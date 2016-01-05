@@ -1,31 +1,23 @@
 \documentclass[12pt, oneside]{book}
- 
 \usepackage{graphicx}
 \usepackage[cmex10]{amsmath}
 \usepackage{algorithmic}
 \begin{document}
  
-%titlepage
 \thispagestyle{empty}
 \begin{center}
 \begin{minipage}{0.75\linewidth}
     \centering
-%University logo
-    %\includegraphics[width=0.3\linewidth]{logo.pdf}
-    \rule{0.4\linewidth}{0.15\linewidth}\par
+    \includegraphics[width=0.3\linewidth]{logo}
+    \par
     \vspace{3cm}
-%Thesis title
-    {\uppercase{\Large Graph Visual Analytics regarding Applications\par}}
+    {\uppercase{\Large Preconditioning\par}}
     \vspace{3cm}
-%Author's name
     {\Large Mohammad Ali Rostami\par}
     \vspace{3cm}
-%Degree
     {\Large Supervisor: Prof. Martin B{\"u}cker\par}
-    
     \vspace{3cm}
-%Date
-    {\Large September 2015}
+    {\Large January 2016}
 \end{minipage}
 \end{center}
 \clearpage
@@ -44,11 +36,61 @@
 
 \chapter{Introduction}
 \chapter{Preliminaries}
-\chapter{Checking a list of Conjectures on different Graphs}
+\begin{itemize}
+\item Given $f:R^n\rightarrow R^n$ in the form of a program
+and vector $z\in R^n$. We want to compute the matrix-vector product
+$Jz$ in which $J=\frac{\partial f}{\partial x}$.
+It will be used in Newton method for the solution of
+non-linear systems.
+\item Given $f:R^n\rightarrow R$ in form of a program and a 
+vector $Z\in R^n$. We want to find the solution of
+the following linear system,
+$$
+\frac{\partial^2 f}{\partial x^2}p =z,
+$$
+in Newton method to minimize $f(x)$. By the way,
+it can be mentioned that $z$ is actually the gradient 
+$z \in\nabla f$
+\end{itemize}
+To compute the minimum of $f(x)$, it is necessary to
+compute the Hessian matrix explicitly and then compute the 
+multiplication of Hessian matrix with vector $z$ with
+iterative methods and knowing the required elements of Hessian.
+\section{Graph Models}
+The graph model for ILU preconditioning can be expressed as the directed graph $G_F=(V,E)$
+in which $V$ represents rows (and columns). The edges of this graph are actually the adjacency relation
+and actually the nonzeros. (Fill path)
+
+The graph model for partial one-soded coloring would be an undirected graph in which
+vertices are defined as columns. Two vertices are connected if their corresponding 
+columns have a nonzero elements in a same row. Being partial is considered due given
+required elements as a pattern. 
+
+Given the matrix $A$, the existing algorithm from [michael's thesis] can be expresses as follows,
+\begin{itemize}
+\item $R_{Init}=\rho(A)$
+\item Preconditioning: $[A^{'},F] = SILU(R_{init},el)$
+\item Coloring: $\Phi(R_{init},A)$
+\item $R_{pot}\subset A\ R_{init}$ such that $|\Phi(R_{init},A)|=|\Phi(R_{init}\cup R_{pot},A)|$
+\item $R_{add}\subset A\ R_{pot}$ such that $|SILU(R_{init}\cup R_{add},el)|=|SILU(R_{init},el) \cup R_{add}|$
+\end{itemize}
+
+We can introduce the new algorithm as follows.
+\begin{itemize}
+\item $R_{Init}=\rho(A)$
+\item Find the graph models for coloring $G_{\Phi}$ and for preconditioning $G_{ILU}$
+\item 
+\begin{align}
+&G_{ILU}^{0} \rightarrow G_{ILU}^{1}\\
+&G_{\Phi}^{0} \rightarrow G_{\Phi}^{1}
+\end{align}
+\end{itemize}
+The goal is to minimize the number of fillins as well as the number of colors in a way that
+the number of additionally required elements is maximized.
 \chapter{Conjecture Checking on list of Graph}
-\chapter{Combinatorial Scientific Computing}
-\chapter{Chemical Graph Theory}
-\chapter{Graph Visualization}
+\chapter{Tools for Combinatorial Scientific Computing}
+\section Conjecture Checking with GraphTea
+\section EXPLAIN
 \chapter{Conclusion}
  
 \bibliographystyle{IEEEtran}
