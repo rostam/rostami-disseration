@@ -1,14 +1,22 @@
 \documentclass[12pt, oneside]{book}
+% This provides the \BibTeX macro
+\usepackage{doc}
+\usepackage{makeidx}
+
+\usepackage[tight,footnotesize]{subfigure}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\newtheorem{problem}{Problem}
+\newtheorem{definition}{Definition}
 \usepackage{graphicx}
-\usepackage[cmex10]{amsmath}
 \usepackage{algorithmic}
+
 \begin{document}
- 
-\thispagestyle{empty}
 \begin{center}
 \begin{minipage}{0.75\linewidth}
     \centering
-    \includegraphics[width=0.5\linewidth]{logo}
+    \includegraphics[width=0.3\linewidth]{logo}
     \par
     \vspace{3cm}
     {\uppercase{\Large Preconditioning\par}}
@@ -36,26 +44,18 @@
 
 \chapter{Introduction}
 \chapter{Preliminaries}
-\begin{itemize}
-\item Given $f:R^n\rightarrow R^n$ in the form of a program
-and vector $z\in R^n$. We want to compute the matrix-vector product
-$Jz$ in which $J=\frac{\partial f}{\partial x}$.
-It will be used in Newton method for the solution of
-non-linear systems.
-\item Given $f:R^n\rightarrow R$ in form of a program and a 
-vector $Z\in R^n$. We want to find the solution of
-the following linear system,
-$$
-\frac{\partial^2 f}{\partial x^2}p =z,
-$$
-in Newton method to minimize $f(x)$. By the way,
-it can be mentioned that $z$ is actually the gradient 
-$z \in\nabla f$
-\end{itemize}
-To compute the minimum of $f(x)$, it is necessary to
-compute the Hessian matrix explicitly and then compute the 
-multiplication of Hessian matrix with vector $z$ with
-iterative methods and knowing the required elements of Hessian.
+\begin{definition}[Structurally Orthogonal]
+Two columns (similary two rows) $c_i$ and $c_j$ are structurally orthogonal if and only if
+they do not have any nonzero element in the same row (similarly in the same column).
+\end{definition}
+
+\begin{definition}[Partially Structurally Orthogonal]
+Given the set of required elements $R$, two columns $c_i$ and $c_j$ are structurally orthogonal 
+if and only if they do not have any nonzero element from $R$ in the same row.
+\end{definition}
+
+
+
 \section{Graph Models}
 The graph model for ILU preconditioning can be expressed as the directed graph $G_F=(V,E)$
 in which $V$ represents rows (and columns). The edges of this graph are actually the adjacency relation
