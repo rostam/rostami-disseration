@@ -15,6 +15,14 @@
 \newcommand{\col}{\ensuremath{c}}
 \newcommand{\row}{\ensuremath{r}}
 
+\newcommand{\R}{\ensuremath{\field{R}}}
+
+\newcommand{\sparsifysymbol}{\ensuremath{\rho}}
+\newcommand{\sparsify}[1]{\ensuremath{\sparsifysymbol(#1)}}
+\newcommand{\todo}[1]{\textbf{#1}}
+\newcommand{\nnz}[1]{\ensuremath{\operatorname{nz}(#1)}}
+
+
 % Define the name of the two minimization problems
 \newcommand{\MinStaBic}{\textsc{MinimumStarBicoloring}}
 \newcommand{\MinBidCom}{\textsc{MinimumBidirectionalCompression}}
@@ -46,17 +54,20 @@
 \section*{Acknowledgments}
 \thispagestyle{empty}
 
-
 \tableofcontents
 
 \chapter{Introduction}
+In the area of scientific computation, finding the differentiation of a function,
+namely the Jacobian matrix, plays a key rule. In contrast to the classical way of finite differences
+to compute the differentiation, Automatic Differentiation~\cite{Griewank2008EDP,Rall1981ADT} 
 
 Luelfesmann's thesis~%\ref{Llfesmann:82817}
 \chapter{Preliminaries}
 
-the definitions in the section of seed matrices are based on \cite{2014:09}.
+We will discuss AD and the needed seed matrices in~\ref{s.seedmatrix} which is based on
+my paper~\cite{2014:09}.
 %===================================================================================================
-\section{Finding a Pair of Seed Matrices}
+\section{Automatic Differentiation}
 \label{s.seedmatrix}
 %===================================================================================================
 Given a program to evaluate some function $f(x) : \setR^n \rightarrow \setR^m$,
@@ -250,51 +261,102 @@ section.
 
 \section{Partial Jacobian Computation}
 
-%\begin{definition}[Structurally Orthogonal]
-%Two columns (similary two rows) $c_i$ and $c_j$ are structurally orthogonal if and only if
-%they do not have any nonzero element in the same row (similarly in the same column).
-%\end{definition}
 
-%\begin{definition}[Partially Structurally Orthogonal]
-%Given the set of required elements $R$, two columns $c_i$ and $c_j$ are structurally orthogonal 
-%if and only if they do not have any nonzero element from $R$ in the same row.
-%\end{definition}
 
-\section{Graph Models}
-The graph model for ILU preconditioning can be expressed as the directed graph $G_F=(V,E)$
-in which $V$ represents rows (and columns). The edges of this graph are actually the adjacency relation
-and actually the nonzeros. (Fill path)
+However, the situation in our semi-matrix-free approach is different. Rather than
+computing all nonzeros of $J$ we are interested in only a subset thereof. More precisely,
+we are interested in the required nonzero elements that are assembled in the matrix
+\sparsify{J}. To demonstrate the difference we continue the example from 
+%\figref{f:full}
+and now assume that the sparsification uses a block size $k=2$. Thus, we are interested
+in the required elements that belong to the three $2 \times 2$ blocks on the main
+diagonal. Those nonzero elements of $J$ that are not required are called nonrequired
+elements. The classification of the nonzero elements into required and nonrequired
+elements is depicted in the left of 
+%\figref{f:partial} 
+by black disks and circles,
+respectively. In this example, columns 1 to~4 can be assigned to column groups as before.
+However, columns 5 and 6 can now be assigned to the same group. The reason is that we are
+not interested in the two nonzeros in row 3 of these two columns which are summed up in
+$J\cdot S$ to a nonzero value indicated by the cross in that figure. That is, we can form
+the sum of two (or more) nonrequired elements without loosing any values of required
+elements. Compared to Problem~\ref{p:seed}, this property allows to reduce the number of
+colors further.
 
-The graph model for partial one-soded coloring would be an undirected graph in which
-vertices are defined as columns. Two vertices are connected if their corresponding 
-columns have a nonzero elements in a same row. Being partial is considered due given
-required elements as a pattern. 
 
-Given the matrix $A$, the existing algorithm from [michael's thesis] can be expresses as follows,
+
+Therefore, we formulate the new problem that represents the assembly of the
+semi-matrix-free approach with a minimal relative cost as follows.
+%
+\begin{problem}[Block Seed]
+\label{p:block}
+%
+Let $J$ be a sparse $n \times n$ Jacobian matrix with known sparsity pattern and let
+\sparsify{J} denote its sparsification using $k \times k$ blocks on the diagonal of $J$.
+Find a binary $n \times p$ seed matrix~$S$ with a minimal number of columns, $p$, such
+that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J \cdot
+S$.
+\end{problem}
+
+The purpose of the next section is to reformulate this combinatorial problem from
+scientific computing in terms of an equivalent problem defined on a suitable graph model.
+
+%==========================================================================================
+\section{Combinatorial Model}
+\label{s.modeling}
+%==========================================================================================
+Graph models are ubiquitous in exploiting the sparsity involved in derivative
+computations; see the comprehensive survey \cite{gmp05}. In the context of the
+semi-matrix-free approach introduced in the previous section, the discussion is based on
+the following undirected graph model.
+%
+%\begin{Definition}[Column Intersection Graph]
+%\label{d:cig}
+%
+The column intersection graph $G = (V,E)$ associated with an $n \times n$ Jacobian $J$
+consists of a set of vertices $V=\{v_1, v_2, \dots, v_n\}$ whose vertex $v_i$ represents
+the $i$th column $J(:,i)$. Furthermore, there is an edge $(v_i,v_j)$ in the set of edges
+$E$ if and only if the columns $J(:,i)$ and $J(:,j)$ represented by $v_i$ and $v_j$ have
+a nonzero element in at least a same row position.
+%\end{Definition}
+%
+The grouping of columns is encoded in the following definition.
+%
+%\begin{Definition}[Coloring]
+A coloring of $G$ is a mapping $\Phi : V \to {1, \dots, p}$ with the property
+$\Phi(v_i)\neq \Phi(v_j)$ for $(v_i,v_j) \in E$.
+%\end{Definition}
+%
+Coleman and Mor\'{e} \cite{Coleman1983EoS} then showed that Problem~\ref{p:seed}, which
+asks for a seed matrix with a minimal number of columns, is equivalent to the following
+coloring problem.
+%
+\begin{problem}[Minimum Coloring]
+\label{p:mincol}
+%
+Find a coloring $\Phi$ of the column intersection graph $G$ with a minimal number of
+colors.
+\end{problem}
+
+The intimate connection between the sparse Jacobian computations described in
+Problem~\ref{p:seed} and the graph coloring issues described by Problem~\ref{p:mincol} is
+well-known and illustrated by an interactive educational module \cite{2013:05}. We now
+focus on novel modifications needed to encode the situation raised by
+Problem~\ref{p:block}.
+
+Recall that the set of nonzero elements is divided into required and nonrequired
+elements. Two columns can be linearly combined without loosing information on the
+required elements as long as one of the following conditions is satisfied:
 \begin{itemize}
-\item $R_{Init}=\rho(A)$
-\item Preconditioning: $[A^{'},F] = SILU(R_{init},el)$
-\item Coloring: $\Phi(R_{init},A)$
-\item $R_{pot}\subset A\ R_{init}$ such that $|\Phi(R_{init},A)|=|\Phi(R_{init}\cup R_{pot},A)|$
-\item $R_{add}\subset A\ R_{pot}$ such that $|SILU(R_{init}\cup R_{add},el)|=|SILU(R_{init},el) \cup R_{add}|$
+  \item There is no row position in which both columns have a nonzero element, whether
+      required or nonrequired.
+  \item There is one or more row positions in which both columns have a nonzero element
+      and both these nonzeros in the same row are nonrequired elements.
 \end{itemize}
 
-We can introduce the new algorithm as follows.
-\begin{itemize}
-\item $R_{Init}=\rho(A)$
-\item Find the graph models for coloring $G_{\Phi}$ and for preconditioning $G_{ILU}$
-\item 
-\begin{align}
-&G_{ILU}^{0} \rightarrow G_{ILU}^{1}\\
-&G_{\Phi}^{0} \rightarrow G_{\Phi}^{1}
-\end{align}
-\end{itemize}
-The goal is to minimize the number of fillins as well as the number of colors in a way that
-the number of additionally required elements is maximized.
-%\chapter{Conjecture Checking on list of Graph}
-%\chapter{Tools for Combinatorial Scientific Computing}
-%\section Conjecture Checking with GraphTea
-%\section EXPLAIN
+Thus, the case where two columns can be assigned to the same column group is encoded by
+the following definition.
+
 \chapter{EXPLAIN}
 \section{Column Compression}
 \cite{2013:05,2014:01}
@@ -315,6 +377,52 @@ Changing the whole structure of back bone to speed up the software.
 
 Chemical Graph theory
 \cite{2015:05,2015:06,2015:07,2015:08}
+
+
+\begin{figure}
+\centering
+   \includegraphics[width=0.45\linewidth]{bad_order_color}
+   \hfill
+   \includegraphics[width=0.45\linewidth]{good_order_color}
+\end{figure}
+
+
+\begin{figure}
+\centering
+   \includegraphics[width=0.4\linewidth]{bad_order}
+   \hfill
+   \includegraphics[width=0.4\linewidth]{bad_order_1_removed}
+   \includegraphics[width=0.4\linewidth]{bad_order_2_1_removed}
+   \hfill
+   \includegraphics[width=0.25\linewidth]{bad_order_3_2_1_removed}
+\caption{The bad  ordering}
+\label{bad_order_fillin}
+\end{figure}
+
+\begin{figure}
+\centering
+   \includegraphics[width=0.4\linewidth]{good_order}
+   \hfill
+   \includegraphics[width=0.4\linewidth]{good_order_2_removed}
+   \includegraphics[width=0.4\linewidth]{good_order_5_2_removed}
+   \hfill
+   \includegraphics[width=0.25\linewidth]{good_order_3_5_2_removed}
+\caption{The good  ordering}
+\label{good_order_fillin}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \chapter{Conclusion}
  
