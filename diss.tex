@@ -428,15 +428,24 @@ Chemical Graph theory
 
 
 
+\chapter{Implementation Details}
+As we discussed, we changed the code such that it becomes more efficient and easier to extend. 
+In the previous version, the module was mainly based on the python libraries:
+\textit{NetworkX} \cite{networkx2008} for the graph data structure,
+\textit{matplotlib} \cite{matplotlib2007} for the visualization aspects,
+\textit{Scipy}~\cite{scipy2001} for the sparse matrix computation, and
+\textit{Mod\_python}~\cite{modpython2013} for the web-based version. 
 
+There were two problems with the previous implementation. First, the final visualization
+of graph and matrix was always an image. 
+So, the time for saving and loading the image was always a problem.
+Second, since the final result was HTML/JS code and the computation part was in python,
+an overhead of the server management for \textit{Mod\_python} is always added to system.
 
-
-
-
-
-
-
-
+In the new implementation, we replaced all python parts with the JS code.
+We decided for the Javascript library D3 because of its power of visualization.
+This is a solution to the two previous problems. However, we needed to implement 
+the sparse matrix computation as well as the graph data structure.
 
 \chapter{Conclusion}
  
