@@ -9,6 +9,16 @@
 \newtheorem{definition}{Definition}
 \usepackage{graphicx}
 \usepackage{algorithmic}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+
 \newcommand{\setR}{\ensuremath{\mathbb{R}}}
 \newcommand{\col}{\ensuremath{c}}
 \newcommand{\row}{\ensuremath{r}}
@@ -62,7 +72,7 @@ Luelfesmann's thesis~%\ref{Llfesmann:82817}
 We will discuss AD and the needed seed matrices in~\ref{s.seedmatrix} which is based on
 our paper~\cite{2014:09}.
 %===================================================================================================
-\section{Automatic Differentiation}
+\section{Jacobian Computation}
 \label{s.seedmatrix}
 %===================================================================================================
 Given a program to evaluate some function $f(x) : \setR^n \rightarrow \setR^m$,
@@ -263,6 +273,49 @@ the pair of matrix-matrix products $JV$ and $WJ$.
 An equivalent graph-theoretical formulation of this problem is discussed in the next
 section.
 
+
+%==========================================================================================
+\section{Combinatorial Model}
+\label{s.modeling}
+%==========================================================================================
+Graph models are ubiquitous in exploiting the sparsity involved in derivative
+computations; see the comprehensive survey \cite{Gebremedhin05whatcolor}. In the context of the
+semi-matrix-free approach introduced in the previous section, the discussion is based on
+the following undirected graph model.
+%
+\begin{definition}[Column Intersection Graph]
+\label{d:cig}
+The column intersection graph $G = (V,E)$ associated with an $n \times n$ Jacobian $J$
+consists of a set of vertices $V=\{v_1, v_2, \dots, v_n\}$ whose vertex $v_i$ represents
+the $i$th column $J(:,i)$. Furthermore, there is an edge $(v_i,v_j)$ in the set of edges
+$E$ if and only if the columns $J(:,i)$ and $J(:,j)$ represented by $v_i$ and $v_j$ have
+a nonzero element in at least a same row position.
+\end{definition}
+
+The grouping of columns is encoded in the following definition.
+%
+\begin{definition}[Coloring]
+A coloring of $G$ is a mapping $\Phi : V \to {1, \dots, p}$ with the property
+$\Phi(v_i)\neq \Phi(v_j)$ for $(v_i,v_j) \in E$.
+\end{definition}
+%
+Coleman and Mor\'{e} \cite{Coleman1983EoS} then showed that Problem~\ref{p.seed.uni}, which
+asks for a seed matrix with a minimal number of columns, is equivalent to the following
+coloring problem.
+%
+\begin{problem}[Minimum Coloring]
+\label{p:mincol}
+%
+Find a coloring $\Phi$ of the column intersection graph $G$ with a minimal number of
+colors.
+\end{problem}
+
+The intimate connection between the sparse Jacobian computations described in
+Problem~\ref{p.seed.uni} and the graph coloring issues described by Problem~\ref{p:mincol} is
+well-known.
+We illustrated this algorithm by an interactive educational module EXPLAIN~\cite{2013:05}
+(see Section~\ref{s.column-compression}). 
+
 \section{Partial Jacobian Computation}
 
 However, the situation in our semi-matrix-free approach is different. Rather than
@@ -299,51 +352,8 @@ that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J
 S$.
 \end{problem}
 
-The purpose of the next section is to reformulate this combinatorial problem from
+We now focus on reformulating this combinatorial problem from
 scientific computing in terms of an equivalent problem defined on a suitable graph model.
-
-%==========================================================================================
-\section{Combinatorial Model}
-\label{s.modeling}
-%==========================================================================================
-Graph models are ubiquitous in exploiting the sparsity involved in derivative
-computations; see the comprehensive survey \cite{Gebremedhin05whatcolor}. In the context of the
-semi-matrix-free approach introduced in the previous section, the discussion is based on
-the following undirected graph model.
-%
-%\begin{Definition}[Column Intersection Graph]
-%\label{d:cig}
-%
-The column intersection graph $G = (V,E)$ associated with an $n \times n$ Jacobian $J$
-consists of a set of vertices $V=\{v_1, v_2, \dots, v_n\}$ whose vertex $v_i$ represents
-the $i$th column $J(:,i)$. Furthermore, there is an edge $(v_i,v_j)$ in the set of edges
-$E$ if and only if the columns $J(:,i)$ and $J(:,j)$ represented by $v_i$ and $v_j$ have
-a nonzero element in at least a same row position.
-%\end{Definition}
-%
-The grouping of columns is encoded in the following definition.
-%
-%\begin{Definition}[Coloring]
-A coloring of $G$ is a mapping $\Phi : V \to {1, \dots, p}$ with the property
-$\Phi(v_i)\neq \Phi(v_j)$ for $(v_i,v_j) \in E$.
-%\end{Definition}
-%
-Coleman and Mor\'{e} \cite{Coleman1983EoS} then showed that Problem~\ref{p.seed.uni}, which
-asks for a seed matrix with a minimal number of columns, is equivalent to the following
-coloring problem.
-%
-\begin{problem}[Minimum Coloring]
-\label{p:mincol}
-%
-Find a coloring $\Phi$ of the column intersection graph $G$ with a minimal number of
-colors.
-\end{problem}
-
-The intimate connection between the sparse Jacobian computations described in
-Problem~\ref{p.seed.uni} and the graph coloring issues described by Problem~\ref{p:mincol} is
-well-known and illustrated by an interactive educational module \cite{2013:05}. We now
-focus on novel modifications needed to encode the situation raised by
-Problem~\ref{p:block}.
 
 Recall that the set of nonzero elements is divided into required and nonrequired
 elements. Two columns can be linearly combined without loosing information on the
@@ -358,8 +368,50 @@ required elements as long as one of the following conditions is satisfied:
 Thus, the case where two columns can be assigned to the same column group is encoded by
 the following definition.
 
+\begin{definition}[Structurally $\sparsifysymbol$-Orthogonal]
+A column $J(:,i)$ is structurally $\sparsifysymbol$-orthogonal to column $J(:,j)$ if and
+only if there is no row position $\ell$ in which $J(\ell,i)$ and $J(\ell,j)$ are nonzero
+elements and at least one of them belongs to the set of required element \sparsify{J}.
+\end{definition}
+
+We now construct a modified column intersection graph in which the set of vertices is the
+same as in Def.~\ref{d:cig}, but whose set of edges is defined differently.
+%
+\begin{definition}[$\sparsifysymbol$-Column Intersection Graph]
+The $\sparsifysymbol$-column intersection graph $G_\sparsifysymbol =
+(V,E_\sparsifysymbol)$ associated with a pair of $n \times n$ Jacobians $J$ and
+\sparsify{J} consists of a set of vertices $V=\{v_1, v_2, \dots, v_n\}$ whose vertex
+$v_i$ represents the $i$th column $J(:,i)$. Furthermore, there is an edge $(v_i,v_j)$ in
+the set of edges $E_\sparsifysymbol$ if and only if the columns $J(:,i)$ and $J(:,j)$
+represented by $v_i$ and $v_j$ are not structurally $\sparsifysymbol$-orthogonal.
+\end{definition}
+
+So, the edge set $E_\sparsifysymbol$ is constructed in such a way that columns
+represented by two vertices $v_i$ and $v_j$ need to be assigned to different groups if
+and only if $(v_i, v_j) \in E_\sparsifysymbol$. This constructions shows that
+Problem~\ref{p:block} is equivalent to the following coloring problem.
+%
+\begin{problem}[Minimum Block Coloring]
+\label{p:minblockcol}
+%
+Find a coloring $\Phi$ of the $\sparsifysymbol$-column intersection graph
+$G_\sparsifysymbol$ with a minimal number of colors.
+\end{problem}
+
+A column of $J$ without any required nonzero element is represented by a vertex to which
+no edge is incident in~$G_\sparsifysymbol$. These isolated vertices does not need to be
+colored. So, in general, colors are assigned to a subset of the vertices in
+$G_\sparsifysymbol$.
+
+Finally, an alternative formulation can be derived by using a bipartite graph model in
+which there is a vertex set for the rows and another vertex set for the columns of the
+Jacobian. Using the more general bipartite graph model, Problem~\ref{p:minblockcol} could
+be reformulated as a minimum distance-2 coloring of a bipartite graph when restricted to
+the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
+
 \chapter{EXPLAIN}
 \section{Column Compression}
+\label{s.column-compression}
 \cite{2013:05,2014:01}
 
 \begin{figure}
@@ -391,8 +443,67 @@ the following definition.
 
 \section{Bidirectional Compression}
 \cite{2014:09}
+%------------------------------------------------------------------------------------------------
+\begin{figure}
+  \centering
+  \subfigure[]{\includegraphics[width=0.43\textwidth]{init-bipartite}}
+  \hfill
+  \subfigure[]{\includegraphics[width=0.55\textwidth]{explain_bottom}}
+  \caption{The general layout of the bidirectional compression module. (a) The top part
+  contains the visualization of the graph and its corresponding matrix. (b)
+   The bottom part contains the intermediate steps, the input, and the
+   history of selections.}
+  \label{f.explain}
+ \end{figure}
+%------------------------------------------------------------------------------------------------
+
+
+%------------------------------------------------------------------------------------------------
+\begin{figure}[b]
+\centering
+\subfigure[]{%
+  % Matrix C: after choosing 2 vertices
+  \includegraphics[width=0.18\textwidth]{arrow-shaped-bipartite-graph-twoselected}
+  \includegraphics[width=0.24\textwidth]{arrow-shaped-matrix-twoselected}
+}
+ \hfill
+\subfigure[]{%
+  % Matrix C: after having completed the solution process
+  \includegraphics[width=0.18\textwidth]{arrow-shaped-almost-worst-coloring-graph}
+  \includegraphics[width=0.24\textwidth]{arrow-shaped-almost-worst-coloring-matrix}
+  }%
+\caption{The graph and the nonzero pattern (a) taken from Fig.~\protect\ref{f.explain}
+after the student interactively selected the vertices $r_2$
+and $c_1$. A star bicoloring (b) of that example after trying to solve
+\MinStaBic\ interactively. This star bicoloring uses $11$ colors.}
+\label{f.arrow-shaped2}
+\end{figure}
+%------------------------------------------------------------------------------------------------
+
+
+%------------------------------------------------------------------------------------------------
+\begin{figure}[t]
+\centering
+\subfigure[]{%
+  % Matrix C: Minimal number of colors
+  \includegraphics[width=0.18\textwidth]{arrow-shaped-best-coloring-graph}
+  \includegraphics[width=0.24\textwidth]{arrowshaped-best-coloring-matrix}
+  }%
+  \hfill
+\subfigure[]{%
+  % A different matrix : after having completed the solution process
+  \includegraphics[width=0.18\textwidth]{arrow-shaped2-best-coloring-graph}
+  \includegraphics[width=0.24\textwidth]{arrow-shaped2-best-coloring-matrix}
+  }%
+\caption{A star bicoloring (a) of the problem instance from
+Fig.~\protect\ref{f.explain} also considered in Fig.~\protect\ref{f.arrow-shaped2}. This
+star bicoloring uses $3$ colors and is an exact solution of \MinStaBic. A star bicoloring
+(b) of a different problem instance using $4$ colors which is also an exact
+solution of \MinStaBic} \label{f.arrow-shaped4}
+\end{figure}
+%------------------------------------------------------------------------------------------------
 \section{Partial Jacobian Computation}
-...
+
 \section{Nested Dissection Ordering}
 \cite{2014:02}
 
@@ -447,7 +558,7 @@ the following definition.
 \centering
 \includegraphics[width=0.9\textwidth]{final}
 \caption{Overall structure of the sparse matrix-vector multiplication module.}
-\label{f.explain}
+\label{f.explain2}
 \end{figure}
 %------------------------------------------------------------------------------------------
 
@@ -484,7 +595,7 @@ the following definition.
 \section{EXPLAIN Revisited}
 We improved the software EXPLAIN in two ways. 
 First, we speed up the software by changing the backbone implementation
-which the details is found in Chapter~\ref{impl}.
+which the details is found in Chapter~\ref{s.impl.explain}.
 Second, we extended EXPLAIN such that the user can add a custom module 
 in an easy scripting lanugage. The program can be written directly 
 in the third frame shown beside the matrix and graph frames
@@ -502,9 +613,10 @@ in the third frame shown beside the matrix and graph frames
 
 
 
-\chapter{GraphTea}
-GraphTea~\cite{2014:07,2014:15,2014:16} is a 
-graph editing framework designed specifically to compute and visualize
+\chapter{Computational Package for coloring}
+For this purpose, we extend GraphTea~\cite{2014:07,2014:15,2014:16} to have a
+set of reports for graph coloring.
+GraphTea is a graph editing framework designed specifically to compute and visualize
 different parameters of graphs interactively.
 Figure~\ref{f.graphtea} shows a snapshot of the main
 graph window together with two additional windows that give more details on the solution
@@ -576,6 +688,8 @@ Chemical Graph theory
 
 
 \chapter{Implementation Details}
+\section{EXPLAIN}
+\label{s.impl.explain}
 As we discussed, we changed the code such that it becomes more efficient and easier to extend. 
 In the previous version, the module was mainly based on the python libraries:
 \textit{NetworkX} \cite{networkx2008} for the graph data structure,
@@ -594,6 +708,8 @@ We decided for the Javascript library D3 because of its power of visualization.
 This is a solution to the two previous problems. However, we needed to implement 
 the sparse matrix computation as well as the graph data structure.
 
+\section{GraphTea}
+\label{s.impl.graphtea}
 \chapter{Conclusion}
  
 \bibliographystyle{IEEEtran}
