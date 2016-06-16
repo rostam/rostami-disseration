@@ -2,11 +2,9 @@
 % This provides the \BibTeX macro
 \usepackage{doc}
 \usepackage{makeidx}
-
 \usepackage[tight,footnotesize]{subfigure}
 \usepackage{amsmath}
 \usepackage{amsfonts}
-
 \newtheorem{problem}{Problem}
 \newtheorem{definition}{Definition}
 \usepackage{graphicx}
@@ -14,17 +12,14 @@
 \newcommand{\setR}{\ensuremath{\mathbb{R}}}
 \newcommand{\col}{\ensuremath{c}}
 \newcommand{\row}{\ensuremath{r}}
-
 \newcommand{\R}{\ensuremath{\field{R}}}
-
 \newcommand{\sparsifysymbol}{\ensuremath{\rho}}
 \newcommand{\sparsify}[1]{\ensuremath{\sparsifysymbol(#1)}}
 \newcommand{\todo}[1]{\textbf{#1}}
 \newcommand{\nnz}[1]{\ensuremath{\operatorname{nz}(#1)}}
-
-
 % Define the name of the two minimization problems
 \newcommand{\MinStaBic}{\textsc{MinimumStarBicoloring}}
+\newcommand{\MinUniCom}{\textsc{MinimumUnidirectionalCompression}}
 \newcommand{\MinBidCom}{\textsc{MinimumBidirectionalCompression}}
 
 \begin{document}
@@ -65,7 +60,7 @@ Luelfesmann's thesis~%\ref{Llfesmann:82817}
 \chapter{Preliminaries}
 
 We will discuss AD and the needed seed matrices in~\ref{s.seedmatrix} which is based on
-my paper~\cite{2014:09}.
+our paper~\cite{2014:09}.
 %===================================================================================================
 \section{Automatic Differentiation}
 \label{s.seedmatrix}
@@ -244,12 +239,21 @@ sparse matrix.
 The above example is intentionally kept simple. However, for general sparsity patterns,
 it is not always easy to figure out how to linearly combine columns and rows such that
 the computational cost is minimized. Hence, we introduce the following combinatorial
-optimization problem that addresses this question. In practice, the solution of this
+optimization problems that addresses this question of unidirectional or bidirectional compression. 
+In practice, the solution of this
 problem will substantially reduce the computational cost for computing all nonzero
 elements of a large and sparse Jacobian.
 
+\begin{problem}[\MinUniCom]
+\label{p.seed.uni} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
+pattern. Find a seed matrix $V$ of dimension $n\times \col$ 
+whose number of columns of $V$ sums up
+to a minimal value, $\col$, such that all nonzero elements of $J$ also appear in
+the matrix-matrix product $JV$.
+\end{problem}
+
 \begin{problem}[\MinBidCom]
-\label{p.seed} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
+\label{p.seed.bid} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
 pattern. Find a pair of binary seed matrices $V$ of dimension $n\times \col$ and $W$~of
 dimension $\row \times m$ whose number of columns of $V$ and number of rows of $W$ sum up
 to a minimal value, $\col + \row$, such that all nonzero elements of $J$ also appear in
@@ -260,8 +264,6 @@ An equivalent graph-theoretical formulation of this problem is discussed in the 
 section.
 
 \section{Partial Jacobian Computation}
-
-
 
 However, the situation in our semi-matrix-free approach is different. Rather than
 computing all nonzeros of $J$ we are interested in only a subset thereof. More precisely,
@@ -280,10 +282,9 @@ However, columns 5 and 6 can now be assigned to the same group. The reason is th
 not interested in the two nonzeros in row 3 of these two columns which are summed up in
 $J\cdot S$ to a nonzero value indicated by the cross in that figure. That is, we can form
 the sum of two (or more) nonrequired elements without loosing any values of required
-elements. Compared to Problem~\ref{p:seed}, this property allows to reduce the number of
+elements. Compared to Problems~\ref{p.seed.uni} and ~\ref{p.seed.bid}, 
+this property allows to reduce the number of
 colors further.
-
-
 
 Therefore, we formulate the new problem that represents the assembly of the
 semi-matrix-free approach with a minimal relative cost as follows.
@@ -306,7 +307,7 @@ scientific computing in terms of an equivalent problem defined on a suitable gra
 \label{s.modeling}
 %==========================================================================================
 Graph models are ubiquitous in exploiting the sparsity involved in derivative
-computations; see the comprehensive survey \cite{gmp05}. In the context of the
+computations; see the comprehensive survey \cite{Gebremedhin05whatcolor}. In the context of the
 semi-matrix-free approach introduced in the previous section, the discussion is based on
 the following undirected graph model.
 %
@@ -327,7 +328,7 @@ A coloring of $G$ is a mapping $\Phi : V \to {1, \dots, p}$ with the property
 $\Phi(v_i)\neq \Phi(v_j)$ for $(v_i,v_j) \in E$.
 %\end{Definition}
 %
-Coleman and Mor\'{e} \cite{Coleman1983EoS} then showed that Problem~\ref{p:seed}, which
+Coleman and Mor\'{e} \cite{Coleman1983EoS} then showed that Problem~\ref{p.seed.uni}, which
 asks for a seed matrix with a minimal number of columns, is equivalent to the following
 coloring problem.
 %
@@ -339,7 +340,7 @@ colors.
 \end{problem}
 
 The intimate connection between the sparse Jacobian computations described in
-Problem~\ref{p:seed} and the graph coloring issues described by Problem~\ref{p:mincol} is
+Problem~\ref{p.seed.uni} and the graph coloring issues described by Problem~\ref{p:mincol} is
 well-known and illustrated by an interactive educational module \cite{2013:05}. We now
 focus on novel modifications needed to encode the situation raised by
 Problem~\ref{p:block}.
@@ -360,14 +361,125 @@ the following definition.
 \chapter{EXPLAIN}
 \section{Column Compression}
 \cite{2013:05,2014:01}
+
+\begin{figure}
+\centering
+\subfigure[Student selected $v_2$ and $v_6$ in that order.]{
+    \includegraphics[width=0.47\textwidth]{fig2.png}
+    \label{fig2}
+}
+\centering
+\subfigure[Student selected $v_2$, $v_6$, $v_3$, $v_5$, $v_1$, and $v_4$ in that order.]{
+    \includegraphics[width=0.47\textwidth]{fig3.png}
+    \label{fig3}
+}
+\centering
+\subfigure[Student selected vertices as in \figurename~\protect\ref{fig3} and then jumped back to $v_2$.]{
+    \includegraphics[width=0.47\textwidth]{fig4.png}
+    \label{fig4}
+}
+\centering
+\subfigure[Student selected $v_2$, $v_1$, $v_3$, $v_4$, $v_5$, and $v_6$ in that order.]{
+    \includegraphics[width=0.47\textwidth]{fig5.png}
+    \label{fig5}
+}
+\caption{Display of various situations after interactively choosing vertices.}
+\label{algorihtm}
+\end{figure}
+
+
+
 \section{Bidirectional Compression}
 \cite{2014:09}
 \section{Partial Jacobian Computation}
 ...
 \section{Nested Dissection Ordering}
 \cite{2014:02}
+
+\begin{figure}[t]
+\centering
+\subfigure{\includegraphics[width=0.25\textwidth]{graph_initial}}%
+\subfigure{\includegraphics[width=0.25\textwidth]{matrix_initial}}
+\caption{Two equivalent representations in terms of a graph (left) and a matrix (right).}
+\label{initial}
+\end{figure}
+
+
+
+\begin{figure}[t]
+\centering
+\subfigure{\includegraphics[width=0.25\textwidth]{graph_10_selected}}%
+\subfigure{\includegraphics[width=0.25\textwidth]{matrix_10_selected}}
+\caption{Graph and matrix view after selecting the vertex number~10. The decomposition into two blocks is still not shown as the graph is not yet decomposed into two disconnected components.}
+\label{selected10}
+\end{figure}
+
+
+\begin{figure}[t]
+\centering
+\subfigure{\includegraphics[width=0.25\textwidth]{graph_4_10_selected}}%
+\subfigure{\includegraphics[width=0.25\textwidth]{matrix_4_10_selected}}
+\caption{Graph and matrix view after selecting the vertices number 10 and then 4. The selection is not adequate as the sizes of blocks are not balanced.}
+\label{selected410}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\subfigure{\includegraphics[width=0.25\textwidth]{graph_8_10_selected}}%
+\subfigure{\includegraphics[width=0.25\textwidth]{matrix_8_10_selected}}
+\caption{Graph and matrix view after selecting the vertices number 10 and then 8. The block sizes are balanced and the separator size is minimized.}
+\label{selected810}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.47\textwidth]{diagram}
+\caption{Score diagram resulting from four different rounds.}
+\label{diagram}
+\end{figure}
 \section{Parallel Matrix Vector Product}
 \cite{2015:3}
+
+%------------------------------------------------------------------------------------------
+% Overall Layout of Module
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\textwidth]{final}
+\caption{Overall structure of the sparse matrix-vector multiplication module.}
+\label{f.explain}
+\end{figure}
+%------------------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------------------
+% Interactive Selection of Vertices
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\textwidth]{twoColors}
+\caption{The intermediate state after the student selected six vertices.}
+\label{f.beginning}
+\end{figure}
+%------------------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------------------
+% Communication structure
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{redComm}
+\caption{All vector entries $x_i$ to be communicated to the red process are drawn in red.}
+\label{f.communication}
+\end{figure}
+%------------------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------------------
+% Score diagram
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\textwidth]{chart}
+\caption{The communication volume and the deviation bound versus various rounds.}
+\label{f.score}
+\end{figure}
+%------------------------------------------------------------------------------------------
 \section{EXPLAIN Revisited}
 Changing the whole structure of back bone to speed up the software.
 \chapter{GraphTea}
@@ -422,10 +534,8 @@ Chemical Graph theory
    \hfill
    \includegraphics[width=0.25\linewidth]{good_order_3_5_2_removed}
 \caption{The good  ordering}
-\label{good_order_fillin}
+\label{good_order_fillin2}
 \end{figure}
-
-
 
 
 \chapter{Implementation Details}
