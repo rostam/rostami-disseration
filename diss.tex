@@ -398,8 +398,8 @@ the following definition.
 
 \begin{figure}[t]
 \centering
-\subfigure{\includegraphics[width=0.25\textwidth]{graph_initial}}%
-\subfigure{\includegraphics[width=0.25\textwidth]{matrix_initial}}
+\subfigure{\includegraphics[width=0.48\textwidth]{graph_initial}}%
+\subfigure{\includegraphics[width=0.48\textwidth]{matrix_initial}}
 \caption{Two equivalent representations in terms of a graph (left) and a matrix (right).}
 \label{initial}
 \end{figure}
@@ -408,8 +408,8 @@ the following definition.
 
 \begin{figure}[t]
 \centering
-\subfigure{\includegraphics[width=0.25\textwidth]{graph_10_selected}}%
-\subfigure{\includegraphics[width=0.25\textwidth]{matrix_10_selected}}
+\subfigure{\includegraphics[width=0.48\textwidth]{graph_10_selected}}%
+\subfigure{\includegraphics[width=0.48\textwidth]{matrix_10_selected}}
 \caption{Graph and matrix view after selecting the vertex number~10. The decomposition into two blocks is still not shown as the graph is not yet decomposed into two disconnected components.}
 \label{selected10}
 \end{figure}
@@ -417,8 +417,8 @@ the following definition.
 
 \begin{figure}[t]
 \centering
-\subfigure{\includegraphics[width=0.25\textwidth]{graph_4_10_selected}}%
-\subfigure{\includegraphics[width=0.25\textwidth]{matrix_4_10_selected}}
+\subfigure{\includegraphics[width=0.48\textwidth]{graph_4_10_selected}}%
+\subfigure{\includegraphics[width=0.48\textwidth]{matrix_4_10_selected}}
 \caption{Graph and matrix view after selecting the vertices number 10 and then 4. The selection is not adequate as the sizes of blocks are not balanced.}
 \label{selected410}
 \end{figure}
@@ -426,8 +426,8 @@ the following definition.
 
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=0.25\textwidth]{graph_8_10_selected}}%
-\subfigure{\includegraphics[width=0.25\textwidth]{matrix_8_10_selected}}
+\subfigure{\includegraphics[width=0.48\textwidth]{graph_8_10_selected}}%
+\subfigure{\includegraphics[width=0.48\textwidth]{matrix_8_10_selected}}
 \caption{Graph and matrix view after selecting the vertices number 10 and then 8. The block sizes are balanced and the separator size is minimized.}
 \label{selected810}
 \end{figure}
@@ -453,7 +453,7 @@ the following definition.
 
 %------------------------------------------------------------------------------------------
 % Interactive Selection of Vertices
-\begin{figure}[t]
+\begin{figure}
 \centering
 \includegraphics[width=0.9\textwidth]{twoColors}
 \caption{The intermediate state after the student selected six vertices.}
@@ -463,7 +463,7 @@ the following definition.
 
 %------------------------------------------------------------------------------------------
 % Communication structure
-\begin{figure}[h]
+\begin{figure}
 \centering
 \includegraphics[width=0.9\textwidth]{redComm}
 \caption{All vector entries $x_i$ to be communicated to the red process are drawn in red.}
@@ -473,17 +473,54 @@ the following definition.
 
 %------------------------------------------------------------------------------------------
 % Score diagram
-\begin{figure}[t]
+\begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{chart}
 \caption{The communication volume and the deviation bound versus various rounds.}
 \label{f.score}
 \end{figure}
 %------------------------------------------------------------------------------------------
+
 \section{EXPLAIN Revisited}
-Changing the whole structure of back bone to speed up the software.
+We improved the software EXPLAIN in two ways. 
+First, we speed up the software by changing the backbone implementation
+which the details is found in Chapter~\ref{impl}.
+Second, we extended EXPLAIN such that the user can add a custom module 
+in an easy scripting lanugage. The program can be written directly 
+in the third frame shown beside the matrix and graph frames
+(see Figure~\ref{f.custom}).
+
+%------------------------------------------------------------------------------------------
+% Score diagram
+\begin{figure}
+\centering
+\includegraphics[width=0.98\textwidth]{custom}
+\caption{}
+\label{f.custom}
+\end{figure}
+%------------------------------------------------------------------------------------------
+
+
+
 \chapter{GraphTea}
-\cite{2014:07}
+GraphTea~\cite{2014:07,2014:15,2014:16} is a 
+graph editing framework designed specifically to compute and visualize
+different parameters of graphs interactively.
+Figure~\ref{f.graphtea} shows a snapshot of the main
+graph window together with two additional windows that give more details on the solution
+of different graph problems. These separate windows providing additional information are
+called ``reports.''
+
+%-----------------------------------------------------------------------------------------------
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{graphtea}
+\caption{An overview of GraphTea: A graph drawing window and 
+two floating dialogs with reports on a given graph.}
+\label{f.graphtea}
+\end{figure}
+%-----------------------------------------------------------------------------------------------
+
 \cite{2014:15}
 \cite{2014:16}
 
