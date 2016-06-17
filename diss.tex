@@ -9,7 +9,7 @@
 \newtheorem{definition}{Definition}
 \usepackage{graphicx}
 %\usepackage{algorithmic}
-
+\usepackage{listings}
 \usepackage[noend]{algpseudocode}
 \usepackage{hyperref}
 \hypersetup{
@@ -274,7 +274,6 @@ the pair of matrix-matrix products $JV$ and $WJ$.
 An equivalent graph-theoretical formulation of this problem is discussed in the next
 section.
 
-
 %==========================================================================================
 \section{Combinatorial Model}
 \label{s.modeling}
@@ -316,7 +315,6 @@ Problem~\ref{p.seed.uni} and the graph coloring issues described by Problem~\ref
 well-known.
 We illustrated this algorithm by an interactive educational module EXPLAIN~\cite{2013:05}
 (see Section~\ref{s.column-compression}). 
-
 
 This undirected graph model is easily adapted to unidirectional compression with respect
 to rows. Here, a vertex represents a row and an edge represents structural
@@ -852,11 +850,10 @@ in the third frame shown beside the matrix and graph frames
 \end{figure}
 %------------------------------------------------------------------------------------------
 
-
-
 \chapter{Computational Package for coloring}
 For this purpose, we extend GraphTea~\cite{2014:07,2014:15,2014:16} to have a
 set of reports for graph coloring.
+%Chemical Graph theory\cite{2015:05,2015:06,2015:07,2015:08}
 GraphTea is a graph editing framework designed specifically to compute and visualize
 different parameters of graphs interactively.
 Figure~\ref{f.graphtea} shows a snapshot of the main
@@ -873,13 +870,6 @@ two floating dialogs with reports on a given graph.}
 \label{f.graphtea}
 \end{figure}
 %-----------------------------------------------------------------------------------------------
-
-\cite{2014:15}
-\cite{2014:16}
-
-Chemical Graph theory
-\cite{2015:05,2015:06,2015:07,2015:08}
-
 
 \begin{figure}
 \centering
@@ -1015,9 +1005,96 @@ Second, since the final result was HTML/JS code and the computation part was in 
 an overhead of the server management for \textit{Mod\_python} is always added to system.
 
 In the new implementation, we replaced all python parts with the JS code.
-We decided for the Javascript library D3 because of its power of visualization.
-This is a solution to the two previous problems. However, we needed to implement 
-the sparse matrix computation as well as the graph data structure.
+We decided for the Javascript library D3 (Data-Driven Documents) 
+because of its power of control and visualization.
+The adjacnecy list is selected for the graph data structure.
+We used the object structure of the JS which helps us to have another
+properties also in the graph. Figure~\ref{f.graph-ds} shown an illustration
+of the data structure. There is basically an array representing the vertices.
+Each cell of array points to another array \textit{edges} which contains
+the id numbers of the vertices which are neigbours of that cell.
+Here, we showed that the data structure can contain another properties like colors.
+It can be extended dynamically to contain any other properties which is needed later.
+For example, two other properties \textit{distance} and \textit{parent} are added
+in the impelementation of Breadth-First Search (BFS).
+
+%-----------------------------------------------------------------------------------------------
+\begin{figure}
+\centering
+\includegraphics[width=0.38\textwidth]{graph}
+\caption{}
+\label{f.graph-ds}
+\end{figure}
+%-----------------------------------------------------------------------------------------------
+
+Another important aspect which is considered in our design was the connection of the 
+model and view. An effective approach enables the direct change in view while keeps the 
+separation of the view and model. So, we decided to have unique ids for the view of
+edges and vertices. The unique ids for vertices are defined as the concatenation of the
+string "ver" and the actual id of vertex. Similarly, the unique ids for edges are
+defined as the concatenation of the four string "edge", the source vertex, "-", 
+and the target vertex. The same idea is used for the matrix view. Each cell of the matrix
+is accessible through an unique id combining the strings "cell", the row index,
+"-", and the column index. Each nonzero at matrix also gets the unique id same as before 
+while inserting the string "nnz" instead of cell.
+
+The previous discussion of the view access enables us to select the 
+specific element and change its behaviour and properties. For example, the following 
+code would change the color of the vertex with the id~\textit{i} and the color
+of a matrix cell,
+\begin{lstlisting}
+d3.select("ver"+i).set_color(red);
+d3.select("cell"+i+"-"+j).set_color(blue);
+\end{lstlisting}
+
+There are two important aspects of implementation which we discuss here. 
+An aspect of implementation is the real connection of an edge to its
+source and target vertices. It means that the locations of the source and target
+vertices are read directly from the vertex component in view. This prevents 
+of the double repaint the view.
+Another aspect is to paint the components in the correct order. So, no edges
+are viewed about vertices or no cells of matrix are shown above the nonzeros. 
+We did this by using the group component of D3 in which it can be managed
+to be drawn always in the given order.
+
+After the first design of the software, we then considered the actual interface
+for the developer. Since, we do not need all the functionality which the 
+programming language provides, we decided to have a new script language which
+has only functionalities regarding the matrix and the graph and their
+connections. Also, this new script language does everything by simple functions
+such that each function does a specific action on the graph or matrix.
+Table~\ref{command-table} shows a list of functions which are availanle
+now in EXPLAIN 2.0.
+\begin{table}
+  \begin{tabular}{ | c | c |}
+    \hline
+    neighbors($l_v$) & returns the neighbours of the vertex $l_v$  \\ \hline
+    color\_vertex($v$,$c$) & colors the vertex $v$ with the color $c$  \\\hline
+    color\_column($i$,$c$) & colors the column $i$ with the color $c$  \\\hline
+    color\_row($j$,$c$)    & colors the row $j$ with the color $c$  \\\hline
+    min($l$) and max($l$) & finds minimum and maximum of the list of integers $l$ \\\hline
+    diff($A$,$B$) & finds differenece of two given sets $A$ and $B$ \\\hline
+    get\_colors($l_v$) & return a list of colors of vertices $l_v$ \\\hline
+\end{tabular}
+\caption{The list of functions available in the new scripting language.}
+\label{command-table}  
+\end{table}
+
+Having such scripting language empowers us to have a dynamic script editor 
+together with EXPLAIN which makes the creation of new module very efficient and fast.
+The developer of a new module needs only to write the action command of the vertex
+click and the global variables which he/she needs.
+There are some predefined variables for required data.
+As an example, the variable \textit{current} represents the current vertex.
+The following code shows the code for the column compression 
+module as an instance. The code is very shorter than the implementation in EXPLAIN 1.0.
+\begin{lstlisting}
+var ns = neighbors(current);
+var col_ns = get_colors(ns);
+var new_col = min(diff(colors,col_ns));
+color_column(current, new_col);
+color_vertex(current,new_col);
+\end{lstlisting}
 
 \section{Computational Package for coloring}
 \label{s.impl.graphtea}
