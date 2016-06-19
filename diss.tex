@@ -19,6 +19,40 @@
     linkcolor=black,
     urlcolor=black
 }
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
 
 \newcommand{\setR}{\ensuremath{\mathbb{R}}}
 \newcommand{\col}{\ensuremath{c}}
@@ -63,13 +97,30 @@
 \tableofcontents
 
 \chapter{Introduction}
-In the area of scientific computation, finding the differentiation of a function,
-namely the Jacobian matrix, plays a key rule. In contrast to the classical way of finite differences
-to compute the differentiation, Automatic Differentiation~\cite{Griewank2008EDP,Rall1981ADT} 
+Partial differential equations (PDE) are the most common models of the real-world problems.
+Iterative solvers are a solution to these linear systems which need a multiplication
+ of Jacobian and a vector in each iteration. 
+Many strategies were studied to compute these products efficiently.
+Automatic Differentiation~\cite{Griewank2008EDP,Rall1981ADT} 
+computes not only the differentiation wtihout numerical errors but also the
+matrix-vector multiplication automatically. 
+Based on this ability of AD techniques, different methods are analysed to 
+reduce the memory that is needed to store the Jacobian matrix as well as
+speeding up the computation. These methods are generally as a part of 
+a bigger area called combinatorial scientific computing.
 
-Luelfesmann's thesis~%\ref{Llfesmann:82817}
+In this work, we discuss an interactive educational tool and a computational package 
+for coloring for the area of combinatorial scientific computing.
+So, we discuss the basic concepts needed throughout this work in Chapter~\ref{prel}.
+Then, we visualize different algorithms from this area in Chapter~\ref{explain}.
+The computational package for coloring is discussed later in Chapter~\ref{package}.
+Implementation details and conculsion comes at the end in Chapters~\ref{impl} and
+~\ref{conc}.
+
+
+
 \chapter{Preliminaries}
-
+\label{prel}
 We will discuss AD and the needed seed matrices in~\ref{s.seedmatrix} which is based on
 our paper~\cite{2014:09}.
 %===================================================================================================
@@ -516,7 +567,7 @@ be reformulated as a minimum distance-2 coloring of a bipartite graph when restr
 the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
 
 \chapter{EXPLAIN}
-
+\label{explain}
 
 \mbox{EXPLAIN} is an extensible collection of educational modules for classroom use.
 It is currently not designed for self-study because the connection between the scientific computing problem and the corresponding graph problem is not available in \mbox{EXPLAIN}. The idea is that the teacher will explain this connection as well as the use of the module in classroom.
@@ -850,7 +901,8 @@ in the third frame shown beside the matrix and graph frames
 \end{figure}
 %------------------------------------------------------------------------------------------
 
-\chapter{Computational Package for coloring}
+\chapter{Computational Package for Coloring}
+\label{package}
 For this purpose, we extend GraphTea~\cite{2014:07,2014:15,2014:16} to have a
 set of reports for graph coloring.
 %Chemical Graph theory\cite{2015:05,2015:06,2015:07,2015:08}
@@ -919,6 +971,7 @@ two floating dialogs with reports on a given graph.}
 
 
 \chapter{Implementation Details}
+\label{impl}
 \section{EXPLAIN 1.0}
 \label{s.impl.explain}
 The previous version of the software \cite{Lulfesmann2010} needed a client with administrator privileges to install Python libraries as well as the software itself. In the new implementation, the software is moved to the online platform which means the student needs just a web browser to work with the software. In this section, we shortly describe the underlying algorithm as well as how it is implemented.
@@ -1099,7 +1152,7 @@ color_vertex(current,new_col);
 \section{Computational Package for coloring}
 \label{s.impl.graphtea}
 \chapter{Conclusion}
- 
+\label{conc}
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
 
