@@ -602,6 +602,8 @@ strategy on how to combine automatic differentiation with preconditioning. The r
 that standard preconditioning techniques typically need access to individual nonzero
 elements of the coefficient matrix whereas automatic differentiation gives efficient
 access to a different level of granularity, namely rows or columns.
+In \cite{Lulfesmann2012Fap}, a novel approach is explained.
+We discuss this approach briefly here.
 
 Common approaches to construct the preconditioner $M$ are based on accessing individual
 nonzero entries $J(i,j)$ of the Jacobian. For instance, diagonal scaling consists of the
@@ -619,27 +621,204 @@ individual nonzero entry via automatic differentiation is as efficient as access
 complete column or row. In practice, an access to some individual nonzero entry is
 therefore prohibitively expensive in terms of computing time.
 
-The third computational ingredient is sparsification of the coefficient matrix $J$. The
-sparsification of $J$ is represented by the symbol \sparsify{J}. The idea is to select a
-subset of all nonzero elements of $J$, described by~\sparsify{J}, and construct a
-preconditioner based on these selected nonzero elements~\cite{Cullum2006}. These nonzero
-elements selected by \sparsify{J} are called \emph{required} nonzero elements. Throughout
-this paper we consider the special case of a sparsification in the form of $k\times k$
-blocks on the main diagonal. That is, the pattern of the required nonzero elements is
-given by the pattern of all nonzeros entries within these $k\times k$ blocks on the
-diagonal. If the block size $k$ does not divide the matrix order $n$ we adapt the size of
-the last diagonal block to some smaller value such that the sum of all block sizes equals
-$n$.
+Let consider a so-called sparsification operator, represented by~\sparsify{J}, 
+which selects a subset of the nonzeros of the Jacobian matrix $J$. 
+It does not mean that the whole Jacobian is available but 
+only the nonzero pattern of the matrix should be known known.
+Now, the preconditioner is built based on these selected nonzero elements~\cite{Cullum2006}.
+These nonzero elements selected by \sparsify{J} are called initially 
+\emph{required} nonzero elements and represented by $R_i$. 
+An example would be the special case of a sparsification in the form of $k\times k$
+blocks on the main diagonal.
 
-initially required elements
-potentially required elements
-additionally required elements
+We discussed the full and partial coloring algorithms regarding AD techniques. 
+Now, the problem~\ref{p:minblockcol} can be solved for Jacobian
+restricted to the set of initially
+required nonzero elements $R_i$. The result of coloring would group
+columns and rows togther. In this processes, the required elements would always
+be computed. However, the nonrequired elements would be divided into two sets of
+elements: the elements which are computed and the ones which would be 
+eliminated. We can think of these computed nonzero elements as the byproduct
+of the coloring. Since the number of colors does not change, 
+an idea would be to add this extra byproducts also to $R_i$.
+However, it could generate new fillins in the preconditioning step.
+So, we call these new set of byproduct elements as the potentially
+required elements $R_p$ and computed as follows,
+$$
+R_p \subset pat(A) - R_i \quad\text{so that}\quad |\Phi(R_i)| = |\Phi(R_i\cup R_p)|.
+$$ 
+
+As we have discussed, an ILU preconditioner is applied to $R_i$ which can
+produce a set of fillin. Now, a maximum subset of potentially required elements
+is selected such that no new fillins are generated which is called
+additionally required elements $R_a$. These elements can be added to the
+initialily required elements for further computation. 
+The additionally required elements can be formulated as follows,
+$$
+R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
+$$ 
+in which $SILU$ means the symbolic ILU factorization.
+
+
+
+
+
+
+
+
+
+
+\chapter{Effects of Ordering in Coloring and Preconditioning}
+\label{package}
+\section{An example}
+Since the exact algorithms for coloring and preconditioning are 
+NP-complete algorhtms, the researhcer use approximate algorithms
+most of the time. If we focus on the graph algorithms, 
+the results of these heuristics are highly dependent 
+on which order the vertices are processed. 
+
+For example, let's consider the following matrix
+\begin{figure}
+\centering
+   \includegraphics[width=0.45\linewidth]{bad_order_color}
+   \hfill
+   \includegraphics[width=0.45\linewidth]{good_order_color}
+\end{figure}
+
+
+\begin{figure}
+\centering
+   \includegraphics[width=0.4\linewidth]{bad_order}
+   \hfill
+   \includegraphics[width=0.4\linewidth]{bad_order_1_removed}
+   \includegraphics[width=0.4\linewidth]{bad_order_2_1_removed}
+   \hfill
+   \includegraphics[width=0.3\linewidth]{bad_order_3_2_1_removed}
+\caption{The bad  ordering}
+\label{bad_order_fillin}
+\end{figure}
+
+
+\begin{figure}
+\centering
+   \includegraphics[width=0.4\linewidth]{good_order}
+   \hfill
+   \includegraphics[width=0.4\linewidth]{good_order_2_removed}
+   \includegraphics[width=0.4\linewidth]{good_order_3_2}
+   \hfill
+   \includegraphics[width=0.4\linewidth]{good_order_4_3_2}
+\caption{The good  ordering}
+\label{good_order_fillin}
+\end{figure}
+
+
+\begin{figure}
+\centering
+   \includegraphics[width=0.4\linewidth]{good_order}
+   \hfill
+   \includegraphics[width=0.4\linewidth]{good_order_2_removed}
+   \includegraphics[width=0.4\linewidth]{good_order_5_2_removed}
+   \hfill
+   \includegraphics[width=0.25\linewidth]{good_order_3_5_2_removed}
+\caption{The good  ordering}
+\label{good_order_fillin2}
+\end{figure}
+
+There are various ordering which were studied for coloring heuristics
+throughout years. Here, we have a list of such orderings for coloring.
+In each item, we explain how the algorithm select the next vertex.
+\begin{itemize}
+\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with minimum degree in each step.
+\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
+\item Stauration-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
+$V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbours of $v$.
+\end{itemize}
+In addition to these orderings, we consider two other orderings:
+\begin{itemize}
+\item Natural Ordering:
+\item NDMetis Ordering\cite{metis,par-nested-disection}:
+\end{itemize}
+
+\section{Computational Package}
+\section{MatLab interface}
+\section{GraphTea interface}
+Michael Luelfesmann was developed a software which computes a small set of 
+coloring and preconditioning. We improved the software regarding the algorithms
+and the visualizations. Specially, the user can select different orders for two heuristics
+which we discussed before.
+For this purpose, we extend our software GraphTea~
+\cite{2014:07,2014:15,2014:16,2015:05,2015:06,2015:07,2015:08} to have a
+set of reports for graph coloring. We
+%Chemical Graph theory\cite{2015:05,2015:06,2015:07,2015:08}
+GraphTea is a graph editing framework designed specifically to compute and visualize
+different parameters of graphs interactively.
+Figure~\ref{f.graphtea} shows a snapshot of the main
+graph window together with two additional windows that give more details on the solution
+of different graph problems. These separate windows providing additional information are
+called ``reports.''
+
+A report can be computed in GraphTea in two different way:
+a single report or an incremental report.
+A single report means to compute some parameters on graph and look at the results
+in a textual way. However, an incremental report happens when we have at least 
+two parameter for computation. So, we would change one of the parameter in
+some range and would generate a table.
+
+The main goal of developing GraphTea was to help the researcher through their research.
+The following abilities of GraphTea could help the research in different dimensions:
+\begin{itemize}
+\item Generate different class of graphs and compute the parameters on them.
+\item Get reports on the graph beside the parameter and find the connections.
+\item Compute the operations on graphs and influence of these operations on parameters
+of the graph. 
+\end{itemize}
+
+If we divdie the researcher's works follows,
+\begin{enumerate}
+\item Guess a hypothesis like a bound for coloring number
+\item Evaluate this bound on different graphs
+\item Prove the hypothesis
+\end{enumerate}
+The second step, i.e. evaluation, is always an important step since many first errors and 
+improvements could be found.
+However, the researcher can only do this evaluation for small examples if they do not
+use computer tools. 
+Different aspects of GraphTea can be used to overcome this evaluation.
+The researchers can generate any graph up to any computationally-reasonable size
+(i.e. computable in a reasonable time) and compute the parameter.
+This process of so-called conjecture checking on different graphs could often lead to a better guess.
+
+Beside the automatic generation of graphs up to any size, we added the ability of loading
+different sparse matrix as graphs to GraphTea.
+
+%-----------------------------------------------------------------------------------------------
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{graphtea}
+\caption{An overview of GraphTea: A graph drawing window and 
+two floating dialogs with reports on a given graph.}
+\label{f.graphtea}
+\end{figure}
+%-----------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \chapter{EXPLAIN}
 \label{explain}
 
 \mbox{EXPLAIN} is an extensible collection of educational modules for classroom use.
 It is currently not designed for self-study because the connection between the scientific computing problem and the corresponding graph problem is not available in \mbox{EXPLAIN}. The idea is that the teacher will explain this connection as well as the use of the module in classroom.
-
 
 \section{Column Compression}
 \label{s.column-compression}
@@ -1012,137 +1191,6 @@ in the third frame shown beside the matrix and graph frames
 \label{f.custom}
 \end{figure}
 %------------------------------------------------------------------------------------------
-
-\chapter{Computational Package}
-\label{package}
-\section{Effects of Ordering in Coloring and Preconditioning}
-Since the exact algorithms for coloring and preconditioning are 
-NP-complete algorhtms, the researhcer use approximate algorithms
-most of the time. If we focus on the graph algorithms, 
-the results of these heuristics are highly dependent 
-on which order the vertices are processed. 
-
-For example, let's consider the following matrix
-\begin{figure}
-\centering
-   \includegraphics[width=0.45\linewidth]{bad_order_color}
-   \hfill
-   \includegraphics[width=0.45\linewidth]{good_order_color}
-\end{figure}
-
-
-\begin{figure}
-\centering
-   \includegraphics[width=0.4\linewidth]{bad_order}
-   \hfill
-   \includegraphics[width=0.4\linewidth]{bad_order_1_removed}
-   \includegraphics[width=0.4\linewidth]{bad_order_2_1_removed}
-   \hfill
-   \includegraphics[width=0.3\linewidth]{bad_order_3_2_1_removed}
-\caption{The bad  ordering}
-\label{bad_order_fillin}
-\end{figure}
-
-
-\begin{figure}
-\centering
-   \includegraphics[width=0.4\linewidth]{good_order}
-   \hfill
-   \includegraphics[width=0.4\linewidth]{good_order_2_removed}
-   \includegraphics[width=0.4\linewidth]{good_order_3_2}
-   \hfill
-   \includegraphics[width=0.4\linewidth]{good_order_4_3_2}
-\caption{The good  ordering}
-\label{good_order_fillin}
-\end{figure}
-
-
-\begin{figure}
-\centering
-   \includegraphics[width=0.4\linewidth]{good_order}
-   \hfill
-   \includegraphics[width=0.4\linewidth]{good_order_2_removed}
-   \includegraphics[width=0.4\linewidth]{good_order_5_2_removed}
-   \hfill
-   \includegraphics[width=0.25\linewidth]{good_order_3_5_2_removed}
-\caption{The good  ordering}
-\label{good_order_fillin2}
-\end{figure}
-
-There are various ordering which were studied for coloring heuristics
-throughout years. Here, we have a list of such orderings for coloring.
-In each item, we explain how the algorithm select the next vertex.
-\begin{itemize}
-\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with minimum degree in each step.
-\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
-\item Stauration-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
-$V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbours of $v$.
-\end{itemize}
-In addition to these orderings, we consider two other orderings:
-\begin{itemize}
-\item Natural Ordering:
-\item NDMetis Ordering\cite{metis,par-nested-disection}:
-\end{itemize}
-
-\section{GraphTea}
-Michael Luelfesmann was developed a software which computes a small set of 
-coloring and preconditioning. We improved the software regarding the algorithms
-and the visualizations. Specially, the user can select different orders for two heuristics
-which we discussed before.
-For this purpose, we extend our software GraphTea~
-\cite{2014:07,2014:15,2014:16,2015:05,2015:06,2015:07,2015:08} to have a
-set of reports for graph coloring. We
-%Chemical Graph theory\cite{2015:05,2015:06,2015:07,2015:08}
-GraphTea is a graph editing framework designed specifically to compute and visualize
-different parameters of graphs interactively.
-Figure~\ref{f.graphtea} shows a snapshot of the main
-graph window together with two additional windows that give more details on the solution
-of different graph problems. These separate windows providing additional information are
-called ``reports.''
-
-A report can be computed in GraphTea in two different way:
-a single report or an incremental report.
-A single report means to compute some parameters on graph and look at the results
-in a textual way. However, an incremental report happens when we have at least 
-two parameter for computation. So, we would change one of the parameter in
-some range and would generate a table.
-
-The main goal of developing GraphTea was to help the researcher through their research.
-The following abilities of GraphTea could help the research in different dimensions:
-\begin{itemize}
-\item Generate different class of graphs and compute the parameters on them.
-\item Get reports on the graph beside the parameter and find the connections.
-\item Compute the operations on graphs and influence of these operations on parameters
-of the graph. 
-\end{itemize}
-
-If we divdie the researcher's works follows,
-\begin{enumerate}
-\item Guess a hypothesis like a bound for coloring number
-\item Evaluate this bound on different graphs
-\item Prove the hypothesis
-\end{enumerate}
-The second step, i.e. evaluation, is always an important step since many first errors and 
-improvements could be found.
-However, the researcher can only do this evaluation for small examples if they do not
-use computer tools. 
-Different aspects of GraphTea can be used to overcome this evaluation.
-The researchers can generate any graph up to any computationally-reasonable size
-(i.e. computable in a reasonable time) and compute the parameter.
-This process of so-called conjecture checking on different graphs could often lead to a better guess.
-
-Beside the automatic generation of graphs up to any size, we added the ability of loading
-different sparse matrix as graphs to GraphTea.
-
-%-----------------------------------------------------------------------------------------------
-\begin{figure}
-\centering
-\includegraphics[width=0.7\textwidth]{graphtea}
-\caption{An overview of GraphTea: A graph drawing window and 
-two floating dialogs with reports on a given graph.}
-\label{f.graphtea}
-\end{figure}
-%-----------------------------------------------------------------------------------------------
 
 \chapter{Implementation Details}
 \label{impl}
