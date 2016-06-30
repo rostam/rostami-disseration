@@ -584,14 +584,15 @@ in which $J$ is a large sparse non-symmetric non-singular Jacobian matrix. An ap
 effective solution since they have a faster convergence and need less memory. As we discussed,
 these solvers are matrix-free which makes AD as a suitable method of differentiation in this case.
 
-Another way to speedup these iterators are the preconditioning techniques~\cite{precond1,precond2}.
-Rather than solving the previous unpreconditioned system
+Another way to speedup these iterators are 
+the preconditioning techniques~\cite{precond1,precond2}.
+Rather than solving the previous unpreconditioned system. 
 we can consider solving the preconditioned system
 \begin{equation}
 \label{e:precond}
 M^{-1} J \vek{x}= M^{-1}\vek{b},
 \end{equation}
-where the $n \times n$ matrix $M$ serves as a preconditioner that somehow approximates
+where the $n \times n$ matrix $M$ serves as a preconditioner that approximates
 the coefficient matrix,
 $$
 M \approx J.
@@ -621,7 +622,7 @@ individual nonzero entry via automatic differentiation is as efficient as access
 complete column or row. In practice, an access to some individual nonzero entry is
 therefore prohibitively expensive in terms of computing time.
 
-Let consider a so-called sparsification operator, represented by~\sparsify{J}, 
+We discussed the sparsification operator~\sparsify{J} 
 which selects a subset of the nonzeros of the Jacobian matrix $J$. 
 It does not mean that the whole Jacobian is available but 
 only the nonzero pattern of the matrix should be known known.
@@ -661,21 +662,16 @@ in which $SILU$ means the symbolic ILU factorization.
 
 
 
-
-
-
-
-
-
-
 \chapter{Effects of Ordering in Coloring and Preconditioning}
 \label{package}
-\section{An example}
+
 Since the exact algorithms for coloring and preconditioning are 
 NP-complete algorhtms, the researhcer use approximate algorithms
 most of the time. If we focus on the graph algorithms, 
 the results of these heuristics are highly dependent 
 on which order the vertices are processed. 
+.... references .....
+ina momkene eshteba bashe....
 
 For example, let's consider the following matrix
 \begin{figure}
@@ -740,10 +736,25 @@ In addition to these orderings, we consider two other orderings:
 \end{itemize}
 
 \section{Computational Package}
+Luelfesmann ... was started a package for computation of the uni- and bidirectional coloring.
+We improved the software in three ways:
+\begin{itemize}
+\item Adding more Ordering
+\item Adding the computation of Preconditioning regarding the graph inside
+\item Documentation
+\item Different Graphic User Interface
+\item Parallelizaton by OpenMP and MPI
+\end{itemize}
+
 \section{MatLab interface}
+Luelfesmann started an interface to compute the coloring,
+we changed the interface .... So user has just one interface to work with
+
+This interface is developed based on the MEX tool. 
+The user has mostly the same functions in the MATLAB.
 \section{GraphTea interface}
 Michael Luelfesmann was developed a software which computes a small set of 
-coloring and preconditioning. We improved the software regarding the algorithms
+coloring and preconditioning. We imTproved the software regarding the algorithms
 and the visualizations. Specially, the user can select different orders for two heuristics
 which we discussed before.
 For this purpose, we extend our software GraphTea~
@@ -804,25 +815,18 @@ two floating dialogs with reports on a given graph.}
 
 
 
-
-
-
-
-
-
-
-
-
-
 \chapter{EXPLAIN}
 \label{explain}
-
 \mbox{EXPLAIN} is an extensible collection of educational modules for classroom use.
 It is currently not designed for self-study because the connection between the scientific computing problem and the corresponding graph problem is not available in \mbox{EXPLAIN}. The idea is that the teacher will explain this connection as well as the use of the module in classroom.
 
+So far, we implemented different moduels for EXPLAIN. 
+Here we explain these modules and how they can be used.
+The implementation details comes later in ~\ref{impl}.
+\section{Gamification}
 \section{Column Compression}
 \label{s.column-compression}
-In \cite{2013:05,2014:01}, we presented an educational module to visualize the
+In \cite{2013:05,2014:01}, we presented an educational module in \mbox{EXPLAIN} to visualize the
 coloring algorithm for the column compression interactively. The idea is 
 summerized as follows.
 
@@ -833,7 +837,7 @@ summerized as follows.
 }
 \label{fig1}
 \end{figure}
-We now describe the extension of \mbox{EXPLAIN} by a novel educational module illustrating column compression. The module allows to select and, thus, color the vertices of a given graph step by step. The order in which the vertices are colored is interactively selected by the student. In each step, when the student selects a vertex, the program checks all of its neighbors regarding the colors. A color of the current step is then greedily selected from a predefined list, $\{1=\text{green}, 2=\text{turquoise}, 3=\text{orange}, 4=\text{violet}, 5=\text{red}, 6=\text{yellow}, ...\}$, such that it differs from the colors of those neighbors that are already colored. Recall that a group of columns corresponds to a set of vertices in the graph with the same color. To indicate this, we do not color only the vertices in the graph but also the corresponding columns in the matrix.
+The module allows to select and, thus, color the vertices of a given graph step by step. The order in which the vertices are colored is interactively selected by the student. In each step, when the student selects a vertex, the program checks all of its neighbors regarding the colors. A color of the current step is then greedily selected from a predefined list, $\{1=\text{green}, 2=\text{turquoise}, 3=\text{orange}, 4=\text{violet}, 5=\text{red}, 6=\text{yellow}, ...\}$, such that it differs from the colors of those neighbors that are already colored. Recall that a group of columns corresponds to a set of vertices in the graph with the same color. To indicate this, we do not color only the vertices in the graph but also the corresponding columns in the matrix.
 
 \figurename~\ref{fig1} shows a screenshot of the column compression module. The nonzero elements of the matrix are denoted by the symbol $\times$ in the matrix view; the corresponding column intersection graph is given immediately next to the matrix. In the bottom of the page, different preloaded matrices can be selected or a new matrix can be uploaded from a file on the file system of the student's computer. The tool provides an interactive interface for the student who can control the algorithm such as returning to previous steps or loading different graphs and matrices. Selecting the vertices in different orderings generates different colorings corresponding to different column compressions.
 
@@ -1191,6 +1195,9 @@ in the third frame shown beside the matrix and graph frames
 \label{f.custom}
 \end{figure}
 %------------------------------------------------------------------------------------------
+
+\section{Ordering in Preconditioning and Coloring}
+
 
 \chapter{Implementation Details}
 \label{impl}
