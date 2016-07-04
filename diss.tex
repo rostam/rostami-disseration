@@ -661,8 +661,7 @@ $$
 in which $SILU$ means the symbolic ILU factorization.
 
 
-
-\chapter{Effects of Ordering in Coloring and Preconditioning}
+\chapter{Effect of Ordering on Coloring and Preconditioning}
 \label{package}
 
 Since the exact algorithms for coloring and preconditioning are 
@@ -811,8 +810,6 @@ two floating dialogs with reports on a given graph.}
 \label{f.graphtea}
 \end{figure}
 %-----------------------------------------------------------------------------------------------
-
-
 
 
 \chapter{Interactive Educational Module}
@@ -1465,10 +1462,34 @@ player to beat that score in subsequent rounds, thus offering an extra challenge
 this educational module, a ``high score'' would consist of a low communication value
 together with a low deviation bound.
 
+\section{Preorderings}
+As we discussed, the ordering is one of the mail elements of heuristics algorithm
+in both preconditioing and coloring. The process of selection that we have
+considered in modules of \mbox{EXPLAIN} are actually the iluustration of this importance.
+This is not always doable for students to find a good selection order specially for
+big matrices.
+%------------------------------------------------------------------------------------------
+% Custom Module
+\begin{figure}
+\centering
+\includegraphics[width=0.98\textwidth]{custom_module}
+\caption{The code of the corresponding module is visualized beside 
+graph and matrix. This code is in a simple scripting language. 
+This code can be executed step by step and with the order whcih
+is specified by the user.}
+\label{f.custom_module}
+\end{figure}
+%------------------------------------------------------------------------------------------
 
-\section{Ordering in Preconditioning and Coloring}
-
-
+\mbox{EXPLAIN 2.0} has a new feature to examine different orders 
+and see the results of algorithm visually. In this feature, different
+pre-orderings are available which can be selected. A custom order is 
+also possible. Figure~\ref{f.custom_module} illustrates graph and matrix
+and the corresponding source code of the module. This source code
+is written in a simple scripting language specially designed for \mbox{EXPLAIN}.
+This source code can be also edited temporarily. Later, the student can
+decide to start the selection by mouse or an automatic visualization
+of the algorithm in which the order is defined by the variable "order".
 
 
 \chapter{Implementation Details}
