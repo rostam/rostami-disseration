@@ -20,7 +20,7 @@
     linkcolor=black,
     urlcolor=black
 }
-
+\newcommand{\mat}[1]{\ensuremath{#1}}
 \newcommand{\vek}[1]{{\ensuremath{\mathbf #1}}}
 \newcommand{\figref}[1]{Figure~\protect\ref{#1}}
 \newcommand{\secref}[1]{Secttion~\protect\ref{#1}}
@@ -815,15 +815,16 @@ two floating dialogs with reports on a given graph.}
 
 
 
-\chapter{EXPLAIN}
+\chapter{Interactive Educational Module}
 \label{explain}
 \mbox{EXPLAIN} is an extensible collection of educational modules for classroom use.
 It is currently not designed for self-study because the connection between the scientific computing problem and the corresponding graph problem is not available in \mbox{EXPLAIN}. The idea is that the teacher will explain this connection as well as the use of the module in classroom.
+EXPLAIN has so far two major releases \mbox{EXPLAIN 1.0} and \mbox{EXPLAIN 2.0}.
+In implementation details we explained how they differ and improved from an original version.
 
-So far, we implemented different moduels for EXPLAIN. 
+We implemented different moduels for EXPLAIN. 
 Here we explain these modules and how they can be used.
 The implementation details comes later in ~\ref{impl}.
-\section{Gamification}
 \section{Column Compression}
 \label{s.column-compression}
 In \cite{2013:05,2014:01}, we presented an educational module in \mbox{EXPLAIN} to visualize the
@@ -922,7 +923,6 @@ S =
  \end{pmatrix}.
 $$
 
-
 \section{Bidirectional Compression}
 \label{s.bidirectional}
 In our publication~\cite{2014:09}, we design and implement an interactive module to
@@ -954,7 +954,7 @@ designed for small problem instances.
 
 
 %------------------------------------------------------------------------------------------------
-\begin{figure}[b]
+\begin{figure}
 \centering
 \subfigure[]{%
   % Matrix C: after choosing 2 vertices
@@ -1045,14 +1045,23 @@ Fig.~\ref{f.arrow-shaped4}~(b). Here, it is more difficult to find out that this
 bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 
 \section{Partial Jacobian Computation}
+The previous module of matrix compression is extended to support
+also the partial Jacobian computation. Here, the student should 
+first select the required elements which are edges in Bipartite graphs.
+So, when the student clicks on the edges, their colors change to red
+and the corresponding nonzero elements are added to required elements.
+
+As soon as the student starts to click the vertices, the required elements
+are become fixed, i.e. no new required  elements can be added.
+The other processes of coloring is completely like the previous module.
 
 \section{Nested Dissection Ordering}
 \subsection{Bisection}
 \cite{2014:02}
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=0.48\textwidth]{graph_initial}}%
-\subfigure{\includegraphics[width=0.48\textwidth]{matrix_initial}}
+\subfigure{\includegraphics[width=0.38\textwidth]{graph_initial}}%
+\subfigure{\includegraphics[width=0.38\textwidth]{matrix_initial}}
 \caption{Two equivalent representations in terms of a graph (left) and a matrix (right).}
 \label{initial}
 \end{figure}
@@ -1060,8 +1069,8 @@ bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=0.48\textwidth]{graph_10_selected}}%
-\subfigure{\includegraphics[width=0.48\textwidth]{matrix_10_selected}}
+\subfigure{\includegraphics[width=0.38\textwidth]{graph_10_selected}}%
+\subfigure{\includegraphics[width=0.38\textwidth]{matrix_10_selected}}
 \caption{Graph and matrix view after selecting the vertex number~10. The decomposition into two blocks is still not shown as the graph is not yet decomposed into two disconnected components.}
 \label{selected10}
 \end{figure}
@@ -1069,8 +1078,8 @@ bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=0.48\textwidth]{graph_4_10_selected}}%
-\subfigure{\includegraphics[width=0.48\textwidth]{matrix_4_10_selected}}
+\subfigure{\includegraphics[width=0.38\textwidth]{graph_4_10_selected}}%
+\subfigure{\includegraphics[width=0.38\textwidth]{matrix_4_10_selected}}
 \caption{Graph and matrix view after selecting the vertices number 10 and then 4. The selection is not adequate as the sizes of blocks are not balanced.}
 \label{selected410}
 \end{figure}
@@ -1091,42 +1100,98 @@ bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 \label{diagram}
 \end{figure}
 
+Though our primary aim is to design an educational model for illustrating the connection between
+scientific computing and graph theory, we also experience with ideas from gamification
+\cite{deterding2011:gug,deterding2011}. The use of elements from game design in the context of
+computer science education is not new. In particular, programming assignments can involve
+implementations of games. In \cite{la2007:gfa}, for instance, an introductory programming course is
+taught under the common umbrella of two-dimensional game development. Similarly, a game project is
+used in a course on software architecture~\cite{Wang2011:EEU}. Programming assignment can also
+involve pieces of software that act as a player in an existing game. However, throughout the
+present paper, our focus of serious games is different. Rather than implementing a game, we are
+interested in situations where students learn by playing a game. Surprisingly, there are only a few
+publications addressing this aspect of gamification. An example is given in
+\cite{Hakulinen2011:usg} where game-based learning is used to teach a course in data structures and
+algorithms. A collaborative game is described in \cite{shl:bsc} that aims at improving the teaching
+quality in a course on mathematical logic.
+
+
+To engage the students more in the teaching process, we improved EXPLAIN such that the students get
+more feedback from the software. This is done by gamification of the software by interpreting each
+solution to a problem instance as a round. The score diagram reporting the results of previous
+rounds also provides another feedback. The idea of gamification is used to solve a combinatorial
+minimization problem consisting of minimizing the size of the vertex separator while, at the same
+time, balancing the size of the remaining components. The consistent use of colors in the graph
+view, the matrix view, and in the score diagram makes it easier for the student to understand
+minimizing a serial bottleneck in the Cholesky factorization while balancing the computational
+load.
 \subsection{Recursive Disection}
+Based on the new features of \mbox{EXPLAIN 2.0}, we could improved the previous
+bisection to a recursive nested dissection algorithm. 
+It contains the bisection itself. So, the student selects the vertex separator
+as before until the graph becomes disconnected. 
+In this new version, the vertex separator will be shown on the bottom
+of the graph. Also the two remaining parts of graph are shown separately
+in two different circles at right and left.
+In Figure~\ref{bad_bisection}, the result of a selection is visualized which
+is inefficient since the parts of graphs are not balanced. 
+Figure~\ref{good_bisection} also shows the results of an efficient selection.
+
 \begin{figure}
 \centering
-\includegraphics[width=0.47\textwidth]{bad_bisection}
-\caption{}
+\includegraphics[width=0.7\textwidth]{bad_bisection}
+\caption{A selection results in an inefficient bisection of graph.}
 \label{bad_bisection}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.47\textwidth]{bad_disection}
-\caption{}
-\label{bad_disection}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.47\textwidth]{good_bisection}
-\caption{}
+\includegraphics[width=0.7\textwidth]{good_bisection}
+\caption{A selection results in an efficient bisection of graph.}
 \label{good_bisection}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.47\textwidth]{good_disection}
-\caption{}
+\includegraphics[width=0.7\textwidth]{bad_disection}
+\caption{A complete nested dissection up to the order 2 which has an 
+inefficient result.}
+\label{bad_disection}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{good_disection}
+\caption{A complete nested dissection up to the order 2 which has an 
+efficient result.}
 \label{good_disection}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.47\textwidth]{good_disection2}
-\caption{}
+\includegraphics[width=0.7\textwidth]{good_disection2}
+\caption{A complete nested dissection up to the order 2 which has an 
+even more efficient result.}
 \label{good_disection2}
 \end{figure}
 
+Now, in contrast to the previous version, the student can click further
+on the vertices of each parts. This selection would trigger a recursive
+bisection of the matrix as well. Again, this selection goes forward until
+both parts of the graphs become disconnected. The vertex separators
+would be moved to the bottom of the graph parts as well as the graph parts
+would be shown separately. Figure~\ref{bad_disection} and Figure~\ref{good_disection}
+illustrated two inefficient and efficient results of nested dissection,
+respectively. Figure~\ref{good_disection2} shows how the results can 
+get even better by a suitable order of selection.
+
+
+The corresponding diagram of history of rounds are improved such that
+both the size of vertex separator as well as the size of four graph parts
+can be visualized. Figure~\ref{barchart} shows a possible selection history.
+As it can be seen the line chart shows the size history of the vertex separator
+and four bar chart grouped together shows the size history of the graph parts.
 
 \begin{figure}
 \centering
@@ -1135,37 +1200,232 @@ bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 \label{barchart}
 \end{figure}
 
+
 \section{Parallel Matrix Vector Product}
-\cite{2015:3}
+In \cite{2015:3}, we extended EXPLAIN with a new module for 
+the parallel sparse matrix-vector multiplication. 
+So if we show the problem as follows, 
+$$
+\vek{y} = \mat{A}\cdot \vek{x}
+$$
+The question here is if data representing \mat{A}, \vek{x} and
+\vek{y} are distributed to multiple processes, to what extent does this data distribution
+have an effect on the computation $\vek{y} \leftarrow \mat{A} \vek{x}$? What are the
+advantages and disadvantages of a given data distribution? What are the criteria for
+evaluating the quality of a data distribution? How should data be distributed to the
+processes ideally?
+
+To discuss such questions with undergraduates who are new to parallel computing we
+suggest to consider the following simple data distribution. The nonzero elements
+of~\mat{A} are distributed to processes by rows. More precisely, all nonzeros of a row
+are distributed to the same process. The vectors \vek{x} and \vek{y} are distributed
+consistently. That is, if a process stores the nonzeros of row $i$ of~\mat{A} then it
+also stores the vector entries~$x_i$ and~$y_i$. Given a fixed number of processes $p$, a
+data distribution may be formally expressed by a mapping called \emph{partition}
+$$
+P:  I \rightarrow \{1, 2, \dots, p\}
+$$
+that decomposes the set of indices $I := \{1, 2, \dots, N\}$ into~$p$ subsets $I_1$,
+$I_2$, \dots, $I_p$ such that
+$$
+I = I_1 \cup I_2 \cup \dots \cup I_p
+$$
+with $I_i \cap I_j = \emptyset$ for~$i \neq j$. That is, if $P(i)=k$ then the nonzeros of
+row~$i$ as well as~$x_i$ and~$y_i$ are stored on process $k$.
+
+Since the nonzero $a_{ij}$ is stored on process~$P(i)$ and the vector entry~$x_j$ is
+stored on process~$P(j)$, one can sort the terms in the sum~\eqref{e.mvp} according to
+those terms where both operands of the product $a_{ij} \cdot x_j$ are stored on the same
+process and those where these operands are stored on different processes:
+\begin{equation}
+\label{e.pmvp}
+y_i =
+  \sum_{ \substack{j  \text{ with }  a_{ij} \neq 0\\ P(i)=P(j)}} a_{ij} \cdot x_j
++ \sum_{ \substack{j  \text{ with }  a_{ij} \neq 0\\ P(i)\neq P(j)}} a_{ij} \cdot x_j ,
+\quad i = 1, 2, \dots, N.
+\end{equation}
+For the sake of simplicity, we assume that the product $a_{ij} \cdot x_j$ is computed by
+the process~$P(i)$ that stores the result $y_i$ to which this product contributes.
+By~\eqref{e.pmvp}, the data distribution  $P$ has an effect on the amount of data that
+needs to be communicated between processes. It also determines which processes
+communicate with each other. Since, on today's computing systems, communication needs
+significantly more time than computation, it is important to find a data distribution
+using a goal-oriented approach. A data distribution is desirable that balances the
+computational load evenly among the processes while, at the same time, minimizes the
+communication among the processes.
+
+The problem of finding a data distribution is also interesting from another perspective
+of undergraduate teaching. It offers the opportunity to demonstrate that a theoretical
+model can serve as a successful abstraction of a practical problem. More precisely, a
+formal approach using concepts from graph theory is capable of tackling the data
+distribution problem systematically.
+
+To this end, we now assume that the nonzero pattern of the nonsymmetric matrix \mat{A} is
+symmetric. Then, the matrix can be represented by an undirected graph $G=(V,E)$. The set
+of nodes $V = \{ 1, 2, \dots, N\}$ is used to associate a node to every row (or
+corresponding column) of \mat{A}. The set of edges
+\begin{displaymath}
+E = \{ (i,j) \mid i, j \in V \text{ and } a_{ij} \neq 0 \text{ for }  i > j \}
+\end{displaymath}
+describes the nonzero entries. Here, the condition $i>j$ indicates that the edge~$(i,j)$
+is identical to the edge~$(j,i)$ and that there is no self-loop in $G$. The data
+distribution to $p$ processes is then represented by the partition
+$$
+P:  V \rightarrow \{1, 2, \dots, p\}
+$$
+that decomposes the set of nodes $V$ of the graph into~$p$ subsets $V_1$, $V_2$, \dots,
+$V_p$ such that
+$$
+V = V_1 \cup V_2 \cup \dots \cup V_p
+$$
+with $V_i \cap V_j = \emptyset$ for~$i \neq j$.
+
+
+Then, \eqref{e.mvp} is reformulated in terms of graph terminology by
+\begin{displaymath}
+y_i = a_{ii} \cdot x_i +
+  \sum_{ \substack{(i,j)\in E \\ P(i)=P(j)}} a_{ij} \cdot x_j
++ \sum_{ \substack{(i,j)\in E \\ P(i)\neq P(j)}} a_{ij} \cdot x_j .
+\end{displaymath}
+Here, the first two terms of the right-hand side can be computed on process~$P(i)$
+without communication to any other process.  The condition~$P(i)\neq P(j)$ in the last
+term shows that the computation of $a_{ij} \cdot x_j$  requires communication between
+process~$P(i)$ which stores~$a_{ij}$ and process~$P(j)$ which stores $x_j$. Minimizing
+interprocess communication then roughly corresponds to minimizing the number of edges
+connecting nodes in different subsets~$V_i$ of the partition $P$. This number of edges is
+called the \emph{cut size} and is formally defined by
+\begin{equation}\label{e.cut}
+  \operatorname{cutsize}(P) = \bigl| \{ (i,j) \in E \mid P(i)\neq P(j) \} \bigr|.
+\end{equation}
+In this graph model, the cut size does not exactly correspond to the number of words
+communicated between all processes in the computation of $\vek{y} \leftarrow \mat{A}
+\vek{x}$ for a given partition $P$. However, it gives a reasonable approximation to this
+amount of communicated data called the \emph{communication volume}; see the corresponding
+discussion in~\cite{hk:mod}. The communication volume is exactly described by the cut
+size if the underlying model is changed from an undirected graph to a
+hypergraph~\cite{ca:hyp,cua:hyp,ua:rev}.
+
+Assuming that the number of nonzeros is roughly the same for each row of~\mat{A}, the
+computation is evenly balanced among the $p$ processes if the partition $P$ is
+$\varepsilon$-balanced defined as
+\begin{equation}\label{e.bal}
+  \max_{1 \leq i \leq p} |V_i| \leq (1 + \varepsilon) \frac{|V|}{p} ,
+\end{equation}
+for some given $\varepsilon > 0$. The graph partitioning problem consists of minimizing
+the cut size of an $\varepsilon$-balanced partition. It is a hard combinatorial
+problem~\cite{gj:com}.
+
+
+To illustrate the connection between computing a sparse matrix-vector multiplication in
+parallel and partitioning an undirected graph, we propose a novel educational module.
+This module is part of a growing set of educational modules called EXPLoring Algorithms
+INteractively (EXPLAIN). This collection of web-based modules is designed to assist in
+the effectiveness of teachers in the classroom and we plan to make it publicly available
+in the near future. Figure~\ref{f.explain} shows the overall layout of this interactive
+module for sparse matrix-vector multiplication. The top of this figure visualizes---side
+by side---the representation of the problem in terms of the graph~$G$ as well as in terms
+of the matrix~\mat{A} and the vector \vek{x}. Below on the left, there is a panel of
+colors representing different processes and another panel displaying the order of
+selecting vertices of the graph. Next, on the right, there is a score diagram recording
+values characterizing communication and load balancing. At the bottom part, there are
+input controls used to select a matrix from a predefined set of matrices, to upload a
+small matrix, and to choose the layout of the graph vertices.
+
+
 %------------------------------------------------------------------------------------------
 % Overall Layout of Module
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{final}
+\includegraphics[width=0.7\textwidth]{final}
 \caption{Overall structure of the sparse matrix-vector multiplication module.}
-\label{f.explain2}
+\label{f.explain}
 \end{figure}
 %------------------------------------------------------------------------------------------
+
+The first figure gives an overall impression of the status of the module after a data
+distribution is completed. Here, $p=4$ processes represented by the colors blue, green,
+red, and yellow get data by interactive actions taken by the student.
+Figure~\ref{f.beginning} now shows the status of the module in a phase that is more
+related to the beginning of that interactive procedure. For a given matrix, the student
+can distribute the data to the processes by first clicking on a color and then clicking
+on an arbitrary number of vertices. That is, the distribution of vertices to a single
+process is determined by first clicking on a color $j$ and then clicking on a certain
+number of vertices, say $i_1, i_2, \dots, i_s$ such that $P(i_1) = P(i_2) = \dots =
+P(i_s) = j$. Then, by clicking on the next color, this procedure can be repeated until
+all vertices are interactively colored and, thus, the data distribution $P$ is finally
+determined.
+
+Figure~\ref{f.beginning} illustrates the situation after the student distributed
+vertices~1, 2 and 3 to the blue process and the vertices~7, 8 and 10 to the green
+process. By interactively assigning a vertex to a process, not only the vertex is colored
+by the color representing this process, but also the row in the matrix as well as the
+corresponding vector entry of \vek{x} are simultaneously colored with the same color.
+This way, the data distribution is visualized in the graph and in the matrix
+simultaneously which emphasizes the connection between the matrix representation and the
+graph representation of that problem. The panel labeled ``Order of selection'' records
+the order of the vertices that are interactively chosen. By inspection from that panel
+in~\figref{f.explain}, we find out that the status depicted in \figref{f.beginning} is an
+intermediate step of the interactive session that led to the data distribution
+in~\figref{f.explain}. Any box labeled with the number of the chosen vertex in that panel
+is also clickable allowing the student to return to any intermediate state and start a
+rearrangement of the data distribution form that state.
+
 
 %------------------------------------------------------------------------------------------
 % Interactive Selection of Vertices
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{twoColors}
+\includegraphics[width=0.7\textwidth]{twoColors}
 \caption{The intermediate state after the student selected six vertices.}
 \label{f.beginning}
 \end{figure}
 %------------------------------------------------------------------------------------------
 
+In EXPLAIN, the term ``round'' refers to the process of solving a single instance of a
+given problem. In this module, the problem consists of distributing all data needed to
+compute the matrix-vector product to the processes. Equivalently, the distribution of all
+vertices of the corresponding graph to the processes is a round. Suppose that round~2 is
+completed in \figref{f.explain}. Then, the student can explore the data distribution in
+more detail by clicking on a color in the panel labeled ``Color of processes.'' Suppose
+that the student chooses the red process, then this action will modify the appearance of
+the vector \vek{x} in the matrix representation to the state given
+in~\figref{f.communication}. Here, all vector entries that need to be communicated to the
+red process are now also colored red. The background color still represents the process
+that stores that vector entry. This illustrates, for instance, that the vector entry
+$x_1$ is communicated from the blue process to the red process when computing $\mat{A}
+\vek{x}$ using this particular data distribution. The matrix representation visualizes
+the reason for this communication. There is at least one row that is colored red and that
+has a nonzero element in column~1. In this example row~4 and row~5 satisfy this
+condition. Thus, $x_1$ is needed to compute $y_4$ and $y_5$. Again, EXPLAIN visually
+illustrates the connection between the linear algebra representation and the graph
+representation. In the graph representation, all vector entries that need to be
+communicated to the red process correspond to those non-red vertices that are connected
+to a red vertex. In this example, this condition is satisfied for vertices 1, 3, 6, 7, 8,
+10 which corresponds to the vector entries $x_1$, $x_3$, $x_6$, $x_7$, $x_8$, $x_{10}$ in
+the matrix representation that are drawn in red.
+
+
 %------------------------------------------------------------------------------------------
 % Communication structure
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{redComm}
+\includegraphics[width=0.7\textwidth]{redComm}
 \caption{All vector entries $x_i$ to be communicated to the red process are drawn in red.}
 \label{f.communication}
 \end{figure}
 %------------------------------------------------------------------------------------------
+
+When a round is completed it is also instructive to focus on the quality of the data
+distribution $P$. Recall that the graph partitioning problem aims at minimizing the cut
+size of~$P$ while balancing the computational load evenly among the processes. To asses
+these two quantities, the module introduces the score diagram. An example of a score
+diagram is depicted in~\figref{f.score}. For each round, this diagram shows the cut size
+defined by~\eqref{e.cut} using the label ``communication volume.'' As mentioned in the
+previous section, the cut size in this undirected graph model is not an exact
+representation of the communication volume. However, it often captures the nature of the
+communication volume quite well. Therefore, this graph model uses the cut size as a
+measure of the communication volume. In that score diagram, the student can check his or
+her attempt to minimize the communication volume over a number of rounds.
 
 %------------------------------------------------------------------------------------------
 % Score diagram
@@ -1177,26 +1437,38 @@ bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 \end{figure}
 %------------------------------------------------------------------------------------------
 
-\section{EXPLAIN Revisited}
-We improved the software EXPLAIN in two ways. 
-First, we speed up the software by changing the backbone implementation
-which the details is found in Chapter~\ref{s.impl.explain}.
-Second, we extended EXPLAIN such that the user can add a custom module 
-in an easy scripting lanugage. The program can be written directly 
-in the third frame shown beside the matrix and graph frames
-(see Figure~\ref{f.custom}).
+The parameter $\varepsilon$ introduced in~\eqref{e.bal} is used to quantify the degree of
+imbalance allowed in a data distribution. If $\varepsilon = 0$ all processes are assigned
+exactly $|V|/p$ rows of \mat{A}, meaning that no imbalance is allowed at all. When
+increasing $\varepsilon$ the load balancing condition~\eqref{e.bal} is relaxed. The
+larger $\varepsilon$ is chosen, the larger is the allowed imbalance. Thus, in some way,
+$\varepsilon$ quantifies the deviation from a perfect load balance. An equivalent form
+of~\eqref{e.bal} is given by
+\begin{equation}\label{e.bound}
+  \frac{p}{|V|} \max_{1 \leq i \leq p} |V_i| - 1  \leq \varepsilon ,
+\end{equation}
+which can be interpreted as follows. Suppose that you are not looking for an
+$\varepsilon$-balanced partition $P$ for a given $\varepsilon$, but rather turn this
+procedure around and ask: ``Given a partition $P$, how large need $\varepsilon$ at least
+be so that this partition is $\varepsilon$-balanced?'' Then the left-hand side of the
+inequality~\eqref{e.bound} which we call \emph{deviation bound} gives an answer to that
+question. The extreme cases for the deviation bound are given by 0 if the distribution is
+perfectly balanced and $p-1$ if there is one process that gets all the data. The score
+diagram shows the value of the deviation bound for each round. A low deviation bound
+indicates a partition that balances the computational load evenly, whereas a large
+deviation bound represents a large imbalance of the load. The score diagram helps the
+student to evaluate the quality of a single data distribution and to compare it with
+distributions obtained in previous rounds. This feedback to the student is designed in
+the spirit of computer games, where a score has only a low immediate relevance to the
+current game. However, the idea is to achieve a ``high score'' and try to motivate the
+player to beat that score in subsequent rounds, thus offering an extra challenge. For
+this educational module, a ``high score'' would consist of a low communication value
+together with a low deviation bound.
 
-%------------------------------------------------------------------------------------------
-% Score diagram
-\begin{figure}
-\centering
-\includegraphics[width=0.98\textwidth]{custom}
-\caption{}
-\label{f.custom}
-\end{figure}
-%------------------------------------------------------------------------------------------
 
 \section{Ordering in Preconditioning and Coloring}
+
+
 
 
 \chapter{Implementation Details}
