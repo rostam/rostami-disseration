@@ -797,10 +797,6 @@ Different aspects of GraphTea can be used to overcome this evaluation.
 The researchers can generate any graph up to any computationally-reasonable size
 (i.e. computable in a reasonable time) and compute the parameter.
 This process of so-called conjecture checking on different graphs could often lead to a better guess.
-
-Beside the automatic generation of graphs up to any size, we added the ability of loading
-different sparse matrix as graphs to GraphTea.
-
 %-----------------------------------------------------------------------------------------------
 \begin{figure}
 \centering
@@ -810,6 +806,14 @@ two floating dialogs with reports on a given graph.}
 \label{f.graphtea}
 \end{figure}
 %-----------------------------------------------------------------------------------------------
+
+Beside the automatic generation of graphs up to any size, we added the ability of loading
+different sparse matrix as graphs to GraphTea.
+A new data structure for the sparse matrix, called \textit{SpMat}, is designed
+to handle the large sparse matrices. This data structure is basically an array.
+This array has the size of number of rows. Each cell of this array points to 
+an array which is the corresponding columns of nonzeros in the corresponding 
+row. 
 
 
 \chapter{Interactive Educational Module}
