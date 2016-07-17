@@ -575,6 +575,7 @@ be reformulated as a minimum distance-2 coloring of a bipartite graph when restr
 the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
 
 \section{Preconditioning}
+\label{precond}
 The computation of Jacobian that we discussed before are one part of solving PDEs. 
 In general, we are considering the solution to the following system of lienar equations,
 $$
@@ -660,9 +661,25 @@ R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
 $$ 
 in which $SILU$ means the symbolic ILU factorization.
 
-
-\chapter{Effect of Ordering on Coloring and Preconditioning}
+\chapter{PreCol 1.0}
 \label{package}
+So far, we discussed different concepts regarding the preconditioning and coloring.
+Here, we focus on the computation of these concepts. 
+Luelfesmann ... was started a package for computation of the uni- 
+and bidirectional (partial-)coloring. We improved the software in many ways
+considering usability and efficiency. We discuss them in the following sections.
+On the other hand, we implemented two interfaces for Matlab and Java 
+to benefit from the power of these software.
+
+%\begin{itemize}
+%\item Adding more Ordering
+%\item Adding the computation of Preconditioning regarding the graph inside
+%\item Documentation
+%\item Different Graphic User Interface
+%\item Parallelizaton by OpenMP and MPI
+%\end{itemize}
+
+\section{Effects of Ordering}
 
 Since the exact algorithms for coloring and preconditioning are 
 NP-complete algorhtms, the researhcer use approximate algorithms
@@ -734,17 +751,28 @@ In addition to these orderings, we consider two other orderings:
 \item NDMetis Ordering\cite{metis,par-nested-disection}:
 \end{itemize}
 
-\section{Computational Package}
-Luelfesmann ... was started a package for computation of the uni- and bidirectional coloring.
-We improved the software in three ways:
-\begin{itemize}
-\item Adding more Ordering
-\item Adding the computation of Preconditioning regarding the graph inside
-\item Documentation
-\item Different Graphic User Interface
-\item Parallelizaton by OpenMP and MPI
-\end{itemize}
 
+\section{Usability, Readability, and Extensibility}
+use of the std algorithms of c++ and the new c++ features
+in favour of readability and efficinecy 
+specially that the algorithms would be automatically parallel in the next
+release of c++ (C++17) next year.
+\cite{parallelcpp}
+
+This strategy reduced the amount of the code dramatically and
+make the code more readable.
+
+Adding new interfaces for coloring and ordering makes it easier to add new 
+algithms and ordering (example)
+
+config file as well as command properties
+
+
+
+\section{Documentation}
+Doxygen and website: http://csc.c3e.de/precol/html/
+\section{Parallelization}
+block parallelization openmp
 \section{MatLab interface}
 Luelfesmann started an interface to compute the coloring,
 we changed the interface .... So user has just one interface to work with
@@ -1674,7 +1702,7 @@ color_column(current, new_col);
 color_vertex(current,new_col);
 \end{lstlisting}
 
-\section{Computational Package}
+\section{PreCol 1.0}
 \label{s.impl.graphtea}
 \chapter{Conclusion}
 \label{conc}
