@@ -1673,19 +1673,6 @@ pages="467--478",
   volume={10},
   number={7},
   pages={673--693},
-  abstract={In this work, we show that the standard graph-partitioning-based
-    decomposition of sparse matrices does not reflect the actual communication volume
-    requirement for parallel matrix-vector multiplication. We propose two computational
-    hypergraph models which avoid this crucial deficiency of the graph model. The proposed
-    models reduce the decomposition problem to the well-known hypergraph partitioning
-    problem. The recently proposed successful multilevel framework is exploited to develop
-    a multilevel hypergraph partitioning tool PaToH for the experimental verification of
-    our proposed hypergraph models. Experimental results on a wide range of realistic
-    sparse test matrices confirm the validity of the proposed hypergraph models. In the
-    decomposition of the test matrices, the hypergraph models using PaToH and hMeTiS result
-    in up to 63 percent less communication volume (30 to 38 percent less on the average)
-    than the graph model using MeTiS, while PaToH is only 1.3-2.3 times slower than MeTiS
-    on the average},
   doi={10.1109/71.780863},
   ISSN={1045-9219},
 } @incollection{cua:hyp,
@@ -1792,5 +1779,25 @@ pages="414--425",
 isbn="978-3-662-48096-0",
 doi="10.1007/978-3-662-48096-0_32",
 url="http://dx.doi.org/10.1007/978-3-662-48096-0_32"
+}
+
+@book{ilu2003,
+ author = {Saad, Y.},
+ title = {Iterative Methods for Sparse Linear Systems},
+ year = {2003},
+ isbn = {0898715342},
+ edition = {2nd},
+ publisher = {Society for Industrial and Applied Mathematics},
+ address = {Philadelphia, PA, USA},
+} 
+
+@TECHREPORT{precond-pothen,
+  AUTHOR =        {D. Hysom and A. Pothen},
+  TITLE =         { Level-based Incomplete LU factorization: Graph Model and Algorithms},
+  NUMBER =        {Tech Report UCRL-JC-150789},
+  INSTITUTION =   {Lawrence Livermore National Labs},
+  ADDRESS =       {East Lansing, Michigan},
+  MONTH =         {November},
+  YEAR  =         {2002},
 }
 

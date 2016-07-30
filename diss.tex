@@ -178,141 +178,16 @@ A set of structurally orthogonal rows is represented by a single row in the prod
 The computational cost then scales with the number of groups of structurally orthogonal
 columns or rows in the forward or reverse mode, respectively.
 
-To illustrate this, we consider the following three $6 \times 6$ Jacobian matrices:
-\begin{equation*}
-A =
- \begin{bmatrix}
- 1  & 0 & 0 & 0 & 0 & 0 \\
- 2  & 7 & 0 & 0 & 0 & 0 \\
- 3  & 0 & 8 & 0 & 0 & 0 \\
- 4  & 0 & 0 & 9 & 0 & 0 \\
- 5  & 0 & 0 & 0 & 10& 0 \\
- 6  & 0 & 0 & 0 & 0 & 11
- \end{bmatrix}, \;\,
-B =
- \begin{bmatrix}
- 1  & 2 & 3 & 4 & 5 & 6 \\
- 0  & 7 & 0 & 0 & 0 & 0 \\
- 0  & 0 & 8 & 0 & 0 & 0 \\
- 0  & 0 & 0 & 9 & 0 & 0 \\
- 0  & 0 & 0 & 0 & 10& 0 \\
- 0  & 0 & 0 & 0 & 0 & 11
- \end{bmatrix}, \;\,
- %
- C =
-  \begin{bmatrix}
- 1  & 7  & 8  & 9  & 10 & 11 \\
- 2  & 12 & 0  & 0  & 0  & 0 \\
- 3  & 0  & 13 & 0  & 0  & 0 \\
- 4  & 0  & 0  & 14 & 0  & 0 \\
- 5  & 0  & 0  & 0  & 15 & 0 \\
- 6  & 0  & 0  & 0  & 0  & 16
- \end{bmatrix}.
-\end{equation*}
-Since all elements of column $1$ of $A$ are nonzero, this column is not structurally
-orthogonal to any of the other columns. Similarly, row $1$ of $B$ is not structurally
-orthogonal to any of the other rows. However, the columns $2$, $3$, $4$, $5$, and $6$ of
-the matrix $A$ are structurally orthogonal and so are rows $2$, $3$, $4$, $5$, and $6$
-of~$B$. Therefore, we build two groups, $\{1 \}$ and $\{2, 3, 4, 5, 6\}$, of structurally
-orthogonal columns of $A$ as well as two groups, $\{1 \}$ and $\{2, 3, 4, 5, 6\}$, of
-structurally orthogonal rows of $B$. This grouping of structurally orthogonal columns and
-rows is represented by the two seed matrices and their resulting matrix-matrix products:
-$$
-V =
-\begin{bmatrix}
- 1  & 0 \\
- 0  & 1 \\
- 0  & 1 \\
- 0  & 1 \\
- 0  & 1 \\
- 0  & 1
-\end{bmatrix},\;\,
-%
-AV =
-\begin{bmatrix}
- 1  & 0 \\
- 2  & 7 \\
- 3  & 8 \\
- 4  & 9 \\
- 5  & 10\\
- 6  & 11
-\end{bmatrix}
-\qquad\text{and}\qquad
-\begin{aligned}
-  W &=
-    \begin{bmatrix}
-     1  & 0 & 0 & 0 & 0 & 0\\
-     0  & 1 & 1 & 1 & 1 & 1\\
-    \end{bmatrix}, \\[1em]
-  %
-  WB &=
-     \begin{bmatrix}
-      1  & 2 & 3 & 4 & 5 & 6\\
-      0  & 7 & 8 & 9 & 10 & 11
-     \end{bmatrix}.
-\end{aligned}
-$$
-Each group of structurally orthogonal columns of $A$ corresponds to a column in the seed
-matrix~$V$. Similarly, each group of structurally orthogonal rows of $B$ corresponds to a
-row in the seed matrix $W$. All nonzero elements of $A$ also appear in $AV$ and all
-nonzero elements of $B$ also appear in $WB$. The computational cost using either the
-forward mode or the reverse mode is decreased from taking identity seed matrices of order
-$n=m=6$ to seed matrices $V$ and $W$ with $\col = \row = 2$, representing two groups of
-structurally orthogonal columns/rows.
-
 Next, consider the matrix $C$ that has neither structurally orthogonal columns nor
 structurally orthogonal rows. Therefore, there is no unidirectional compression of the
 matrix $C$, neither by \col\ columns nor by \row\ rows, that reduce \col\ or \row\ below
-$n = m = 6$. However, a linear combination of both, columns and rows, can be used to
+the number of columns or rows. However, a linear combination of both, columns and rows, can be used to
 reduce the computational cost to a value below six. Here, the columns and rows of a
 corresponding group are not necessarily structurally orthogonal. This technique in which
 the forward and reverse mode are used in a combined way is called \emph{bidirectional
-compression}. There are various ways to carry out this compression. One option for this
-example is to choose
-\begin{equation}
-\label{e.onesvw}
-V =
-\begin{bmatrix}
- 1  & 0\\
- 0  & 1 \\
- 0  & 1 \\
- 0  & 1 \\
- 0  & 1\\
- 0  & 1
-\end{bmatrix},\;\,
-%
-CV =
-\begin{bmatrix}
- 1  & 45\\
- 2  & 12 \\
- 3  & 13 \\
- 4  & 14 \\
- 5  & 15\\
- 6  & 16
-\end{bmatrix}
-\qquad\text{and}\qquad
-\begin{aligned}
-  W &=
-   \begin{bmatrix}
-    1  & 0 & 0 & 0 & 0 & 0\\
-   \end{bmatrix}, \\[1em]
-  WC &=
-   \begin{bmatrix}
-    1  & 7 & 8 & 9 & 10 & 11
-   \end{bmatrix}.
-\end{aligned}
-\end{equation}
-All nonzero elements of $C$ also appear in the pair~$CV$ and $WC$. Notice that the
-nonzero element~$1$ is contained in both products and that the product $CV$ contains the
-value~$45$ which is irrelevant to compute all nonzero elements of $C$. The computational
-cost of a bidirectional compression is dominated by the sum of the costs of the forward
-and reverse mode which is $\col + \row = 3$ in this example. By counting the occurrences
-of ones in the seed matrices in \eqref{e.onesvw}, we see that 6 columns, but only a
-single row of $C$ are used to form the groups of columns/rows. In general, it is
-sufficient to form these groups by choosing subsets of the columns and rows of a given
-sparse matrix.
+compression}. 
 
-The above example is intentionally kept simple. However, for general sparsity patterns,
+For general sparsity patterns,
 it is not always easy to figure out how to linearly combine columns and rows such that
 the computational cost is minimized. Hence, we introduce the following combinatorial
 optimization problems that addresses this question of unidirectional or bidirectional compression. 
@@ -670,32 +545,49 @@ in which $SILU$ means the symbolic ILU factorization.
 \chapter{PreCol 1.0}
 \label{package}
 So far, we discussed different concepts regarding the preconditioning and coloring.
-Here, we focus on the computation of these concepts. 
-Luelfesmann ... was started a package for computation of the uni- 
-and bidirectional (partial-)coloring. We improved the software in many ways
-considering usability and efficiency. We discuss them in the following sections.
-On the other hand, we implemented two interfaces for Matlab and Java 
-to benefit from the power of these software.
+Here, we focus on the computation of the colorings and preconditioning in the ground of linear solver. 
+Luelfesmann and B{\"u}cker~\cite{Lulfesmann2012Fap} started a package for computation of the uni- 
+and bidirectional (partial-)coloring as well as the partial computation and its relative preconditoning which we discussed in ~\ref{precond}. 
+We improved the software in various ways that are explained in the following sections.
 
-%\begin{itemize}
-%\item Adding more Ordering
-%\item Adding the computation of Preconditioning regarding the graph inside
+First, we discuss the fillin reduction in Section~\ref{s.ordering.effect}.
+Then we see how the extensibility, readibility, and usability are improved 
+in Section~\ref{s.extend}. 
+We examine different strategies for the parallization 
+in Section~\ref{s.parallel}.
+Then, the interfaces for MATLAB and JAVA would be discussed
+in Section~\ref{s.interfaces}.
+Finally, we explain how these all are implemented in
+Section~\ref{s.impl.ordering}.
+
+%\item Improving extensibility and usability
 %\item Documentation
-%\item Different Graphic User Interface
-%\item Parallelizaton by OpenMP and MPI
+%\item Interfaces for other languages
+%\item Parallelizaton
 %\end{itemize}
 
 \section{Effects of Ordering}
+\label{s.ordering.effect}
+Here, we investigate the preconditioning based on the incomplete LU factorization (ILU) \cite{ilu2003}.
+Between different models of ILU, we consider the level-based ILU factorization here.
+We use a graph model for ILU instead of the current matrix model to have a unified
+work on graphs in the implemented library. This graph model is based on the proposed
+model in ~\cite{precond-pothen}. If the given matrix is unsymmetric,
+we put a vertex for each row. We also connect the vertex $i$ to the
+vertex $j$ with an directed edge if the corresponding element $(i,j)$ in matrix
+in nonzero. If the matrix is symmetric, these edges are undirected. This means
+ the graph is a simple graph and the given matrix is actually the adjacency
+matrix of the graph.
+
+Now, we look at the effects of preordering for the vertices of the given preconditioning graph to reduce fillins in ILU factorization. Later, we would study further how this fillin reduction would increase the additionally required elements.
 
 Since the exact algorithms for coloring and preconditioning are 
 NP-complete algorhtms, the researhcer use approximate algorithms
 most of the time. If we focus on the graph algorithms, 
 the results of these heuristics are highly dependent 
 on which order the vertices are processed. 
-.... references .....
-ina momkene eshteba bashe....
 
-For example, let's consider the following matrix
+For example, let's consider first the following matrix
 \begin{figure}
 \centering
    \includegraphics[width=0.45\linewidth]{bad_order_color}
@@ -751,27 +643,30 @@ In each item, we explain how the algorithm select the next vertex.
 \item Stauration-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
 $V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbours of $v$.
 \end{itemize}
-In addition to these orderings, we consider two other orderings:
+In addition to these orderings, we consider four other orderings
+for preconditoning:
 \begin{itemize}
 \item Natural Ordering:
 \item NDMetis Ordering\cite{metis,par-nested-disection}:
+\item Minimum Degree:
+\item Maximum Degree:
 \end{itemize}
 
-\begin{tabular}{|c|c|c|c|}
+\begin{table}
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-Matrix & Nat & Min & Metis \\\hline
-gyro\_m & 27890 & 25900 & 25512 \\\hline
+Matrix & Nat & Max & Min & Metis \\\hline
+gyro\_m & 27890 & 333 &25900 & 25512 \\\hline
 \end{tabular}
-
+\caption{The number of fillins compared based on the different orderings
+for the graph vertices.}
+\end{table}
 
 
 \section{Usability, Readability, and Extensibility}
+\label{extend}
 use of the std algorithms of c++ and the new c++ features
 in favour of readability and efficinecy 
-specially that the algorithms would be automatically parallel in the next
-release of c++ (C++17) next year.
-It is actually available in from g++ 4.3 
-\cite{parallelcpp}
 
 This strategy reduced the amount of the code dramatically and
 make the code more readable.
@@ -802,9 +697,13 @@ The comparison between new design and the previous version is as follows,
 
 Preconditioning in Graph (instead of matrix version in Matlab)
 
-\section{Documentation}
 Doxygen and website: http://csc.c3e.de/precol/html/
 \section{Parallelization}
+\label{s.parallel}
+specially that the algorithms would be automatically parallel in the next
+release of c++ (C++17) next year.
+It is actually available in from g++ 4.3 
+\cite{parallelcpp}
 block parallelization openmp for the coloring part
 \cite{Rokos2015}
 \textit{Cavity16} from the sparse matrix collection of University of Florida 
@@ -824,13 +723,14 @@ Threads & Time & Colors \\\hline
 9 & 15.4174 & 47 \\\hline
 10 & 16.1545 & 47 \\\hline
 \end{tabular}
-\section{MatLab interface}
+\section{JAVA and MATLAB interface}
+\label{s.interfaces}
 Luelfesmann started an interface to compute the coloring,
 we changed the interface .... So user has just one interface to work with
 
 This interface is developed based on the MEX tool. 
 The user has mostly the same functions in the MATLAB.
-\section{GraphTea interface}
+%\section{GraphTea interface}
 Michael Luelfesmann was developed a software which computes a small set of 
 coloring and preconditioning. We imTproved the software regarding the algorithms
 and the visualizations. Specially, the user can select different orders for two heuristics
@@ -893,6 +793,7 @@ to handle the large sparse matrices. This data structure is basically an array.
 This array has the size of number of rows. Each cell of this array points to 
 an array which is the corresponding columns of nonzeros in this row. 
 \section{Implementation Details}
+\label{s.impl.ordering}
 %-----------------------------------------------------------------------------------------------
 \begin{figure}
 \centering
