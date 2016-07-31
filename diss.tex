@@ -662,20 +662,51 @@ gyro\_m & 27890 & 333 &25900 & 25512 \\\hline
 for the graph vertices.}
 \end{table}
 
-
 \section{Usability, Readability, and Extensibility}
 \label{extend}
-use of the std algorithms of c++ and the new c++ features
-in favour of readability and efficinecy 
+Here, we explain what we have done to ease the usage of the software
+either for developers or for end users. We have restructured the implementation
+to achieve these goals. 
 
-This strategy reduced the amount of the code dramatically and
+We employed concepts from the object-oriented programming to empower
+the developers to implement new extensions without going into 
+details of core implementation. So, two main ingredients coloring
+and orderings can be implemented now only by derving an interface.
+For example, a new ordering can be added as easy as the following code.
+\begin{lstlisting}
+class LFO : public Ordering {
+    bool order(const Graph &G_b, vector<unsigned int> &ord, bool restricted) {
+        ...
+    }
+};
+\end{lstlisting}
+The developer needs to implement this new class in a only-header fashion~\cite{headeronly},
+since the goal is to write an extension with a few code. So, the developer should
+move the new header file to the corresponding directory which is the ordering directory
+for this new ordering and \textit{algs} directory for coloring algorithms.
+Now, building the software would bring this new ordering into the software execution.
+
+Using the standard library of C++ as well as the concept of functional programming
+in new C++ release~\cite{Sutherland2015}, we provide different functions which can be used
+by developer to work on graphs. For example, the iteration of vertices
+or edges can be easy as follows,
+\begin{lstlisting}
+for_each_v(G, f);
+for_each_v(G, [&](Ver v) {...});
+for_each_e(G, f);
+for_each_e(G, [&](Edge e) {...});
+\end{lstlisting}
+, in whcih the variable $f$ is a function which gets an input parameter
+of a vertex or an edge, respectively.
+Also, the other syntax is the lambda function 
+from the new C++ functional programming to implement a function in place.
+
+Following a unique solution, we implement all the possible part of algorithms
+with the use of standard library of C++ which also improves the readibility.
+This strategy reduces the amount of the code dramatically and
 make the code more readable.
 
-Adding new interfaces for coloring and ordering makes it easier to add new 
-algithms and ordering (example)
-
-config file as well as command properties
-
+\textbf{Restructuring.}
 In the previous version, the coloring, 
 potentially required elements, and the additionally required elements
 were computed in the functions written in \text{C++}.
@@ -684,20 +715,65 @@ This means that the code in Matlab needs to call the
 MEX interface for three times at least. 
 In this way, it was necessary to do the conversion from the Matlab sparse
 matrix to graph (or matrix) format in \text{C++}
-and converting back from \text{C++} to Matlab..
+and converting back from \text{C++} to Matlab.
+This is illustrated in Figure~\ref{structure} (Left).
 This reults in the lack of efficiency. On ther other hand,
 this mix of programming languages reduces 
 the accuracy and makes the versioning difficult.
- 
+%-----------------------------------------------------------------------------------------------
+\begin{figure}
+\centering
+\includegraphics[width=0.42\textwidth]{old_struct}
+\hfill
+\includegraphics[width=0.52\textwidth]{new_struct}
+\caption{There were many communications between MATLAB and C/C++ version. The communication
+is done based on the MEX interface. A conversion from matrix to graph is computed
+each time that the MEX interface is used. (Left) A new implementation reduces a lot of communication.
+It brings toghether different parts of algorithm in a package. Two interfaces written
+ in MATLAB and Java call this package as a local program.}
+\label{f.structure}
+\end{figure}
+%-----------------------------------------------------------------------------------------------
+
 We improved the design of the software to resolve these problems.
-So, except the iterative solver part, the other parts of algorithm are 
-computed in \textit{C++}. So, we implemented the preconditoning and 
-and the sparsification in C++ and adapt the conversion in graphs.
-The comparison between new design and the previous version is as follows,
+So, all the parts of algorithm are computed in \textit{C++} now.
+Figure~\ref{f.structure} (Left) visualizes this new implementation.
+All the parts can be computed in C++. However, 
+the part of iterative solver part, can be computed also in MATLAB,
+since the MATLAB functions in this area are in general more convincing. 
+For this goal, we implemented the preconditoning and 
+and the sparsification in C++. 
+As you can see in Figure~\ref{f.structure} (Left), we also implemented
+two interfaces in MATLAB and JAVA languages which we will explain in 
+Section~\ref{s.interfaces}.
 
-Preconditioning in Graph (instead of matrix version in Matlab)
+To use the software, the user can use a command-line command in addition to
+the interfaces in JAVA and MATLAB. So, the user needs to specify different
+options for coloring algorithm, orderings, the block size, and so.
+These options can be entered directly in the terminal together with command
+or can be written in a so called config file which is imported by the software. 
+The format of config file is as follows,
+\begin{lstlisting}
+alg: PartialD2Coloring
+col_ord: Min
+ilu_ord: LFO
+type: BlockDiagonal
+blk: 10
+\end{lstlisting}
+Different parameters possible in config file is as follows,
+\begin{itemize}
+\item alg:
+\item col_ord: 
+\item type:
+\item blk:
+\end{itemize}
 
-Doxygen and website: http://csc.c3e.de/precol/html/
+We also generated a new documentation as a website which is available
+under the website: http://csc.c3e.de/precol/html.
+This website is generated automatically by Doxygen~\ref{Lischner2013}.
+We implemented some new HTML/CSS template for doxygen to include extra
+texts and documentation in the website.
+
 \section{Parallelization}
 \label{s.parallel}
 specially that the algorithms would be automatically parallel in the next
@@ -707,8 +783,8 @@ It is actually available in from g++ 4.3
 block parallelization openmp for the coloring part
 \cite{Rokos2015}
 \textit{Cavity16} from the sparse matrix collection of University of Florida 
-The system 
-Intel® Core i5-3320M CPU @ 2.60GHz × 4 
+The timing are all from the computation carried on 
+an intel Core i5 with 8 Gb RAM. 
 \begin{tabular}{|c|c|c|}
 \hline
 Threads & Time & Colors \\\hline
@@ -794,20 +870,9 @@ This array has the size of number of rows. Each cell of this array points to
 an array which is the corresponding columns of nonzeros in this row. 
 \section{Implementation Details}
 \label{s.impl.ordering}
-%-----------------------------------------------------------------------------------------------
-\begin{figure}
-\centering
-\includegraphics[width=0.42\textwidth]{old_struct}
-\hfill
-\includegraphics[width=0.52\textwidth]{new_struct}
-\caption{There were many communications between MATLAB and C/C++ version. The communication
-is done based on the MEX interface. A conversion from matrix to graph is computed
-each time that the MEX interface is used. (Left) A new implementation reduces a lot of communication.
-It brings toghether different parts of algorithm in a package. Two interfaces written
- in MATLAB and Java call this package as a local program.}
-\label{f.structure}
-\end{figure}
-%-----------------------------------------------------------------------------------------------
+
+
+
 \chapter{Interactive Educational Module}
 \label{explain}
 \mbox{EXPLAIN} is an extensible collection of educational modules for classroom use.
