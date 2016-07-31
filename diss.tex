@@ -663,7 +663,7 @@ for the graph vertices.}
 \end{table}
 
 \section{Usability, Readability, and Extensibility}
-\label{extend}
+\label{s.extend}
 Here, we explain what we have done to ease the usage of the software
 either for developers or for end users. We have restructured the implementation
 to achieve these goals. 
@@ -716,7 +716,7 @@ MEX interface for three times at least.
 In this way, it was necessary to do the conversion from the Matlab sparse
 matrix to graph (or matrix) format in \text{C++}
 and converting back from \text{C++} to Matlab.
-This is illustrated in Figure~\ref{structure} (Left).
+This is illustrated in Figure~\ref{f.structure} (Left).
 This reults in the lack of efficiency. On ther other hand,
 this mix of programming languages reduces 
 the accuracy and makes the versioning difficult.
@@ -763,14 +763,14 @@ blk: 10
 Different parameters possible in config file is as follows,
 \begin{itemize}
 \item alg:
-\item col_ord: 
+\item col\_ord: 
 \item type:
 \item blk:
 \end{itemize}
 
 We also generated a new documentation as a website which is available
 under the website: http://csc.c3e.de/precol/html.
-This website is generated automatically by Doxygen~\ref{Lischner2013}.
+This website is generated automatically by Doxygen~\cite{Lischner2013}.
 We implemented some new HTML/CSS template for doxygen to include extra
 texts and documentation in the website.
 
@@ -801,19 +801,11 @@ Threads & Time & Colors \\\hline
 \end{tabular}
 \section{JAVA and MATLAB interface}
 \label{s.interfaces}
-Luelfesmann started an interface to compute the coloring,
-we changed the interface .... So user has just one interface to work with
-
-This interface is developed based on the MEX tool. 
-The user has mostly the same functions in the MATLAB.
-%\section{GraphTea interface}
-Michael Luelfesmann was developed a software which computes a small set of 
-coloring and preconditioning. We imTproved the software regarding the algorithms
-and the visualizations. Specially, the user can select different orders for two heuristics
-which we discussed before.
-For this purpose, we extend our software GraphTea~
+\textbf{JAVA interface.}
+We extend our JAVA software GraphTea~
 \cite{2014:07,2014:15,2014:16,2015:05,2015:06,2015:07,2015:08} to have a
-set of reports for graph coloring. We
+set of reports for graph coloring and preconditioning which call the program
+\textit{PreCol}.
 %Chemical Graph theory\cite{2015:05,2015:06,2015:07,2015:08}
 GraphTea is a graph editing framework designed specifically to compute and visualize
 different parameters of graphs interactively.
@@ -868,9 +860,9 @@ A new data structure for the sparse matrix, called \textit{SpMat}, is designed
 to handle the large sparse matrices. This data structure is basically an array.
 This array has the size of number of rows. Each cell of this array points to 
 an array which is the corresponding columns of nonzeros in this row. 
+\textbf{MATLAB interface.}
 \section{Implementation Details}
 \label{s.impl.ordering}
-
 
 
 \chapter{Interactive Educational Module}
@@ -882,7 +874,7 @@ In implementation details we explained how they differ and improved from an orig
 
 We implemented different moduels for EXPLAIN. 
 Here we explain these modules and how they can be used.
-The implementation details comes later in ~\ref{impl}.
+The implementation details comes later in ~\ref{s.impl.explain}.
 \section{Column Compression}
 \label{s.column-compression}
 In \cite{2013:05,2014:01}, we presented an educational module in \mbox{EXPLAIN} to visualize the
@@ -1260,18 +1252,33 @@ and four bar chart grouped together shows the size history of the graph parts.
 
 
 \section{Parallel Matrix Vector Product}
+
 In \cite{2015:3}, we extended EXPLAIN with a new module for 
 the parallel sparse matrix-vector multiplication. 
 So if we show the problem as follows, 
 $$
 \vek{y} = \mat{A}\cdot \vek{x}
 $$
+or by elements as follows,
+\begin{equation}
+\label{e.yax}
+\vek{y} \leftarrow \mat{A} \vek{x}
+\end{equation}
+where the $N$-dimensional vector $\vek{y}$ is the result of applying \mat{A} to some
+given $N$-dimen\-sional vector $\vek{x}$. Then, the $i$th entry of~$\vek{y}$ is given by
+\begin{equation}
+\label{e.mvp}
+y_i = \sum_{j \text{ with }  a_{ij} \neq 0} a_{ij} \cdot x_j ,
+\quad
+i = 1, 2, \dots, N,
+\end{equation}
 The question here is if data representing \mat{A}, \vek{x} and
 \vek{y} are distributed to multiple processes, to what extent does this data distribution
 have an effect on the computation $\vek{y} \leftarrow \mat{A} \vek{x}$? What are the
 advantages and disadvantages of a given data distribution? What are the criteria for
 evaluating the quality of a data distribution? How should data be distributed to the
 processes ideally?
+
 
 To discuss such questions with undergraduates who are new to parallel computing we
 suggest to consider the following simple data distribution. The nonzero elements
@@ -1292,7 +1299,7 @@ with $I_i \cap I_j = \emptyset$ for~$i \neq j$. That is, if $P(i)=k$ then the no
 row~$i$ as well as~$x_i$ and~$y_i$ are stored on process $k$.
 
 Since the nonzero $a_{ij}$ is stored on process~$P(i)$ and the vector entry~$x_j$ is
-stored on process~$P(j)$, one can sort the terms in the sum~\eqref{e.mvp} according to
+stored on process~$P(j)$, one can sort the terms of \eqref{e.mvp} according to
 those terms where both operands of the product $a_{ij} \cdot x_j$ are stored on the same
 process and those where these operands are stored on different processes:
 \begin{equation}
@@ -1379,7 +1386,7 @@ parallel and partitioning an undirected graph, we propose a novel educational mo
 This module is part of a growing set of educational modules called EXPLoring Algorithms
 INteractively (EXPLAIN). This collection of web-based modules is designed to assist in
 the effectiveness of teachers in the classroom and we plan to make it publicly available
-in the near future. Figure~\ref{f.explain} shows the overall layout of this interactive
+in the near future. Figure~\ref{f.explain.matvec} shows the overall layout of this interactive
 module for sparse matrix-vector multiplication. The top of this figure visualizes---side
 by side---the representation of the problem in terms of the graph~$G$ as well as in terms
 of the matrix~\mat{A} and the vector \vek{x}. Below on the left, there is a panel of
@@ -1396,7 +1403,7 @@ small matrix, and to choose the layout of the graph vertices.
 \centering
 \includegraphics[width=0.7\textwidth]{final}
 \caption{Overall structure of the sparse matrix-vector multiplication module.}
-\label{f.explain}
+\label{f.explain.matvec}
 \end{figure}
 %------------------------------------------------------------------------------------------
 
@@ -1553,8 +1560,9 @@ decide to start the selection by mouse or an automatic visualization
 of the algorithm in which the order is defined by the variable "order".
 
 \section{Implementation Details}
-\subsection{EXPLAIN 1.0}
 \label{s.impl.explain}
+\subsection{EXPLAIN 1.0}
+\label{s.impl.explain1}
 The previous version of the software \cite{Lulfesmann2010} needed a client with administrator privileges to install Python libraries as well as the software itself. In the new implementation, the software is moved to the online platform which means the student needs just a web browser to work with the software. In this section, we shortly describe the underlying algorithm as well as how it is implemented.
 
 The underlying algorithm of coloring and keeping the history is shown in the pseudo-codes given in \figurename~\ref{f:alg}. The first procedure represents what happens when a student clicks on a vertex. The second one shows how the history of matrix and graph images are loaded when the student clicks on one of the history buttons.
@@ -1625,6 +1633,7 @@ The library \textit{Mod\_python} assists to implement folder management, user in
 Previously, an event was handled by a local Python function but, in the new version, there are two sides, server and client. The web browser at client side shows HTML websites with embedded  Javascript source code while the server side is written in Python. Since the buttons are HTML buttons and the events are Javascript functions, a form is submitted to the Python server by a Javascript function containing the execution request and parameters to the related Python function. Then, the called Python function writes the dynamically generated result as an HTML string to the Apache request. The server sends back the HTML string and the client shows the string as a web page.
 
 \subsection{EXPLAIN 2.0}
+\label{s.impl.explain2}
 As we discussed, we changed the code such that it becomes more efficient and easier to extend. 
 In the previous version, the module was mainly based on the python libraries:
 \textit{NetworkX} \cite{networkx2008} for the graph data structure,
