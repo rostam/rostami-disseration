@@ -74,24 +74,23 @@
 \newcommand{\MinStaBic}{\textsc{MinimumStarBicoloring}}
 \newcommand{\MinUniCom}{\textsc{MinimumUnidirectionalCompression}}
 \newcommand{\MinBidCom}{\textsc{MinimumBidirectionalCompression}}
-
 \begin{document}
 \begin{center}
-\begin{minipage}{0.75\linewidth}
+\begin{titlepage}
     \centering
     \includegraphics[width=0.3\linewidth]{logo}
     \par
-    \vspace{3cm}
+    \vspace{2cm}
     {\uppercase{\Large Combinatorial Scientific Computing\par}}
-    \vspace{3cm}
+    \vspace{2cm}
     {\Large Mohammad Ali Rostami\par}
-    \vspace{3cm}
     {\Large Supervisor: Prof. Martin B{\"u}cker\par}
-    \vspace{3cm}
-    {\Large January 2016}
-\end{minipage}
+    \vspace{2cm}
+    {\Large Faculty of Mathematics and Computer Science\\Friedrich Schiller University Jena\par}
+    \vspace{2cm}
+    {\Large \today}
+\end{titlepage}
 \end{center}
-\clearpage
 
 \newpage
 \section*{Abstract}
@@ -101,9 +100,9 @@
 \newpage
 \section*{Acknowledgments}
 \thispagestyle{empty}
-
+\pagenumbering{roman} %
 \tableofcontents
-
+\pagenumbering{arabic}
 \chapter{Introduction}
 Partial differential equations (PDE) are the most common models of the real-world problems.
 Iterative solvers are a solution to these linear systems which need a multiplication
@@ -130,7 +129,6 @@ First, we go throught basic definitions in Chapter~\ref{prel} which are needed i
 The computational package for coloring is discussed later in Chapter~\ref{package}.
 Then, we visualize different algorithms from this area in Chapter~\ref{explain}.
 Conclusion comes at the end in Chapter~\ref{conc}.
-
 
 
 \chapter{Preliminaries}
@@ -860,6 +858,8 @@ A new data structure for the sparse matrix, called \textit{SpMat}, is designed
 to handle the large sparse matrices. This data structure is basically an array.
 This array has the size of number of rows. Each cell of this array points to 
 an array which is the corresponding columns of nonzeros in this row. 
+
+
 \textbf{MATLAB interface.}
 \section{Implementation Details}
 \label{s.impl.ordering}
