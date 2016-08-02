@@ -91,19 +91,10 @@
     {\Large \today}
 \end{titlepage}
 \end{center}
+\tableofcontents
 
 \newpage
 \section*{Abstract}
-
-\thispagestyle{empty}
-
-\newpage
-\section*{Acknowledgments}
-\thispagestyle{empty}
-\pagenumbering{roman} %
-\tableofcontents
-\pagenumbering{arabic}
-\chapter{Introduction}
 Partial differential equations (PDE) are the most common models of the real-world problems.
 Iterative solvers are a solution to these linear systems which need a multiplication
  of Jacobian and a vector in each iteration. 
@@ -576,23 +567,45 @@ vertex $j$ with an directed edge if the corresponding element $(i,j)$ in matrix
 in nonzero. If the matrix is symmetric, these edges are undirected. This means
  the graph is a simple graph and the given matrix is actually the adjacency
 matrix of the graph.
-
 Now, we look at the effects of preordering for the vertices of the given preconditioning graph to reduce fillins in ILU factorization. Later, we would study further how this fillin reduction would increase the additionally required elements.
 
-Since the exact algorithms for coloring and preconditioning are 
-NP-complete algorhtms, the researhcer use approximate algorithms
-most of the time. If we focus on the graph algorithms, 
-the results of these heuristics are highly dependent 
-on which order the vertices are processed. 
+Since finding an exact coloring coloring is a known NP-complete problem~\cite{SPINRAD198589},
+different heuristics are employed to find an estimation of minimum coloring. The greedy
+coloring is one of these heuristics which is widely used. 
+Greedy coloring algorithms computes a reasonable coloring~\cite{spaa14}.
+However, this algorithm depends on the order of vertices. 
+Hence, there are many publications on how to choose a good ordering heuristics
+for serial or parallel version of coloring~\cite{ordering1,ordering2,ordering3}.
 
-For example, let's consider first the following matrix
-\begin{figure}
-\centering
-   \includegraphics[width=0.45\linewidth]{bad_order_color}
-   \hfill
-   \includegraphics[width=0.45\linewidth]{good_order_color}
-\end{figure}
+As same as coloring algorithms, finding an ILU factorization with the minimum
+fillins is also an NP-complete problem. There are a lot of literature 
+considering this problem\cite{ilu_ordering1,ilu_ordering2,ilu_ordering3,ilu_ordering4}. 
+Again, the ILU factorization is computed in a specific order which is essential
+in the minimum fillins. Here we bring an example to show how the order affects 
+the ILU factorization and the number of fillins. 
+For example, let's consider first the following matrix,
+$$\begin{bmatrix}
+ 1 & 1 & 0 & 1 & 0 & 1 & 0\\
+ 1 & 1 & 1 & 0 & 0 & 0 & 0\\
+ 0 & 1 & 1 & 0 & 1 & 0 & 1\\
+ 1 & 0 & 0 & 1 & 1 & 0 & 0\\
+ 0 & 0 & 1 & 1 & 1 & 1 & 1\\
+ 1 & 0 & 0 & 0 & 1 & 1 & 1\\
+ 0 & 0 & 1 & 0 & 1 & 1 & 1\\
+ \end{bmatrix}.$$
 
+We setup a graph for ILU preconditoning.
+The graph for preconditoning would be simply the adjacency matrix
+since the matrix is symmetric. 
+The first graph shown at the top-left part of Figure~\ref{bad_order_fillin}
+is shown the graph computed from the previous matrix.
+
+%\begin{figure}
+%\centering
+%   \includegraphics[width=0.45\linewidth]{bad_order_color}
+%   \hfill
+%   \includegraphics[width=0.45\linewidth]{good_order_color}
+%\end{figure}
 
 \begin{figure}
 \centering
@@ -774,6 +787,9 @@ texts and documentation in the website.
 
 \section{Parallelization}
 \label{s.parallel}
+
+\cite{mpi_greedy_coloring}
+
 specially that the algorithms would be automatically parallel in the next
 release of c++ (C++17) next year.
 It is actually available in from g++ 4.3 
@@ -859,11 +875,9 @@ to handle the large sparse matrices. This data structure is basically an array.
 This array has the size of number of rows. Each cell of this array points to 
 an array which is the corresponding columns of nonzeros in this row. 
 
-
 \textbf{MATLAB interface.}
 \section{Implementation Details}
 \label{s.impl.ordering}
-
 
 \chapter{Interactive Educational Module}
 \label{explain}
