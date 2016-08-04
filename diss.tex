@@ -700,6 +700,7 @@ ILU factorization.
 The left table is for the matirx \textit{nos3.mtx} with $960$ rows, $960$ columns, and $15844$ nonzero elements 
 and the right one is for the matrix\textit{gyro\_m} with $17361$ rows ,$17361$ columns, $340431$ nonzero elements.
 Both are from the Florida sparse matrix collections.}
+\label{ilu-effect}
 \end{table}
 
 These results are computed on the symmetric matrix \textit{nos3.mtx} with $960$ rows, $960$ columns, and $15844$ nonzero elementstheand the symmetric matrix \textit{gyro\_m} with
@@ -713,7 +714,21 @@ Another observation is that the Metis and Min ordering are generating almost the
 number of fillins and additionally required elements for the small matrices. 
 It is only for the big matrices which the power of Metis ordering can be seen.
 
-Also, it can be 
+
+This difference in number of additionally elements affects the convergence speed
+relatively. Both Figure~\ref{nat_convergence} and Figure~\ref{metis_convergence} show
+the convergence history of the bicgstab solvers on the matirx \textit{nos3}.
+The three line charts are the convergence history of the solver with
+no preconditioning, ILU preconditioning with block-diagonal sparsification,
+and ILU preconditioning with block-diagonal sparsification together with the found
+additionally required elements, respectively.
+Here, the block size is chosen to be $10$ and the level of ILU factorization
+is $10$.
+
+Clearly, Figure~\ref{metis_convergence} has a better convergence rate in the chart
+in which the additionally required elements are added in comparison with the same 
+chart in Figure~\ref{nat_convergence}.
+
 \begin{figure}
 \includegraphics[width=\linewidth]{nos3_mtx_convergence_nat}
 \caption{Natural ordering results in a worst convergence.}
@@ -722,8 +737,103 @@ Also, it can be
 
 \begin{figure}
 \includegraphics[width=\linewidth]{nos3_mtx_convergence_metis}
-\label{Metis ordering results in a better convergence.}
+\caption{Metis ordering results in a better convergence.}
 \label{metis_convergence}
+\end{figure}
+
+So far, we decided for the level of ILU factorization arbitrarily.
+Here, we want to see the actual influence of the level parameter on
+the fillins and additionally required elemets,
+%\begin{table}
+%\begin{tabular}{}
+%\hline
+%Level & Fillins & Adds \\\hline
+
+%\end{tabular}
+%\begin{tabular}{}
+%\hline
+%Level & Fillins & Adds \\\hline
+
+%\end{tabular}
+%\caption{changing the level parameter}
+%\label{level-par}
+%\end{table}
+
+On the other hand, the coloring has its influence on the number of 
+additionally required elements. Table~\ref{col-effect}
+
+Here, we did not change any settings other than the ordering of coloring. The ordering for
+ILU preconditioning is fixed to the natural ordering.
+The block size is $50$ and $10$ and the ILU level is $5$ and $2$ for two matrices
+\textit{gyro\_m} and \textit{nos3}, respectively.
+The matrix is \textit{gyro\_m}.
+\begin{table}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Ordering & Colors & Fillins & Additionally required elements \\\hline
+LFO &  34 & 8760 & 66554 \\\hline
+SLO &  33 & 8760 & 57760 \\\hline
+IDO &  35 & 8760 & 66588 \\\hline
+\end{tabular}
+\begin{tabular}{|c|c|c|c|}
+Ordering & Colors & Fillins & Additionally required elements \\\hline
+LFO &  15 & 50 & 394 \\\hline
+SLO &  12 & 50 & 384 \\\hline
+IDO &  16 & 50 & 436 \\\hline
+\end{tabular}
+\caption{The effect of coloring on the number of additionally required elements
+computed for two matrix \textit{gyro\_m} and \textit{nos3}. }
+\label{col-effect}
+\end{table}
+
+It can be seen that the number of additionally required elements increases when 
+the number of colors decreases. This can be understood as the number of potentially
+required elements are chosen from the non-required elements and added to the required elements
+such that number of colors does not increase. Hence, if the number of colors are more,
+the freedom of choosing elements gets higher.
+As two tables~\ref{ilu-effect} and~\ref{col-effect} shows, 
+both the ordering of colorig and the ordering of precondtioning affects the number of
+additionally required elements. Although smaller number of fillin increases
+the number of additionally required elements, the smaller number of colors 
+decreases the number of additionally required elements.
+This is in contrast to the mimimum number of colors which we are searching for, 
+in the autmatic differentation.
+
+%new algorhtms ....???
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{el_fillins.jpg}
+\caption{The influence of the level parameter for ILU on the number of fillins and
+additionally required elements. The block size is fixed to $10$. The ordering for coloring
+and for ILU preconditioning are \textit{LFO} and \textit{Nat}. The matrix is \textit{nos3}.}
+\label{el_fillins}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{add_blocksize.jpg}
+\caption{The influence of the ordering of the ILU preconditoning 
+on the additionally required elements. 
+Three different orderings natural, minimum, and Metis are used.
+The level parameter for ILU is fixed to $10$. 
+The ordering for coloring is fixed to~\textit{LFO}.
+The matrix is \textit{exx3} with the $1733$ rows,
+$1733$ columns, and $11961$ nonzero elements.}
+\label{add_blocksize}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{fillin_blocksize.jpg}
+\caption{The influence of the ordering of the ILU preconditoning 
+on the fillins. 
+Three different orderings natural, minimum, and Metis are used.
+The level parameter for ILU is fixed to $10$. 
+The ordering for coloring is fixed to~\textit{LFO}.
+The matrix is \textit{exx3} with the $1733$ rows,
+$1733$ columns, and $11961$ nonzero elements.}
+\label{fillin_blocksize}
 \end{figure}
 
 
