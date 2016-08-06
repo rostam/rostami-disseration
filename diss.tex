@@ -840,22 +840,6 @@ $1733$ columns, and $11961$ nonzero elements.}
 \label{fillin_blocksize}
 \end{figure}
 
-\section{Effect of fillins in Addtionally required elements}
-So far, we meant the conservative approach to compute the additionally required elements
-proposed by Lueflesmann ... In the same thesis, there is another approach to compute
-additionally required elements.
-After some experiments of computation of additionally required elements based on 
-the number of fillins, it is seen that the number of additionally required elements 
-remains the same. Even if the fillins are not considered at all, this number does not change.
-This motivates us to prove that the number of fillins is independent in this case.
-It should be mentioned that the number of potentially required elements change each time 
-regarding the number of fillins. 
-
-The reason could be the appearance of fillins in the blocks when the ILU algorithm is computed
-on a block diagonal matrix. 
-
-
-
 
 
 \section{Parallelization}
@@ -1063,8 +1047,6 @@ This array has the size of number of rows. Each cell of this array points to
 an array which is the corresponding columns of nonzeros in this row. 
 
 \textbf{MATLAB interface.}
-\section{Implementation Details}
-\label{s.impl.ordering}
 
 \chapter{Interactive Educational Module}
 \label{explain}
@@ -1141,7 +1123,6 @@ J \cdot S =
 J \cdot
  \begin{bmatrix}
  0  & 0 & 1 & 0 \\
- 1  & 0 & 0 & 0 \\
  0  & 1 & 0 & 0 \\
  0  & 0 & 0 & 1 \\
  0  & 0 & 1 & 0 \\
