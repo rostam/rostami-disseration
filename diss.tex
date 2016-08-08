@@ -127,7 +127,7 @@ Conclusion comes at the end in Chapter~\ref{conc}.
 We will discuss AD and the needed seed matrices in~\ref{s.seedmatrix} which is based on
 our paper~\cite{2014:09}.
 %===================================================================================================
-\section{Jacobian Computation}
+\section{Full Jacobian Computation}
 \label{s.seedmatrix}
 %===================================================================================================
 Given a program to evaluate some function $f(x) : \setR^n \rightarrow \setR^m$,
@@ -531,7 +531,7 @@ R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
 $$ 
 in which $SILU$ means the symbolic ILU factorization.
 
-\chapter{Effects of ordering}
+\chapter{Preconditioning and Coloring}
 \label{package}
 So far, we discussed different concepts regarding the preconditioning and coloring.
 Here, we focus on the computation of the colorings and preconditioning in the ground of linear solver. 
