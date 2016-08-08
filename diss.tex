@@ -20,6 +20,7 @@
     linkcolor=black,
     urlcolor=black
 }
+\usepackage[table]{xcolor}
 \newcommand{\mat}[1]{\ensuremath{#1}}
 \newcommand{\vek}[1]{{\ensuremath{\mathbf #1}}}
 \newcommand{\figref}[1]{Figure~\protect\ref{#1}}
@@ -130,6 +131,7 @@ our paper~\cite{2014:09}.
 \section{Full Jacobian Computation}
 \label{s.seedmatrix}
 %===================================================================================================
+\subsection{Problem}
 Given a program to evaluate some function $f(x) : \setR^n \rightarrow \setR^m$,
 techniques of automatic differentiation (AD)~\cite{Griewank2008EDP,Rall1981ADT} generate
 computer programs capable of evaluating the $m \times n$ Jacobian matrix $J$. In the
@@ -204,7 +206,7 @@ An equivalent graph-theoretical formulation of this problem is discussed in the 
 section.
 
 %==========================================================================================
-\section{Combinatorial Model}
+\subsection{Combinatorial Model}
 \label{s.modeling}
 %==========================================================================================
 Graph models are ubiquitous in exploiting the sparsity involved in derivative
@@ -353,6 +355,7 @@ To illustrate the tricky transformation from \MinBidCom\ to \MinStaBic, we desig
 educational module explained in Section~\ref{s.bidirectional}.
 
 \section{Partial Jacobian Computation}
+\subsection{Problem}
 However, the situation in our semi-matrix-free approach is different. Rather than
 computing all nonzeros of $J$ we are interested in only a subset thereof. More precisely,
 we are interested in the required nonzero elements that are assembled in the matrix
@@ -387,6 +390,7 @@ that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J
 S$.
 \end{problem}
 
+\subsection{Combinatorial Model}
 We now focus on reformulating this combinatorial problem from
 scientific computing in terms of an equivalent problem defined on a suitable graph model.
 
@@ -443,9 +447,10 @@ which there is a vertex set for the rows and another vertex set for the columns 
 Jacobian. Using the more general bipartite graph model, Problem~\ref{p:minblockcol} could
 be reformulated as a minimum distance-2 coloring of a bipartite graph when restricted to
 the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
-
+\subsection{Sparsification (Block Diagonal)}
 \section{Preconditioning}
 \label{precond}
+\subsection{Problem}
 The computation of Jacobian that we discussed before are one part of solving PDEs. 
 In general, we are considering the solution to the following system of lienar equations,
 $$
@@ -502,7 +507,7 @@ These nonzero elements selected by \sparsify{J} are called initially
 \emph{required} nonzero elements and represented by $R_i$. 
 An example would be the special case of a sparsification in the form of $k\times k$
 blocks on the main diagonal.
-
+\subsection{Comibnatorial Model}
 We discussed the full and partial coloring algorithms regarding AD techniques. 
 Now, the problem~\ref{p:minblockcol} can be solved for Jacobian
 restricted to the set of initially
@@ -538,7 +543,6 @@ Here, we focus on the computation of the colorings and preconditioning in the gr
 Luelfesmann and B{\"u}cker~\cite{Lulfesmann2012Fap} started a package for computation of the uni- 
 and bidirectional (partial-)coloring as well as the partial computation and its relative preconditoning which we discussed in ~\ref{precond}. 
 We improved the software in various ways that are explained in the following sections.
-
 First, we discuss the fillin reduction in Section~\ref{s.ordering.effect}.
 Then we see how the extensibility, readibility, and usability are improved 
 in Section~\ref{s.extend}. 
@@ -558,8 +562,74 @@ Section~\ref{s.impl.ordering}.
 mohem ... discussion about the sparsification in matlab and c
 staring from zero or one ???
 
+\section{New heuristics for coloring}
+\label{s.heuristic}
+
+\newcolumntype{r}{>{\columncolor{red!60}}c}
+\newcolumntype{b}{>{\columncolor{blue!60}}c}
+\begin{equation}
+\left(\begin{array}{rrb}
+* & * & *\\
+0 & r & r \\
+* & 0 & *
+\end{array}\right)
+\qquad
+\left(\begin{array}{rbr}
+* & * & *\\
+0 & r & r \\
+* & 0 & *
+\end{array}\right)
+\label{twocolorings}
+\end{equation}
+Although both matrix colorings in~\ref{twocolorings} 
+are correct partial coloring and have the same number of
+colors, the number of nonrequired elements 
+which are determined are different.
+
+The new heuristics is as follows,
+
+\begin{lstlisting}
+for i=1 to num_of_columns
+  if the column is is not colored
+    color the column i
+    loop over all the uncolored columns j
+    if j can be compressed by i
+      compute the nonrequired nonzeros which are determined after compression
+    color the column which has the maximum determined nonrequired elements
+    if there are more than one column with this maximum value
+      see if it can be additionally required elements
+
+\end{lstlisting}
 \section{Effects of Ordering}
 \label{s.ordering.effect}
+
+
+\begin{align} 
+Ax = b \rightarrow M^{-1} Ax &= M^{-1}b\\
+P^T M^{-1} P P^T A P P^T x &= P^T M^{-1} P P^T b\\
+(P^T M^{-1} P) (P^T A P) P^T x &= (P^T M^{-1} P) P^T b\\
+(P^T M P)^{-1} (P^T A P) P^T x &= (P^T M P)^{-1} P^T b\\
+\tilde{M}^{-1}\tilde{A}\tilde{x} &= \tilde{M}^{-1}\tilde{b} 
+\label{e.reordering}
+\end{align}
+
+As we discussed in the iterative solvers, like BICGSTAB,
+we always need to have a matrix vector product like $Az$.
+This suits the AD behaviour which gets a seed matrix, here the vector $z$, and
+computes the matrix vector product. As the equation~\ref{e.reordering} shows,
+the reordering results in another computation as $\tilde{A}.\tilde{x} = P^T A P x$.
+Since the AD computes only $A$ multiplied by a vector $z$, 
+the computation should be rewriten as follows,
+$$
+z = P \tilde{x}
+A = ad(f,z,...)
+cg(P^T A,...)
+$$
+
+in which the seed matrix $P \tilde{x}$ is used instead of $x$.
+After computation of AD, the resulting Jacobian matrix, should be multiplied
+by $P^T$ from the left.
+ 
 
 Here, we investigate the preconditioning based on the incomplete LU factorization (ILU) \cite{ilu2003}.
 Between different models of ILU, we consider the level-based ILU factorization here.
