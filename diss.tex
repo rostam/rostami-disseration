@@ -20,7 +20,7 @@
     linkcolor=black,
     urlcolor=black
 }
-
+\newcommand{\mat}[1]{\ensuremath{#1}}
 \newcommand{\vek}[1]{{\ensuremath{\mathbf #1}}}
 \newcommand{\figref}[1]{Figure~\protect\ref{#1}}
 \newcommand{\secref}[1]{Secttion~\protect\ref{#1}}
@@ -74,37 +74,27 @@
 \newcommand{\MinStaBic}{\textsc{MinimumStarBicoloring}}
 \newcommand{\MinUniCom}{\textsc{MinimumUnidirectionalCompression}}
 \newcommand{\MinBidCom}{\textsc{MinimumBidirectionalCompression}}
-
 \begin{document}
 \begin{center}
-\begin{minipage}{0.75\linewidth}
+\begin{titlepage}
     \centering
     \includegraphics[width=0.3\linewidth]{logo}
     \par
-    \vspace{3cm}
-    {\uppercase{\Large Preconditioning\par}}
-    \vspace{3cm}
+    \vspace{2cm}
+    {\uppercase{\Large Combinatorial Scientific Computing\par}}
+    \vspace{2cm}
     {\Large Mohammad Ali Rostami\par}
-    \vspace{3cm}
     {\Large Supervisor: Prof. Martin B{\"u}cker\par}
-    \vspace{3cm}
-    {\Large January 2016}
-\end{minipage}
+    \vspace{2cm}
+    {\Large Faculty of Mathematics and Computer Science\\Friedrich Schiller University Jena\par}
+    \vspace{2cm}
+    {\Large \today}
+\end{titlepage}
 \end{center}
-\clearpage
+\tableofcontents
 
 \newpage
 \section*{Abstract}
-
-\thispagestyle{empty}
-
-\newpage
-\section*{Acknowledgments}
-\thispagestyle{empty}
-
-\tableofcontents
-
-\chapter{Introduction}
 Partial differential equations (PDE) are the most common models of the real-world problems.
 Iterative solvers are a solution to these linear systems which need a multiplication
  of Jacobian and a vector in each iteration. 
@@ -117,14 +107,19 @@ reduce the memory that is needed to store the Jacobian matrix as well as
 speeding up the computation. These methods are generally as a part of 
 a bigger area called combinatorial scientific computing.
 
-In this work, we discuss an interactive educational tool and a computational package 
-for coloring for the area of combinatorial scientific computing.
-So, we discuss the basic concepts needed throughout this work in Chapter~\ref{prel}.
-Then, we visualize different algorithms from this area in Chapter~\ref{explain}.
-The computational package for coloring is discussed later in Chapter~\ref{package}.
-Implementation details and conculsion comes at the end in Chapters~\ref{impl} and
-~\ref{conc}.
+On the other hand, another method to speed up the convergence of the linear solver
+is preconditoning. We try to investigate these two computational ingredients
+in a common base of combinatorial scientific computing. 
 
+In this work, we discuss first a computational package for coloring and preconditioning.
+We improve this software in different directions. Then, we design educational modules
+to teach this concept and other concepts from combinatorial scientific computing.
+
+The following works is structed as follows.
+First, we go throught basic definitions in Chapter~\ref{prel} which are needed in other chapters.
+The computational package for coloring is discussed later in Chapter~\ref{package}.
+Then, we visualize different algorithms from this area in Chapter~\ref{explain}.
+Conclusion comes at the end in Chapter~\ref{conc}.
 
 
 \chapter{Preliminaries}
@@ -132,7 +127,7 @@ Implementation details and conculsion comes at the end in Chapters~\ref{impl} an
 We will discuss AD and the needed seed matrices in~\ref{s.seedmatrix} which is based on
 our paper~\cite{2014:09}.
 %===================================================================================================
-\section{Jacobian Computation}
+\section{Full Jacobian Computation}
 \label{s.seedmatrix}
 %===================================================================================================
 Given a program to evaluate some function $f(x) : \setR^n \rightarrow \setR^m$,
@@ -172,141 +167,16 @@ A set of structurally orthogonal rows is represented by a single row in the prod
 The computational cost then scales with the number of groups of structurally orthogonal
 columns or rows in the forward or reverse mode, respectively.
 
-To illustrate this, we consider the following three $6 \times 6$ Jacobian matrices:
-\begin{equation*}
-A =
- \begin{bmatrix}
- 1  & 0 & 0 & 0 & 0 & 0 \\
- 2  & 7 & 0 & 0 & 0 & 0 \\
- 3  & 0 & 8 & 0 & 0 & 0 \\
- 4  & 0 & 0 & 9 & 0 & 0 \\
- 5  & 0 & 0 & 0 & 10& 0 \\
- 6  & 0 & 0 & 0 & 0 & 11
- \end{bmatrix}, \;\,
-B =
- \begin{bmatrix}
- 1  & 2 & 3 & 4 & 5 & 6 \\
- 0  & 7 & 0 & 0 & 0 & 0 \\
- 0  & 0 & 8 & 0 & 0 & 0 \\
- 0  & 0 & 0 & 9 & 0 & 0 \\
- 0  & 0 & 0 & 0 & 10& 0 \\
- 0  & 0 & 0 & 0 & 0 & 11
- \end{bmatrix}, \;\,
- %
- C =
-  \begin{bmatrix}
- 1  & 7  & 8  & 9  & 10 & 11 \\
- 2  & 12 & 0  & 0  & 0  & 0 \\
- 3  & 0  & 13 & 0  & 0  & 0 \\
- 4  & 0  & 0  & 14 & 0  & 0 \\
- 5  & 0  & 0  & 0  & 15 & 0 \\
- 6  & 0  & 0  & 0  & 0  & 16
- \end{bmatrix}.
-\end{equation*}
-Since all elements of column $1$ of $A$ are nonzero, this column is not structurally
-orthogonal to any of the other columns. Similarly, row $1$ of $B$ is not structurally
-orthogonal to any of the other rows. However, the columns $2$, $3$, $4$, $5$, and $6$ of
-the matrix $A$ are structurally orthogonal and so are rows $2$, $3$, $4$, $5$, and $6$
-of~$B$. Therefore, we build two groups, $\{1 \}$ and $\{2, 3, 4, 5, 6\}$, of structurally
-orthogonal columns of $A$ as well as two groups, $\{1 \}$ and $\{2, 3, 4, 5, 6\}$, of
-structurally orthogonal rows of $B$. This grouping of structurally orthogonal columns and
-rows is represented by the two seed matrices and their resulting matrix-matrix products:
-$$
-V =
-\begin{bmatrix}
- 1  & 0 \\
- 0  & 1 \\
- 0  & 1 \\
- 0  & 1 \\
- 0  & 1 \\
- 0  & 1
-\end{bmatrix},\;\,
-%
-AV =
-\begin{bmatrix}
- 1  & 0 \\
- 2  & 7 \\
- 3  & 8 \\
- 4  & 9 \\
- 5  & 10\\
- 6  & 11
-\end{bmatrix}
-\qquad\text{and}\qquad
-\begin{aligned}
-  W &=
-    \begin{bmatrix}
-     1  & 0 & 0 & 0 & 0 & 0\\
-     0  & 1 & 1 & 1 & 1 & 1\\
-    \end{bmatrix}, \\[1em]
-  %
-  WB &=
-     \begin{bmatrix}
-      1  & 2 & 3 & 4 & 5 & 6\\
-      0  & 7 & 8 & 9 & 10 & 11
-     \end{bmatrix}.
-\end{aligned}
-$$
-Each group of structurally orthogonal columns of $A$ corresponds to a column in the seed
-matrix~$V$. Similarly, each group of structurally orthogonal rows of $B$ corresponds to a
-row in the seed matrix $W$. All nonzero elements of $A$ also appear in $AV$ and all
-nonzero elements of $B$ also appear in $WB$. The computational cost using either the
-forward mode or the reverse mode is decreased from taking identity seed matrices of order
-$n=m=6$ to seed matrices $V$ and $W$ with $\col = \row = 2$, representing two groups of
-structurally orthogonal columns/rows.
-
 Next, consider the matrix $C$ that has neither structurally orthogonal columns nor
 structurally orthogonal rows. Therefore, there is no unidirectional compression of the
 matrix $C$, neither by \col\ columns nor by \row\ rows, that reduce \col\ or \row\ below
-$n = m = 6$. However, a linear combination of both, columns and rows, can be used to
+the number of columns or rows. However, a linear combination of both, columns and rows, can be used to
 reduce the computational cost to a value below six. Here, the columns and rows of a
 corresponding group are not necessarily structurally orthogonal. This technique in which
 the forward and reverse mode are used in a combined way is called \emph{bidirectional
-compression}. There are various ways to carry out this compression. One option for this
-example is to choose
-\begin{equation}
-\label{e.onesvw}
-V =
-\begin{bmatrix}
- 1  & 0\\
- 0  & 1 \\
- 0  & 1 \\
- 0  & 1 \\
- 0  & 1\\
- 0  & 1
-\end{bmatrix},\;\,
-%
-CV =
-\begin{bmatrix}
- 1  & 45\\
- 2  & 12 \\
- 3  & 13 \\
- 4  & 14 \\
- 5  & 15\\
- 6  & 16
-\end{bmatrix}
-\qquad\text{and}\qquad
-\begin{aligned}
-  W &=
-   \begin{bmatrix}
-    1  & 0 & 0 & 0 & 0 & 0\\
-   \end{bmatrix}, \\[1em]
-  WC &=
-   \begin{bmatrix}
-    1  & 7 & 8 & 9 & 10 & 11
-   \end{bmatrix}.
-\end{aligned}
-\end{equation}
-All nonzero elements of $C$ also appear in the pair~$CV$ and $WC$. Notice that the
-nonzero element~$1$ is contained in both products and that the product $CV$ contains the
-value~$45$ which is irrelevant to compute all nonzero elements of $C$. The computational
-cost of a bidirectional compression is dominated by the sum of the costs of the forward
-and reverse mode which is $\col + \row = 3$ in this example. By counting the occurrences
-of ones in the seed matrices in \eqref{e.onesvw}, we see that 6 columns, but only a
-single row of $C$ are used to form the groups of columns/rows. In general, it is
-sufficient to form these groups by choosing subsets of the columns and rows of a given
-sparse matrix.
+compression}. 
 
-The above example is intentionally kept simple. However, for general sparsity patterns,
+For general sparsity patterns,
 it is not always easy to figure out how to linearly combine columns and rows such that
 the computational cost is minimized. Hence, we introduce the following combinatorial
 optimization problems that addresses this question of unidirectional or bidirectional compression. 
@@ -575,6 +445,7 @@ be reformulated as a minimum distance-2 coloring of a bipartite graph when restr
 the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
 
 \section{Preconditioning}
+\label{precond}
 The computation of Jacobian that we discussed before are one part of solving PDEs. 
 In general, we are considering the solution to the following system of lienar equations,
 $$
@@ -584,14 +455,15 @@ in which $J$ is a large sparse non-symmetric non-singular Jacobian matrix. An ap
 effective solution since they have a faster convergence and need less memory. As we discussed,
 these solvers are matrix-free which makes AD as a suitable method of differentiation in this case.
 
-Another way to speedup these iterators are the preconditioning techniques~\cite{precond1,precond2}.
-Rather than solving the previous unpreconditioned system
+Another way to speedup these iterators are 
+the preconditioning techniques~\cite{precond1,precond2}.
+Rather than solving the previous unpreconditioned system. 
 we can consider solving the preconditioned system
 \begin{equation}
 \label{e:precond}
 M^{-1} J \vek{x}= M^{-1}\vek{b},
 \end{equation}
-where the $n \times n$ matrix $M$ serves as a preconditioner that somehow approximates
+where the $n \times n$ matrix $M$ serves as a preconditioner that approximates
 the coefficient matrix,
 $$
 M \approx J.
@@ -602,6 +474,8 @@ strategy on how to combine automatic differentiation with preconditioning. The r
 that standard preconditioning techniques typically need access to individual nonzero
 elements of the coefficient matrix whereas automatic differentiation gives efficient
 access to a different level of granularity, namely rows or columns.
+In \cite{Lulfesmann2012Fap}, a novel approach is explained.
+We discuss this approach briefly here.
 
 Common approaches to construct the preconditioner $M$ are based on accessing individual
 nonzero entries $J(i,j)$ of the Jacobian. For instance, diagonal scaling consists of the
@@ -619,31 +493,574 @@ individual nonzero entry via automatic differentiation is as efficient as access
 complete column or row. In practice, an access to some individual nonzero entry is
 therefore prohibitively expensive in terms of computing time.
 
-The third computational ingredient is sparsification of the coefficient matrix $J$. The
-sparsification of $J$ is represented by the symbol \sparsify{J}. The idea is to select a
-subset of all nonzero elements of $J$, described by~\sparsify{J}, and construct a
-preconditioner based on these selected nonzero elements~\cite{Cullum2006}. These nonzero
-elements selected by \sparsify{J} are called \emph{required} nonzero elements. Throughout
-this paper we consider the special case of a sparsification in the form of $k\times k$
-blocks on the main diagonal. That is, the pattern of the required nonzero elements is
-given by the pattern of all nonzeros entries within these $k\times k$ blocks on the
-diagonal. If the block size $k$ does not divide the matrix order $n$ we adapt the size of
-the last diagonal block to some smaller value such that the sum of all block sizes equals
-$n$.
+We discussed the sparsification operator~\sparsify{J} 
+which selects a subset of the nonzeros of the Jacobian matrix $J$. 
+It does not mean that the whole Jacobian is available but 
+only the nonzero pattern of the matrix should be known known.
+Now, the preconditioner is built based on these selected nonzero elements~\cite{Cullum2006}.
+These nonzero elements selected by \sparsify{J} are called initially 
+\emph{required} nonzero elements and represented by $R_i$. 
+An example would be the special case of a sparsification in the form of $k\times k$
+blocks on the main diagonal.
 
-initially required elements
-potentially required elements
-additionally required elements
-\chapter{EXPLAIN}
+We discussed the full and partial coloring algorithms regarding AD techniques. 
+Now, the problem~\ref{p:minblockcol} can be solved for Jacobian
+restricted to the set of initially
+required nonzero elements $R_i$. The result of coloring would group
+columns and rows togther. In this processes, the required elements would always
+be computed. However, the nonrequired elements would be divided into two sets of
+elements: the elements which are computed and the ones which would be 
+eliminated. We can think of these computed nonzero elements as the byproduct
+of the coloring. Since the number of colors does not change, 
+an idea would be to add this extra byproducts also to $R_i$.
+However, it could generate new fillins in the preconditioning step.
+So, we call these new set of byproduct elements as the potentially
+required elements $R_p$ and computed as follows,
+$$
+R_p \subset pat(A) - R_i \quad\text{so that}\quad |\Phi(R_i)| = |\Phi(R_i\cup R_p)|.
+$$ 
+
+As we have discussed, an ILU preconditioner is applied to $R_i$ which can
+produce a set of fillin. Now, a maximum subset of potentially required elements
+is selected such that no new fillins are generated which is called
+additionally required elements $R_a$. These elements can be added to the
+initialily required elements for further computation. 
+The additionally required elements can be formulated as follows,
+$$
+R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
+$$ 
+in which $SILU$ means the symbolic ILU factorization.
+
+\chapter{Preconditioning and Coloring}
+\label{package}
+So far, we discussed different concepts regarding the preconditioning and coloring.
+Here, we focus on the computation of the colorings and preconditioning in the ground of linear solver. 
+Luelfesmann and B{\"u}cker~\cite{Lulfesmann2012Fap} started a package for computation of the uni- 
+and bidirectional (partial-)coloring as well as the partial computation and its relative preconditoning which we discussed in ~\ref{precond}. 
+We improved the software in various ways that are explained in the following sections.
+
+First, we discuss the fillin reduction in Section~\ref{s.ordering.effect}.
+Then we see how the extensibility, readibility, and usability are improved 
+in Section~\ref{s.extend}. 
+We examine different strategies for the parallization 
+in Section~\ref{s.parallel}.
+Then, the interfaces for MATLAB and JAVA would be discussed
+in Section~\ref{s.interfaces}.
+Finally, we explain how these all are implemented in
+Section~\ref{s.impl.ordering}.
+
+%\item Improving extensibility and usability
+%\item Documentation
+%\item Interfaces for other languages
+%\item Parallelizaton
+%\end{itemize}
+\todo{zero or one}
+mohem ... discussion about the sparsification in matlab and c
+staring from zero or one ???
+
+\section{Effects of Ordering}
+\label{s.ordering.effect}
+
+Here, we investigate the preconditioning based on the incomplete LU factorization (ILU) \cite{ilu2003}.
+Between different models of ILU, we consider the level-based ILU factorization here.
+We use a graph model for ILU instead of the current matrix model to have a unified
+work on graphs in the implemented library. This graph model is based on the proposed
+model in ~\cite{precond-pothen}. If the given matrix is unsymmetric,
+we put a vertex for each row. We also connect the vertex $i$ to the
+vertex $j$ with an directed edge if the corresponding element $(i,j)$ in matrix
+in nonzero. If the matrix is symmetric, these edges are undirected. This means
+ the graph is a simple graph and the given matrix is actually the adjacency
+matrix of the graph.
+Now, we look at the effects of preordering for the vertices of the given preconditioning graph to reduce fillins in ILU factorization. Later, we would study further how this fillin reduction would increase the additionally required elements.
+
+Since finding an exact coloring coloring is a known NP-complete problem~\cite{SPINRAD198589},
+different heuristics are employed to find an estimation of minimum coloring. The greedy
+coloring is one of these heuristics which is widely used. 
+Greedy coloring algorithms computes a reasonable coloring~\cite{spaa14}.
+However, this algorithm depends on the order of vertices. 
+Hence, there are many publications on how to choose a good ordering heuristics
+for serial or parallel version of coloring~\cite{ordering1,ordering2,ordering3}.
+
+As same as coloring algorithms, finding an ILU factorization with the minimum
+fillins is also an NP-complete problem. There are a lot of literature 
+considering this problem\cite{ilu_ordering1,ilu_ordering2,ilu_ordering3,ilu_ordering4}. 
+Again, the ILU factorization is computed in a specific order which is essential
+in the minimum fillins. Here we bring an example to show how the order affects 
+the ILU factorization and the number of fillins. 
+For example, let's consider first the following matrix,
+$$\begin{bmatrix}
+ 1 & 1 & 0 & 1 & 0 & 1 & 0\\
+ 1 & 1 & 1 & 0 & 0 & 0 & 0\\
+ 0 & 1 & 1 & 0 & 1 & 0 & 1\\
+ 1 & 0 & 0 & 1 & 1 & 0 & 0\\
+ 0 & 0 & 1 & 1 & 1 & 1 & 1\\
+ 1 & 0 & 0 & 0 & 1 & 1 & 1\\
+ 0 & 0 & 1 & 0 & 1 & 1 & 1\\
+ \end{bmatrix}.$$
+
+We setup a graph for ILU preconditoning.
+The graph for preconditoning would be simply the adjacency matrix
+since the matrix is symmetric. 
+For example, the graph in Figure~\ref{bad_order_fillin}
+is computed from the previous matrix. Here, we illustrated the
+computation of Cholesky factorization step by step.
+Figure~\ref{bad_order_fillin} computes the Cholesky factorization
+in which the order of vertices are the numbering writen on the vertices
+as labels. The ordering in Figure~\ref{bad_order_fillin} is actually
+ a worst-case ordering that produces $6$ fillins. These fillins are
+illustrated as dotted lines.
+
+%\begin{figure}
+%\centering
+%   \includegraphics[width=0.45\linewidth]{bad_order_color}
+%   \hfill
+%   \includegraphics[width=0.45\linewidth]{good_order_color}
+%\end{figure}
+
+\begin{figure}
+\centering
+   \includegraphics[width=0.4\linewidth]{bad_order}
+   \hfill
+   \includegraphics[width=0.4\linewidth]{bad_order_1_removed}
+   \includegraphics[width=0.4\linewidth]{bad_order_2_1_removed}
+   \hfill
+   \includegraphics[width=0.3\linewidth]{bad_order_3_2_1_removed}
+\caption{A worst case ordering generates $6$ fillins. The ordering here is the 
+numberign which visualized as labels.}
+\label{bad_order_fillin}
+\end{figure}
+
+Figure~\ref{good_order_fillin} shows how the new ordering produces
+$5$ fillins when the ordering is $2, 3, 4$. However, the best ordering produces only $3$ fillins
+as Fiugre~\ref{good_order_fillin2} shows when the ordering is $2, 5, 3$.
+
+\begin{figure}
+\centering
+   \includegraphics[width=0.4\linewidth]{good_order}
+   \hfill
+   \includegraphics[width=0.4\linewidth]{good_order_2_removed}
+   \includegraphics[width=0.4\linewidth]{good_order_3_2}
+   \hfill
+   \includegraphics[width=0.4\linewidth]{good_order_4_3_2}
+\caption{The order of elimination $2, 3, 4$ generates $5$ fillins.}
+\label{good_order_fillin}
+\end{figure}
+
+
+\begin{figure}
+\centering
+   \includegraphics[width=0.4\linewidth]{good_order}
+   \hfill
+   \includegraphics[width=0.4\linewidth]{good_order_2_removed}
+   \includegraphics[width=0.4\linewidth]{good_order_5_2_removed}
+   \hfill
+   \includegraphics[width=0.25\linewidth]{good_order_3_5_2_removed}
+\caption{The order of elimination $2, 5, 3$ generates $3$ fillins.}
+\label{good_order_fillin2}
+\end{figure}
+
+There are various ordering which were studied for coloring heuristics
+throughout years. Here, we have a list of such orderings for coloring
+which is available in \textit{PreCol}.
+In each item, we explain how the algorithm select the next vertex.
+\begin{itemize}
+\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with minimum degree in each step.
+\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
+\item Stauration-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
+$V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbours of $v$.
+\end{itemize}
+
+In addition to these orderings, we consider three other orderings for preconditoning:
+\begin{itemize}
+\item Natural Ordering: This ordering is based on the ordering of the matrix rows and columns given as input.
+\item Minimum Degree Ordering: The one generates a list of vertices which are sorted based on the degree from minimum to maximum.
+\item Minimum Saturated Degree Ordering: ...
+\item Metis Ordering\cite{metis,par-nested-disection}: This ordering is generated by the well known
+tool \textit{Metis} which is a fill-reducing ordering.
+\end{itemize}
+As we discussed in Section~\ref{precond}, the additionally required elements are a subset of 
+potentially required elements which are selected such that no new fillin is generated. 
+So, we can guess the number of fillins in ILU factorization affects the additionally required elements.
+The following tables shows that different ordering generates different fillins and additionally
+required elements,
+\begin{table}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Orders & Colors & Fillins & Adds \\\hline
+Nat & 15 & 70 & 398 \\\hline
+Min & 15 & 52 & 410 \\\hline
+Metis & 15 & 52 & 410 \\\hline
+\end{tabular}
+\hfill
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Orders & Colors & Fillins & Adds \\\hline
+Nat & 34 & 8760 & 60554 \\\hline
+Min & 34 & 8414 & 61002 \\\hline
+Metis & 34 & 642 & 67352 \\\hline
+\end{tabular}
+\caption{The number of fillins and additionally required elements compared based on the different orderings
+for the graph vertices. The number of colors remains the same since we change only the ordering for
+ILU factorization.
+The left table is for the matirx \textit{nos3.mtx} with $960$ rows, $960$ columns, and $15844$ nonzero elements 
+and the right one is for the matrix\textit{gyro\_m} with $17361$ rows ,$17361$ columns, $340431$ nonzero elements.
+Both are from the Florida sparse matrix collections.}
+\label{ilu-effect}
+\end{table}
+
+These results are computed on the symmetric matrix \textit{nos3.mtx} with $960$ rows, $960$ columns, and $15844$ nonzero elementstheand the symmetric matrix \textit{gyro\_m} with
+$17361$ rows ,$17361$ columns, $340431$ nonzero elements from 
+the Florida sparse matrix collections. The block size is
+chosen to be $50$ for the matrix \textit{gyro\_m} and $15$ for 
+the matrix \textit{nos3}. Also, the coloring algorithm would be a one-sided
+partial coloring. As it can be seen in this table, the fill-reducing Metis ordering 
+generates the minimum fillin as well as the maximum additionally required elements.
+Another observation is that the Metis and Min ordering are generating almost the same
+number of fillins and additionally required elements for the small matrices. 
+It is only for the big matrices which the power of Metis ordering can be seen.
+
+This difference in number of additionally elements affects the convergence speed
+relatively. Both Figure~\ref{nat_convergence} and Figure~\ref{metis_convergence} show
+the convergence history of the bicgstab solvers on the matirx \textit{nos3}.
+The three line charts are the convergence history of the solver with
+no preconditioning, ILU preconditioning with block-diagonal sparsification,
+and ILU preconditioning with block-diagonal sparsification together with the found
+additionally required elements, respectively.
+Here, the block size is chosen to be $10$ and the level of ILU factorization
+is $10$.
+
+Clearly, Figure~\ref{metis_convergence} has a better convergence rate in the chart
+in which the additionally required elements are added in comparison with the same 
+chart in Figure~\ref{nat_convergence}.
+
+\begin{figure}
+\includegraphics[width=\linewidth]{nos3_mtx_convergence_nat}
+\caption{Natural ordering results in a worst convergence.}
+\label{nat_convergence}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{nos3_mtx_convergence_metis}
+\caption{Metis ordering results in a better convergence.}
+\label{metis_convergence}
+\end{figure}
+
+So far, we decided for the level of ILU factorization arbitrarily.
+Here, we want to see the actual influence of the level parameter on
+the fillins and additionally required elemets,
+%\begin{table}
+%\begin{tabular}{}
+%\hline
+%Level & Fillins & Adds \\\hline
+
+%\end{tabular}
+%\begin{tabular}{}
+%\hline
+%Level & Fillins & Adds \\\hline
+
+%\end{tabular}
+%\caption{changing the level parameter}
+%\label{level-par}
+%\end{table}
+
+On the other hand, the coloring has its influence on the number of 
+additionally required elements. Table~\ref{col-effect}
+
+Here, we did not change any settings other than the ordering of coloring. The ordering for
+ILU preconditioning is fixed to the natural ordering.
+The block size is $50$ and $10$ and the ILU level is $5$ and $2$ for two matrices
+\textit{gyro\_m} and \textit{nos3}, respectively.
+The matrix is \textit{gyro\_m}.
+\begin{table}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Ordering & Colors & Fillins & Additionally required elements \\\hline
+LFO &  34 & 8760 & 66554 \\\hline
+SLO &  33 & 8760 & 57760 \\\hline
+IDO &  35 & 8760 & 66588 \\\hline
+\end{tabular}
+\begin{tabular}{|c|c|c|c|}
+Ordering & Colors & Fillins & Additionally required elements \\\hline
+LFO &  15 & 50 & 394 \\\hline
+SLO &  12 & 50 & 384 \\\hline
+IDO &  16 & 50 & 436 \\\hline
+\end{tabular}
+\caption{The effect of coloring on the number of additionally required elements
+computed for two matrix \textit{gyro\_m} and \textit{nos3}. }
+\label{col-effect}
+\end{table}
+
+It can be seen that the number of additionally required elements increases when 
+the number of colors decreases. This can be understood as the number of potentially
+required elements are chosen from the non-required elements and added to the required elements
+such that number of colors does not increase. Hence, if the number of colors are more,
+the freedom of choosing elements gets higher.
+As two tables~\ref{ilu-effect} and~\ref{col-effect} shows, 
+both the ordering of colorig and the ordering of precondtioning affects the number of
+additionally required elements. Although smaller number of fillin increases
+the number of additionally required elements, the smaller number of colors 
+decreases the number of additionally required elements.
+This is in contrast to the mimimum number of colors which we are searching for, 
+in the autmatic differentation.
+
+%new algorhtms ....???
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{el_fillins.jpg}
+\caption{The influence of the level parameter for ILU on the number of fillins and
+additionally required elements. The block size is fixed to $10$. The ordering for coloring
+and for ILU preconditioning are \textit{LFO} and \textit{Nat}. The matrix is \textit{nos3}.}
+\label{el_fillins}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{add_blocksize.jpg}
+\caption{The influence of the ordering of the ILU preconditoning 
+on the additionally required elements. 
+Three different orderings natural, minimum, and Metis are used.
+The level parameter for ILU is fixed to $10$. 
+The ordering for coloring is fixed to~\textit{LFO}.
+The matrix is \textit{exx3} with the $1733$ rows,
+$1733$ columns, and $11961$ nonzero elements.}
+\label{add_blocksize}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{fillin_blocksize.jpg}
+\caption{The influence of the ordering of the ILU preconditoning 
+on the fillins. 
+Three different orderings natural, minimum, and Metis are used.
+The level parameter for ILU is fixed to $10$. 
+The ordering for coloring is fixed to~\textit{LFO}.
+The matrix is \textit{exx3} with the $1733$ rows,
+$1733$ columns, and $11961$ nonzero elements.}
+\label{fillin_blocksize}
+\end{figure}
+
+
+
+\section{Parallelization}
+\label{s.parallel}
+
+\cite{mpi_greedy_coloring}
+
+specially that the algorithms would be automatically parallel in the next
+release of c++ (C++17) next year.
+It is actually available in from g++ 4.3 
+\cite{parallelcpp}
+block parallelization openmp for the coloring part
+\cite{Rokos2015}
+\textit{Cavity16} from the sparse matrix collection of University of Florida 
+The timing are all from the computation carried on 
+an intel Core i5 with 8 Gb RAM. 
+\begin{tabular}{|c|c|c|}
+\hline
+Threads & Time & Colors \\\hline
+1 & 42.8745 & 47 \\\hline
+2 & 33.9665 & 47 \\\hline
+3 & 25.2741 & 48 \\\hline
+4 & 20.6863 & 48 \\\hline
+5 & 21.4943 & 47 \\\hline
+6 & 20.1796 & 50 \\\hline
+7 & 17.9640 & 49 \\\hline
+8 & 16.1068 & 52 \\\hline
+9 & 15.4174 & 47 \\\hline
+10 & 16.1545 & 47 \\\hline
+\end{tabular}
+
+
+\section{PreCol 1.0}%Usability, Readability, and Extensibility}
+\label{s.extend}
+Here, we explain what we have done to ease the usage of the software
+either for developers or for end users. We have restructured the implementation
+to achieve these goals. 
+
+We employed concepts from the object-oriented programming to empower
+the developers to implement new extensions without going into 
+details of core implementation. So, two main ingredients coloring
+and orderings can be implemented now only by derving an interface.
+For example, a new ordering can be added as easy as the following code.
+\begin{lstlisting}
+class LFO : public Ordering {
+    bool order(const Graph &G_b, vector<unsigned int> &ord, bool restricted) {
+        ...
+    }
+};
+\end{lstlisting}
+The developer needs to implement this new class in a only-header fashion~\cite{headeronly},
+since the goal is to write an extension with a few code. So, the developer should
+move the new header file to the corresponding directory which is the ordering directory
+for this new ordering and \textit{algs} directory for coloring algorithms.
+Now, building the software would bring this new ordering into the software execution.
+
+Using the standard library of C++ as well as the concept of functional programming
+in new C++ release~\cite{Sutherland2015}, we provide different functions which can be used
+by developer to work on graphs. For example, the iteration of vertices
+or edges can be easy as follows,
+\begin{lstlisting}
+for_each_v(G, f);
+for_each_v(G, [&](Ver v) {...});
+for_each_e(G, f);
+for_each_e(G, [&](Edge e) {...});
+\end{lstlisting}
+, in whcih the variable $f$ is a function which gets an input parameter
+of a vertex or an edge, respectively.
+Also, the other syntax is the lambda function 
+from the new C++ functional programming to implement a function in place.
+
+Following a unique solution, we implement all the possible part of algorithms
+with the use of standard library of C++ which also improves the readibility.
+This strategy reduces the amount of the code dramatically and
+make the code more readable.
+
+\textbf{Restructuring.}
+In the previous version, the coloring, 
+potentially required elements, and the additionally required elements
+were computed in the functions written in \text{C++}.
+The other parts of computation were done in Matlab.
+This means that the code in Matlab needs to call the
+MEX interface for three times at least. 
+In this way, it was necessary to do the conversion from the Matlab sparse
+matrix to graph (or matrix) format in \text{C++}
+and converting back from \text{C++} to Matlab.
+This is illustrated in Figure~\ref{f.structure} (Left).
+This reults in the lack of efficiency. On ther other hand,
+this mix of programming languages reduces 
+the accuracy and makes the versioning difficult.
+%-----------------------------------------------------------------------------------------------
+\begin{figure}
+\centering
+\includegraphics[width=0.42\textwidth]{old_struct}
+\hfill
+\includegraphics[width=0.52\textwidth]{new_struct}
+\caption{There were many communications between MATLAB and C/C++ version. The communication
+is done based on the MEX interface. A conversion from matrix to graph is computed
+each time that the MEX interface is used. (Left) A new implementation reduces a lot of communication.
+It brings toghether different parts of algorithm in a package. Two interfaces written
+ in MATLAB and Java call this package as a local program.}
+\label{f.structure}
+\end{figure}
+%-----------------------------------------------------------------------------------------------
+
+We improved the design of the software to resolve these problems.
+So, all the parts of algorithm are computed in \textit{C++} now.
+Figure~\ref{f.structure} (Left) visualizes this new implementation.
+All the parts can be computed in C++. However, 
+the part of iterative solver part, can be computed also in MATLAB,
+since the MATLAB functions in this area are in general more convincing. 
+For this goal, we implemented the preconditoning and 
+and the sparsification in C++. 
+As you can see in Figure~\ref{f.structure} (Left), we also implemented
+two interfaces in MATLAB and JAVA languages which we will explain in 
+Section~\ref{s.interfaces}.
+
+To use the software, the user can use a command-line command in addition to
+the interfaces in JAVA and MATLAB. So, the user needs to specify different
+options for coloring algorithm, orderings, the block size, and so.
+These options can be entered directly in the terminal together with command
+or can be written in a so called config file which is imported by the software. 
+The format of config file is as follows,
+\begin{lstlisting}
+alg: PartialD2Coloring
+col_ord: Min
+ilu_ord: LFO
+type: BlockDiagonal
+blk: 10
+\end{lstlisting}
+Different parameters possible in config file is as follows,
+\begin{itemize}
+\item alg:
+\item col\_ord: 
+\item type:
+\item blk:
+\end{itemize}
+
+We also generated a new documentation as a website which is available
+under the website: http://csc.c3e.de/precol/html.
+This website is generated automatically by Doxygen~\cite{Lischner2013}.
+We implemented some new HTML/CSS template for doxygen to include extra
+texts and documentation in the website.
+
+\section{JAVA and MATLAB interface}
+\label{s.interfaces}
+\textbf{JAVA interface.}
+We extend our JAVA software GraphTea~
+\cite{2014:07,2014:15,2014:16,2015:05,2015:06,2015:07,2015:08} to have a
+set of reports for graph coloring and preconditioning which call the program
+\textit{PreCol}.
+%Chemical Graph theory\cite{2015:05,2015:06,2015:07,2015:08}
+GraphTea is a graph editing framework designed specifically to compute and visualize
+different parameters of graphs interactively.
+Figure~\ref{f.graphtea} shows a snapshot of the main
+graph window together with two additional windows that give more details on the solution
+of different graph problems. These separate windows providing additional information are
+called ``reports.''
+
+A report can be computed in GraphTea in two different way:
+a single report or an incremental report.
+A single report means to compute some parameters on graph and look at the results
+in a textual way. However, an incremental report happens when we have at least 
+two parameter for computation. So, we would change one of the parameter in
+some range and would generate a table.
+
+The main goal of developing GraphTea was to help the researcher through their research.
+The following abilities of GraphTea could help the research in different dimensions:
+\begin{itemize}
+\item Generate different class of graphs and compute the parameters on them.
+\item Get reports on the graph beside the parameter and find the connections.
+\item Compute the operations on graphs and influence of these operations on parameters
+of the graph. 
+\end{itemize}
+
+If we divdie the researcher's works follows,
+\begin{enumerate}
+\item Guess a hypothesis like a bound for coloring number
+\item Evaluate this bound on different graphs
+\item Prove the hypothesis
+\end{enumerate}
+The second step, i.e. evaluation, is always an important step since many first errors and 
+improvements could be found.
+However, the researcher can only do this evaluation for small examples if they do not
+use computer tools. 
+Different aspects of GraphTea can be used to overcome this evaluation.
+The researchers can generate any graph up to any computationally-reasonable size
+(i.e. computable in a reasonable time) and compute the parameter.
+This process of so-called conjecture checking on different graphs could often lead to a better guess.
+%-----------------------------------------------------------------------------------------------
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{graphtea}
+\caption{An overview of GraphTea: A graph drawing window and 
+two floating dialogs with reports on a given graph.}
+\label{f.graphtea}
+\end{figure}
+%-----------------------------------------------------------------------------------------------
+
+Beside the automatic generation of graphs up to any size, we added the ability of loading
+different sparse matrix as graphs to GraphTea.
+A new data structure for the sparse matrix, called \textit{SpMat}, is designed
+to handle the large sparse matrices. This data structure is basically an array.
+This array has the size of number of rows. Each cell of this array points to 
+an array which is the corresponding columns of nonzeros in this row. 
+
+\textbf{MATLAB interface.}
+
+\chapter{Interactive Educational Module}
 \label{explain}
-
 \mbox{EXPLAIN} is an extensible collection of educational modules for classroom use.
 It is currently not designed for self-study because the connection between the scientific computing problem and the corresponding graph problem is not available in \mbox{EXPLAIN}. The idea is that the teacher will explain this connection as well as the use of the module in classroom.
+EXPLAIN has so far two major releases \mbox{EXPLAIN 1.0} and \mbox{EXPLAIN 2.0}.
+In implementation details we explained how they differ and improved from an original version.
 
-
+We implemented different moduels for EXPLAIN. 
+Here we explain these modules and how they can be used.
+The implementation details comes later in ~\ref{s.impl.explain}.
 \section{Column Compression}
 \label{s.column-compression}
-In \cite{2013:05,2014:01}, we presented an educational module to visualize the
+In \cite{2013:05,2014:01}, we presented an educational module in \mbox{EXPLAIN} to visualize the
 coloring algorithm for the column compression interactively. The idea is 
 summerized as follows.
 
@@ -654,7 +1071,7 @@ summerized as follows.
 }
 \label{fig1}
 \end{figure}
-We now describe the extension of \mbox{EXPLAIN} by a novel educational module illustrating column compression. The module allows to select and, thus, color the vertices of a given graph step by step. The order in which the vertices are colored is interactively selected by the student. In each step, when the student selects a vertex, the program checks all of its neighbors regarding the colors. A color of the current step is then greedily selected from a predefined list, $\{1=\text{green}, 2=\text{turquoise}, 3=\text{orange}, 4=\text{violet}, 5=\text{red}, 6=\text{yellow}, ...\}$, such that it differs from the colors of those neighbors that are already colored. Recall that a group of columns corresponds to a set of vertices in the graph with the same color. To indicate this, we do not color only the vertices in the graph but also the corresponding columns in the matrix.
+The module allows to select and, thus, color the vertices of a given graph step by step. The order in which the vertices are colored is interactively selected by the student. In each step, when the student selects a vertex, the program checks all of its neighbors regarding the colors. A color of the current step is then greedily selected from a predefined list, $\{1=\text{green}, 2=\text{turquoise}, 3=\text{orange}, 4=\text{violet}, 5=\text{red}, 6=\text{yellow}, ...\}$, such that it differs from the colors of those neighbors that are already colored. Recall that a group of columns corresponds to a set of vertices in the graph with the same color. To indicate this, we do not color only the vertices in the graph but also the corresponding columns in the matrix.
 
 \figurename~\ref{fig1} shows a screenshot of the column compression module. The nonzero elements of the matrix are denoted by the symbol $\times$ in the matrix view; the corresponding column intersection graph is given immediately next to the matrix. In the bottom of the page, different preloaded matrices can be selected or a new matrix can be uploaded from a file on the file system of the student's computer. The tool provides an interactive interface for the student who can control the algorithm such as returning to previous steps or loading different graphs and matrices. Selecting the vertices in different orderings generates different colorings corresponding to different column compressions.
 
@@ -706,7 +1123,6 @@ J \cdot S =
 J \cdot
  \begin{bmatrix}
  0  & 0 & 1 & 0 \\
- 1  & 0 & 0 & 0 \\
  0  & 1 & 0 & 0 \\
  0  & 0 & 0 & 1 \\
  0  & 0 & 1 & 0 \\
@@ -739,7 +1155,6 @@ S =
  \end{pmatrix}.
 $$
 
-
 \section{Bidirectional Compression}
 \label{s.bidirectional}
 In our publication~\cite{2014:09}, we design and implement an interactive module to
@@ -771,7 +1186,7 @@ designed for small problem instances.
 
 
 %------------------------------------------------------------------------------------------------
-\begin{figure}[b]
+\begin{figure}
 \centering
 \subfigure[]{%
   % Matrix C: after choosing 2 vertices
@@ -862,14 +1277,23 @@ Fig.~\ref{f.arrow-shaped4}~(b). Here, it is more difficult to find out that this
 bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 
 \section{Partial Jacobian Computation}
+The previous module of matrix compression is extended to support
+also the partial Jacobian computation. Here, the student should 
+first select the required elements which are edges in Bipartite graphs.
+So, when the student clicks on the edges, their colors change to red
+and the corresponding nonzero elements are added to required elements.
+
+As soon as the student starts to click the vertices, the required elements
+are become fixed, i.e. no new required  elements can be added.
+The other processes of coloring is completely like the previous module.
 
 \section{Nested Dissection Ordering}
 \subsection{Bisection}
 \cite{2014:02}
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=0.48\textwidth]{graph_initial}}%
-\subfigure{\includegraphics[width=0.48\textwidth]{matrix_initial}}
+\subfigure{\includegraphics[width=0.38\textwidth]{graph_initial}}%
+\subfigure{\includegraphics[width=0.38\textwidth]{matrix_initial}}
 \caption{Two equivalent representations in terms of a graph (left) and a matrix (right).}
 \label{initial}
 \end{figure}
@@ -877,8 +1301,8 @@ bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=0.48\textwidth]{graph_10_selected}}%
-\subfigure{\includegraphics[width=0.48\textwidth]{matrix_10_selected}}
+\subfigure{\includegraphics[width=0.38\textwidth]{graph_10_selected}}%
+\subfigure{\includegraphics[width=0.38\textwidth]{matrix_10_selected}}
 \caption{Graph and matrix view after selecting the vertex number~10. The decomposition into two blocks is still not shown as the graph is not yet decomposed into two disconnected components.}
 \label{selected10}
 \end{figure}
@@ -886,8 +1310,8 @@ bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=0.48\textwidth]{graph_4_10_selected}}%
-\subfigure{\includegraphics[width=0.48\textwidth]{matrix_4_10_selected}}
+\subfigure{\includegraphics[width=0.38\textwidth]{graph_4_10_selected}}%
+\subfigure{\includegraphics[width=0.38\textwidth]{matrix_4_10_selected}}
 \caption{Graph and matrix view after selecting the vertices number 10 and then 4. The selection is not adequate as the sizes of blocks are not balanced.}
 \label{selected410}
 \end{figure}
@@ -908,42 +1332,98 @@ bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 \label{diagram}
 \end{figure}
 
+Though our primary aim is to design an educational model for illustrating the connection between
+scientific computing and graph theory, we also experience with ideas from gamification
+\cite{deterding2011:gug,deterding2011}. The use of elements from game design in the context of
+computer science education is not new. In particular, programming assignments can involve
+implementations of games. In \cite{la2007:gfa}, for instance, an introductory programming course is
+taught under the common umbrella of two-dimensional game development. Similarly, a game project is
+used in a course on software architecture~\cite{Wang2011:EEU}. Programming assignment can also
+involve pieces of software that act as a player in an existing game. However, throughout the
+present paper, our focus of serious games is different. Rather than implementing a game, we are
+interested in situations where students learn by playing a game. Surprisingly, there are only a few
+publications addressing this aspect of gamification. An example is given in
+\cite{Hakulinen2011:usg} where game-based learning is used to teach a course in data structures and
+algorithms. A collaborative game is described in \cite{shl:bsc} that aims at improving the teaching
+quality in a course on mathematical logic.
+
+
+To engage the students more in the teaching process, we improved EXPLAIN such that the students get
+more feedback from the software. This is done by gamification of the software by interpreting each
+solution to a problem instance as a round. The score diagram reporting the results of previous
+rounds also provides another feedback. The idea of gamification is used to solve a combinatorial
+minimization problem consisting of minimizing the size of the vertex separator while, at the same
+time, balancing the size of the remaining components. The consistent use of colors in the graph
+view, the matrix view, and in the score diagram makes it easier for the student to understand
+minimizing a serial bottleneck in the Cholesky factorization while balancing the computational
+load.
 \subsection{Recursive Disection}
+Based on the new features of \mbox{EXPLAIN 2.0}, we could improved the previous
+bisection to a recursive nested dissection algorithm. 
+It contains the bisection itself. So, the student selects the vertex separator
+as before until the graph becomes disconnected. 
+In this new version, the vertex separator will be shown on the bottom
+of the graph. Also the two remaining parts of graph are shown separately
+in two different circles at right and left.
+In Figure~\ref{bad_bisection}, the result of a selection is visualized which
+is inefficient since the parts of graphs are not balanced. 
+Figure~\ref{good_bisection} also shows the results of an efficient selection.
+
 \begin{figure}
 \centering
-\includegraphics[width=0.47\textwidth]{bad_bisection}
-\caption{}
+\includegraphics[width=0.7\textwidth]{bad_bisection}
+\caption{A selection results in an inefficient bisection of graph.}
 \label{bad_bisection}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.47\textwidth]{bad_disection}
-\caption{}
-\label{bad_disection}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.47\textwidth]{good_bisection}
-\caption{}
+\includegraphics[width=0.7\textwidth]{good_bisection}
+\caption{A selection results in an efficient bisection of graph.}
 \label{good_bisection}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.47\textwidth]{good_disection}
-\caption{}
+\includegraphics[width=0.7\textwidth]{bad_disection}
+\caption{A complete nested dissection up to the order 2 which has an 
+inefficient result.}
+\label{bad_disection}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{good_disection}
+\caption{A complete nested dissection up to the order 2 which has an 
+efficient result.}
 \label{good_disection}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.47\textwidth]{good_disection2}
-\caption{}
+\includegraphics[width=0.7\textwidth]{good_disection2}
+\caption{A complete nested dissection up to the order 2 which has an 
+even more efficient result.}
 \label{good_disection2}
 \end{figure}
 
+Now, in contrast to the previous version, the student can click further
+on the vertices of each parts. This selection would trigger a recursive
+bisection of the matrix as well. Again, this selection goes forward until
+both parts of the graphs become disconnected. The vertex separators
+would be moved to the bottom of the graph parts as well as the graph parts
+would be shown separately. Figure~\ref{bad_disection} and Figure~\ref{good_disection}
+illustrated two inefficient and efficient results of nested dissection,
+respectively. Figure~\ref{good_disection2} shows how the results can 
+get even better by a suitable order of selection.
+
+
+The corresponding diagram of history of rounds are improved such that
+both the size of vertex separator as well as the size of four graph parts
+can be visualized. Figure~\ref{barchart} shows a possible selection history.
+As it can be seen the line chart shows the size history of the vertex separator
+and four bar chart grouped together shows the size history of the graph parts.
 
 \begin{figure}
 \centering
@@ -952,37 +1432,247 @@ bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 \label{barchart}
 \end{figure}
 
+
 \section{Parallel Matrix Vector Product}
-\cite{2015:3}
+
+In \cite{2015:3}, we extended EXPLAIN with a new module for 
+the parallel sparse matrix-vector multiplication. 
+So if we show the problem as follows, 
+$$
+\vek{y} = \mat{A}\cdot \vek{x}
+$$
+or by elements as follows,
+\begin{equation}
+\label{e.yax}
+\vek{y} \leftarrow \mat{A} \vek{x}
+\end{equation}
+where the $N$-dimensional vector $\vek{y}$ is the result of applying \mat{A} to some
+given $N$-dimen\-sional vector $\vek{x}$. Then, the $i$th entry of~$\vek{y}$ is given by
+\begin{equation}
+\label{e.mvp}
+y_i = \sum_{j \text{ with }  a_{ij} \neq 0} a_{ij} \cdot x_j ,
+\quad
+i = 1, 2, \dots, N,
+\end{equation}
+The question here is if data representing \mat{A}, \vek{x} and
+\vek{y} are distributed to multiple processes, to what extent does this data distribution
+have an effect on the computation $\vek{y} \leftarrow \mat{A} \vek{x}$? What are the
+advantages and disadvantages of a given data distribution? What are the criteria for
+evaluating the quality of a data distribution? How should data be distributed to the
+processes ideally?
+
+
+To discuss such questions with undergraduates who are new to parallel computing we
+suggest to consider the following simple data distribution. The nonzero elements
+of~\mat{A} are distributed to processes by rows. More precisely, all nonzeros of a row
+are distributed to the same process. The vectors \vek{x} and \vek{y} are distributed
+consistently. That is, if a process stores the nonzeros of row $i$ of~\mat{A} then it
+also stores the vector entries~$x_i$ and~$y_i$. Given a fixed number of processes $p$, a
+data distribution may be formally expressed by a mapping called \emph{partition}
+$$
+P:  I \rightarrow \{1, 2, \dots, p\}
+$$
+that decomposes the set of indices $I := \{1, 2, \dots, N\}$ into~$p$ subsets $I_1$,
+$I_2$, \dots, $I_p$ such that
+$$
+I = I_1 \cup I_2 \cup \dots \cup I_p
+$$
+with $I_i \cap I_j = \emptyset$ for~$i \neq j$. That is, if $P(i)=k$ then the nonzeros of
+row~$i$ as well as~$x_i$ and~$y_i$ are stored on process $k$.
+
+Since the nonzero $a_{ij}$ is stored on process~$P(i)$ and the vector entry~$x_j$ is
+stored on process~$P(j)$, one can sort the terms of \eqref{e.mvp} according to
+those terms where both operands of the product $a_{ij} \cdot x_j$ are stored on the same
+process and those where these operands are stored on different processes:
+\begin{equation}
+\label{e.pmvp}
+y_i =
+  \sum_{ \substack{j  \text{ with }  a_{ij} \neq 0\\ P(i)=P(j)}} a_{ij} \cdot x_j
++ \sum_{ \substack{j  \text{ with }  a_{ij} \neq 0\\ P(i)\neq P(j)}} a_{ij} \cdot x_j ,
+\quad i = 1, 2, \dots, N.
+\end{equation}
+For the sake of simplicity, we assume that the product $a_{ij} \cdot x_j$ is computed by
+the process~$P(i)$ that stores the result $y_i$ to which this product contributes.
+By~\eqref{e.pmvp}, the data distribution  $P$ has an effect on the amount of data that
+needs to be communicated between processes. It also determines which processes
+communicate with each other. Since, on today's computing systems, communication needs
+significantly more time than computation, it is important to find a data distribution
+using a goal-oriented approach. A data distribution is desirable that balances the
+computational load evenly among the processes while, at the same time, minimizes the
+communication among the processes.
+
+The problem of finding a data distribution is also interesting from another perspective
+of undergraduate teaching. It offers the opportunity to demonstrate that a theoretical
+model can serve as a successful abstraction of a practical problem. More precisely, a
+formal approach using concepts from graph theory is capable of tackling the data
+distribution problem systematically.
+
+To this end, we now assume that the nonzero pattern of the nonsymmetric matrix \mat{A} is
+symmetric. Then, the matrix can be represented by an undirected graph $G=(V,E)$. The set
+of nodes $V = \{ 1, 2, \dots, N\}$ is used to associate a node to every row (or
+corresponding column) of \mat{A}. The set of edges
+\begin{displaymath}
+E = \{ (i,j) \mid i, j \in V \text{ and } a_{ij} \neq 0 \text{ for }  i > j \}
+\end{displaymath}
+describes the nonzero entries. Here, the condition $i>j$ indicates that the edge~$(i,j)$
+is identical to the edge~$(j,i)$ and that there is no self-loop in $G$. The data
+distribution to $p$ processes is then represented by the partition
+$$
+P:  V \rightarrow \{1, 2, \dots, p\}
+$$
+that decomposes the set of nodes $V$ of the graph into~$p$ subsets $V_1$, $V_2$, \dots,
+$V_p$ such that
+$$
+V = V_1 \cup V_2 \cup \dots \cup V_p
+$$
+with $V_i \cap V_j = \emptyset$ for~$i \neq j$.
+
+
+Then, \eqref{e.mvp} is reformulated in terms of graph terminology by
+\begin{displaymath}
+y_i = a_{ii} \cdot x_i +
+  \sum_{ \substack{(i,j)\in E \\ P(i)=P(j)}} a_{ij} \cdot x_j
++ \sum_{ \substack{(i,j)\in E \\ P(i)\neq P(j)}} a_{ij} \cdot x_j .
+\end{displaymath}
+Here, the first two terms of the right-hand side can be computed on process~$P(i)$
+without communication to any other process.  The condition~$P(i)\neq P(j)$ in the last
+term shows that the computation of $a_{ij} \cdot x_j$  requires communication between
+process~$P(i)$ which stores~$a_{ij}$ and process~$P(j)$ which stores $x_j$. Minimizing
+interprocess communication then roughly corresponds to minimizing the number of edges
+connecting nodes in different subsets~$V_i$ of the partition $P$. This number of edges is
+called the \emph{cut size} and is formally defined by
+\begin{equation}\label{e.cut}
+  \operatorname{cutsize}(P) = \bigl| \{ (i,j) \in E \mid P(i)\neq P(j) \} \bigr|.
+\end{equation}
+In this graph model, the cut size does not exactly correspond to the number of words
+communicated between all processes in the computation of $\vek{y} \leftarrow \mat{A}
+\vek{x}$ for a given partition $P$. However, it gives a reasonable approximation to this
+amount of communicated data called the \emph{communication volume}; see the corresponding
+discussion in~\cite{hk:mod}. The communication volume is exactly described by the cut
+size if the underlying model is changed from an undirected graph to a
+hypergraph~\cite{ca:hyp,cua:hyp,ua:rev}.
+
+Assuming that the number of nonzeros is roughly the same for each row of~\mat{A}, the
+computation is evenly balanced among the $p$ processes if the partition $P$ is
+$\varepsilon$-balanced defined as
+\begin{equation}\label{e.bal}
+  \max_{1 \leq i \leq p} |V_i| \leq (1 + \varepsilon) \frac{|V|}{p} ,
+\end{equation}
+for some given $\varepsilon > 0$. The graph partitioning problem consists of minimizing
+the cut size of an $\varepsilon$-balanced partition. It is a hard combinatorial
+problem~\cite{gj:com}.
+
+
+To illustrate the connection between computing a sparse matrix-vector multiplication in
+parallel and partitioning an undirected graph, we propose a novel educational module.
+This module is part of a growing set of educational modules called EXPLoring Algorithms
+INteractively (EXPLAIN). This collection of web-based modules is designed to assist in
+the effectiveness of teachers in the classroom and we plan to make it publicly available
+in the near future. Figure~\ref{f.explain.matvec} shows the overall layout of this interactive
+module for sparse matrix-vector multiplication. The top of this figure visualizes---side
+by side---the representation of the problem in terms of the graph~$G$ as well as in terms
+of the matrix~\mat{A} and the vector \vek{x}. Below on the left, there is a panel of
+colors representing different processes and another panel displaying the order of
+selecting vertices of the graph. Next, on the right, there is a score diagram recording
+values characterizing communication and load balancing. At the bottom part, there are
+input controls used to select a matrix from a predefined set of matrices, to upload a
+small matrix, and to choose the layout of the graph vertices.
+
+
 %------------------------------------------------------------------------------------------
 % Overall Layout of Module
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{final}
+\includegraphics[width=0.7\textwidth]{final}
 \caption{Overall structure of the sparse matrix-vector multiplication module.}
-\label{f.explain2}
+\label{f.explain.matvec}
 \end{figure}
 %------------------------------------------------------------------------------------------
+
+The first figure gives an overall impression of the status of the module after a data
+distribution is completed. Here, $p=4$ processes represented by the colors blue, green,
+red, and yellow get data by interactive actions taken by the student.
+Figure~\ref{f.beginning} now shows the status of the module in a phase that is more
+related to the beginning of that interactive procedure. For a given matrix, the student
+can distribute the data to the processes by first clicking on a color and then clicking
+on an arbitrary number of vertices. That is, the distribution of vertices to a single
+process is determined by first clicking on a color $j$ and then clicking on a certain
+number of vertices, say $i_1, i_2, \dots, i_s$ such that $P(i_1) = P(i_2) = \dots =
+P(i_s) = j$. Then, by clicking on the next color, this procedure can be repeated until
+all vertices are interactively colored and, thus, the data distribution $P$ is finally
+determined.
+
+Figure~\ref{f.beginning} illustrates the situation after the student distributed
+vertices~1, 2 and 3 to the blue process and the vertices~7, 8 and 10 to the green
+process. By interactively assigning a vertex to a process, not only the vertex is colored
+by the color representing this process, but also the row in the matrix as well as the
+corresponding vector entry of \vek{x} are simultaneously colored with the same color.
+This way, the data distribution is visualized in the graph and in the matrix
+simultaneously which emphasizes the connection between the matrix representation and the
+graph representation of that problem. The panel labeled ``Order of selection'' records
+the order of the vertices that are interactively chosen. By inspection from that panel
+in~\figref{f.explain}, we find out that the status depicted in \figref{f.beginning} is an
+intermediate step of the interactive session that led to the data distribution
+in~\figref{f.explain}. Any box labeled with the number of the chosen vertex in that panel
+is also clickable allowing the student to return to any intermediate state and start a
+rearrangement of the data distribution form that state.
+
 
 %------------------------------------------------------------------------------------------
 % Interactive Selection of Vertices
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{twoColors}
+\includegraphics[width=0.7\textwidth]{twoColors}
 \caption{The intermediate state after the student selected six vertices.}
 \label{f.beginning}
 \end{figure}
 %------------------------------------------------------------------------------------------
 
+In EXPLAIN, the term ``round'' refers to the process of solving a single instance of a
+given problem. In this module, the problem consists of distributing all data needed to
+compute the matrix-vector product to the processes. Equivalently, the distribution of all
+vertices of the corresponding graph to the processes is a round. Suppose that round~2 is
+completed in \figref{f.explain}. Then, the student can explore the data distribution in
+more detail by clicking on a color in the panel labeled ``Color of processes.'' Suppose
+that the student chooses the red process, then this action will modify the appearance of
+the vector \vek{x} in the matrix representation to the state given
+in~\figref{f.communication}. Here, all vector entries that need to be communicated to the
+red process are now also colored red. The background color still represents the process
+that stores that vector entry. This illustrates, for instance, that the vector entry
+$x_1$ is communicated from the blue process to the red process when computing $\mat{A}
+\vek{x}$ using this particular data distribution. The matrix representation visualizes
+the reason for this communication. There is at least one row that is colored red and that
+has a nonzero element in column~1. In this example row~4 and row~5 satisfy this
+condition. Thus, $x_1$ is needed to compute $y_4$ and $y_5$. Again, EXPLAIN visually
+illustrates the connection between the linear algebra representation and the graph
+representation. In the graph representation, all vector entries that need to be
+communicated to the red process correspond to those non-red vertices that are connected
+to a red vertex. In this example, this condition is satisfied for vertices 1, 3, 6, 7, 8,
+10 which corresponds to the vector entries $x_1$, $x_3$, $x_6$, $x_7$, $x_8$, $x_{10}$ in
+the matrix representation that are drawn in red.
+
+
 %------------------------------------------------------------------------------------------
 % Communication structure
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{redComm}
+\includegraphics[width=0.7\textwidth]{redComm}
 \caption{All vector entries $x_i$ to be communicated to the red process are drawn in red.}
 \label{f.communication}
 \end{figure}
 %------------------------------------------------------------------------------------------
+
+When a round is completed it is also instructive to focus on the quality of the data
+distribution $P$. Recall that the graph partitioning problem aims at minimizing the cut
+size of~$P$ while balancing the computational load evenly among the processes. To asses
+these two quantities, the module introduces the score diagram. An example of a score
+diagram is depicted in~\figref{f.score}. For each round, this diagram shows the cut size
+defined by~\eqref{e.cut} using the label ``communication volume.'' As mentioned in the
+previous section, the cut size in this undirected graph model is not an exact
+representation of the communication volume. However, it often captures the nature of the
+communication volume quite well. Therefore, this graph model uses the cut size as a
+measure of the communication volume. In that score diagram, the student can check his or
+her attempt to minimize the communication volume over a number of rounds.
 
 %------------------------------------------------------------------------------------------
 % Score diagram
@@ -994,160 +1684,67 @@ bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 \end{figure}
 %------------------------------------------------------------------------------------------
 
-\section{EXPLAIN Revisited}
-We improved the software EXPLAIN in two ways. 
-First, we speed up the software by changing the backbone implementation
-which the details is found in Chapter~\ref{s.impl.explain}.
-Second, we extended EXPLAIN such that the user can add a custom module 
-in an easy scripting lanugage. The program can be written directly 
-in the third frame shown beside the matrix and graph frames
-(see Figure~\ref{f.custom}).
+The parameter $\varepsilon$ introduced in~\eqref{e.bal} is used to quantify the degree of
+imbalance allowed in a data distribution. If $\varepsilon = 0$ all processes are assigned
+exactly $|V|/p$ rows of \mat{A}, meaning that no imbalance is allowed at all. When
+increasing $\varepsilon$ the load balancing condition~\eqref{e.bal} is relaxed. The
+larger $\varepsilon$ is chosen, the larger is the allowed imbalance. Thus, in some way,
+$\varepsilon$ quantifies the deviation from a perfect load balance. An equivalent form
+of~\eqref{e.bal} is given by
+\begin{equation}\label{e.bound}
+  \frac{p}{|V|} \max_{1 \leq i \leq p} |V_i| - 1  \leq \varepsilon ,
+\end{equation}
+which can be interpreted as follows. Suppose that you are not looking for an
+$\varepsilon$-balanced partition $P$ for a given $\varepsilon$, but rather turn this
+procedure around and ask: ``Given a partition $P$, how large need $\varepsilon$ at least
+be so that this partition is $\varepsilon$-balanced?'' Then the left-hand side of the
+inequality~\eqref{e.bound} which we call \emph{deviation bound} gives an answer to that
+question. The extreme cases for the deviation bound are given by 0 if the distribution is
+perfectly balanced and $p-1$ if there is one process that gets all the data. The score
+diagram shows the value of the deviation bound for each round. A low deviation bound
+indicates a partition that balances the computational load evenly, whereas a large
+deviation bound represents a large imbalance of the load. The score diagram helps the
+student to evaluate the quality of a single data distribution and to compare it with
+distributions obtained in previous rounds. This feedback to the student is designed in
+the spirit of computer games, where a score has only a low immediate relevance to the
+current game. However, the idea is to achieve a ``high score'' and try to motivate the
+player to beat that score in subsequent rounds, thus offering an extra challenge. For
+this educational module, a ``high score'' would consist of a low communication value
+together with a low deviation bound.
 
+\section{Preorderings}
+As we discussed, the ordering is one of the mail elements of heuristics algorithm
+in both preconditioing and coloring. The process of selection that we have
+considered in modules of \mbox{EXPLAIN} are actually the iluustration of this importance.
+This is not always doable for students to find a good selection order specially for
+big matrices.
 %------------------------------------------------------------------------------------------
-% Score diagram
+% Custom Module
 \begin{figure}
 \centering
-\includegraphics[width=0.98\textwidth]{custom}
-\caption{}
-\label{f.custom}
+\includegraphics[width=\textwidth]{custom_module}
+\caption{The code of the corresponding module is visualized beside 
+graph and matrix. This code is in a simple scripting language. 
+This code can be executed step by step and with the order whcih
+is specified by the user.}
+\label{f.custom_module}
 \end{figure}
 %------------------------------------------------------------------------------------------
 
-\chapter{Computational Package}
-\label{package}
-\section{Effects of Ordering in Coloring and Preconditioning}
-Since the exact algorithms for coloring and preconditioning are 
-NP-complete algorhtms, the researhcer use approximate algorithms
-most of the time. If we focus on the graph algorithms, 
-the results of these heuristics are highly dependent 
-on which order the vertices are processed. 
+\mbox{EXPLAIN 2.0} has a new feature to examine different orders 
+and see the results of algorithm visually. In this feature, different
+pre-orderings are available which can be selected. A custom order is 
+also possible. Figure~\ref{f.custom_module} illustrates graph and matrix
+and the corresponding source code of the module. This source code
+is written in a simple scripting language specially designed for \mbox{EXPLAIN}.
+This source code can be also edited temporarily. Later, the student can
+decide to start the selection by mouse or an automatic visualization
+of the algorithm in which the order is defined by the variable "order".
 
-For example, let's consider the following matrix
-\begin{figure}
-\centering
-   \includegraphics[width=0.45\linewidth]{bad_order_color}
-   \hfill
-   \includegraphics[width=0.45\linewidth]{good_order_color}
-\end{figure}
-
-
-\begin{figure}
-\centering
-   \includegraphics[width=0.4\linewidth]{bad_order}
-   \hfill
-   \includegraphics[width=0.4\linewidth]{bad_order_1_removed}
-   \includegraphics[width=0.4\linewidth]{bad_order_2_1_removed}
-   \hfill
-   \includegraphics[width=0.3\linewidth]{bad_order_3_2_1_removed}
-\caption{The bad  ordering}
-\label{bad_order_fillin}
-\end{figure}
-
-
-\begin{figure}
-\centering
-   \includegraphics[width=0.4\linewidth]{good_order}
-   \hfill
-   \includegraphics[width=0.4\linewidth]{good_order_2_removed}
-   \includegraphics[width=0.4\linewidth]{good_order_3_2}
-   \hfill
-   \includegraphics[width=0.4\linewidth]{good_order_4_3_2}
-\caption{The good  ordering}
-\label{good_order_fillin}
-\end{figure}
-
-
-\begin{figure}
-\centering
-   \includegraphics[width=0.4\linewidth]{good_order}
-   \hfill
-   \includegraphics[width=0.4\linewidth]{good_order_2_removed}
-   \includegraphics[width=0.4\linewidth]{good_order_5_2_removed}
-   \hfill
-   \includegraphics[width=0.25\linewidth]{good_order_3_5_2_removed}
-\caption{The good  ordering}
-\label{good_order_fillin2}
-\end{figure}
-
-There are various ordering which were studied for coloring heuristics
-throughout years. Here, we have a list of such orderings for coloring.
-In each item, we explain how the algorithm select the next vertex.
-\begin{itemize}
-\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with minimum degree in each step.
-\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
-\item Stauration-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
-$V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbours of $v$.
-\end{itemize}
-In addition to these orderings, we consider two other orderings:
-\begin{itemize}
-\item Natural Ordering:
-\item NDMetis Ordering\cite{metis,par-nested-disection}:
-\end{itemize}
-
-\section{GraphTea}
-Michael Luelfesmann was developed a software which computes a small set of 
-coloring and preconditioning. We improved the software regarding the algorithms
-and the visualizations. Specially, the user can select different orders for two heuristics
-which we discussed before.
-For this purpose, we extend our software GraphTea~
-\cite{2014:07,2014:15,2014:16,2015:05,2015:06,2015:07,2015:08} to have a
-set of reports for graph coloring. We
-%Chemical Graph theory\cite{2015:05,2015:06,2015:07,2015:08}
-GraphTea is a graph editing framework designed specifically to compute and visualize
-different parameters of graphs interactively.
-Figure~\ref{f.graphtea} shows a snapshot of the main
-graph window together with two additional windows that give more details on the solution
-of different graph problems. These separate windows providing additional information are
-called ``reports.''
-
-A report can be computed in GraphTea in two different way:
-a single report or an incremental report.
-A single report means to compute some parameters on graph and look at the results
-in a textual way. However, an incremental report happens when we have at least 
-two parameter for computation. So, we would change one of the parameter in
-some range and would generate a table.
-
-The main goal of developing GraphTea was to help the researcher through their research.
-The following abilities of GraphTea could help the research in different dimensions:
-\begin{itemize}
-\item Generate different class of graphs and compute the parameters on them.
-\item Get reports on the graph beside the parameter and find the connections.
-\item Compute the operations on graphs and influence of these operations on parameters
-of the graph. 
-\end{itemize}
-
-If we divdie the researcher's works follows,
-\begin{enumerate}
-\item Guess a hypothesis like a bound for coloring number
-\item Evaluate this bound on different graphs
-\item Prove the hypothesis
-\end{enumerate}
-The second step, i.e. evaluation, is always an important step since many first errors and 
-improvements could be found.
-However, the researcher can only do this evaluation for small examples if they do not
-use computer tools. 
-Different aspects of GraphTea can be used to overcome this evaluation.
-The researchers can generate any graph up to any computationally-reasonable size
-(i.e. computable in a reasonable time) and compute the parameter.
-This process of so-called conjecture checking on different graphs could often lead to a better guess.
-
-Beside the automatic generation of graphs up to any size, we added the ability of loading
-different sparse matrix as graphs to GraphTea.
-
-%-----------------------------------------------------------------------------------------------
-\begin{figure}
-\centering
-\includegraphics[width=0.7\textwidth]{graphtea}
-\caption{An overview of GraphTea: A graph drawing window and 
-two floating dialogs with reports on a given graph.}
-\label{f.graphtea}
-\end{figure}
-%-----------------------------------------------------------------------------------------------
-
-\chapter{Implementation Details}
-\label{impl}
-\section{EXPLAIN 1.0}
+\section{Implementation Details}
 \label{s.impl.explain}
+\subsection{EXPLAIN 1.0}
+\label{s.impl.explain1}
 The previous version of the software \cite{Lulfesmann2010} needed a client with administrator privileges to install Python libraries as well as the software itself. In the new implementation, the software is moved to the online platform which means the student needs just a web browser to work with the software. In this section, we shortly describe the underlying algorithm as well as how it is implemented.
 
 The underlying algorithm of coloring and keeping the history is shown in the pseudo-codes given in \figurename~\ref{f:alg}. The first procedure represents what happens when a student clicks on a vertex. The second one shows how the history of matrix and graph images are loaded when the student clicks on one of the history buttons.
@@ -1217,7 +1814,8 @@ The library \textit{Mod\_python} assists to implement folder management, user in
 
 Previously, an event was handled by a local Python function but, in the new version, there are two sides, server and client. The web browser at client side shows HTML websites with embedded  Javascript source code while the server side is written in Python. Since the buttons are HTML buttons and the events are Javascript functions, a form is submitted to the Python server by a Javascript function containing the execution request and parameters to the related Python function. Then, the called Python function writes the dynamically generated result as an HTML string to the Apache request. The server sends back the HTML string and the client shows the string as a web page.
 
-\section{EXPLAIN 2.0}
+\subsection{EXPLAIN 2.0}
+\label{s.impl.explain2}
 As we discussed, we changed the code such that it becomes more efficient and easier to extend. 
 In the previous version, the module was mainly based on the python libraries:
 \textit{NetworkX} \cite{networkx2008} for the graph data structure,
@@ -1322,9 +1920,6 @@ var new_col = min(diff(colors,col_ns));
 color_column(current, new_col);
 color_vertex(current,new_col);
 \end{lstlisting}
-
-\section{Computational Package}
-\label{s.impl.graphtea}
 \chapter{Conclusion}
 \label{conc}
 \bibliographystyle{IEEEtran}
