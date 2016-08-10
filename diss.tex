@@ -586,9 +586,41 @@ are correct partial coloring and have the same number of
 colors, the number of nonrequired elements 
 which are determined are different.
 
-The new heuristics is as follows,
-
+If the greedy algorithm for one-sided coloring is given in a pseudocode as follow,
 \begin{lstlisting}
+for v in column_vertices:
+  forbidden_colors[0] = v
+  if (v is inciden to required edges) 
+    for n in neighbours of v:
+      if n is colored:
+        forbidden_colors[color of n] = v
+
+  find the first color which is not forbidden for v
+  color v with this color
+\end{lstlisting}
+
+
+The new heuristics can be expressed as follows,
+\begin{lstlisting}
+for v in column_vertices:
+  forbidden_colors[0] = v
+  if (v is inciden to required edges) 
+    for n in neighbours of v:
+      if n is colored:
+        forbidden_colors[color of n] = v
+
+  find the first color which is not forbidden for v
+  color v with this color
+
+  ind_set = find the maximum independent set containing v
+  for i in ind_set
+    nreq_i = find all nonrequired nonzeros in the column i
+    nreq_v = find all nonrequired nonzeros in the column v
+    cnt_nreq = count (nreq_i - nreq_v)
+    map <- i , cnt_nreq
+  sort map based on the value
+  
+
 for i=1 to num_of_columns
   if the column is is not colored
     color the column i
