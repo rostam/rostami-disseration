@@ -587,6 +587,7 @@ colors, the number of nonrequired elements
 which are determined are different.
 
 If the greedy algorithm for one-sided coloring is given in a pseudocode as follow,
+NP-hard problem~\cite{npcomplete1}
 \begin{lstlisting}
 for v in column_vertices:
   forbidden_colors[0] = v
@@ -599,10 +600,9 @@ for v in column_vertices:
   color v with this color
 \end{lstlisting}
 
-
-The new heuristics can be expressed as follows,
+we introduce a new heuristc coloring algorithm as follow,
 \begin{lstlisting}
-for v in column_vertices:
+for v in column_vertices which is not colored:
   forbidden_colors[0] = v
   if (v is inciden to required edges) 
     for n in neighbours of v:
@@ -617,21 +617,17 @@ for v in column_vertices:
     nreq_i = find all nonrequired nonzeros in the column i
     nreq_v = find all nonrequired nonzeros in the column v
     cnt_nreq = count (nreq_i - nreq_v)
-    map <- i , cnt_nreq
+    map <- (i , cnt_nreq)
   sort map based on the value
-  
-
-for i=1 to num_of_columns
-  if the column is is not colored
-    color the column i
-    loop over all the uncolored columns j
-    if j can be compressed by i
-      compute the nonrequired nonzeros which are determined after compression
-    color the column which has the maximum determined nonrequired elements
-    if there are more than one column with this maximum value
-      see if it can be additionally required elements
-
+  color the column with the maximum value
+  color alpha colummns with the minimum value
 \end{lstlisting}
+This new algorithm tries to color the columns such that the number of colors
+remain almost the same while the number of additionally required elements are increased.
+In which, the value of $\alpha$ gives us a control between minimizing the coloring number 
+and maximizing the aditionally required elements.
+To be able to compare this new coloring with the old one we should keep the coloring s
+
 \section{Effects of Ordering}
 \label{s.ordering.effect}
 
