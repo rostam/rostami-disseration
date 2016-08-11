@@ -24,7 +24,9 @@
 \newcommand{\mat}[1]{\ensuremath{#1}}
 \newcommand{\vek}[1]{{\ensuremath{\mathbf #1}}}
 \newcommand{\figref}[1]{Figure~\protect\ref{#1}}
-\newcommand{\secref}[1]{Secttion~\protect\ref{#1}}
+\newcommand{\secref}[1]{Section~\protect\ref{#1}}
+\newcommand{\chapref}[1]{Chapter~\protect\ref{#1}}
+
 
 \usepackage{color}
 \definecolor{lightgray}{rgb}{.9,.9,.9}
@@ -96,6 +98,7 @@
 
 \newpage
 \section*{Abstract}
+\chapter{Introduction}
 Partial differential equations (PDE) are the most common models of the real-world problems.
 Iterative solvers are a solution to these linear systems which need a multiplication
  of Jacobian and a vector in each iteration. 
@@ -116,20 +119,28 @@ In this work, we discuss first a computational package for coloring and precondi
 We improve this software in different directions. Then, we design educational modules
 to teach this concept and other concepts from combinatorial scientific computing.
 
-The following works is structed as follows.
-First, we go throught basic definitions in Chapter~\ref{prel} which are needed in other chapters.
-The computational package for coloring is discussed later in Chapter~\ref{package}.
-Then, we visualize different algorithms from this area in Chapter~\ref{explain}.
-Conclusion comes at the end in Chapter~\ref{conc}.
+This following dissertation is structed as follows.
+First, we go throught basic definitions in \chapref{prel} which are needed in other chapters.
+\chapref{package} discusses a new heuristics for coloring as well as a study of the effects of 
+ordering in the previously provided greedy algorithms. Also, we restructure a previous software
+to be more readable and extensible and to contain new heuristic algorithm.
+Then, we discuss an interactive educational module in~\chapref{explain}
+which is designed to teach the computational science algorithms in classroom.
+Finally, the conclusion and future work comes in \chapref{conc}.
 
 
-\chapter{Preliminaries}
+\chapter{‌Basic Definitions}
 \label{prel}
-We will discuss AD and the needed seed matrices in~\ref{s.seedmatrix} which is based on
-our paper~\cite{2014:09}.
+%We will discuss AD and the needed seed matrices in~\ref{s.seedmatrix} which is based on
+%our paper~\cite{2014:09}.
+
+In this chapter, we would briefly discuss the basic definitions which we need to understand
+the other parts of the paper. In each section of this chapter, we provide some references to read the concepts
+in details. We divide the definitions in three parts of full Jacobian computation in~\secref{s.full.jac},
+partial Jacobian computation~\secref{s.part.jac}, and the preconditioning in~\secref{s.precond}.
 %===================================================================================================
 \section{Full Jacobian Computation}
-\label{s.seedmatrix}
+\label{s.full.jac}
 %===================================================================================================
 \subsection{Problem}
 Given a program to evaluate some function $f(x) : \setR^n \rightarrow \setR^m$,
@@ -355,6 +366,7 @@ To illustrate the tricky transformation from \MinBidCom\ to \MinStaBic, we desig
 educational module explained in Section~\ref{s.bidirectional}.
 
 \section{Partial Jacobian Computation}
+\label{s.part.jac}
 \subsection{Problem}
 However, the situation in our semi-matrix-free approach is different. Rather than
 computing all nonzeros of $J$ we are interested in only a subset thereof. More precisely,
@@ -449,7 +461,7 @@ be reformulated as a minimum distance-2 coloring of a bipartite graph when restr
 the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
 \subsection{Sparsification (Block Diagonal)}
 \section{Preconditioning}
-\label{precond}
+\label{s.precond}
 \subsection{Problem}
 The computation of Jacobian that we discussed before are one part of solving PDEs. 
 In general, we are considering the solution to the following system of lienar equations,
@@ -541,7 +553,7 @@ in which $SILU$ means the symbolic ILU factorization.
 So far, we discussed different concepts regarding the preconditioning and coloring.
 Here, we focus on the computation of the colorings and preconditioning in the ground of linear solver. 
 Luelfesmann and B{\"u}cker~\cite{Lulfesmann2012Fap} started a package for computation of the uni- 
-and bidirectional (partial-)coloring as well as the partial computation and its relative preconditoning which we discussed in ~\ref{precond}. 
+and bidirectional (partial-)coloring as well as the partial computation and its relative preconditoning which we discussed in ~\ref{s.precond}. 
 We improved the software in various ways that are explained in the following sections.
 First, we discuss the fillin reduction in Section~\ref{s.ordering.effect}.
 Then we see how the extensibility, readibility, and usability are improved 
@@ -627,6 +639,56 @@ remain almost the same while the number of additionally required elements are in
 In which, the value of $\alpha$ gives us a control between minimizing the coloring number 
 and maximizing the aditionally required elements.
 To be able to compare this new coloring with the old one we should keep the coloring s
+
+matrix \textit{ex33} 1733 1733 23922
+block size is changes from $1$ to $70$
+The number of colors of greedy algorithm is always the minimum between different orderings.
+
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_add_alpha_0}
+\label{new.col.add.alpha.zero}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_col_alpha_0}
+\label{new.col.col.alpha.zero}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_add_alpha_6}
+\label{new.col.add.alpha.six}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_col_alpha_6}
+\label{new.col.col.alpha.six}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_add_alpha_10_nos3}
+\label{new.col.add.alpha.ten.nos3}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_col_alpha_10_nos3}
+\label{new.col.col.alpha.ten.nos3}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_add_alpha_1_nos3}
+\label{new.col.add.alpha.one.nos3}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_col_alpha_1_nos3}
+\label{new.col.add.alpha.one.nos3}
+\end{figure}
+
 
 \section{Effects of Ordering}
 \label{s.ordering.effect}
@@ -776,7 +838,7 @@ In addition to these orderings, we consider three other orderings for precondito
 \item Metis Ordering\cite{metis,par-nested-disection}: This ordering is generated by the well known
 tool \textit{Metis} which is a fill-reducing ordering.
 \end{itemize}
-As we discussed in Section~\ref{precond}, the additionally required elements are a subset of 
+As we discussed in Section~\ref{s.precond}, the additionally required elements are a subset of 
 potentially required elements which are selected such that no new fillin is generated. 
 So, we can guess the number of fillins in ILU factorization affects the additionally required elements.
 The following tables shows that different ordering generates different fillins and additionally
