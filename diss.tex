@@ -631,8 +631,10 @@ for v in column_vertices which is not colored:
     cnt_nreq = count (nreq_i - nreq_v)
     map <- (i , cnt_nreq)
   sort map based on the value
-  color the column with the maximum value
-  color alpha colummns with the minimum value
+  all_max_nreq = find all columns with the maximum values of remained required elements
+  max_nreq_min_req = find the element of all_max_nreq with the minimum value of required elements
+  color the column max_nreq_min_req
+  color alpha colummns with the minimum value of all_min_nreq
 \end{lstlisting}
 This new algorithm tries to color the columns such that the number of colors
 remain almost the same while the number of additionally required elements are increased.
@@ -640,7 +642,7 @@ In which, the value of $\alpha$ gives us a control between minimizing the colori
 and maximizing the aditionally required elements.
 To be able to compare this new coloring with the old one we should keep the coloring s
 
-matrix \textit{ex33} 1733 1733 23922
+matrix \textit{ex33} with 1733 1733 23922
 block size is changes from $1$ to $70$
 The number of colors of greedy algorithm is always the minimum between different orderings.
 
