@@ -576,7 +576,14 @@ staring from zero or one ???
 
 \section{New heuristics for coloring}
 \label{s.heuristic}
+In partial coloring, we compute the coloring focusing on
+required nonzero elements. However, there are other nonzero
+elements that are non-required but that are also computed as a
+by-product of the computation of required elements. 
+These are important elements for the determination of potentailly required elements
+and additionally required elements. 
 
+Look at the following example,
 \newcolumntype{r}{>{\columncolor{red!60}}c}
 \newcolumntype{b}{>{\columncolor{blue!60}}c}
 \begin{equation}
@@ -593,12 +600,31 @@ staring from zero or one ???
 \end{array}\right)
 \label{twocolorings}
 \end{equation}
-Although both matrix colorings in~\ref{twocolorings} 
-are correct partial coloring and have the same number of
-colors, the number of nonrequired elements 
-which are determined are different.
+in which the symbol $r$ stands for the required element, the symbol \textit{$*$}
+stands for the other nonzero elements, and the number $0$ denotes the
+actual zero elements. If the first and second column are colored
+with the same color, you will get the nonzero at position $(3,1)$ as
+a by-product. However, there are certain degrees of freedom. In
+this example you could also assign the same color to columns $1$ and
+$3$ in which case no nonzero element in the last row will be computed
+as a by-product. This leads to the question of maximizing the
+number of nonzero elements that are computed as a by-product.
 
-If the greedy algorithm for one-sided coloring is given in a pseudocode as follow,
+Same story put differently: As it can be seen, the columns $2$ or $3$
+could have the same color with the first column to compute the
+required elements.( Of course, $2$ and $3$ are not allowed to have the
+same color because the required elements would sum up.) However,
+the number of nonrequired elements which survive would increase if
+we color the first and second column with the same color and the
+other one with the other color. Now, the question is: can we save
+more nonrequired elements in the process of coloring? Can we
+maximize a term like alpha.X + beta.C where alpha and beta are
+weighting coefficients, X is the coloring number, and C is the
+number of survived nonrequired elements?
+
+Here, we introudce a new heuristic which increase the number of survived nonrequired elements
+such that the number of colors remains almost the same.
+The greedy algorithm for one-sided coloring is given in a pseudocode as follow,
 NP-hard problem~\cite{npcomplete1}
 \begin{lstlisting}
 for v in column_vertices:
@@ -611,8 +637,26 @@ for v in column_vertices:
   find the first color which is not forbidden for v
   color v with this color
 \end{lstlisting}
+The greedy coloring is widely used since the computational complexity is low and
+it is easy to implement. Also, the different orderings can be adapted to
+improve the results of coloring. In this coloring, the assumption is that each
+column is availale one at a time. Hence, we can not compare the number of 
+nonrequired elements in the processes of coloring.
+For this purpose, we introduce a new heuristc coloring algorithm.
 
-we introduce a new heuristc coloring algorithm as follow,
+Our approach in this new heuristic coloring algorithm
+ is based on finding an independent set. A subset of the vertices $S\subset V$ is
+called an independent set if there is no edge between any of these vertices, i.e.,
+$$
+\forall u,v\in S: (u,v)\notin E.
+$$
+For a given vertex $v$, we show an independent set containing $v$ by $I_v$.
+We define also the number of nonrequired elements which can be 
+survived when two columns $i$ and $j$ are compressed as $N_{nreq}(i,j)$.
+Now, we compute $N_{nreq}(u,v)$ for each element $u\in I_v$.
+Now, we color a vertex from the set $I_v$ with the mzximum value of $N_{nreq}$
+beside coloring the vertex $v$ in each step and with the same color as $v$.
+
 \begin{lstlisting}
 for v in column_vertices which is not colored:
   forbidden_colors[0] = v
@@ -2082,7 +2126,82 @@ var new_col = min(diff(colors,col_ns));
 color_column(current, new_col);
 color_vertex(current,new_col);
 \end{lstlisting}
-\chapter{Conclusion}
+\chapter{Conclusion and Future Work}
+﻿1) Same PC approach as with M. Luelfesmann, but symmetric matrix
+(Preconditioning of Hessians). Much more degrees of freedom in
+coloring, connection to fill in of Cholesky might offer even more
+degrees of freedom.
+
+2) Same PC approach as with M. Luelfesmann, but replace ILU with
+Approximate inverse (AINV) PC. Then we don't have any fill-in.
+
+Need to review the AINV algorithms. There is an algorithm that
+takes a pattern for preconditioner M as input and gradually updates
+this starting pattern and the nonzero values.
+
+a) Do sparsification as usual, this leads to R\_potentially. Take
+R\_init + R\_potentially as starting pattern for M. We would have two
+separate problems: coloring and AINV.
+
+b) Ask the user to input not only R\_init, but also pattern of M.
+Color the graph with this information. Should be a different
+coloring problem than the usual partial coloring problem. (However,
+this seems to be the same as partial coloring with a larger set of
+required elements. Is that true?)
+
+When applying AINV to an intial M, is there any effect on M? For
+instance, does the pattern of M vary? How does it vary? Does the
+variation depend on the structure of the initial pattern only? Or
+does the pattern vary based on the values of M that are available
+at runtime? Perhaps, one can estimate/approximate the pattern of M
+conservatively without taking the values of M into account. (This
+would then be similar to the fill-in when using ILU.) Need to look
+at AINV algorithms more closely.
+
+3) Transform program for function f(x) not only to a program for
+df/dx (traditional AD), but also to another program for
+Matrix-vector product M x vector, where M is an AINV preconditioner
+for the Jacobian df/dx.
+
+4) Formulate the problem (already developed by Luelfesmann and
+Buecker) of finding the subset R\_add of R\_potential precisely.
+
+First try: Find a maximal number of additionally required elements
+without increasing the number of fill-in as compared to ILU applied
+to R\_init.
+
+For this problem: Go back to DAG rather than bipartite graph model.
+Are there any new(?) results from Saad et al. on probing?
+
+It seems unlikely that there already is a graph model for this
+problem since you would never throw away nonzero elements in sparse
+direct methods. This removal of nonzeros is only interesting if you
+consider preconditioning with the sparsification approach.
+
+5) What if we consider blocks of submatrices for coloring instead
+of just a complete row or column? There is a work from Hossain and
+Steihaug that discuss this idea only for blocks of rows and the
+same column intersection graph model as before. For unidirectional
+coloring, they showed that there is an advantage.
+
+Is there still an advantage if we go from unidirectional coloring
+to bidirectional coloring? What will happen if we consider not only
+full coloring, but also partial coloring?
+
+6) What about a new graph model for coloring, for instance a
+hypergraph model for fine-grained coloring?
+
+8) In the overall preconditioning approach, we did not take into
+account any ideas on fill-in when solving the partial coloring
+problem. Indeed, fill-in and coloring were considered as separate
+tasks. What if we consider fill-in when we color the graph? So,
+what about the following formulation of the problem:
+
+Problem: Graph G is given, k for ILU(k) is given. Find a coloring
+as well as a ordering for the vertices of G such that the number of
+fill-in when ILU(k) is applied to the required + by-product
+nonzeros is minimized and, at the same time, the number of colors
+is minimized.
 \label{conc}
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
