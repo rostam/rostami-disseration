@@ -689,7 +689,6 @@ collection with 1733 rows, 1733 columns, and 23922 nonzeros. The block size chan
 from $1$ ot $70$. The number of colors in~\figref{bls_cols_ex33_without_alpha} for the greedy coloring
 is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and \textit{IDO}.
 
-
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{bls_adds_ex33_without_alpha}
@@ -706,16 +705,69 @@ The computation is carried out on the matrix \textit{ex33}. }
 \label{bls_cols_ex33_without_alpha}
 \end{figure}
 
-So far, we select a vertex with the maximum nonrequired elements. However, it could be 
+So far, we select a vertex with the maximum nonrequired elements. However, it can happen
 that we have more than one vertex with the maximum nonrequired elements in each step.
-An improvement is to select a vertex from this set of maximum values such that the number of
-additionally required elements increase. 
+Suppose we are looking at vertex $v$ and two vertices $a$ and $b$ have maximum values of 
+$N_nreq(v,a) = N_nreq(v,b)$.
+Additiong both elements $v_i$ and $v_j$ would not always gives us more additionaly required elements 
+because the value of $N_nreq(a,b)$ can be very small. 
+Therefore, an improvement is to select one vertex from this set of maximum values such that the number of
+additionally required elements increase. As we have seen, a potential required element can be 
+an additional required element if the addition of this element to the initially required elements
+does not introduce any new fillin. Having less number of initially required elements in a column would decrease
+the possiblity of producing more fillins since it would decrease the whole number of fill pathes.
 
-This new algorithm tries to color the columns such that the number of colors
+So, the previous algorithm is modified as follow,
+\begin{lstlisting}
+for v in column_vertices which is not colored:
+  forbidden_colors[0] = v
+  if (v is inciden to required edges) 
+    for n in neighbours of v:
+      if n is colored:
+        forbidden_colors[color of n] = v
+
+  find the first color which is not forbidden for v
+  color v with this color
+
+  ind_set = find the maximum independent set containing v
+  for i in ind_set
+    nreq_i = find all nonrequired nonzeros in the column i
+    nreq_v = find all nonrequired nonzeros in the column v
+    cnt_nreq = count (nreq_i - nreq_v)
+    map <- (i , cnt_nreq)
+  sort map based on the value
+  all_max_nreq = find all columns with the maximum values of remained required elements
+  max_nreq_min_req = find the element of all_max_nreq with the minimum value of required elements
+  color the column max_nreq_min_req
+\end{lstlisting}
+\figref{bls_add_ex33_compare_max} shows how the number of additionally required elements are increased
+by the previous strategy.
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_add_ex33_compare_max}
+\label{bls_add_ex33_compare_max}
+\end{figure}
+
+Our algorithm tries to color the columns such that the number of colors
 remain almost the same while the number of additionally required elements are increased.
+What if one can have some control over colors too. 
+A good heuristic for coloring is to select indpendent sets 
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_cols_indset_ex33_}
+\label{bls_cols_indset_ex33_}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_adds_indset_ex33_}
+\label{bls_adds_indset_ex33_}
+\end{figure}
+
 In which, the value of $\alpha$ gives us a control between minimizing the coloring number 
 and maximizing the aditionally required elements.
 To be able to compare this new coloring with the old one we should keep the coloring s
+
 
 \begin{lstlisting}
 for v in column_vertices which is not colored:
@@ -740,13 +792,6 @@ for v in column_vertices which is not colored:
   color the column max_nreq_min_req
   color alpha colummns with the minimum value of all_min_nreq
 \end{lstlisting}
-
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{bls_add_ex33_compare_max}
-\label{bls_add_ex33_compare_max}
-\end{figure}
 
 
 
