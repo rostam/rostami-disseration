@@ -669,6 +669,53 @@ for v in column_vertices which is not colored:
   color v with this color
 
   ind_set = find the maximum independent set containing v
+  max_cnt_nreq = MAX_INT
+  max_cnt_nreq_pos = 0
+  for i in ind_set
+    nreq_i = find all nonrequired nonzeros in the column i
+    nreq_v = find all nonrequired nonzeros in the column v
+    cnt_nreq = count (nreq_i - nreq_v)
+    if(cnt_nreq > max_cnt_nreq) max_cnt_nreq_pos = i
+  color the column max_nreq_min_pos
+\end{lstlisting}
+This new algorithm tries to color the columns such that the number of colors
+remain almost the same while the number of additionally required elements are increased.
+In which, the value of $\alpha$ gives us a control between minimizing the coloring number 
+and maximizing the aditionally required elements.
+To be able to compare this new coloring with the old one we should keep the coloring s
+
+matrix \textit{ex33} with 1733 1733 23922
+block size is changes from $1$ to $70$
+The number of colors of greedy algorithm is always the minimum between different orderings.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_adds_ex33_without_alpha}
+\label{bls_adds_ex33_without_alpha}
+\caption{The number of colors in the new heuristic coloring compared with the greedy algorithm.
+The computation is carried out on the matrix \textit{ex33}. }
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_cols_ex33_without_alpha}
+\label{bls_cols_ex33_without_alpha}
+\caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
+The computation is carried out on the matrix \textit{ex33}. }
+\end{figure}
+
+
+\begin{lstlisting}
+for v in column_vertices which is not colored:
+  forbidden_colors[0] = v
+  if (v is inciden to required edges) 
+    for n in neighbours of v:
+      if n is colored:
+        forbidden_colors[color of n] = v
+
+  find the first color which is not forbidden for v
+  color v with this color
+
+  ind_set = find the maximum independent set containing v
   for i in ind_set
     nreq_i = find all nonrequired nonzeros in the column i
     nreq_v = find all nonrequired nonzeros in the column v
@@ -680,15 +727,14 @@ for v in column_vertices which is not colored:
   color the column max_nreq_min_req
   color alpha colummns with the minimum value of all_min_nreq
 \end{lstlisting}
-This new algorithm tries to color the columns such that the number of colors
-remain almost the same while the number of additionally required elements are increased.
-In which, the value of $\alpha$ gives us a control between minimizing the coloring number 
-and maximizing the aditionally required elements.
-To be able to compare this new coloring with the old one we should keep the coloring s
 
-matrix \textit{ex33} with 1733 1733 23922
-block size is changes from $1$ to $70$
-The number of colors of greedy algorithm is always the minimum between different orderings.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bls_add_ex33_compare_max}
+\label{bls_add_ex33_compare_max}
+\end{figure}
+
 
 
 \begin{figure}
