@@ -104,23 +104,23 @@ Iterative solvers are a solution to these linear systems which need a multiplica
  of Jacobian and a vector in each iteration. 
 Many strategies were studied to compute these products efficiently.
 Automatic Differentiation~\cite{Griewank2008EDP,Rall1981ADT} 
-computes not only the differentiation wtihout numerical errors but also the
+computes not only the differentiation without numerical errors but also the
 matrix-vector multiplication automatically. 
-Based on this ability of AD techniques, different methods are analysed to 
+Based on this ability of AD techniques, different methods are analyzed to 
 reduce the memory that is needed to store the Jacobian matrix as well as
 speeding up the computation. These methods are generally as a part of 
 a bigger area called combinatorial scientific computing.
 
 On the other hand, another method to speed up the convergence of the linear solver
-is preconditoning. We try to investigate these two computational ingredients
+is preconditioning. We try to investigate these two computational ingredients
 in a common base of combinatorial scientific computing. 
 
 In this work, we discuss first a computational package for coloring and preconditioning.
 We improve this software in different directions. Then, we design educational modules
 to teach this concept and other concepts from combinatorial scientific computing.
 
-This following dissertation is structed as follows.
-First, we go throught basic definitions in \chapref{prel} which are needed in other chapters.
+This following dissertation is structured as follows.
+First, we go through basic definitions in \chapref{prel} which are needed in other chapters.
 \chapref{package} discusses a new heuristics for coloring as well as a study of the effects of 
 ordering in the previously provided greedy algorithms. Also, we restructure a previous software
 to be more readable and extensible and to contain new heuristic algorithm.
@@ -464,7 +464,7 @@ the set of required edges. This is called partial coloring in~\cite{Gebremedhin0
 \label{s.precond}
 \subsection{Problem}
 The computation of Jacobian that we discussed before are one part of solving PDEs. 
-In general, we are considering the solution to the following system of lienar equations,
+In general, we are considering the solution to the following system of linear equations,
 $$
 J\vek{x} = \vek{b},
 $$
@@ -524,7 +524,7 @@ We discussed the full and partial coloring algorithms regarding AD techniques.
 Now, the problem~\ref{p:minblockcol} can be solved for Jacobian
 restricted to the set of initially
 required nonzero elements $R_i$. The result of coloring would group
-columns and rows togther. In this processes, the required elements would always
+columns and rows together. In this processes, the required elements would always
 be computed. However, the nonrequired elements would be divided into two sets of
 elements: the elements which are computed and the ones which would be 
 eliminated. We can think of these computed nonzero elements as the byproduct
@@ -541,7 +541,7 @@ As we have discussed, an ILU preconditioner is applied to $R_i$ which can
 produce a set of fillin. Now, a maximum subset of potentially required elements
 is selected such that no new fillins are generated which is called
 additionally required elements $R_a$. These elements can be added to the
-initialily required elements for further computation. 
+initially required elements for further computation. 
 The additionally required elements can be formulated as follows,
 $$
 R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
@@ -553,12 +553,12 @@ in which $SILU$ means the symbolic ILU factorization.
 So far, we discussed different concepts regarding the preconditioning and coloring.
 Here, we focus on the computation of the colorings and preconditioning in the ground of linear solver. 
 Luelfesmann and B{\"u}cker~\cite{Lulfesmann2012Fap} started a package for computation of the uni- 
-and bidirectional (partial-)coloring as well as the partial computation and its relative preconditoning which we discussed in ~\ref{s.precond}. 
+and bidirectional (partial-)coloring as well as the partial computation and its relative preconditioning which we discussed in ~\ref{s.precond}. 
 We improved the software in various ways that are explained in the following sections.
 First, we discuss the fillin reduction in Section~\ref{s.ordering.effect}.
-Then we see how the extensibility, readibility, and usability are improved 
+Then we see how the extensibility, readability, and usability are improved 
 in Section~\ref{s.extend}. 
-We examine different strategies for the parallization 
+We examine different strategies for the parallelization 
 in Section~\ref{s.parallel}.
 Then, the interfaces for MATLAB and JAVA would be discussed
 in Section~\ref{s.interfaces}.
@@ -580,7 +580,7 @@ In partial coloring, we compute the coloring focusing on
 required nonzero elements. However, there are other nonzero
 elements that are non-required but that are also computed as a
 by-product of the computation of required elements. 
-These are important elements for the determination of potentailly required elements
+These are important elements for the determination of potentially required elements
 and additionally required elements. 
 
 Look at the following example,
@@ -622,14 +622,14 @@ maximize a term like alpha.X + beta.C where alpha and beta are
 weighting coefficients, X is the coloring number, and C is the
 number of survived nonrequired elements?
 
-Here, we introudce a new heuristic which increase the number of survived nonrequired elements
+Here, we introduce a new heuristic which increase the number of survived nonrequired elements
 such that the number of colors remains almost the same.
 The greedy algorithm for one-sided coloring is given in a pseudocode as follow,
 NP-hard problem~\cite{npcomplete1}
 \begin{lstlisting}
 for v in column_vertices:
   forbidden_colors[0] = v
-  if (v is inciden to required edges) 
+  if (v is incident to required edges) 
     for n in neighbours of v:
       if n is colored:
         forbidden_colors[color of n] = v
@@ -640,9 +640,9 @@ for v in column_vertices:
 The greedy coloring is widely used since the computational complexity is low and
 it is easy to implement. Also, the different orderings can be adapted to
 improve the results of coloring. In this coloring, the assumption is that each
-column is availale one at a time. Hence, we can not compare the number of 
+column is available one at a time. Hence, we can not compare the number of 
 nonrequired elements in the processes of coloring.
-For this purpose, we introduce a new heuristc coloring algorithm.
+For this purpose, we introduce a new heuristic coloring algorithm.
 
 Our approach in this new heuristic coloring algorithm
 is based on finding an independent set. A subset of the vertices $S\subset V$ is
@@ -660,7 +660,7 @@ The following pseudocode shows this approach,
 \begin{lstlisting}
 for v in column_vertices which is not colored:
   forbidden_colors[0] = v
-  if (v is inciden to required edges) 
+  if (v is incident to required edges) 
     for n in neighbours of v:
       if n is colored:
         forbidden_colors[color of n] = v
@@ -681,12 +681,12 @@ for v in column_vertices which is not colored:
 
 \figref{bls_adds_ex33_without_alpha} shows the number of additionally required elements
 computed by this new approach, compared with the greedy algorithm. Clearly, 
-the new approach computes more additionally required elements als than the greedy appraoch.
+the new approach computes more additionally required elements als than the greedy approach.
 This is an interesting result since the number of colors remains almost the same
 as it can be seen in~\figref{bls_cols_ex33_without_alpha}.
 Both computations is carried out on the matrix \textit{ex33} from the Florida sparse matrix
 collection with 1733 rows, 1733 columns, and 23922 nonzeros. The block size changes 
-from $1$ ot $70$. The number of colors in~\figref{bls_cols_ex33_without_alpha} for the greedy coloring
+from $1$ to $70$. The number of colors in~\figref{bls_cols_ex33_without_alpha} for the greedy coloring
 is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and \textit{IDO}.
 
 \begin{figure}
@@ -709,19 +709,19 @@ So far, we select a vertex with the maximum nonrequired elements. However, it ca
 that we have more than one vertex with the maximum nonrequired elements in each step.
 Suppose we are looking at vertex $v$ and two vertices $a$ and $b$ have maximum values of 
 $N_nreq(v,a) = N_nreq(v,b)$.
-Additiong both elements $v_i$ and $v_j$ would not always gives us more additionaly required elements 
+Adding both elements $v_i$ and $v_j$ would not always gives us more additionally required elements 
 because the value of $N_nreq(a,b)$ can be very small. 
 Therefore, an improvement is to select one vertex from this set of maximum values such that the number of
 additionally required elements increase. As we have seen, a potential required element can be 
 an additional required element if the addition of this element to the initially required elements
 does not introduce any new fillin. Having less number of initially required elements in a column would decrease
-the possiblity of producing more fillins since it would decrease the whole number of fill pathes.
+the possibility of producing more fillins since it would decrease the whole number of fill paths.
 
 So, the previous algorithm is modified as follow,
 \begin{lstlisting}
 for v in column_vertices which is not colored:
   forbidden_colors[0] = v
-  if (v is inciden to required edges) 
+  if (v is incident to required edges) 
     for n in neighbours of v:
       if n is colored:
         forbidden_colors[color of n] = v
@@ -751,7 +751,7 @@ by the previous strategy.
 Our algorithm is to color the columns such that the number of colors
 remain almost the same while the number of additionally required elements are increased.
 What if one can have some control over colors too. 
-A good heuristic for coloring is to color indpendent sets in each step.
+A good heuristic for coloring is to color independent sets in each step.
 For example, \figref{bls_cols_indset_ex33_} shows a comparison between a greedy algorithm and
 an algorithm which colors the independent set first. As you can see the independent set algorithm
 produces definitely less number of colors. However, it does not perform good in the case of additionally
@@ -773,7 +773,7 @@ the greedy algorithm with respect to the number of additionally required element
 \end{figure}
 
 It is a logical result since we saw that selecting two columns with the maximum number of nonrequired
-elements does not give us always more number of additionaly required elements.
+elements does not give us always more number of additionally required elements.
 So, we propose to choose only column with the maximum number of nonrequired elements and
 choose $\alpha$ other columns with the minimum number of nonrequired elements. In this case, 
 we can decrease the number of colors by increasing the value $\alpha$ while the number of
@@ -782,7 +782,7 @@ The new algorithm would look like the following pseudocode,
 \begin{lstlisting}
 for v in column_vertices which is not colored:
   forbidden_colors[0] = v
-  if (v is inciden to required edges) 
+  if (v is incident to required edges) 
     for n in neighbours of v:
       if n is colored:
         forbidden_colors[color of n] = v
@@ -800,7 +800,7 @@ for v in column_vertices which is not colored:
   all_max_nreq = find all columns with the maximum values of remained required elements
   max_nreq_min_req = find the element of all_max_nreq with the minimum value of required elements
   color the column max_nreq_min_req
-  color alpha colummns with the minimum value of all_min_nreq
+  color alpha columns with the minimum value of all_min_nreq
 \end{lstlisting}
 So if we choose $\alpha=0$, we would have the same algorithm as before.
 As in~\figref{new.col.add.alpha.zero}, the number of additionally required elements  
@@ -838,35 +838,37 @@ in~\figref{new.col.col.alpha.one.nos3}.
 The new computations shows almost the same results. However,
 the only difference is that all the results change dramatically
 after the size of block $40$. In general, an observation can be 
-summerized that the results are better than for the smaller size of blocks
+summarized that the results are better than for the smaller size of blocks
 specially when the matrix is small.
 
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{bls_add_alpha_10_nos3}
+\caption{}
 \label{new.col.add.alpha.ten.nos3}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{bls_col_alpha_10_nos3}
+\caption{}
 \label{new.col.col.alpha.ten.nos3}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{bls_add_alpha_1_nos3}
+\caption{}
 \label{new.col.add.alpha.one.nos3}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{bls_col_alpha_1_nos3}
-\label{new.col.add.alpha.one.nos3}
+\caption{}
+\label{new.col.col.alpha.one.nos3}
 \end{figure}
-
 
 \section{Effects of Ordering}
 \label{s.ordering.effect}
-
 
 \begin{align} 
 Ax = b \rightarrow M^{-1} Ax &= M^{-1}b\\
@@ -883,7 +885,7 @@ This suits the AD behaviour which gets a seed matrix, here the vector $z$, and
 computes the matrix vector product. As the equation~\ref{e.reordering} shows,
 the reordering results in another computation as $\tilde{A}.\tilde{x} = P^T A P x$.
 Since the AD computes only $A$ multiplied by a vector $z$, 
-the computation should be rewriten as follows,
+the computation should be rewritten as follows,
 $$
 z = P \tilde{x}
 A = ad(f,z,...)
@@ -899,7 +901,7 @@ Here, we investigate the preconditioning based on the incomplete LU factorizatio
 Between different models of ILU, we consider the level-based ILU factorization here.
 We use a graph model for ILU instead of the current matrix model to have a unified
 work on graphs in the implemented library. This graph model is based on the proposed
-model in ~\cite{precond-pothen}. If the given matrix is unsymmetric,
+model in ~\cite{precond-pothen}. If the given matrix is asymmetric,
 we put a vertex for each row. We also connect the vertex $i$ to the
 vertex $j$ with an directed edge if the corresponding element $(i,j)$ in matrix
 in nonzero. If the matrix is symmetric, these edges are undirected. This means
@@ -939,7 +941,7 @@ For example, the graph in Figure~\ref{bad_order_fillin}
 is computed from the previous matrix. Here, we illustrated the
 computation of Cholesky factorization step by step.
 Figure~\ref{bad_order_fillin} computes the Cholesky factorization
-in which the order of vertices are the numbering writen on the vertices
+in which the order of vertices are the numbering written on the vertices
 as labels. The ordering in Figure~\ref{bad_order_fillin} is actually
  a worst-case ordering that produces $6$ fillins. These fillins are
 illustrated as dotted lines.
@@ -960,13 +962,13 @@ illustrated as dotted lines.
    \hfill
    \includegraphics[width=0.3\linewidth]{bad_order_3_2_1_removed}
 \caption{A worst case ordering generates $6$ fillins. The ordering here is the 
-numberign which visualized as labels.}
+numbering which visualized as labels.}
 \label{bad_order_fillin}
 \end{figure}
 
 Figure~\ref{good_order_fillin} shows how the new ordering produces
 $5$ fillins when the ordering is $2, 3, 4$. However, the best ordering produces only $3$ fillins
-as Fiugre~\ref{good_order_fillin2} shows when the ordering is $2, 5, 3$.
+as Figure~\ref{good_order_fillin2} shows when the ordering is $2, 5, 3$.
 
 \begin{figure}
 \centering
@@ -1000,11 +1002,11 @@ In each item, we explain how the algorithm select the next vertex.
 \begin{itemize}
 \item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with minimum degree in each step.
 \item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
-\item Stauration-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
+\item Saturation-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
 $V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbours of $v$.
 \end{itemize}
 
-In addition to these orderings, we consider three other orderings for preconditoning:
+In addition to these orderings, we consider three other orderings for preconditioning:
 \begin{itemize}
 \item Natural Ordering: This ordering is based on the ordering of the matrix rows and columns given as input.
 \item Minimum Degree Ordering: The one generates a list of vertices which are sorted based on the degree from minimum to maximum.
@@ -1036,13 +1038,13 @@ Metis & 34 & 642 & 67352 \\\hline
 \caption{The number of fillins and additionally required elements compared based on the different orderings
 for the graph vertices. The number of colors remains the same since we change only the ordering for
 ILU factorization.
-The left table is for the matirx \textit{nos3.mtx} with $960$ rows, $960$ columns, and $15844$ nonzero elements 
+The left table is for the matrix \textit{nos3.mtx} with $960$ rows, $960$ columns, and $15844$ nonzero elements 
 and the right one is for the matrix\textit{gyro\_m} with $17361$ rows ,$17361$ columns, $340431$ nonzero elements.
 Both are from the Florida sparse matrix collections.}
 \label{ilu-effect}
 \end{table}
 
-These results are computed on the symmetric matrix \textit{nos3.mtx} with $960$ rows, $960$ columns, and $15844$ nonzero elementstheand the symmetric matrix \textit{gyro\_m} with
+These results are computed on the symmetric matrix \textit{nos3.mtx} with $960$ rows, $960$ columns, and $15844$ nonzero elements and the symmetric matrix \textit{gyro\_m} with
 $17361$ rows ,$17361$ columns, $340431$ nonzero elements from 
 the Florida sparse matrix collections. The block size is
 chosen to be $50$ for the matrix \textit{gyro\_m} and $15$ for 
@@ -1055,7 +1057,7 @@ It is only for the big matrices which the power of Metis ordering can be seen.
 
 This difference in number of additionally elements affects the convergence speed
 relatively. Both Figure~\ref{nat_convergence} and Figure~\ref{metis_convergence} show
-the convergence history of the bicgstab solvers on the matirx \textit{nos3}.
+the convergence history of the bicgstab solvers on the matrix \textit{nos3}.
 The three line charts are the convergence history of the solver with
 no preconditioning, ILU preconditioning with block-diagonal sparsification,
 and ILU preconditioning with block-diagonal sparsification together with the found
@@ -1130,12 +1132,12 @@ required elements are chosen from the non-required elements and added to the req
 such that number of colors does not increase. Hence, if the number of colors are more,
 the freedom of choosing elements gets higher.
 As two tables~\ref{ilu-effect} and~\ref{col-effect} shows, 
-both the ordering of colorig and the ordering of precondtioning affects the number of
+both the ordering of coloring and the ordering of preconditioning affects the number of
 additionally required elements. Although smaller number of fillin increases
 the number of additionally required elements, the smaller number of colors 
 decreases the number of additionally required elements.
-This is in contrast to the mimimum number of colors which we are searching for, 
-in the autmatic differentation.
+This is in contrast to the minimum number of colors which we are searching for, 
+in the automatic differentiation.
 
 %new algorhtms ....???
 
@@ -1151,7 +1153,7 @@ and for ILU preconditioning are \textit{LFO} and \textit{Nat}. The matrix is \te
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{add_blocksize.jpg}
-\caption{The influence of the ordering of the ILU preconditoning 
+\caption{The influence of the ordering of the ILU preconditioning 
 on the additionally required elements. 
 Three different orderings natural, minimum, and Metis are used.
 The level parameter for ILU is fixed to $10$. 
@@ -1164,7 +1166,7 @@ $1733$ columns, and $11961$ nonzero elements.}
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{fillin_blocksize.jpg}
-\caption{The influence of the ordering of the ILU preconditoning 
+\caption{The influence of the ordering of the ILU preconditioning 
 on the fillins. 
 Three different orderings natural, minimum, and Metis are used.
 The level parameter for ILU is fixed to $10$. 
@@ -1215,7 +1217,7 @@ to achieve these goals.
 We employed concepts from the object-oriented programming to empower
 the developers to implement new extensions without going into 
 details of core implementation. So, two main ingredients coloring
-and orderings can be implemented now only by derving an interface.
+and orderings can be implemented now only by deriving an interface.
 For example, a new ordering can be added as easy as the following code.
 \begin{lstlisting}
 class LFO : public Ordering {
@@ -1240,13 +1242,13 @@ for_each_v(G, [&](Ver v) {...});
 for_each_e(G, f);
 for_each_e(G, [&](Edge e) {...});
 \end{lstlisting}
-, in whcih the variable $f$ is a function which gets an input parameter
+, in which the variable $f$ is a function which gets an input parameter
 of a vertex or an edge, respectively.
 Also, the other syntax is the lambda function 
 from the new C++ functional programming to implement a function in place.
 
 Following a unique solution, we implement all the possible part of algorithms
-with the use of standard library of C++ which also improves the readibility.
+with the use of standard library of C++ which also improves the readability.
 This strategy reduces the amount of the code dramatically and
 make the code more readable.
 
@@ -1261,7 +1263,7 @@ In this way, it was necessary to do the conversion from the Matlab sparse
 matrix to graph (or matrix) format in \text{C++}
 and converting back from \text{C++} to Matlab.
 This is illustrated in Figure~\ref{f.structure} (Left).
-This reults in the lack of efficiency. On ther other hand,
+This results in the lack of efficiency. On the other hand,
 this mix of programming languages reduces 
 the accuracy and makes the versioning difficult.
 %-----------------------------------------------------------------------------------------------
@@ -1273,7 +1275,7 @@ the accuracy and makes the versioning difficult.
 \caption{There were many communications between MATLAB and C/C++ version. The communication
 is done based on the MEX interface. A conversion from matrix to graph is computed
 each time that the MEX interface is used. (Left) A new implementation reduces a lot of communication.
-It brings toghether different parts of algorithm in a package. Two interfaces written
+It brings together different parts of algorithm in a package. Two interfaces written
  in MATLAB and Java call this package as a local program.}
 \label{f.structure}
 \end{figure}
@@ -1285,7 +1287,7 @@ Figure~\ref{f.structure} (Left) visualizes this new implementation.
 All the parts can be computed in C++. However, 
 the part of iterative solver part, can be computed also in MATLAB,
 since the MATLAB functions in this area are in general more convincing. 
-For this goal, we implemented the preconditoning and 
+For this goal, we implemented the preconditioning and 
 and the sparsification in C++. 
 As you can see in Figure~\ref{f.structure} (Left), we also implemented
 two interfaces in MATLAB and JAVA languages which we will explain in 
@@ -1349,7 +1351,7 @@ The following abilities of GraphTea could help the research in different dimensi
 of the graph. 
 \end{itemize}
 
-If we divdie the researcher's works follows,
+If we divide the researcher's works follows,
 \begin{enumerate}
 \item Guess a hypothesis like a bound for coloring number
 \item Evaluate this bound on different graphs
@@ -1361,7 +1363,7 @@ However, the researcher can only do this evaluation for small examples if they d
 use computer tools. 
 Different aspects of GraphTea can be used to overcome this evaluation.
 The researchers can generate any graph up to any computationally-reasonable size
-(i.e. computable in a reasonable time) and compute the parameter.
+(i.e. commutable in a reasonable time) and compute the parameter.
 This process of so-called conjecture checking on different graphs could often lead to a better guess.
 %-----------------------------------------------------------------------------------------------
 \begin{figure}
@@ -1389,14 +1391,14 @@ It is currently not designed for self-study because the connection between the s
 EXPLAIN has so far two major releases \mbox{EXPLAIN 1.0} and \mbox{EXPLAIN 2.0}.
 In implementation details we explained how they differ and improved from an original version.
 
-We implemented different moduels for EXPLAIN. 
+We implemented different modules for EXPLAIN. 
 Here we explain these modules and how they can be used.
 The implementation details comes later in ~\ref{s.impl.explain}.
 \section{Column Compression}
 \label{s.column-compression}
 In \cite{2013:05,2014:01}, we presented an educational module in \mbox{EXPLAIN} to visualize the
 coloring algorithm for the column compression interactively. The idea is 
-summerized as follows.
+summarized as follows.
 
 \begin{figure}
 \centering
@@ -1841,7 +1843,7 @@ model can serve as a successful abstraction of a practical problem. More precise
 formal approach using concepts from graph theory is capable of tackling the data
 distribution problem systematically.
 
-To this end, we now assume that the nonzero pattern of the nonsymmetric matrix \mat{A} is
+To this end, we now assume that the nonzero pattern of the asymmetric matrix \mat{A} is
 symmetric. Then, the matrix can be represented by an undirected graph $G=(V,E)$. The set
 of nodes $V = \{ 1, 2, \dots, N\}$ is used to associate a node to every row (or
 corresponding column) of \mat{A}. The set of edges
@@ -2049,7 +2051,7 @@ together with a low deviation bound.
 \section{Preorderings}
 As we discussed, the ordering is one of the mail elements of heuristics algorithm
 in both preconditioing and coloring. The process of selection that we have
-considered in modules of \mbox{EXPLAIN} are actually the iluustration of this importance.
+considered in modules of \mbox{EXPLAIN} are actually the illustration of this importance.
 This is not always doable for students to find a good selection order specially for
 big matrices.
 %------------------------------------------------------------------------------------------
@@ -2059,7 +2061,7 @@ big matrices.
 \includegraphics[width=\textwidth]{custom_module}
 \caption{The code of the corresponding module is visualized beside 
 graph and matrix. This code is in a simple scripting language. 
-This code can be executed step by step and with the order whcih
+This code can be executed step by step and with the order which
 is specified by the user.}
 \label{f.custom_module}
 \end{figure}
@@ -2166,16 +2168,16 @@ an overhead of the server management for \textit{Mod\_python} is always added to
 In the new implementation, we replaced all python parts with the JS code.
 We decided for the Javascript library D3 (Data-Driven Documents) 
 because of its power of control and visualization.
-The adjacnecy list is selected for the graph data structure.
+The adjacency list is selected for the graph data structure.
 We used the object structure of the JS which helps us to have another
 properties also in the graph. Figure~\ref{f.graph-ds} shown an illustration
 of the data structure. There is basically an array representing the vertices.
 Each cell of array points to another array \textit{edges} which contains
-the id numbers of the vertices which are neigbours of that cell.
+the id numbers of the vertices which are neighbours of that cell.
 Here, we showed that the data structure can contain another properties like colors.
 It can be extended dynamically to contain any other properties which is needed later.
 For example, two other properties \textit{distance} and \textit{parent} are added
-in the impelementation of Breadth-First Search (BFS).
+in the implementation of Breadth-First Search (BFS).
 
 %-----------------------------------------------------------------------------------------------
 \begin{figure}
@@ -2219,10 +2221,10 @@ to be drawn always in the given order.
 After the first design of the software, we then considered the actual interface
 for the developer. Since, we do not need all the functionality which the 
 programming language provides, we decided to have a new script language which
-has only functionalities regarding the matrix and the graph and their
+has only functionality regarding the matrix and the graph and their
 connections. Also, this new script language does everything by simple functions
 such that each function does a specific action on the graph or matrix.
-Table~\ref{command-table} shows a list of functions which are availanle
+Table~\ref{command-table} shows a list of functions which are available
 now in EXPLAIN 2.0.
 \begin{table}
   \begin{tabular}{ | c | c |}
@@ -2232,7 +2234,7 @@ now in EXPLAIN 2.0.
     color\_column($i$,$c$) & colors the column $i$ with the color $c$  \\\hline
     color\_row($j$,$c$)    & colors the row $j$ with the color $c$  \\\hline
     min($l$) and max($l$) & finds minimum and maximum of the list of integers $l$ \\\hline
-    diff($A$,$B$) & finds differenece of two given sets $A$ and $B$ \\\hline
+    diff($A$,$B$) & finds difference of two given sets $A$ and $B$ \\\hline
     get\_colors($l_v$) & return a list of colors of vertices $l_v$ \\\hline
 \end{tabular}
 \caption{The list of functions available in the new scripting language.}
