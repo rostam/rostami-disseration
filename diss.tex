@@ -748,27 +748,37 @@ by the previous strategy.
 \label{bls_add_ex33_compare_max}
 \end{figure}
 
-Our algorithm tries to color the columns such that the number of colors
+Our algorithm is to color the columns such that the number of colors
 remain almost the same while the number of additionally required elements are increased.
 What if one can have some control over colors too. 
-A good heuristic for coloring is to select indpendent sets 
+A good heuristic for coloring is to color indpendent sets in each step.
+For example, \figref{bls_cols_indset_ex33_} shows a comparison between a greedy algorithm and
+an algorithm which colors the independent set first. As you can see the independent set algorithm
+produces definitely less number of colors. However, it does not perform good in the case of additionally
+required elements as in \figref{bls_adds_indset_ex33_}.
 
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{bls_cols_indset_ex33_}
+\caption{The comparison of an algorithm which color the independent sets first and 
+the greedy algorithm with respect to the number of colors.}
 \label{bls_cols_indset_ex33_}
 \end{figure}
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{bls_adds_indset_ex33_}
+\caption{The comparison of an algorithm which color the independent sets first and 
+the greedy algorithm with respect to the number of additionally required elements.}
 \label{bls_adds_indset_ex33_}
 \end{figure}
 
-In which, the value of $\alpha$ gives us a control between minimizing the coloring number 
-and maximizing the aditionally required elements.
-To be able to compare this new coloring with the old one we should keep the coloring s
-
-
+It is a logical result since we saw that selecting two columns with the maximum number of nonrequired
+elements does not give us always more number of additionaly required elements.
+So, we propose to choose only column with the maximum number of nonrequired elements and
+choose $\alpha$ other columns with the minimum number of nonrequired elements. In this case, 
+we can decrease the number of colors by increasing the value $\alpha$ while the number of
+additionally required elements decrease only a little bit.
+The new algorithm would look like the following pseudocode,
 \begin{lstlisting}
 for v in column_vertices which is not colored:
   forbidden_colors[0] = v
@@ -792,9 +802,12 @@ for v in column_vertices which is not colored:
   color the column max_nreq_min_req
   color alpha colummns with the minimum value of all_min_nreq
 \end{lstlisting}
-
-
-
+So if we choose $\alpha=0$, we would have the same algorithm as before.
+As in~\figref{new.col.add.alpha.zero}, the number of additionally required elements  
+would increase. The number of colors is almost in the same order as in~\figref{new.col.col.alpha.zero}.
+It can be compared to the computation on the same configuration but with different $\alpha=6$.
+The number of colors would increase as in~\figref{new.col.col.alpha.six} while
+the number of additionally required elements would not decrease a lot as in~\figref{new.col.col.alpha.six}.
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{bls_add_alpha_0}
@@ -816,6 +829,17 @@ for v in column_vertices which is not colored:
 \includegraphics[width=\linewidth]{bls_col_alpha_6}
 \label{new.col.col.alpha.six}
 \end{figure}
+
+We also compute the new algorithm on the other matrix \textit{nos3}
+and the results for $\alpha=10$ are shown in~\figref{new.col.add.alpha.ten.nos3}
+and~\figref{new.col.col.alpha.ten.nos3}
+and for $\alpha=1$ are shown in~\figref{new.col.add.alpha.one.nos3} and
+in~\figref{new.col.col.alpha.one.nos3}.
+The new computations shows almost the same results. However,
+the only difference is that all the results change dramatically
+after the size of block $40$. In general, an observation can be 
+summerized that the results are better than for the smaller size of blocks
+specially when the matrix is small.
 
 \begin{figure}
 \centering
