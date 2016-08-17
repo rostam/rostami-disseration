@@ -187,7 +187,7 @@ Next, consider the matrix $C$ that has neither structurally orthogonal columns n
 structurally orthogonal rows. Therefore, there is no unidirectional compression of the
 matrix $C$, neither by \col\ columns nor by \row\ rows, that reduce \col\ or \row\ below
 the number of columns or rows. However, a linear combination of both, columns and rows, can be used to
-reduce the computational cost to a value below six. Here, the columns and rows of a
+reduce the computational cost to a value below the size of matrix. Here, the columns and rows of a
 corresponding group are not necessarily structurally orthogonal. This technique in which
 the forward and reverse mode are used in a combined way is called \emph{bidirectional
 compression}. 
@@ -216,17 +216,16 @@ to a minimal value, $\col + \row$, such that all nonzero elements of $J$ also ap
 the pair of matrix-matrix products $JV$ and $WJ$.
 \end{problem}
 
-An equivalent graph-theoretical formulation of this problem is discussed in the next
-section.
-
 %==========================================================================================
 \subsection{Combinatorial Model}
 \label{s.modeling}
 %==========================================================================================
-Graph models are ubiquitous in exploiting the sparsity involved in derivative
-computations; see the comprehensive survey \cite{Gebremedhin05whatcolor}. In the context of the
-semi-matrix-free approach introduced in the previous section, the discussion is based on
-the following undirected graph model.
+We reformulate the scientific computing problems which we have discussed in the 
+previous section. The new formulation is an equivanet problem defined on a
+carefully chosen graph model. The survey \cite{Gebremedhin05whatcolor} 
+discusses different methods
+to exploit the sparsity involved in derivative computations.
+We first look at a simple graph model for the unidirectional compression,
 %
 \begin{definition}[Column Intersection Graph]
 \label{d:cig}
@@ -258,16 +257,18 @@ colors.
 The intimate connection between the sparse Jacobian computations described in
 Problem~\ref{p.seed.uni} and the graph coloring issues described by Problem~\ref{p:mincol} is
 well-known.
-We illustrated this algorithm by an interactive educational module EXPLAIN~\cite{2013:05}
-(see Section~\ref{s.column-compression}). 
+%We illustrated this algorithm by an interactive educational module EXPLAIN~\cite{2013:05}
+%(see Section~\ref{s.column-compression}). 
 
-This undirected graph model is easily adapted to unidirectional compression with respect
-to rows. Here, a vertex represents a row and an edge represents structural
-non-orthogonality of two rows. However, the undirected graph model is not sufficient to
-capture the properties involved in bidirectional compression. An obvious reason is that,
-for a rectangular Jacobian matrix, a bidirectional compression requires to model columns
-and rows separately. It is therefore common to consider a bipartite graph
-model~\cite{Coleman1996SaE,cv:ecs,hs:csj}. In this model, the vertex set $V=V_c\cup V_r$
+If a vertex represents a row and an edge represents structural
+non-orthogonality of two rows, a row-intersection graph can be adapted too.
+Although, this model is convincing for the unidirectional compression, 
+the bidirectional compression can not be computed in this model.
+A bidirectional compression needs the information of both rows and columns which
+is not encoded. A bipartite graph model is defined for this 
+purpose as in~\cite{Coleman1996SaE,cv:ecs,hs:csj}. 
+
+In the bipartite graph model, the vertex set $V=V_c\cup V_r$
 is decomposed into a set of vertices~$V_c$ representing columns of $J$ and another set of
 vertices~$V_r$ representing rows. The set of edges~$E$ is used to represent the nonzero
 elements and it is defined as follows. An edge $(c_i , r_j) \in E$ connects a column
@@ -276,8 +277,6 @@ at the position represented by $c_i$ and $r_j$. The graph is bipartite indicatin
 all edges connect vertices from one set~$V_c$ to the other set $V_r$. That is, there is
 no edge connecting vertices within the set $V_c$ or within $V_r$. Moreover, two vertices
 that are connected by a path of length two, are called \emph{distance-$2$ neighbors}.
-
-\MinUniCom
 
 The overall idea behind transforming Problem \ref{p.seed.bid}, \MinBidCom, into an equivalent
 problem using the bipartite graph model is as follows. The grouping of the columns and
@@ -376,7 +375,7 @@ complexity of Problem~\ref{p.coloring} including recent new results is given in~
 Gebremedhin et al~\cite{Gebremedhin05whatcolor} introduced the concept of the partial Jacobian computation
 in which the assumption is that only a subset of Jacobian should be determined which is called the required elements. 
 L{\"u}lfesmann~\cite{Lulfesmann2012Fap} has studied more considerably in this area.
-Suppose the required elements are shown by $R$,
+Suppose the required elements are shown by $R$, the definition of
 \emph{structurally orthogonality} is adapted for the partial coloring as follows,
 \begin{definition}[Partially Structurally Orthogonal]\label{d.part.str.orth}
 Two columns $c_i$ and $c_j$ are partially structurally orthogonal with respecto $R$ 
@@ -407,32 +406,53 @@ An equivalent graph-theoretical formulation of this problem is discussed in the 
 section.
 
 \subsection{Combinatorial Model}
-Restricted distance-$2$ coloring
-Restricted star bicoloring
-Problem minimum of these
-\subsection{Sparsification (Block Diagonal)}
-However, the situation in our semi-matrix-free approach is different. Rather than
-computing all nonzeros of $J$ we are interested in only a subset thereof. More precisely,
-we are interested in the required nonzero elements that are assembled in the matrix
-\sparsify{J}. To demonstrate the difference we continue the example from 
-%\figref{f:full}
-and now assume that the sparsification uses a block size $k=2$. Thus, we are interested
-in the required elements that belong to the three $2 \times 2$ blocks on the main
-diagonal. Those nonzero elements of $J$ that are not required are called nonrequired
-elements. The classification of the nonzero elements into required and nonrequired
-elements is depicted in the left of 
-%\figref{f:partial} 
-by black disks and circles,
-respectively. In this example, columns 1 to~4 can be assigned to column groups as before.
-However, columns 5 and 6 can now be assigned to the same group. The reason is that we are
-not interested in the two nonzeros in row 3 of these two columns which are summed up in
-$J\cdot S$ to a nonzero value indicated by the cross in that figure. That is, we can form
-the sum of two (or more) nonrequired elements without loosing any values of required
-elements. Compared to Problems~\ref{p.seed.uni} and ~\ref{p.seed.bid}, 
-this property allows to reduce the number of
-colors further.
+Based on \cite{Gebremedhin05whatcolor,Lulfesmann2012Fap}, the definitions
+of the full Jacobian colorings are adapted as follows,
+\begin{definition}[Restricted distance-$2$ coloring]\label{d.coloring}
+Given a bipartite graph $G=(V_c\cup V_r, E)$ and a subset of required edges
+$E_R\subset E$ , then a mapping $\Phi:V_c \to
+\{0,1,\dots ,p\}$ is a distance-$2$ coloring
+of $G$ restricted to $E_R$ if no column vertex gets a zero color and
+for every path $(c_k,r_i,c_j)$ with $c_k\in V_c$, 
+$\Phi(c_k) \neq \Phi(c_j)$.
+\end{definition}
+\begin{definition}[Restricted star bicoloring]\label{d.coloring}
+Given a bipartite graph $G=(V_c\cup V_r, E)$ and a subset of required edges
+$E_R\subset E$ , then a mapping $\Phi:V_c \cup V_r \to
+\{0,1,\dots ,p\}$ is a star bicoloring of $G$ restricted to $E_R$
+if the following conditions are satisfied:
+\begin{enumerate}
+\item Vertices in $V_c$ and $V_r$ receive disjoint colors, except for the neutral color~$0$. That
+    is, for every $c_i \in V_c$ and $r_j \in V_r$, either $\Phi(c_i) \neq \Phi(r_j)$ or
+    $\Phi(c_i)=\Phi(r_j)=0$.
 
-Therefore, we formulate the new problem that represents the assembly of the
+\item At least one end point of and edge in $E_R$ recieves a nonzero color. 
+\item For every edge $(r_i,c_j)\in E_R$, $r_i, r_l\in V_r$, and 
+$c_j, c_k\in V_c$,
+\begin{itemize}
+\item if $\Phi (r_i) = 0$, then for every path $(c_k,r_i,c_j)$, $\Phi (c_k)\neq \Phi (c_j)$
+\item if $\Phi (c_j) = 0$, then for every path $(r_i,c_j,r_l)$, $\Phi (r_i)\neq \Phi (r_l)$
+\item if $\Phi (r_i) = 0$ and $\Phi (c_j) = 0$, then for every path $(c_k,r_i,c_j,r_l)$, 
+$\Phi (c_k)\neq \Phi (c_j)$ or $\Phi (r_i)\neq \Phi (r_l)$
+\end{itemize} 
+\end{enumerate}
+\end{definition}
+
+The optimization problems would be to 
+find the minimum restricted distance-$2$ coloring
+and the minimum restricted star bicoloring.
+\subsection{Sparsification (Block Diagonal)}
+The third computational ingredient is sparsification of the coefficient matrix $J$. The
+sparsification of $J$ is represented by the symbol \sparsify{J}. The idea is to select a
+subset of all nonzero elements of $J$, described by~\sparsify{J}, and construct a
+preconditioner based on these selected nonzero elements~\cite{Cullum2006}. These nonzero
+elements selected by \sparsify{J} are called \emph{required} nonzero elements. Throughout
+this paper we consider the special case of a sparsification in the form of $k\times k$
+blocks on the main diagonal. That is, the pattern of the required nonzero elements is
+given by the pattern of all nonzero entries within these $k\times k$ blocks on the
+diagonal. If the block size $k$ does not divide the matrix order $n$, we adapt the size
+of the last diagonal block to some smaller value such that the sum of all block sizes
+equals $n$. We formulate the new problem that represents the assembly of the
 semi-matrix-free approach with a minimal relative cost as follows.
 %
 \begin{problem}[Block Seed]
@@ -447,7 +467,6 @@ S$.
 
 We now focus on reformulating this combinatorial problem from
 scientific computing in terms of an equivalent problem defined on a suitable graph model.
-
 Recall that the set of nonzero elements is divided into required and nonrequired
 elements. Two columns can be linearly combined without loosing information on the
 required elements as long as one of the following conditions is satisfied:
