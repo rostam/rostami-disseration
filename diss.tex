@@ -73,9 +73,14 @@
 \newcommand{\todo}[1]{\textbf{#1}}
 \newcommand{\nnz}[1]{\ensuremath{\operatorname{nz}(#1)}}
 % Define the name of the two minimization problems
-\newcommand{\MinStaBic}{\textsc{MinimumStarBicoloring}}
-\newcommand{\MinUniCom}{\textsc{MinimumUnidirectionalCompression}}
-\newcommand{\MinBidCom}{\textsc{MinimumBidirectionalCompression}}
+\newcommand{\MinStaBic}{\textsc{Minimum Star Bicoloring}}
+\newcommand{\MinUniCom}{\textsc{Minimum Unidirectional Compression}}
+\newcommand{\MinBidCom}{\textsc{Minimum Bidirectional Compression}}
+
+\newcommand{\MinRStaBic}{\textsc{Minimum Restricted Star Bicoloring}}
+\newcommand{\MinRUniCom}{\textsc{Minimum Restricted Unidirectional Compression}}
+\newcommand{\MinRBidCom}{\textsc{Minimum Restricted Bidirectional Compression}}
+
 \begin{document}
 \pagenumbering{roman}
 \begin{titlepage}
@@ -272,6 +277,8 @@ all edges connect vertices from one set~$V_c$ to the other set $V_r$. That is, t
 no edge connecting vertices within the set $V_c$ or within $V_r$. Moreover, two vertices
 that are connected by a path of length two, are called \emph{distance-$2$ neighbors}.
 
+\MinUniCom
+
 The overall idea behind transforming Problem \ref{p.seed.bid}, \MinBidCom, into an equivalent
 problem using the bipartite graph model is as follows. The grouping of the columns and
 rows is expressed by representing each group by a color. Vertices that belong to the same
@@ -360,12 +367,50 @@ coloring in the bipartite graph model is then equivalent to a coloring in the un
 model in which all neighbors are colored differently. Finally, a discussion of the computational
 complexity of Problem~\ref{p.coloring} including recent new results is given in~\cite{jj:cjr}.
 
-To illustrate the tricky transformation from \MinBidCom\ to \MinStaBic, we design a new
-educational module explained in Section~\ref{s.bidirectional}.
+%To illustrate the tricky transformation from \MinBidCom\ to \MinStaBic, we design a new
+%educational module explained in Section~\ref{s.bidirectional}.
 
 \section{Partial Jacobian Computation}
 \label{s.part.jac}
 \subsection{Problem}
+Gebremedhin et al~\cite{Gebremedhin05whatcolor} introduced the concept of the partial Jacobian computation
+in which the assumption is that only a subset of Jacobian should be determined which is called the required elements. 
+L{\"u}lfesmann~\cite{Lulfesmann2012Fap} has studied more considerably in this area.
+Suppose the required elements are shown by $R$,
+\emph{structurally orthogonality} is adapted for the partial coloring as follows,
+\begin{definition}[Partially Structurally Orthogonal]\label{d.part.str.orth}
+Two columns $c_i$ and $c_j$ are partially structurally orthogonal with respecto $R$ 
+if and only if they do not have a nonzero element in the same row where at least 
+one of these nonzero elements is required.
+\end{definition}
+
+The corresponding problem can be formulated as follows for either unidirectional
+or bidirectional compression,
+\begin{problem}[\MinRUniCom]
+\label{p.seed.uni} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
+pattern and $R$ be a proper subset of $J$. Find a seed matrix $V$ of dimension $n\times \col$ 
+whose number of columns of $V$ sums up
+to a minimal value, $\col$, such that all nonzero elements of $R$ also appear in
+the matrix-matrix product $JV$.
+\end{problem}
+
+\begin{problem}[\MinRBidCom]
+\label{p.seed.bid} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
+pattern and $R$ be a proper subset of $J$. 
+Find a pair of binary seed matrices $V$ of dimension $n\times \col$ and $W$~of
+dimension $\row \times m$ whose number of columns of $V$ and number of rows of $W$ sum up
+to a minimal value, $\col + \row$, such that all nonzero elements of $R$ also appear in
+the pair of matrix-matrix products $JV$ and $WJ$.
+\end{problem}
+
+An equivalent graph-theoretical formulation of this problem is discussed in the next
+section.
+
+\subsection{Combinatorial Model}
+Restricted distance-$2$ coloring
+Restricted star bicoloring
+Problem minimum of these
+\subsection{Sparsification (Block Diagonal)}
 However, the situation in our semi-matrix-free approach is different. Rather than
 computing all nonzeros of $J$ we are interested in only a subset thereof. More precisely,
 we are interested in the required nonzero elements that are assembled in the matrix
@@ -400,7 +445,6 @@ that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J
 S$.
 \end{problem}
 
-\subsection{Combinatorial Model}
 We now focus on reformulating this combinatorial problem from
 scientific computing in terms of an equivalent problem defined on a suitable graph model.
 
@@ -457,7 +501,7 @@ which there is a vertex set for the rows and another vertex set for the columns 
 Jacobian. Using the more general bipartite graph model, Problem~\ref{p:minblockcol} could
 be reformulated as a minimum distance-2 coloring of a bipartite graph when restricted to
 the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
-\subsection{Sparsification (Block Diagonal)}
+
 \section{Preconditioning}
 \label{s.precond}
 \subsection{Problem}
@@ -619,11 +663,14 @@ more nonrequired elements in the process of coloring? Can we
 maximize a term like alpha.X + beta.C where alpha and beta are
 weighting coefficients, X is the coloring number, and C is the
 number of survived nonrequired elements?
-
 Here, we introduce a new heuristic which increase the number of survived nonrequired elements
 such that the number of colors remains almost the same.
-The greedy algorithm for one-sided coloring is given in a pseudocode as follow,
-NP-hard problem~\cite{npcomplete1}
+
+Since finding an exact coloring coloring is a known NP-complete problem~\cite{SPINRAD198589},
+different heuristics are employed to find an estimation of minimum coloring. The greedy
+coloring is one of these heuristics which is widely used. 
+Greedy coloring algorithms computes a reasonable coloring~\cite{spaa14}.
+The greedy coloring algorithm for a simple graph is given in a pseudocode as follow,
 \begin{lstlisting}
 for v in column_vertices:
   forbidden_colors[0] = v
@@ -636,8 +683,33 @@ for v in column_vertices:
   color v with this color
 \end{lstlisting}
 The greedy coloring is widely used since the computational complexity is low and
-it is easy to implement. Also, the different orderings can be adapted to
-improve the results of coloring. In this coloring, the assumption is that each
+it is easy to implement. Various versions of this coloring is introduces so far.
+The version which we show here, had the computational complexity of 
+$\mathcal{O}(n + m)$ in which $n$ is the number of vertices 
+and $m$ is the number of edges~\cite{ordering1}.
+We need to iterate over all vertices and check the incidency condition for 
+all edges connected to each vertex. It can be written also as $\mathcal{O}(n + \Delta)$
+since we need only to check neighbours of each vertex.
+
+However, this algorithm depends on the order of vertices. 
+Hence, there are many publications on how to choose a good ordering heuristics
+for serial or parallel version of coloring~\cite{ordering1,ordering2,ordering3}.
+%NP-hard problem~\cite{npcomplete1}
+There are various ordering which were studied for coloring heuristics
+throughout years. Here, we have a list of some of these orderings for coloring.
+\begin{itemize}
+\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with minimum degree in each step.
+\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
+\item Saturation-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
+$V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbours of $v$.
+\item Smallest last ordering (SLO)~\cite{ordering1} makes a set of vertices ${v_1,v_2,...,v_n}$ in a so called smallest-last
+order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices $v_1,v_2,...,v_i$ for all $i$.
+\end{itemize}
+The computation of this ordering can have a higher complexity than $\mathcal{O}(n+m)$
+or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1}
+although it has the different space complexity.
+These different orderings can be used to improve the results of coloring. 
+In this coloring, the assumption is that each
 column is available one at a time. Hence, we can not compare the number of 
 nonrequired elements in the processes of coloring.
 For this purpose, we introduce a new heuristic coloring algorithm.
@@ -677,6 +749,13 @@ for v in column_vertices which is not colored:
   color the column max_nreq_min_pos
 \end{lstlisting}
 
+The time complexity of this new heuristic is estimated as follow.
+We need to go through all vertices 
+and find the maximum independent set containing each vertex. 
+Then, we need to find all nonrequired elements which can be survived.
+It is to be of the order $\mathcal{O}(n^2)$ although it is actually 
+of smaller since we color two vertices in each step. 
+
 \figref{bls_adds_ex33_without_alpha} shows the number of additionally required elements
 computed by this new approach, compared with the greedy algorithm. Clearly, 
 the new approach computes more additionally required elements als than the greedy approach.
@@ -689,7 +768,7 @@ is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_adds_ex33_without_alpha}
+\includegraphics[width=0.9\linewidth]{bls_adds_ex33_without_alpha}
 \caption{The number of colors in the new heuristic coloring compared with the greedy algorithm.
 The computation is carried out on the matrix \textit{ex33}. }
 \label{bls_adds_ex33_without_alpha}
@@ -697,7 +776,7 @@ The computation is carried out on the matrix \textit{ex33}. }
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_cols_ex33_without_alpha}
+\includegraphics[width=0.9\linewidth]{bls_cols_ex33_without_alpha}
 \caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
 The computation is carried out on the matrix \textit{ex33}. }
 \label{bls_cols_ex33_without_alpha}
@@ -713,7 +792,7 @@ Therefore, an improvement is to select one vertex from this set of maximum value
 additionally required elements increase. As we have seen, a potential required element can be 
 an additional required element if the addition of this element to the initially required elements
 does not introduce any new fillin. Having less number of initially required elements in a column would decrease
-the possibility of producing more fillins since it would decrease the whole number of fill paths.
+the possibility of producing more fillins since it would decrease the whole number of fill paths. \todo{}
 
 So, the previous algorithm is modified as follow,
 \begin{lstlisting}
@@ -738,11 +817,13 @@ for v in column_vertices which is not colored:
   max_nreq_min_req = find the element of all_max_nreq with the minimum value of required elements
   color the column max_nreq_min_req
 \end{lstlisting}
+The time complexity is again $\mathcal{O}(n^2)$ since the sort of map happens in the lower order of 
+$\mathcal{O}(nlog(n))$. 
 \figref{bls_add_ex33_compare_max} shows how the number of additionally required elements are increased
 by the previous strategy.
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_add_ex33_compare_max}
+\includegraphics[width=0.9\linewidth]{bls_add_ex33_compare_max}
 \label{bls_add_ex33_compare_max}
 \end{figure}
 
@@ -757,14 +838,14 @@ required elements as in \figref{bls_adds_indset_ex33_}.
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_cols_indset_ex33_}
+\includegraphics[width=0.9\linewidth]{bls_cols_indset_ex33_}
 \caption{The comparison of an algorithm which color the independent sets first and 
 the greedy algorithm with respect to the number of colors.}
 \label{bls_cols_indset_ex33_}
 \end{figure}
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_adds_indset_ex33_}
+\includegraphics[width=0.9\linewidth]{bls_adds_indset_ex33_}
 \caption{The comparison of an algorithm which color the independent sets first and 
 the greedy algorithm with respect to the number of additionally required elements.}
 \label{bls_adds_indset_ex33_}
@@ -808,27 +889,39 @@ The number of colors would increase as in~\figref{new.col.col.alpha.six} while
 the number of additionally required elements would not decrease a lot as in~\figref{new.col.col.alpha.six}.
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_add_alpha_0}
+\includegraphics[width=0.9\linewidth]{bls_add_alpha_0}
+\caption{The number of additionally required elements computed by the new heuristics compared with the 
+greedy algorithm. The computation carried out on the matrix \textit{ex33} and value of $\alpha$ is 
+set to $0$.}
 \label{new.col.add.alpha.zero}
 \end{figure}
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_col_alpha_0}
+\includegraphics[width=0.9\linewidth]{bls_col_alpha_0}
+\caption{The number of colors computed by the new heuristics compared with the 
+greedy algorithm. The computation carried out on the matrix \textit{ex33} and value of $\alpha$ is 
+set to $0$.}
 \label{new.col.col.alpha.zero}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_add_alpha_6}
+\includegraphics[width=0.9\linewidth]{bls_add_alpha_6}
+\caption{The number of additionally required elements computed by the new heuristics compared with the 
+greedy algorithm. The computation carried out on the matrix \textit{ex33} and value of $\alpha$ is 
+set to $6$.}
 \label{new.col.add.alpha.six}
 \end{figure}
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_col_alpha_6}
+\includegraphics[width=0.9\linewidth]{bls_col_alpha_6}
+\caption{The number of colors computed by the new heuristics compared with the 
+greedy algorithm. The computation carried out on the matrix \textit{ex33} and value of $\alpha$ is 
+set to $6$.}
 \label{new.col.col.alpha.six}
 \end{figure}
 
-We also compute the new algorithm on the other matrix \textit{nos3}
+Here, we compute the new heuristic on the other matrix \textit{nos3}
 and the results for $\alpha=10$ are shown in~\figref{new.col.add.alpha.ten.nos3}
 and~\figref{new.col.col.alpha.ten.nos3}
 and for $\alpha=1$ are shown in~\figref{new.col.add.alpha.one.nos3} and
@@ -841,41 +934,49 @@ specially when the matrix is small.
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_add_alpha_10_nos3}
-\caption{}
+\includegraphics[width=0.9\linewidth]{bls_add_alpha_10_nos3}
+\caption{The number of additionally required elements computed by the new heuristics compared with the 
+greedy algorithm. The computation carried out on the matrix \textit{nos3} and value of $\alpha$ is 
+set to $10$.}
 \label{new.col.add.alpha.ten.nos3}
 \end{figure}
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_col_alpha_10_nos3}
-\caption{}
+\includegraphics[width=0.9\linewidth]{bls_col_alpha_10_nos3}
+\caption{The number of additionally required elements computed by the new heuristics compared with the 
+greedy algorithm. The computation carried out on the matrix \textit{nos3} and value of $\alpha$ is 
+set to $10$.}
 \label{new.col.col.alpha.ten.nos3}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_add_alpha_1_nos3}
-\caption{}
+\includegraphics[width=0.9\linewidth]{bls_add_alpha_1_nos3}
+\caption{The number of additionally required elements computed by the new heuristics compared with the 
+greedy algorithm. The computation carried out on the matrix \textit{nos3} and value of $\alpha$ is 
+set to $1$.}
 \label{new.col.add.alpha.one.nos3}
 \end{figure}
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{bls_col_alpha_1_nos3}
-\caption{}
+\includegraphics[width=0.9\linewidth]{bls_col_alpha_1_nos3}
+\caption{The number of additionally required elements computed by the new heuristics compared with the 
+greedy algorithm. The computation carried out on the matrix \textit{nos3} and value of $\alpha$ is 
+set to $1$.}
 \label{new.col.col.alpha.one.nos3}
 \end{figure}
 
 \section{Effects of Ordering}
 \label{s.ordering.effect}
 
-\begin{align} 
+\begin{align*} 
 Ax = b \rightarrow M^{-1} Ax &= M^{-1}b\\
 P^T M^{-1} P P^T A P P^T x &= P^T M^{-1} P P^T b\\
 (P^T M^{-1} P) (P^T A P) P^T x &= (P^T M^{-1} P) P^T b\\
 (P^T M P)^{-1} (P^T A P) P^T x &= (P^T M P)^{-1} P^T b\\
 \tilde{M}^{-1}\tilde{A}\tilde{x} &= \tilde{M}^{-1}\tilde{b} 
 \label{e.reordering}
-\end{align}
+\end{align*}
 
 As we discussed in the iterative solvers, like BICGSTAB,
 we always need to have a matrix vector product like $Az$.
@@ -893,7 +994,6 @@ $$
 in which the seed matrix $P \tilde{x}$ is used instead of $x$.
 After computation of AD, the resulting Jacobian matrix, should be multiplied
 by $P^T$ from the left.
- 
 
 Here, we investigate the preconditioning based on the incomplete LU factorization (ILU) \cite{ilu2003}.
 Between different models of ILU, we consider the level-based ILU factorization here.
@@ -906,14 +1006,6 @@ in nonzero. If the matrix is symmetric, these edges are undirected. This means
  the graph is a simple graph and the given matrix is actually the adjacency
 matrix of the graph.
 Now, we look at the effects of preordering for the vertices of the given preconditioning graph to reduce fillins in ILU factorization. Later, we would study further how this fillin reduction would increase the additionally required elements.
-
-Since finding an exact coloring coloring is a known NP-complete problem~\cite{SPINRAD198589},
-different heuristics are employed to find an estimation of minimum coloring. The greedy
-coloring is one of these heuristics which is widely used. 
-Greedy coloring algorithms computes a reasonable coloring~\cite{spaa14}.
-However, this algorithm depends on the order of vertices. 
-Hence, there are many publications on how to choose a good ordering heuristics
-for serial or parallel version of coloring~\cite{ordering1,ordering2,ordering3}.
 
 As same as coloring algorithms, finding an ILU factorization with the minimum
 fillins is also an NP-complete problem. There are a lot of literature 
@@ -994,15 +1086,18 @@ as Figure~\ref{good_order_fillin2} shows when the ordering is $2, 5, 3$.
 \end{figure}
 
 There are various ordering which were studied for coloring heuristics
-throughout years. Here, we have a list of such orderings for coloring
-which is available in \textit{PreCol}.
-In each item, we explain how the algorithm select the next vertex.
-\begin{itemize}
-\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with minimum degree in each step.
-\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
-\item Saturation-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
-$V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbours of $v$.
-\end{itemize}
+throughout years. 
+As we discussed in the previous section, there are different ordering for coloring
+like \textit{LFO}, \textit{IDO}, and \textit{SLO}.
+%Here, we have a list of such orderings for coloring
+%which is available in \textit{PreCol}.
+%In each item, we explain how the algorithm select the next vertex.
+%\begin{itemize}
+%\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with minimum degree in each step.
+%\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the %matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
+%\item Saturation-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
+%$V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbours of $v$.
+%\end{itemize}
 
 In addition to these orderings, we consider three other orderings for preconditioning:
 \begin{itemize}
