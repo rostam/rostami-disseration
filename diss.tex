@@ -617,10 +617,11 @@ Luelfesmann and B{\"u}cker~\cite{Lulfesmann2012Fap} started a package for comput
 and bidirectional (partial-)coloring as well as the partial computation and its relative preconditioning which we discussed in ~\ref{s.precond}. 
 We improved the software in various ways that are explained in the following sections.
 First, we discuss the fillin reduction in Section~\ref{s.ordering.effect}.
-Then we see how the extensibility, readability, and usability are improved 
-in Section~\ref{s.extend}. 
 We examine different strategies for the parallelization 
 in Section~\ref{s.parallel}.
+Then we look at the software \textit{PreCol} and 
+see how the extensibility, readability, and usability are improved 
+in Section~\ref{s.extend} for computation of these coloring heuristics. 
 Then, the interfaces for MATLAB and JAVA would be discussed
 in Section~\ref{s.interfaces}.
 Finally, we explain how these all are implemented in
@@ -635,8 +636,9 @@ Section~\ref{s.impl.ordering}.
 mohem ... discussion about the sparsification in matlab and c
 staring from zero or one ???
 
-\section{New heuristics for coloring}
+\section{New heuristics for distance-$2$ coloring}
 \label{s.heuristic}
+
 In partial coloring, we compute the coloring focusing on
 required nonzero elements. However, there are other nonzero
 elements that are non-required but that are also computed as a
@@ -985,9 +987,30 @@ set to $1$.}
 \label{new.col.col.alpha.one.nos3}
 \end{figure}
 
+The adaption of this new algorithm to the bipartite graph mode is straightforward.
+Only two parts of algorithm needs this adaption. The part which the incidency is checked 
+in which a distance-2 neighbourness should be checked instead of normal neighbourness.
+Also, the part that we search for the indpendent set containing a given vertex should 
+be computed again by a distance-2 neighbourness.
+
+\section{New heuristics for star bicoloring}
+\label{s.heuristic.starbicoloring}
+The classical approach toward star bicoloring is first introduced in 
+\cite{Gebremedhin05whatcolor} as star bicoloring scheme.
+This algorithm is implemented and evaluated in
+Lülfesmann~\cite{LulfesmannMaster}. This algorithm performs convincing
+since the steps of the algorithms is near to the definition of the coloring.
+Complete direct solver bicoloring and Row/Column Fill Bicoloring~\cite{Hossain95computinga}
+are the other algorithms which are introduced for bicoloring.
+As Calotoiu~\cite{CalotoiuMaster} dicusses theses algorithms do not perform
+better than the classic star bicoloring scheme.
+Calotoiu~\cite{CalotoiuMaster} introduces the integrated star bicoloring 
+and total ordering star bicoloring which performs better than 
+star bicoloring scheme in some matrices and not much worse in some other
+matrices.
+
 \section{Effects of Ordering}
 \label{s.ordering.effect}
-
 \begin{align*} 
 Ax = b \rightarrow M^{-1} Ax &= M^{-1}b\\
 P^T M^{-1} P P^T A P P^T x &= P^T M^{-1} P P^T b\\
