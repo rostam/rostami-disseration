@@ -1009,29 +1009,76 @@ and total ordering star bicoloring which performs better than
 star bicoloring scheme in some matrices and not much worse in some other
 matrices.
 
+As same as the last section, we search for a modified version of star bicoloring
+which increases the number of additionally required elements without 
+a high increase the number of colors. The idea from the new heuristic 
+can be applied here. However it can survive less additionally required
+elements since a survived nonrequired elements from the column compression
+it is not necessary a survived nonrequired elemtns form the row compression.
+
+We consider the following implemenetation of star bicoloring based on 
+Algorithm 3.5 from Lülfesmann~\cite{Lulfesmann2012Fap}.
+Here, the notation $G[S]$ means the graph induces on the edge set $S$.
+\begin{lstlisting}[mathescape]
+$forbiddenColors = [0,0,...,0]$
+$\Phi = [-1, ..., -1]$
+$v = -1$
+$E_R^{'} = E_R$
+while $E_R^{'}$ is not empty 
+  if($\Delta(V_r,G[E_R^{'}]) > \rho \Delta(V_c,G[E_R^{'}])$ then
+    v = $v_r\in V_r$ with maximum degree in $G[E_R^{-1}]$
+  else
+    v = $v_c\in V_c$ with maximum degree in $G[E_R^{-1}]$
+  $E_R^{'} = E_R^{'} - {(v,w)\in E_R^{'}:w\in N_1(v,G[E_R^{'}])}$
+  for all $w\in N_1(v,G)$
+    if $\Phi(w) \leq 0$
+      for all $x\in N_1(w,G)$ with $\Phi(w) > 0$
+        if $(v,w) \in E_R$ or $(w,x) \in E_R$
+          $forbiddenColors[\Phi (x)]=v$
+    else
+      for all $x\in N_1(w,G[E_R])$ with $\Phi(w) > 0$
+        for all $y\in N_1(x,G)$ with $\Phi(y) > 0$ and $y\neq w$
+          if $\Phi(w) = \Phi(y)$
+            $forbiddenColors[\Phi (x)] = v$
+  $\Phi(v) = min{j>0: forbiddenColors[j] \neq v}$
+  for all $v_c\in V_c$ with $\Phi(v_c) > 0$
+    $\Phi (v_c) = \Phi (v_c) + max{\Phi (v_r): v_r \in V_r}$
+  for all $v\in V_r\cup V_c$ with $\Phi(v)\neq -1$
+    $\Phi (v) = 0$  
+\end{lstlisting}
+This algorithm process a vertex either from column vertices
+or row vertices with maximum degree in each step.
+We change this part of algorithm to process a specific algorithm
+with maximum degree and maximum nonrequired elements instead of 
+an arbitrary vertex. After the first step, this processes can be
+repeated or we can process the vertices with 
+minimum number of nonrequired elements.
+
 \begin{figure}
 \includegraphics[width=\linewidth]{bls_adds_crystm01_old_star_vs_new}
-\caption{Natural ordering results in a worst convergence.}
+\caption{The number of additionally required elements computed with
+the new star bicoloring compared with the older implementation. 
+The asymmetric matrix \textit{$crystm01$} is used here.}
 \label{bls_adds_crystm01_old_star_vs_new}
 \end{figure}
 
 \begin{figure}
 \includegraphics[width=\linewidth]{bls_cols_crystm01_old_star_vs_new}
-\caption{Natural ordering results in a worst convergence.}
+\caption{The number of additionally required elements computed with
+the new star bicoloring compared with the older implementation. 
+The asymmetric matrix \textit{$crystm01$} is used here.}
 \label{bls_cols_crystm01_old_star_vs_new}
 \end{figure}
 
 
 \section{Effects of Ordering}
 \label{s.ordering.effect}
-\begin{align*} 
-Ax = b \rightarrow M^{-1} Ax &= M^{-1}b\\
-P^T M^{-1} P P^T A P P^T x &= P^T M^{-1} P P^T b\\
-(P^T M^{-1} P) (P^T A P) P^T x &= (P^T M^{-1} P) P^T b\\
-(P^T M P)^{-1} (P^T A P) P^T x &= (P^T M P)^{-1} P^T b\\
-\tilde{M}^{-1}\tilde{A}\tilde{x} &= \tilde{M}^{-1}\tilde{b} 
-\label{e.reordering}
-\end{align*}
+
+In the idea of mixing the preconditioning and AD which
+we have discussed in ... , the ILU preconditioning is computed
+using the natural ordering of the given matrix. However,
+it is a well known fact that the number of fillins is 
+highly dependent on the ordering. 
 
 As we discussed in the iterative solvers, like BICGSTAB,
 we always need to have a matrix vector product like $Az$.
@@ -1045,10 +1092,17 @@ z = P \tilde{x}
 A = ad(f,z,...)
 cg(P^T A,...)
 $$
-
 in which the seed matrix $P \tilde{x}$ is used instead of $x$.
 After computation of AD, the resulting Jacobian matrix, should be multiplied
 by $P^T$ from the left.
+\begin{align*} 
+Ax = b \rightarrow M^{-1} Ax &= M^{-1}b\\
+P^T M^{-1} P P^T A P P^T x &= P^T M^{-1} P P^T b\\
+(P^T M^{-1} P) (P^T A P) P^T x &= (P^T M^{-1} P) P^T b\\
+(P^T M P)^{-1} (P^T A P) P^T x &= (P^T M P)^{-1} P^T b\\
+\tilde{M}^{-1}\tilde{A}\tilde{x} &= \tilde{M}^{-1}\tilde{b} 
+\label{e.reordering}
+\end{align*}
 
 Here, we investigate the preconditioning based on the incomplete LU factorization (ILU) \cite{ilu2003}.
 Between different models of ILU, we consider the level-based ILU factorization here.
