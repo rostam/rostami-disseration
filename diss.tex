@@ -106,6 +106,28 @@ of needed storage. In contrast to full Jacobian computation in which all element
 are meant to be determined, parital Jacobian computation is looking at a subset
 of these elements. This property brings a lot of conventions leading to a faster
 and more efficient computation.
+Determining these nonzero elements 
+in full or partial Jacobian computations
+by a famouse the automatic differentation techniques
+can be modeled as graph coloring in graph language. 
+
+Since a matrix-vector product (instead of the whole Jacobian)
+is needed in iterative solvers, automatic differentations fits
+the best in the iterative solvers.
+However, the preconditioning techniques used 
+to improve the convergence of iterative solvers, 
+needs an access to the nonzero elements. 
+So, a sparsification is applied on the Jacobian
+before computing the preconditioner.
+Some of the remaning nonzeros are added to the
+sparsified ones in favour of efficiency.
+The current thesis first looks at different way to optimize
+the processes of selecting elements. Also, some research
+is discussed for ILU preconditioning.
+At the second part of this thesis, we introduce 
+an interactive educational module to teach these
+tricky concepts in classroom. 
+
 \chapter*{Zusammenfassung}
 \chapter*{Acknowledgements}
 \noindent This project would not have been possible without 
@@ -138,19 +160,19 @@ On the other hand, another method to speed up the convergence of the linear solv
 is preconditioning. We try to investigate these two computational ingredients
 in a common base of combinatorial scientific computing. 
 
-In this work, we discuss first a computational package for coloring and preconditioning.
-We improve this software in different directions. Then, we design educational modules
-to teach this concept and other concepts from combinatorial scientific computing.
-
-This following dissertation is structured as follows.
+This dissertation is structured as follows.
 First, we go through basic definitions in \chapref{prel} which are needed in other chapters.
-\chapref{package} discusses a new heuristics for coloring as well as a study of the effects of 
-ordering in the previously provided greedy algorithms. Also, we restructure a previous software
+We discuss the known graph model for full Jacobian computation and partial Jacobian
+computation. A sparsification is introduced which helps in the formulation of 
+mix of automatic differentation and preconditioning.
+\chapref{package} discusses new heuristics for distance-$2$ coloring and 
+star bicoloring. We also look at a simple parallelization technique for the 
+coloring algorithm. also We look at the ordering for the ILU preconditioning.
+In this chapter, we restructure a previous software
 to be more readable and extensible and to contain new heuristic algorithm.
-Then, we discuss an interactive educational module in~\chapref{explain}
+\chapref{explain} discuss an interactive educational module
 which is designed to teach the computational science algorithms in classroom.
 Finally, the conclusion and future work comes in \chapref{conc}.
-
 
 \chapter{‌Basic Definitions}
 \label{prel}
@@ -158,8 +180,8 @@ Finally, the conclusion and future work comes in \chapref{conc}.
 %our paper~\cite{2014:09}.
 
 In this chapter, we would briefly discuss the basic definitions which we need to understand
-the other parts of the paper. In each section of this chapter, we provide some references to read the concepts
-in details. We divide the definitions in three parts of full Jacobian computation in~\secref{s.full.jac},
+the other parts of the paper. In each section of this chapter, we provide some references to read the conceptsin details. 
+We divide the definitions in three parts of full Jacobian computation in~\secref{s.full.jac},
 partial Jacobian computation~\secref{s.part.jac}, and the preconditioning in~\secref{s.precond}.
 %===================================================================================================
 \section{Full Jacobian Computation}
@@ -652,6 +674,23 @@ in ~\secref{s.interfaces}.
 %\end{itemize}
 \section{New heuristics for coloring}
 \label{s.heuristic}
+In \secref{s.precond}, we discuss the idea of mixing different
+computational ingredients in favour of reducing the computational efforts
+and storage. 
+In summary, this is the process of computation,
+\begin{itemize}
+\item Sparsify the Jacobian matrix: $J\xrightarrow{\rho}J^{'}$
+\item Compute the seed matrix based on a partial graph coloring over $J$ and $J^{'}$
+\item Compute the ILU preconditioning on the sparsified Jacobian matrix $J^{'}$
+\end{itemize}
+
+The additionally required elements can be computed in different ways.
+A matrix version:
+
+Two graph versions based on \cite{Lulfesmann2012Fap}
+
+Our focus is on the second version
+
 In partial coloring, we compute the coloring focusing on
 required nonzero elements. However, there are other nonzero
 elements that are non-required but that are also computed as a
@@ -1082,13 +1121,13 @@ $0.3$ to $0.4$ in \figref{rho_value_orani678} would result
 in a change of $10000$ in the number of additionally required elements.
 
 \begin{figure}
-\includegraphics[width=0.9\linewidth]{rho_value_685_bus}
+%\includegraphics[width=0.9\linewidth]{rho_value_685_bus}
 \caption{influence of $\rho$}
 \label{rho_value_685_bus}
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=0.9\linewidth]{rho_value_orani678}
+%\includegraphics[width=0.9\linewidth]{rho_value_orani678}
 \caption{influence of $\rho$}
 \label{rho_value_orani678}
 \end{figure}
