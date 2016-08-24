@@ -26,6 +26,7 @@
 \newcommand{\figref}[1]{Figure~\protect\ref{#1}}
 \newcommand{\secref}[1]{Section~\protect\ref{#1}}
 \newcommand{\chapref}[1]{Chapter~\protect\ref{#1}}
+\newcommand{\defref}[1]{Definition~\protect\ref{#1}}
 
 \usepackage{color}
 \definecolor{lightgray}{rgb}{.9,.9,.9}
@@ -157,8 +158,13 @@ speeding up the computation. These methods are generally as a part of
 a bigger area called combinatorial scientific computing.
 
 On the other hand, another method to speed up the convergence of the linear solver
-is preconditioning. We try to investigate these two computational ingredients
-in a common base of combinatorial scientific computing. 
+is preconditioning. The preconditioning techniques need most of the time access to
+the elements of Jacobian which is in contrast to the requirements of automatic differentation.
+Applying a sparsification operator first on the Jacobian matrix and do the ILU preconditioning
+on the sparsified matrix would be a solution to the problem of determiniation of 
+all elmenets. This processes becomes complete by trying to add more elements to the matrix
+without producing more fillins or colors. We introduce new heuristics which consider this
+elements in the time of coloring in favour of increasing them.
 
 This dissertation is structured as follows.
 First, we go through basic definitions in \chapref{prel} which are needed in other chapters.
@@ -174,31 +180,31 @@ to be more readable and extensible and to contain new heuristic algorithm.
 which is designed to teach the computational science algorithms in classroom.
 Finally, the conclusion and future work comes in \chapref{conc}.
 
-\chapter{‌Basic Definitions}
+\chapter{‌State of the Art}
 \label{prel}
-%We will discuss AD and the needed seed matrices in~\ref{s.seedmatrix} which is based on
-%our paper~\cite{2014:09}.
-
-In this chapter, we would briefly discuss the basic definitions which we need to understand
-the other parts of the paper. In each section of this chapter, we provide some references to read the conceptsin details. 
-We divide the definitions in three parts of full Jacobian computation in~\secref{s.full.jac},
+In this chapter, we would briefly discuss the already exisiting concepts which we need to understand
+the other parts of the paper. In each section of this chapter, 
+we provide some references to read these concepts further in details. 
+These concepts are introduced in three parts of full Jacobian computation in~\secref{s.full.jac},
 partial Jacobian computation~\secref{s.part.jac}, and the preconditioning in~\secref{s.precond}.
 %===================================================================================================
 \section{Full Jacobian Computation}
 \label{s.full.jac}
 %===================================================================================================
 \subsection{Problem}
-Given a program to evaluate some function $f(x) : \setR^n \rightarrow \setR^m$,
+\label{ss.problem.full}
+Given a program to evaluate some function $f(x) : \setR^n \rightarrow \setR^m$ 
+in the computational cost $t$,
 techniques of automatic differentiation (AD)~\cite{Griewank2008EDP,Rall1981ADT} generate
-computer programs capable of evaluating the $m \times n$ Jacobian matrix $J$. In the
-\emph{forward mode} (FM) of AD, the automatically-generated program computes the product
-$JV$; in the \emph{reverse mode}, it computes the product $WJ$. In these matrix-matrix
-products, the two binary input matrices $V \in \{0,1\}^{n\times \col}$ and $W\in
-\{0,1\}^{\row\times m}$ are called \emph{seed matrices}. The products $JV$ and $WJ$ are
-computed without assembling the Jacobian $J$. Compared to the time needed to evaluate
-$f(x)$, the computational cost of computing $JV$ in the forward mode is larger by a
-factor of \col, the number of columns of $V$. The corresponding factor for the reverse
-mode to compute $WJ$ is given by \row, the number of rows of $W$.
+computer programs capable of evaluating the $m \times n$ Jacobian matrix $J$. 
+The so-called forward mode of automatic differenation generates a program automatically 
+which computes the product of Jacobian matrix with some given so-called seed matrix $V$,
+i.e. $JV$. There is an inverse mode of automatic differentation which computes
+the product $WJ$. An important consideration is that automatic differentation 
+computes these products without assembling the Jacobian $J$. 
+Suppose the matrix $V$ has $\col$ number of columns and the matrix $W$ has 
+$\row$ number of rows, the computational costs to compute these products 
+would be $\col t$ and $\row t$, respectively.
 
 In general, the Jacobian $J$ is computed choosing either $c=n$ and $V$ as the identity of
 order~$n$ in the forward mode or $r = m$ and $W$ as the identity of order $m$ in the
@@ -211,22 +217,43 @@ mode with a suitable linear combination of the rows of~$J$; see the
 survey~\cite{Gebremedhin05whatcolor}.
 
 The key idea behind this \emph{unidirectional compression} is now illustrated for the
-forward mode. Let $J=[c_1, c_2, \dots, c_n]$ denote the Jacobian matrix whose $i$th
+forward mode. First, we present a definition as follows, 
+\begin{definition}[Structurally Othogonality]
+\label{d:struct_orth}
+Let $J=[c_1, c_2, \dots, c_n]$ denote the Jacobian matrix whose $i$th
 column is represented by the vector $c_i \in \setR^m$. Two columns $c_i$ and $c_j$ are
 called \emph{structurally orthogonal} if they do not have any nonzero element in a same
 row. Two columns are called \emph{structurally non-orthogonal} if there is at least one
-row in which both columns, $c_i$ and $c_j$, have a nonzero element. The number of columns
-of the seed matrix is then reduced by forming linear combinations of structurally
-orthogonal columns. More precisely, a set $S$ of structurally orthogonal columns can be
-represented by a single column of the product $JV$ because the sum of these columns
-contains all the nonzero entries of all the columns in $S$. Analogously, two rows are
+row in which both columns, $c_i$ and $c_j$, have a nonzero element.
+Analogously, two rows are
 \emph{structurally orthogonal} if they do not have any nonzero element in a same column.
-A set of structurally orthogonal rows is represented by a single row in the product $WJ$.
+\end{definition}
+We can compute a linear combinations of structurally orthogonal columns of the seed matrix
+to reeduce the number of columns of the seed matrix.
+More precisely, a set $S$ of structurally orthogonal columns can be
+represented by a single column of the product $JV$ because the sum of these columns
+contains all the nonzero entries of all the columns in $S$. 
+A set of structurally orthogonal rows is also represented by a single row in the product $WJ$.
 The computational cost then scales with the number of groups of structurally orthogonal
-columns or rows in the forward or reverse mode, respectively.
-
+columns or rows in the forward or reverse mode, respectively. 
+\figref{f.mat-ex-for-orth} (Left) and \figref{f.mat-ex-for-orth} (Middle) shows two examples
+of the matrices which can be compressed efficiently by columns and rows, respectively.
+\begin{figure}
+\includegraphics[width=0.3\linewidth]{diag-col}
+\hfill
+\includegraphics[width=0.3\linewidth]{diagrow}
+\hfill
+\includegraphics[width=0.3\linewidth]{arrow}
+\caption{
+(Left) An example of a matrix which can be compressed efficiently by columns.
+(Middle) An example of a matrix which can be compressed efficiently by rows.
+(Right) An example of a matrix which cannot be compressed efficiently either by columns nor by rows.
+}
+\label{f.mat-ex-for-orth}
+\end{figure}
 Next, consider the matrix $C$ that has neither structurally orthogonal columns nor
-structurally orthogonal rows. Therefore, there is no unidirectional compression of the
+structurally orthogonal rows as in \figref{f.mat-ex-for-orth} (Right). 
+Therefore, there is no unidirectional compression of the
 matrix $C$, neither by \col\ columns nor by \row\ rows, that reduce \col\ or \row\ below
 the number of columns or rows. However, a linear combination of both, columns and rows, can be used to
 reduce the computational cost to a value below the size of matrix. Here, the columns and rows of a
@@ -262,8 +289,9 @@ the pair of matrix-matrix products $JV$ and $WJ$.
 \subsection{Combinatorial Model}
 \label{s.modeling}
 %==========================================================================================
-We reformulate the scientific computing problems which we have discussed in the 
-previous section. The new formulation is an equivanet problem defined on a
+We reformulate the scientific computing problems which 
+we have discussed in \secref{ss.problem.full}. 
+The new formulation is an equivanet problem defined on a
 carefully chosen graph model. The survey \cite{Gebremedhin05whatcolor} 
 discusses different methods
 to exploit the sparsity involved in derivative computations.
@@ -278,7 +306,8 @@ $E$ if and only if the columns $J(:,i)$ and $J(:,j)$ represented by $v_i$ and $v
 a nonzero element in at least a same row position.
 \end{definition}
 
-The grouping of columns is encoded in the following definition.
+As we have a graph model intrepreted from our Jacobian matrix in \defref{d:cig},
+the grouping of columns can be encoded in the following well-know graph coloring problem.
 %
 \begin{definition}[Coloring]
 A coloring of $G$ is a mapping $\Phi : V \to {1, \dots, p}$ with the property
@@ -288,22 +317,18 @@ $\Phi(v_i)\neq \Phi(v_j)$ for $(v_i,v_j) \in E$.
 Coleman and Mor\'{e} \cite{Coleman1983EoS} then showed that Problem~\ref{p.seed.uni}, which
 asks for a seed matrix with a minimal number of columns, is equivalent to the following
 coloring problem.
-%
+
 \begin{problem}[Minimum Coloring]
 \label{p:mincol}
-%
 Find a coloring $\Phi$ of the column intersection graph $G$ with a minimal number of
 colors.
 \end{problem}
-
-The intimate connection between the sparse Jacobian computations described in
-Problem~\ref{p.seed.uni} and the graph coloring issues described by Problem~\ref{p:mincol} is
-well-known.
-%We illustrated this algorithm by an interactive educational module EXPLAIN~\cite{2013:05}
-%(see Section~\ref{s.column-compression}). 
-
+As it can be seen, there is an intimate connection between the sparse Jacobian computations described in
+Problem~\ref{p.seed.uni} and 
+the graph coloring issues described by Problem~\ref{p:mincol}.
 If a vertex represents a row and an edge represents structural
 non-orthogonality of two rows, a row-intersection graph can be adapted too.
+
 Although, this model is convincing for the unidirectional compression, 
 the bidirectional compression can not be computed in this model.
 A bidirectional compression needs the information of both rows and columns which
@@ -319,6 +344,11 @@ at the position represented by $c_i$ and $r_j$. The graph is bipartite indicatin
 all edges connect vertices from one set~$V_c$ to the other set $V_r$. That is, there is
 no edge connecting vertices within the set $V_c$ or within $V_r$. Moreover, two vertices
 that are connected by a path of length two, are called \emph{distance-$2$ neighbors}.
+
+The coloring problem in the column-intersection graph \ref{p.seed.uni} can also be represented in 
+this bipartite graph model. This equivalent coloring is done only in the set of
+column vertices. Also, \emph{distance-$2$ neighbors} should be considered instead of
+classic definition of neighbourhood. 
 
 The overall idea behind transforming Problem \ref{p.seed.bid}, \MinBidCom, into an equivalent
 problem using the bipartite graph model is as follows. The grouping of the columns and
@@ -651,11 +681,16 @@ R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
 $$ 
 in which $SILU$ means the symbolic ILU factorization.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% PRECONDITIONING AND COLORING
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Preconditioning and Coloring}
 \label{package}
 So far, we discussed different concepts regarding the preconditioning and coloring.
 Here, we focus on the computation of the colorings and preconditioning in the ground of linear solver. 
-Luelfesmann and B{\"u}cker~\cite{Lulfesmann2012Fap} started a package for computation of the uni- 
+Lülfesmann and Bücker~\cite{Lulfesmann2012Fap} started a package for computation of the uni- 
 and bidirectional (partial-)coloring as well as the partial computation and its relative preconditioning which we discussed in ~\ref{s.precond}. 
 We improved the software in various ways that are explained in the following sections.
 First, we discuss the fillin reduction in ~\secref{s.ordering.effect}.
@@ -1121,13 +1156,13 @@ $0.3$ to $0.4$ in \figref{rho_value_orani678} would result
 in a change of $10000$ in the number of additionally required elements.
 
 \begin{figure}
-%\includegraphics[width=0.9\linewidth]{rho_value_685_bus}
+\includegraphics[width=0.9\linewidth]{rho_value_685_bus}
 \caption{influence of $\rho$}
 \label{rho_value_685_bus}
 \end{figure}
 
 \begin{figure}
-%\includegraphics[width=0.9\linewidth]{rho_value_orani678}
+\includegraphics[width=0.9\linewidth]{rho_value_orani678}
 \caption{influence of $\rho$}
 \label{rho_value_orani678}
 \end{figure}
