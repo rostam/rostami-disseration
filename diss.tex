@@ -335,6 +335,8 @@ A bidirectional compression needs the information of both rows and columns which
 is not encoded. A bipartite graph model is defined for this 
 purpose as in~\cite{Coleman1996SaE,cv:ecs,hs:csj}. 
 
+\begin{definition}[Bipartite Graph Model]
+\label{d.bip.graph}
 In the bipartite graph model, the vertex set $V=V_c\cup V_r$
 is decomposed into a set of vertices~$V_c$ representing columns of $J$ and another set of
 vertices~$V_r$ representing rows. The set of edges~$E$ is used to represent the nonzero
@@ -344,6 +346,7 @@ at the position represented by $c_i$ and $r_j$. The graph is bipartite indicatin
 all edges connect vertices from one set~$V_c$ to the other set $V_r$. That is, there is
 no edge connecting vertices within the set $V_c$ or within $V_r$. Moreover, two vertices
 that are connected by a path of length two, are called \emph{distance-$2$ neighbors}.
+\end{definition}
 
 The coloring problem in the column-intersection graph \ref{p.seed.uni} can also be represented in 
 this bipartite graph model. This equivalent coloring is done only in the set of
@@ -652,7 +655,7 @@ These nonzero elements selected by \sparsify{J} are called initially
 \emph{required} nonzero elements and represented by $R_i$. 
 An example would be the special case of a sparsification in the form of $k\times k$
 blocks on the main diagonal.
-\subsection{Comibnatorial Model}
+
 We discussed the full and partial coloring algorithms regarding AD techniques. 
 Now, the problem~\ref{p:minblockcol} can be solved for Jacobian
 restricted to the set of initially
@@ -680,6 +683,26 @@ $$
 R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
 $$ 
 in which $SILU$ means the symbolic ILU factorization.
+
+\subsection{Comibnatorial Model}
+\label{ss.comb.precond}
+The bipartite graph model presented in~\defref{d.bip.graph}
+can be used to design new algorithms for finding the initially, potentially,
+and additionally required elements. Three subsets $E_i, E_p, E_a\subset E$
+are considered for the initially, potentially,
+and additionally required elements, respectively.
+Given the sparsification operator $\rho$and  the Jacobian matrix $A$,
+here is a list of steps in the computation of additionally required elements
+and the corresponding algorithm on the bipartite graph model,
+\begin{itemize}
+\item compute the initially required elements $R_i = \rho(A)$.
+\item setup the bipartite graph $G$ from $A$ and the subset $E_i\subset E$ fom $R_i$.
+\item color the bipartite graph $G$ and save colors as the properties of vertices $\Phi_{G}(R_i)$
+\item find a subset of edges $E_p\in E - E_i$ such that 
+\end{itemize}
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -721,7 +744,16 @@ In summary, this is the process of computation,
 
 The additionally required elements can be computed in different ways.
 A matrix version:
-
+$E_i$ $R_i$
+$E_p$ $R_p$
+\begin{lstlisting}[mathescape]
+$R_p=\emptyset$
+for $(r_i,c_j)\in E_i$ with $\Phi(c_j)\neq 0$
+  for $c_k\in N_1(r_i,c_j)$ with $j\neq k$ and $(r_i,c_k)\notin E_i$
+    if $\Phi(c_j) = \Phi(c_k)$
+      continue
+  E_p = E_p \cup {(r_i,c_j)}
+\end{lstlisting}
 Two graph versions based on \cite{Lulfesmann2012Fap}
 
 Our focus is on the second version
