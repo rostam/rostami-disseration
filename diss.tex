@@ -693,11 +693,13 @@ are considered for the initially, potentially,
 and additionally required elements, respectively.
 Given the sparsification operator $\rho$and  the Jacobian matrix $A$,
 here is a list of steps in the computation of additionally required elements
-and the corresponding algorithm on the bipartite graph model,
+and the corresponding algorithm on the bipartite graph model
+(details can be found in~\cite{Lulfesmann2012Fap},
 \begin{itemize}
 \item compute the initially required elements $R_i = \rho(A)$.
 \item setup the bipartite graph $G$ from $A$ and the subset $E_i\subset E$ fom $R_i$.
-\item color the bipartite graph $G$ and save colors as the properties of vertices $\Phi_{G}(R_i)$
+\item compute the partial coloring the bipartite graph $G$ restricted to $E_i$ 
+and save colors as the properties of vertices $\Phi_{G}(R_i)$
 \item find a subset of edges $E_p\in E - E_i$ such that 
 \end{itemize}
 
