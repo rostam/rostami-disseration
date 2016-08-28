@@ -63,6 +63,7 @@
    showtabs=false,
    captionpos=b
 }
+\renewcommand{\lstlistingname}{Code}
 
 \newcommand{\setR}{\ensuremath{\mathbb{R}}}
 \newcommand{\col}{\ensuremath{c}}
@@ -684,7 +685,7 @@ R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
 $$ 
 in which $SILU$ means the symbolic ILU factorization.
 
-\subsection{Comibnatorial Model}
+\subsection{Combinatorial Model}
 \label{ss.comb.precond}
 The bipartite graph model presented in~\defref{d.bip.graph}
 can be used to design new algorithms for finding the initially, potentially,
@@ -704,7 +705,39 @@ and save colors as the properties of vertices $\Phi_{G}(R_i)$
 \end{itemize}
 
 
+\begin{lstlisting}[caption=Find potentially required elements for star bicoloring,label=code.pot.sb,mathescape]
+$E_p = \emptyset$
+for $(r_i,c_j)\in E-E_i$ with $\Phi(r_i)\notin 0$ or $\Phi(c_j)\notin 0$ 
+  if($\Phi(r_i) = 0$)
+    for $c_k\in N_1(r_i,G)$ with $j\neq k$ and $(r_i,c_k)\notin E_i$
+      if($\Phi(c_j)==\Phi(c_k)$)
+        continue with the next edge $(r_i,c_j)\in E - E_i$
 
+  if($\Phi(c_j) = 0$)
+    for $r_l\in N_1(c_j,G)$ with $j\neq l$ and $(r_l,c_j)\notin E_i$
+      if($\Phi(r_i)==\Phi(r_l)$)
+        continue with the next edge $(r_i,c_j)\in E - E_i$
+
+  if($\Phi(r_i) \neq 0$ and $\Phi(c_j) \neq 0$)
+    for $c_k\in N_1(r_i,G)$ with $i\notin k$
+      for $r_l\in N_1(c_j,G)$ with $j\notin l$
+        if($\Phi(c_j)==\Phi(c_k)$ and $\Phi(r_i)==\Phi(r_l)$)
+          continue with the next edge $(r_i,c_j)\in E - E_i$
+
+  $E_p = E_p \cup {(r_i,c_j)}$
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Find additionally required elements,label=code.add,mathescape]
+$E_a = \emptyset$
+for $(r_i,c_j)\in E_p$
+  if $i > j$
+    if $\exists c_l\in N_1(r_j,G[E_i \cup (E_f\cup E_a)])$ with $l>j$
+      continue with next edge $(r_i,c_j)\in E_p$
+  else if $i > j$
+    if $\exists r_k\in N_1(c_i,G[E_i \cup (E_f\cup E_a)])$ with $k>i$
+      continue with next edge $(r_i,c_j)\in E_p$
+  $E_a = E_a \cup {(r_i,c_j)}$ 
+\end{lstlisting}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
