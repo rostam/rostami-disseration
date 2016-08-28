@@ -700,10 +700,11 @@ and the corresponding algorithm on the bipartite graph model
 \item compute the initially required elements $R_i = \rho(A)$.
 \item setup the bipartite graph $G$ from $A$ and the subset $E_i\subset E$ fom $R_i$.
 \item compute the partial coloring the bipartite graph $G$ restricted to $E_i$ 
-and save colors as the properties of vertices $\Phi_{G}(R_i)$
-\item find a subset of edges $E_p\in E - E_i$ such that 
+and save colors as the properties of vertices $\Phi_{G}(E_i)$
+\item find a subset of edges $E_p\subset E - E_i$ such that $\Phi_{G}(E_i) = \Phi_{G}(E_i \cup E_p)$
+\item find a subset of potentially required edges $E_a\subset E_p$ such 
+that $SILUR(R_i) \cup R_a = SILU(R_i \cup R_a)$
 \end{itemize}
-
 
 \begin{lstlisting}[caption=Find potentially required elements for star bicoloring,label=code.pot.sb,mathescape]
 $E_p = \emptyset$
