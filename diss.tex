@@ -822,7 +822,7 @@ in ~\secref{s.interfaces}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Review of ILU fatorization}
+\section{Experiments on Effects of Orderings}
 \label{s.ilu}
 In the idea of mixing the preconditioning and AD which
 we have discussed in~\secref{s.precond} , the ILU preconditioning is computed
@@ -1013,8 +1013,8 @@ number of fillins for the small matrices.
 It is only for the big matrices which the efficiency of Metis ordering can be seen.
 
 This difference in number of fillins can affect the convergence speed
-relatively. Both Figure~\ref{nat_metis_convergence} (Left) 
-and Figure~\ref{nat_metis_convergence} (Right)  show
+relatively. Both Figure~\ref{nat_convergence}
+and Figure~\ref{metis_convergence} show
 the convergence history of the bicgstab solvers on the matrix \textit{nos3}.
 The three line charts are the convergence history of the solver with
 no preconditioning, ILU preconditioning with block-diagonal sparsification,
@@ -1022,36 +1022,47 @@ and ILU preconditioning with block-diagonal sparsification together with the fou
 additionally required elements, respectively.
 Here, the block size is chosen to be $10$ and the level of ILU factorization
 is $10$.
-Clearly, Figure~\ref{nat_metis_convergence}(Right) has a better convergence rate in the chart
+Clearly, Figure~\ref{metis_convergence} has a better convergence rate in the chart
 in which the additionally required elements are added in comparison with the same 
-chart in Figure~\ref{nat_metis_convergence}(Left).
+chart in Figure~\ref{nat_convergence}.
 
 \begin{figure}
-\includegraphics[width=0.49\linewidth]{nos3_mtx_convergence_nat}
-\includegraphics[width=0.49\linewidth]{nos3_mtx_convergence_metis}
-\caption{
-(Left) Natural ordering results in a worst convergence. 
-(Right) Metis ordering results in a better convergence.}
-\label{nat_metis_convergence}
+\centering
+\includegraphics[width=0.9\linewidth]{nos3_mtx_convergence_nat}
+\caption{Natural ordering results in a worst convergence.} 
+\label{nat_convergence}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{nos3_mtx_convergence_metis}
+\caption{Metis ordering results in a better convergence.}
+\label{metis_convergence}
 \end{figure}
 
 So far, we decided for the level of ILU factorization arbitrarily.
 Here, we want to see the actual influence of the level parameter on
-the fillins and additionally required elemets,
-%\begin{table}
-%\begin{tabular}{}
-%\hline
-%Level & Fillins & Adds \\\hline
+the fillins which is visualized in \figref{el_fillins_orderings},
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{el_fillins_orderings.jpg}
+\caption{The influence of the level parameter for ILU on the number of fillins
+while three different orderings are employed. 
+The block size is fixed to $100$. 
+The matrix is \textit{ex33} and the level parameter changes from $0$ to $25$.
+The ordering for coloring is \textit{LFO}.}
+\label{el_fillins_orderings}
+\end{figure}
 
-%\end{tabular}
-%\begin{tabular}{}
-%\hline
-%Level & Fillins & Adds \\\hline
-
-%\end{tabular}
-%\caption{changing the level parameter}
-%\label{level-par}
-%\end{table}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{bls_fillins_orderings.jpg}
+\caption{The influence of the block size for sparsification on the number of fillins
+while three different orderings are employed. 
+The block size is fixed to $100$. 
+The matrix is \textit{ex33} and the block size changes from $1$ to $200$.
+The ordering for coloring is \textit{LFO}.}
+\label{bls_fillins_orderings}
+\end{figure}
 
 On the other hand, the coloring has its influence on the number of 
 additionally required elements. Table~\ref{col-effect}
@@ -1093,44 +1104,18 @@ decreases the number of additionally required elements.
 This is in contrast to the minimum number of colors which we are searching for, 
 in the automatic differentiation.
 
-%new algorhtms ....???
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{el_fillins.jpg}
-\caption{The influence of the level parameter for ILU on the number of fillins and
-additionally required elements. The block size is fixed to $10$. The ordering for coloring
-and for ILU preconditioning are \textit{LFO} and \textit{Nat}. The matrix is \textit{nos3}.}
-\label{el_fillins}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{add_blocksize.jpg}
-\caption{The influence of the ordering of the ILU preconditioning 
-on the additionally required elements. 
-Three different orderings natural, minimum, and Metis are used.
-The level parameter for ILU is fixed to $10$. 
-The ordering for coloring is fixed to~\textit{LFO}.
-The matrix is \textit{exx3} with the $1733$ rows,
-$1733$ columns, and $11961$ nonzero elements.}
-\label{add_blocksize}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{fillin_blocksize.jpg}
-\caption{The influence of the ordering of the ILU preconditioning 
-on the fillins. 
-Three different orderings natural, minimum, and Metis are used.
-The level parameter for ILU is fixed to $10$. 
-The ordering for coloring is fixed to~\textit{LFO}.
-The matrix is \textit{exx3} with the $1733$ rows,
-$1733$ columns, and $11961$ nonzero elements.}
-\label{fillin_blocksize}
-\end{figure}
-
-
+%\begin{figure}
+%\centering
+%\includegraphics[width=0.9\linewidth]{fillin_blocksize.jpg}
+%\caption{The influence of the ordering of the ILU preconditioning 
+%on the fillins. 
+%Three different orderings natural, minimum, and Metis are used.
+%The level parameter for ILU is fixed to $10$. 
+%The ordering for coloring is fixed to~\textit{LFO}.
+%The matrix is \textit{exx3} with the $1733$ rows,
+%$1733$ columns, and $11961$ nonzero elements.}
+%\label{fillin_blocksize}
+%\end{figure}
 %\item Improving extensibility and usability
 %\item Documentation
 %\item Interfaces for other languages
