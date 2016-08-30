@@ -805,8 +805,10 @@ throughout this thesis.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Preconditioning and Coloring}
 \label{package}
-So far, we discussed different concepts regarding the preconditioning and coloring.
-Here, we focus on the computation of the colorings and preconditioning in the ground of linear solver. 
+The different steps of compting the additionally required elements are discussed in
+\secref{ss.comb.precond}. Here, we look at these steps and examine how they can be
+parallelized if it can be done at all.
+
 Lülfesmann and Bücker~\cite{Lulfesmann2012Fap} started a package for computation of the uni- 
 and bidirectional (partial-)coloring as well as the partial computation and its relative preconditioning which we discussed in ~\ref{s.precond}. 
 We improved the software in various ways that are explained in the following sections.
@@ -1123,26 +1125,6 @@ in the automatic differentiation.
 %\end{itemize}
 \section{New heuristics for coloring}
 \label{s.heuristic}
-In \secref{s.precond}, we discuss the idea of mixing different
-computational ingredients in favour of reducing the computational efforts
-and storage. 
-In summary, this is the process of computation,
-\begin{itemize}
-\item Sparsify the Jacobian matrix: $J\xrightarrow{\rho}J^{'}$
-\item Compute the seed matrix based on a partial graph coloring over $J$ and $J^{'}$
-\item Compute the ILU preconditioning on the sparsified Jacobian matrix $J^{'}$
-\end{itemize}
-
-%We saw an algorithm to compute additionally required elements 
-%in~\coderef{code.add2}. 
-%The additionally required elements can be computed in different ways.
-%A matrix version:
-%$E_i$ $R_i$
-%$E_p$ $R_p$
-
-%Two graph versions based on \cite{Lulfesmann2012Fap}
-%Our focus is on the second version
-
 In partial coloring, we compute the coloring focusing on
 required nonzero elements. However, there are other nonzero
 elements that are nonrequired but that are also computed as a
@@ -1651,18 +1633,58 @@ The asymmetric matrix \textit{$crystm01$} is used here.}
 
 \subsection{Parallelization}
 \label{s.parallel}
+As we sawe in \secref{s.precond}, different steps should be followed
+to compute the additionally required elements. Here, we look at each of 
+these steps and examine how they can be parallelized by OpenMP 
+if it can be done efficiently.
 
-\cite{mpi_greedy_coloring}
+First, we look at the coloring algorithm.
+There are many literature for a parallelized coloring algorithm.
+For example, 
+{\c{C}}ataly{\"{u}}rek~\cite{cataly2012} itroduced an OpenMP parallelized
+algorithm which comptues the same number of colors as the serial version.
+However, there are two points in each step of the algorithm in which two threads
+need to be synchronized.
+However, we focus on another algorithm from Rokos et al~\cite{Rokos2015} 
+which presents an algorithm in which only a point of synchronization is 
+needed. The number of colors also remains near to the number of colors
+in the serial version. A bipartite version of the algorithm can be easily
+adapted as in \coderef{omp.greedy.bip}. This algorithm first colors the vertices
+greedily and then tries to correct the false colorings which can happend.
 
-specially that the algorithms would be automatically parallel in the next
-release of c++ (C++17) next year.
-It is actually available in from g++ 4.3 
-\cite{parallelcpp}
-block parallelization openmp for the coloring part
-\cite{Rokos2015}
-\textit{Cavity16} from the sparse matrix collection of University of Florida 
-The timing are all from the computation carried on 
-an intel Core i5 with 8 Gb RAM. 
+\begin{figure}
+\begin{lstlisting}[caption=A OpenMP parallelized version of greedy algorithm
+adapted for the bipartite graph.,label=omp.greedy.bip]
+function d2_color_omp($G$,$V$)
+  #progrma omp parallel for
+  for $v\in V$
+    $forbiddenColors[\Phi(n)] = v$
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
+  #pragma omp barrier
+  $U_0 = V$
+  $i = 1$
+  while $U_{i-1}\neq \emptyset$
+    $L=\emptyset$
+    #pragma omp parallel for
+    for $v\in U_{i-1}$
+      if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v) 
+        $forbiddenColors[\Phi(n)] = v$
+        $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
+    #pragma omp barrier
+    $U_i = L$
+    $i = i+1$
+\end{lstlisting}
+\end{figure}
+
+We color the bipartite graph intrepeted from the matrix \textit{Cavity16}
+from the sparse matrix collection of University of Florida.
+The timing are all from the computation carried on an intel Core i5 with 8 Gb RAM.
+The Table~\ref{omp.res} shows the results of this computation.
+Here, we change the number of threads from $1$ to $10$ shown in the first column. 
+The second colum shows the computation time in milliseconds. The third column
+is also the number of colors which changes based on the number of colors.
+
+\begin{figure}
 \begin{tabular}{|c|c|c|}
 \hline
 Threads & Time & Colors \\\hline
@@ -1676,7 +1698,71 @@ Threads & Time & Colors \\\hline
 8 & 16.1068 & 52 \\\hline
 9 & 15.4174 & 47 \\\hline
 10 & 16.1545 & 47 \\\hline
+\end{tabular}\begin{tabular}{|c|c|c|}
+\hline
+Threads & Time & Colors \\\hline
+1 & 42.8745 & 47 \\\hline
+2 & 33.9665 & 47 \\\hline
+3 & 25.2741 & 48 \\\hline
+4 & 20.6863 & 48 \\\hline
+5 & 21.4943 & 47 \\\hline
+6 & 20.1796 & 50 \\\hline
+7 & 17.9640 & 49 \\\hline
+8 & 16.1068 & 52 \\\hline
+9 & 15.4174 & 47 \\\hline
+10 & 16.1545 & 47 \\\hline
 \end{tabular}
+\label{omp.res}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=0.5\linewidth]{ths_spd.jpg}
+\end{figure}
+
+\begin{figure}
+\begin{lstlisting}[caption=New coloring heuristc in the bipartite graph model 
+parallelized by OpenMP,label=code.new.bip.omp,mathescape]
+function d2_color_nreq($G_b$,$\alpha$)
+  #progrma omp parallel for
+  for $v\in V_c$ with $\Phi(v)=0$
+    $forbiddenColors[0] = v$
+    if $\exists n\in N_2(v): (v,n)\in E_i$ 
+      for $n\in N_2(v)$
+        if $\Phi(n) \neq 0$
+          $forbiddenColors[\Phi(n)] = v$
+
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
+    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $nreq_v = \{n\in N_2(v):(n,v)\notin E_i\}$
+    for $i \in I_v$
+      $nreq_i = \{n\in N_2(i):(n,i)\notin E_i\}$
+      $req_i  = \{n\in N_2(i):(n,i)\in E_i\}$ 
+      $mapVtoNreq = mapVtoNreq \cup (i , count (nreq_i - nreq_v))$
+      $mapVtoreq  = map \cup (i , count (req_i))$
+    $maxs = \{ a\in keys(map): map[a] = max(values(mapVtoNreq))\}$
+    $mins = \{ a\in keys(map): map[a] = min(values(mapVtoNreq))\}$
+    $minReq = \{ a\in maxs: mapVtoreq[a] = min(values(mapVtoreq))\}$
+    $\Phi(minReq) = \Phi(v)$
+    for $i\in\{0,1,...,\alpha\}$
+      $\Phi(mins[i]) = \Phi(v)$
+
+  #pragma omp barrier
+  $U_0 = V$
+  $i = 1$
+  while $U_{i-1}\neq \emptyset$
+    $L=\emptyset$
+    #pragma omp parallel for
+    for $v\in U_{i-1}$
+      if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v) 
+        $forbiddenColors[\Phi(n)] = v$
+        $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
+    #pragma omp barrier
+    $U_i = L$
+    $i = i+1$
+\end{lstlisting}
+\end{figure}
+
+\cite{mpi_greedy_coloring}
 
 
 \section{PreCol 1.0}%Usability, Readability, and Extensibility}
@@ -1702,6 +1788,12 @@ since the goal is to write an extension with a few code. So, the developer shoul
 move the new header file to the corresponding directory which is the ordering directory
 for this new ordering and \textit{algs} directory for coloring algorithms.
 Now, building the software would bring this new ordering into the software execution.
+
+specially that the algorithms would be automatically parallel in the next
+release of c++ (C++17) next year.
+It is actually available in from g++ 4.3 
+\cite{parallelcpp}
+
 
 Using the standard library of C++ as well as the concept of functional programming
 in new C++ release~\cite{Sutherland2015}, we provide different functions which can be used
