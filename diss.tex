@@ -1651,7 +1651,6 @@ needed. The number of colors also remains near to the number of colors
 in the serial version. A bipartite version of the algorithm can be easily
 adapted as in \coderef{omp.greedy.bip}. This algorithm first colors the vertices
 greedily and then tries to correct the false colorings which can happend.
-
 \begin{figure}
 \begin{lstlisting}[caption=A OpenMP parallelized version of greedy algorithm
 adapted for the bipartite graph.,label=omp.greedy.bip]
@@ -1675,50 +1674,10 @@ function d2_color_omp($G$,$V$)
     $i = i+1$
 \end{lstlisting}
 \end{figure}
-
-We color the bipartite graph intrepeted from the matrix \textit{Cavity16}
-from the sparse matrix collection of University of Florida.
-The timing are all from the computation carried on an intel Core i5 with 8 Gb RAM.
-The Table~\ref{omp.res} shows the results of this computation.
-Here, we change the number of threads from $1$ to $10$ shown in the first column. 
-The second colum shows the computation time in milliseconds. The third column
-is also the number of colors which changes based on the number of colors.
-
-\begin{figure}
-\begin{tabular}{|c|c|c|}
-\hline
-Threads & Time & Colors \\\hline
-1 & 42.8745 & 47 \\\hline
-2 & 33.9665 & 47 \\\hline
-3 & 25.2741 & 48 \\\hline
-4 & 20.6863 & 48 \\\hline
-5 & 21.4943 & 47 \\\hline
-6 & 20.1796 & 50 \\\hline
-7 & 17.9640 & 49 \\\hline
-8 & 16.1068 & 52 \\\hline
-9 & 15.4174 & 47 \\\hline
-10 & 16.1545 & 47 \\\hline
-\end{tabular}\begin{tabular}{|c|c|c|}
-\hline
-Threads & Time & Colors \\\hline
-1 & 42.8745 & 47 \\\hline
-2 & 33.9665 & 47 \\\hline
-3 & 25.2741 & 48 \\\hline
-4 & 20.6863 & 48 \\\hline
-5 & 21.4943 & 47 \\\hline
-6 & 20.1796 & 50 \\\hline
-7 & 17.9640 & 49 \\\hline
-8 & 16.1068 & 52 \\\hline
-9 & 15.4174 & 47 \\\hline
-10 & 16.1545 & 47 \\\hline
-\end{tabular}
-\label{omp.res}
-\end{figure}
-
-\begin{figure}
-\includegraphics[width=0.5\linewidth]{ths_spd.jpg}
-\end{figure}
-
+This idea of parallelization can be applied to our new coloring heuristics.
+It means we compute the coloring like before by a parallelized loop.
+Then, we correct the coloring. \coderef{code.new.bip.omp} shows the parallelized
+version of \coderef{code.new.bip}.
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristc in the bipartite graph model 
 parallelized by OpenMP,label=code.new.bip.omp,mathescape]
@@ -1753,7 +1712,7 @@ function d2_color_nreq($G_b$,$\alpha$)
     $L=\emptyset$
     #pragma omp parallel for
     for $v\in U_{i-1}$
-      if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v) 
+      if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v)$
         $forbiddenColors[\Phi(n)] = v$
         $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
     #pragma omp barrier
@@ -1762,8 +1721,72 @@ function d2_color_nreq($G_b$,$\alpha$)
 \end{lstlisting}
 \end{figure}
 
-\cite{mpi_greedy_coloring}
+We color the bipartite graph intrepeted from the matrix \textit{Cavity16}
+from the sparse matrix collection of University of Florida.
+The timing are all from the computation carried on an intel Core i5 with 8 Gb RAM.
+Table~\ref{omp.res} shows the results of this computation.
+Here, we change the number of threads from $1$ to $10$ shown in the first column. 
+The second colum shows the computation time in milliseconds. The third column
+is also the number of colors which changes based on the number of colors.
+Table~\ref{omp.res}(Left) shows the results of computation of \coderef{omp.greedy.bip}
+and Table~\ref{omp.res}(Right) for \coderef{code.new.bip.omp}.
+Also \figref{speedups} (Left) and \figref{speedups} (Right) visualize the speedup
+based on the number of threads.
+\begin{figure}
+\begin{tabular}{|c|c|c|}
+\hline
+Threads & Time & Colors \\\hline
+1 & 42.8745 & 47 \\\hline
+2 & 33.9665 & 47 \\\hline
+3 & 25.2741 & 48 \\\hline
+4 & 20.6863 & 48 \\\hline
+5 & 21.4943 & 47 \\\hline
+6 & 20.1796 & 50 \\\hline
+7 & 17.9640 & 49 \\\hline
+8 & 16.1068 & 52 \\\hline
+9 & 15.4174 & 47 \\\hline
+10 & 16.1545 & 47 \\\hline
+\end{tabular}\hfill
+\begin{tabular}{|c|c|c|}
+\hline
+Threads & Time & Colors \\\hline
+1 & 96.795 & 48 \\\hline
+2 & 75.744 & 47 \\\hline
+3 & 55.605 & 49 \\\hline
+4 & 49.335 & 49 \\\hline
+5 & 49.360 & 47 \\\hline
+6 & 49.365 & 51 \\\hline
+7 & 45.342 & 47 \\\hline
+8 & 43.254 & 51 \\\hline
+9 & 40.742 & 48 \\\hline
+10 & 39.416 & 47 \\\hline
+\end{tabular}
+\caption{
+(Left) The results of computation of greedy coloring parallelized by OpenMP.
+(Right) The results of computation of new heuristics parallelized by OpenMP}
+\label{omp.res}
+\end{figure}
 
+\begin{figure}
+\includegraphics[width=0.44\linewidth]{ths_spd.jpg}\hfill
+\includegraphics[width=0.47\linewidth]{ths_spd2.jpg}
+\caption{
+(Left) Speedup for the computation of greedy coloring in bipartite graph model parallelized by OpenMP.
+(Right)Speedup for the computation of new coloring heurtistic in bipartite graph model parallelized by OpenMP.
+}
+\label{speedups}
+\end{figure}
+The same idea can be applied to the new heuristic for star bicoloring which is a potential
+future work.
+
+Apart from the parallelization of coloring, the block diagonal sparsification makes a suitable
+matrix for parallelization. It is well known the fillins are generated only in the nonzero
+blocks in such matrices. This observation gives a direct idea of parallelization in which each process
+works on each block. We do not go into details since it is already discussed in previous literature
+like~\cite{parblockilu}. However, it does not mean that the same idea can be applied in computation of
+additionally required elements since those elements are outside the blocks.
+
+%\cite{mpi_greedy_coloring}
 
 \section{PreCol 1.0}%Usability, Readability, and Extensibility}
 \label{s.extend}
@@ -1789,11 +1812,6 @@ move the new header file to the corresponding directory which is the ordering di
 for this new ordering and \textit{algs} directory for coloring algorithms.
 Now, building the software would bring this new ordering into the software execution.
 
-specially that the algorithms would be automatically parallel in the next
-release of c++ (C++17) next year.
-It is actually available in from g++ 4.3 
-\cite{parallelcpp}
-
 
 Using the standard library of C++ as well as the concept of functional programming
 in new C++ release~\cite{Sutherland2015}, we provide different functions which can be used
@@ -1813,7 +1831,9 @@ from the new C++ functional programming to implement a function in place.
 Following a unique solution, we implement all the possible part of algorithms
 with the use of standard library of C++ which also improves the readability.
 This strategy reduces the amount of the code dramatically and
-make the code more readable.
+make the code more readable. 
+Also, the standard algorithms would be automatically parallel in the next
+release of C++ (C++17) next year~\cite{parallelcpp}.
 
 \subsection{Restructuring.}
 In the previous version, the coloring, 
