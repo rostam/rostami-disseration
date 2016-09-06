@@ -2831,82 +2831,26 @@ color_vertex(current,new_col);
 
 \chapter{Conclusion and Future Work}
 \label{conc}
-This work is to improve the new ideas in combinatorial scientific
-computing. Specially, our focus is the new idea of mixing AD 
-and preconditioning which we explained in \secref{s.precond}.
-The whole idea is to save storage as well as to optimize
-the convergence of iterative linear solvers. We introduce 
-a new heuristics here in favour of convergence by increasing
-the number of elements of the matrix which appear in 
-preconditioner while the memory usage for the Jacobian computation
-remains almost the same.
-We also extend an interactive educational module toward teaching 
-the concepts of combinatorial scientific computing. We actually
-did more than a simple extension. A lot of new features and concepts
-are added to the software.
+This work is to develop the new ideas in combinatorial scientific
+computing. Our focus is the new idea of mixing AD and preconditioning which we explained in \secref{s.precond}. The whole idea is to save storage as well as to optimize the convergence of iterative linear solvers. We introduce new heuristics here for a better convergence and to increase the number of elements of the matrix which appear in preconditioner while the memory usage for the Jacobian computation
+remains almost the same. Additionally, we extend an interactive educational module toward teaching the concepts of combinatorial scientific computing. We added a lot of new features and concepts to this module.
 
-Although some work is done so far, there is still a lot of room
-for improvements. Here is a list of suggestions for future work,
-\begin{itemize}
-\item So far, most of works toward miixing AD and preconditioning
-was to find a solution for general matrix. However, the study
-of Hessians' matrix gives more degree of freedom in coloring.
-Also, the connection to fillin of Cholesky factorization 
-might offer even more degree of freedom.
+Although there is much existing research, many dimensions of the problem can be improved. Most of the works toward mixing AD and preconditioning looks at solutions for a general matrix. However, the study of Hessians' matrix and its connection to fill-in of Cholesky factorization might offer more degree of freedom in coloring. 
 
-\item We considered only the ILU preconditioning. 
-What if we replace ILU with
-Approximate inverse (AINV) preconditioning which produce no fill-in.
-There is a need to review the AINV algorithms. 
-An algorithm for this technique takes a pattern 
-for preconditioner M as input and gradually updates
-this starting pattern and the nonzero values.
-So we can do sparsification as usual which leads to R\_p. 
-Take R\_i + R\_p as starting pattern for M. We would have two
-separate problems: coloring and AINV preconditioning.
-This means that the user should give 
-not only R\_init as input but also pattern of M.
-We then color the graph with this information. 
-It should be a different coloring problem than 
-the usual partial coloring problem. However,
-this seems to be the same as partial coloring with a larger set of
-required elements.
-When applying AINV to an intial M, is there any effect on M? For
-instance, does the pattern of M vary? How does it vary? Does the
+On the other hand, we considered only the ILU preconditioning.  What if we replace ILU with the approximate inverse preconditioning (AINV)~\cite{ainv98} which produces no fill-in. There is a need to review the AINV algorithms. An algorithm for this technique takes a pattern for preconditioner $M$ as input and gradually updates this starting pattern and the nonzero values.
+So we can do first a sparsification as usual which leads to $R_p$ and take $R_i + R_p$ as starting pattern for $M$. Then, we would have two
+separate problems: coloring and AINV preconditioning. It means that two matrices $R_init$ and $M$ are provided as input. We then color the graph with this information.  It is a different coloring problem than the usual partial coloring problem. However, this seems to be the same as partial coloring with a larger set of required elements.
+When applying AINV to an initial $M$, is there any effect on $M$? For
+instance, does the pattern of $M$ vary? How does it vary? Does the
 variation depend on the structure of the initial pattern only? Or
-does the pattern vary based on the values of M that are available
-at runtime? Perhaps, one can estimate/approximate the pattern of M
-conservatively without taking the values of M into account. (This
+does the pattern vary based on the values of $M$ that are available
+at runtime? Perhaps, one can estimate/approximate the pattern of $M$
+conservatively without taking the values of $M$ into account. (This
 would then be similar to the fill-in when using ILU.) Need to look
 at AINV algorithms more closely.
-What if we transform program for function $f(x)$ not only to a program for
-$\frac{df}{dx}$ (traditional AD), but also to another program for
-Matrix-vector product $Mx$ vector, where $M$ is an AINV preconditioner
-for the Jacobian $\frac{df}{dx}$.
+What if we transform program for function $f(x)$ not only to a program for $\frac{df}{dx}$ (traditional AD), but also to another program for matrix-vector product $Mx$ where $M$ is an AINV preconditioner for the Jacobian $\frac{df}{dx}$.
 
-\item What if we consider blocks of submatrices for coloring instead
-of just a complete row or column? There is a work from Hossain and
-Steihaug that discuss this idea only for blocks of rows and the
-same column intersection graph model as before. For unidirectional
-coloring, they showed that there is an advantage.
-Is there still an advantage if we go from unidirectional coloring
-to bidirectional coloring? What will happen if we consider not only
-full coloring, but also partial coloring?
-
-\item What about a new graph model for coloring, for instance a
-hypergraph model for fine-grained coloring?
-
-\item In the overall preconditioning approach, we did not take into
-account any ideas on fill-in when solving the partial coloring
-problem. Indeed, fill-in and coloring were considered as separate
-tasks. What if we consider fill-in when we color the graph? So,
-what about the following formulation of the problem:
-Graph G is given, k for ILU(k) is given. Find a coloring
-as well as a ordering for the vertices of G such that the number of
-fill-in when ILU(k) is applied to the required + by-product
-nonzeros is minimized and, at the same time, the number of colors
-is minimized.
-\end{itemize}
+Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph model as before and show it has advantages in the unidirectional coloring. A first improvement is to search for the equivalent approach in the bidirectional coloring and partial coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
 
