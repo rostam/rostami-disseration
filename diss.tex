@@ -104,33 +104,21 @@
 \chapter*{Abstract}
 Solving problems originating from the real-world applications are often based
 on the solution to some linear equations containing a sparse Jacobian matrix.
-These sparse Jacobian matrices are most of the time huge matrices. Hence, there
-are many research on exploiting the sparsity structure and to decrease the amount
-of needed storage. In contrast to full Jacobian computation in which all elements
-are meant to be determined, parital Jacobian computation is looking at a subset
-of these elements. This property brings a lot of conventions leading to a faster
+These sparse Jacobian matrices are most of the time huge. Hence, there
+is much research to exploit the sparsity structure and to decrease the amount of needed storage. In contrast to full Jacobian computation in which all elements are meant to be determined, partial Jacobian computation is looking at a subset of these elements. This property brings a lot of conventions leading to a faster
 and more efficient computation.
-Determining these nonzero elements 
-in full or partial Jacobian computations
-by a famouse the automatic differentation techniques
+Determining these nonzero elements in full or partial Jacobian computations by automatic differentiation techniques
 can be modeled as graph coloring in graph language. 
 
 Since a matrix-vector product (instead of the whole Jacobian)
-is needed in iterative solvers, automatic differentations fits
+is needed in iterative solvers, automatic differentiation fits
 the best in the iterative solvers.
-However, the preconditioning techniques used 
-to improve the convergence of iterative solvers, 
-needs an access to the nonzero elements. 
-So, a sparsification is applied on the Jacobian
-before computing the preconditioner.
-Some of the remaning nonzeros are added to the
-sparsified ones in favour of efficiency.
-The current thesis first looks at different way to optimize
-the processes of selecting elements. Also, some research
-is discussed for ILU preconditioning.
-At the second part of this thesis, we introduce 
-an interactive educational module to teach these
-tricky concepts in classroom. 
+On the other hand, the preconditioning techniques are used to improve the convergence of iterative solvers and need access to the nonzero elements. So, a sparsification applies on the Jacobian before computing the preconditioner. The elements produced from the sparsification are also considered as the required elements in the partial coloring. 
+There is a procedure which selects a subset of the remaining nonrequired elements and adds to the sparsified matrix such that no fill-ins or increase of the number of colors happens.
+The current thesis first looks at different ways to optimize
+the processes of selecting elements. 
+At the second part of this thesis, we introduce an interactive educational module to teach these
+tricky concepts in the classroom. 
 
 \chapter*{Zusammenfassung}
 \chapter*{Acknowledgements}
@@ -148,9 +136,7 @@ for encouraging me throughout all my studies at University.
 \tableofcontents
 \chapter{Introduction}
 \pagenumbering{arabic}
-Partial differential equations (PDE) are the most common models of the real-world problems.
-Iterative solvers are a solution to these linear systems which need a multiplication
- of Jacobian and a vector in each iteration. 
+Partial differential equations (PDE) are the most common models of the real-world problems. Iterative solvers are a solution to these linear systems which need a multiplication of Jacobian and a vector in each iteration. 
 Many strategies were studied to compute these products efficiently.
 Automatic Differentiation~\cite{Griewank2008EDP,Rall1981ADT} 
 computes not only the differentiation without numerical errors but also the
@@ -180,8 +166,8 @@ coloring algorithm. also We look at the ordering for the ILU preconditioning.
 In this chapter, we restructure a previous software
 to be more readable and extensible and to contain new heuristic algorithm.
 \chapref{explain} discuss an interactive educational module
-which is designed to teach the computational science algorithms in classroom.
-Finally, the conclusion and future work comes in \chapref{conc}.
+which is designed to teach the computational science algorithms in the classroom. 
+Finally, the conclusion and future work come in \chapref{conc}.
 
 \chapter{‌State of the Art}
 \label{prel}
@@ -194,20 +180,20 @@ partial Jacobian computation~\secref{s.part.jac}, and the preconditioning in~\se
 \section{Full Jacobian Computation}
 \label{s.full.jac}
 %===================================================================================================
+
 \subsection{Problem}
 \label{ss.problem.full}
-Given a program to evaluate some function $f(x) : \setR^n \rightarrow \setR^m$ 
+If there is a program which computes the function $f(x) : \setR^n \rightarrow \setR^m$
 in the computational cost $t$,
 techniques of automatic differentiation (AD)~\cite{Griewank2008EDP,Rall1981ADT} generate
-computer programs capable of evaluating the $m \times n$ Jacobian matrix $J$. 
-The so-called forward mode of automatic differenation generates a program automatically 
+Computer programs capable of evaluating the $m \times n$ Jacobian matrix $J$. 
+The so-called forward mode of automatic differentiation creates a program automatically 
 which computes the product of Jacobian matrix with some given so-called seed matrix $V$,
-i.e. $JV$. There is an inverse mode of automatic differentation which computes
-the product $WJ$. An important consideration is that automatic differentation 
-computes these products without assembling the Jacobian $J$. 
-Suppose the matrix $V$ has $\col$ number of columns and the matrix $W$ has 
-$\row$ number of rows, the computational costs to compute these products 
-would be $\col t$ and $\row t$, respectively.
+i.e. $JV$. There is an inverse mode of automatic differentiation which computes the product $WJ$. 
+These techniques of automatic differentiation do these computations without assembling the Jacobian $J$. 
+Suppose the matrix $V$ has $\col$ number of columns and the matrix $W$ has $\row$ number of rows, 
+the computational costs to compute these products would be $\col t$ and $\row t$, respectively.
+
 
 In general, the Jacobian $J$ is computed choosing either $c=n$ and $V$ as the identity of
 order~$n$ in the forward mode or $r = m$ and $W$ as the identity of order $m$ in the
