@@ -11,6 +11,8 @@
 \graphicspath{{./figs/}}
 %\usepackage{algorithmic}
 \usepackage{listings}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
 \usepackage[noend]{algpseudocode}
 \usepackage{hyperref}
 \hypersetup{
@@ -152,7 +154,7 @@ the elements of Jacobian which is in contrast to the requirements of automatic d
 Applying a sparsification operator first on the Jacobian matrix and do the ILU preconditioning
 on the sparsified matrix would be a solution to the problem of determiniation of 
 all elmenets. This processes becomes complete by trying to add more elements to the matrix
-without producing more fillins or colors. We introduce new heuristics which consider this
+without producing more fill-ins or colors. We introduce new heuristics which consider this
 elements in the time of coloring in favour of increasing them.
 
 This dissertation is structured as follows.
@@ -651,7 +653,7 @@ elements: the elements which are computed and the ones which would be
 eliminated. We can think of these computed nonzero elements as the byproduct
 of the coloring. Since the number of colors does not change, 
 an idea would be to add this extra byproducts also to $R_i$.
-However, it could generate new fillins in the preconditioning step.
+However, it could generate new fill-ins in the preconditioning step.
 So, we call these new set of byproduct elements as the potentially
 required elements $R_p$ and computed as follows,
 $$
@@ -659,30 +661,30 @@ R_p \subset pat(A) - R_i \quad\text{so that}\quad |\Phi(R_i)| = |\Phi(R_i\cup R_
 $$ 
 
 As we have discussed, an ILU preconditioner is applied to $R_i$ which can
-produce a set of fillin. 
+produce a set of fill-in. 
 We consider thte 
 Different methods can be employed to compute the preconditioner.
 A purely matrix version of the ILU preconditioning can be found in~\cite{cscpaper}.
 Hysom and Pothen~\cite{precond-pothen} introduced first a graph model for the incomplete
 LU factorization in which the matrix is actually the adjacency matrix of this graph.
 It should be considered that the graph would be directed if the matrix is not symmetric.
-A concept of \textit{fill path} is defined to characterize the fillins in preconditioning,
+A concept of \textit{fill path} is defined to characterize the fill-ins in preconditioning,
 \begin{definition}[Fill path]\label{d.fill.path}
 A fill path is a path $(v_i,...,v_k,...,v_j)$ with
 $k<min(i,j)$. It means the index of the all inner nodes in a given ordering of vertices
 should be smaller than indices of the vertices $v_i$ and $v_j$. 
-Equivalently, a matrix element $(i,j)$ is a fillin if there is a fill path between
+Equivalently, a matrix element $(i,j)$ is a fill-in if there is a fill path between
 $v_i$ and $v_j$.
 \end{definition}
 In addition to the concept of fill path, another concept of fill level $l$ is needed to 
 formulate the level-based incomplete LU factorization~\cite{precond-pothen}.
-This parameter is used to filter the generated fillins. 
+This parameter is used to filter the generated fill-ins. 
 Actually this parameter is the length of the fill path.
-The level-based incomplete LU factorization the generated fillins are allowed
+The level-based incomplete LU factorization the generated fill-ins are allowed
 to be considered only up to the level $l$.
 
 Now, a maximum subset of potentially required elements
-is selected such that no new fillins are generated which is called
+is selected such that no new fill-ins are generated which is called
 additionally required elements $R_a$. These elements can be added to the
 initially required elements for further computation. 
 The additionally required elements can be formulated as follows,
@@ -792,20 +794,37 @@ throughout this thesis.
 \chapter{Preconditioning and Coloring}
 \label{package}
 The different steps of compting the additionally required elements are discussed in
-\secref{ss.comb.precond}. Here, we look at these steps and examine how they can be
-parallelized if it can be done at all.
+\secref{ss.comb.precond}. Here, we look at effects of ordering on the number of fill-ins
+in \secref{s.ilu} and how it can be fit into the automatic differentiation. 
+In \secref{s.heuristic}, we discuss different strategies to increase the number of
+additionally required elements as well as first ideas toward parallelizations.
 
 Lülfesmann and Bücker~\cite{Lulfesmann2012Fap} started a package for computation of the uni- 
-and bidirectional (partial-)coloring as well as the partial computation and its relative preconditioning which we discussed in ~\ref{s.precond}. 
-We improved the software in various ways that are explained in the following sections.
-First, we discuss the fillin reduction in ~\secref{s.ordering.effect}.
-We examine different strategies for the parallelization 
-in ~\secref{s.parallel}.
-Then we look at the software \textit{PreCol} and 
-see how the extensibility, readability, and usability are improved 
-in ~\secref{s.extend} for computation of these coloring heuristics. 
-Then, the interfaces for MATLAB and JAVA would be discussed
+and bidirectional (partial-)coloring as well as the partial computation and its relative preconditioning 
+which we discussed in ~\ref{s.precond}. 
+We improved the software in various ways that are explained in~\secref{s.extend}.
+Finally, a MATLAB interface and a JAVA interface for this software package is introduced 
 in ~\secref{s.interfaces}.
+
+Throught this thesis, we did experiments on some matrices from the Flordia sparse
+matrix collection~\cite{florida.matrices}. Table~\ref{florida.mats} shows these matrices
+togther with their information. 
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+Name & Size & Nonzeros\\\hline
+\textit{nos3} & $960\times 960$ & $15844$\\\hline
+\textit{gyro\_m} & $17361\times 17361$ & $340431$ \\\hline
+\textit{ex33} & $1733\times 1733$ & $23922$\\\hline
+\end{tabular}
+\hfill
+\caption{The experiments are done these matrices from the Florida sparse matrix collection 
+throught this thesis.}
+\label{florida.mats}
+\end{table}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -813,34 +832,51 @@ in ~\secref{s.interfaces}.
 \section{Experiments on Effects of Orderings}
 \label{s.ilu}
 In the idea of mixing the preconditioning and AD which
-we have discussed in~\secref{s.precond} , the ILU preconditioning is computed
+we have discussed in~\secref{s.precond}, the ILU preconditioning is computed
 using the natural ordering of the given matrix. However,
-it is a well known fact that the number of fillins is 
-highly dependent on the ordering. 
+it is a well known fact that the number of fill-ins is 
+highly dependent on the ordering.
+So, we can improve the number of fill-ins by carefully choosing an ordering.
+On the other hand, we compute the Jacobian matrix by AD techniques in which
+the matrix computed in a specific ordering. We need a reformulation to
+fit these two computation from ILU preconditioning and the automatic differentation.
 
 As we discussed in the iterative solvers, like BICGSTAB,
-we always need to have a matrix vector product like $Az$.
+we always need to have a matrix-vector product like $Az$.
 This suits the AD behaviour which gets a seed matrix, here the vector $z$, and
-computes the matrix vector product. As the equation~\ref{e.reordering} shows,
-the reordering results in another computation as $\tilde{A}.\tilde{x} = P^T A P x$.
-Since the AD computes only $A$ multiplied by a vector $z$, 
-the computation should be rewritten as follows,
+computes the matrix-vector product. 
+A reordering of the matrix for ILU preconditioning
+needs a consideration also in the seed matrix.
+Without reordering, a preconditioning would look like as,
 $$
-z = P \tilde{x}
-A = ad(f,z,...)
-cg(P^T A,...)
+Ax = b \rightarrow M^{-1} Ax = M^{-1}b.
 $$
-in which the seed matrix $P \tilde{x}$ is used instead of $x$.
-After computation of AD, the resulting Jacobian matrix, should be multiplied
-by $P^T$ from the left.
-\begin{align} 
+We would add the reordering to this equation results in the following equations,
+\begin{align*} 
 Ax = b \rightarrow M^{-1} Ax &= M^{-1}b\\
 P^T M^{-1} P P^T A P P^T x &= P^T M^{-1} P P^T b\\
 (P^T M^{-1} P) (P^T A P) P^T x &= (P^T M^{-1} P) P^T b\\
 (P^T M P)^{-1} (P^T A P) P^T x &= (P^T M P)^{-1} P^T b\\
-\tilde{M}^{-1}\tilde{A}\tilde{x} &= \tilde{M}^{-1}\tilde{b} 
-\label{e.reordering}
-\end{align}
+\tilde{M}^{-1}\tilde{A}\tilde{x} &= \tilde{M}^{-1}\tilde{b}. 
+\end{align*}
+As this equation shows, we need a reordering in the matrix $A$ if we 
+have the reordering in the preconditioner. 
+So, the matrix-vector product $\tilde{A}.\tilde{x} = P^T A P x$ 
+should be computed instead of $A.x$.
+
+Let the function $ad$ to compute the automatic differentiation
+and the fuction $bicgstab$ to compute a step of BICGSTAB iterative solver,
+we modify the seed matrix and the return result of this function 
+to adapt the reordering as follows,
+\begin{align*}
+z &= P \tilde{x}\\
+APz &= ad(f,z,...)\\
+\tilde{x} &= bicgstab(P^T APz,...)
+\end{align*} 
+in which the seed matrix $P \tilde{x}$ is used instead of $x$.
+After computation of AD, the resulting matrix-vector product $APz$, 
+should be multiplied by $P^T$ from the left before continuing by the
+computations regarding BICGSTAB.
 
 Here, we investigate the preconditioning based on the incomplete LU factorization (ILU) \cite{ilu2003}.
 Between different models of ILU, we consider the level-based ILU factorization here.
@@ -852,14 +888,14 @@ vertex $j$ with an directed edge if the corresponding element $(i,j)$ in matrix
 in nonzero. If the matrix is symmetric, these edges are undirected. This means
  the graph is a simple graph and the given matrix is actually the adjacency
 matrix of the graph.
-Now, we look at the effects of preordering for the vertices of the given preconditioning graph to reduce fillins in ILU factorization. Later, we would study further how this fillin reduction would increase the additionally required elements.
+Now, we look at the effects of preordering for the vertices of the given preconditioning graph to reduce fill-ins in ILU factorization. Later, we would study further how this fill-in reduction would increase the additionally required elements.
 
 As same as coloring algorithms, finding an ILU factorization with the minimum
-fillins is also an NP-complete problem. There are a lot of literature 
+fill-ins is also an NP-complete problem. There are a lot of literature 
 considering this problem\cite{ilu_ordering1,ilu_ordering2,ilu_ordering3,ilu_ordering4}. 
 Again, the ILU factorization is computed in a specific order which is essential
-in the minimum fillins. Here we bring an example to show how the order affects 
-the ILU factorization and the number of fillins. 
+in the minimum fill-ins. Here we bring an example to show how the order affects 
+the ILU factorization and the number of fill-ins. 
 For example, let's consider first the following matrix,
 $$\begin{bmatrix}
  1 & 1 & 0 & 1 & 0 & 1 & 0\\
@@ -880,7 +916,7 @@ computation of Cholesky factorization step by step.
 Figure~\ref{bad_order_fillin} computes the Cholesky factorization
 in which the order of vertices are the numbering written on the vertices
 as labels. The ordering in Figure~\ref{bad_order_fillin} is actually
- a worst-case ordering that produces $6$ fillins. These fillins are
+ a worst-case ordering that produces $6$ fill-ins. These fill-ins are
 illustrated as dotted lines.
 
 %\begin{figure}
@@ -899,13 +935,13 @@ illustrated as dotted lines.
    \includegraphics[width=0.23\linewidth]{bad_order_2_1_removed}
    \hfill
    \includegraphics[width=0.16\linewidth]{bad_order_3_2_1_removed}
-\caption{A worst case ordering generates $6$ fillins. The ordering here is the 
+\caption{A worst case ordering generates $6$ fill-ins. The ordering here is the 
 numbering which visualized as labels.}
 \label{bad_order_fillin}
 \end{figure}
 
 Figure~\ref{good_order_fillin} shows how the new ordering produces
-$5$ fillins when the ordering is $2, 3, 4$. However, the best ordering produces only $3$ fillins
+$5$ fill-ins when the ordering is $2, 3, 4$. However, the best ordering produces only $3$ fill-ins
 as Figure~\ref{good_order_fillin2} shows when the ordering is $2, 5, 3$.
 
 \begin{figure}
@@ -917,7 +953,7 @@ as Figure~\ref{good_order_fillin2} shows when the ordering is $2, 5, 3$.
    \includegraphics[width=0.23\linewidth]{good_order_3_2}
    \hfill
    \includegraphics[width=0.16\linewidth]{good_order_4_3_2}
-\caption{The order of elimination $2, 3, 4$ generates $5$ fillins.}
+\caption{The order of elimination $2, 3, 4$ generates $5$ fill-ins.}
 \label{good_order_fillin}
 \end{figure}
 
@@ -931,7 +967,7 @@ as Figure~\ref{good_order_fillin2} shows when the ordering is $2, 5, 3$.
    \includegraphics[width=0.23\linewidth]{good_order_5_2_removed}
    \hfill
    \includegraphics[width=0.18\linewidth]{good_order_3_5_2_removed}
-\caption{The order of elimination $2, 5, 3$ generates $3$ fillins.}
+\caption{The order of elimination $2, 5, 3$ generates $3$ fill-ins.}
 \label{good_order_fillin2}
 \end{figure}
 
@@ -955,17 +991,17 @@ In addition to these orderings, we consider three other orderings for preconditi
 \item Metis Ordering\cite{metis,par-nested-disection} (Metis): This ordering is generated by the well known
 tool \textit{Metis} which is a fill-reducing ordering. It is computed by the algorithm of nested dissection.
 \end{itemize}
-The Table~\ref{ilu-effect} shows how different ordering generates different fillins required elements.
-The number of fillins compared based on the different orderings
+The Table~\ref{ilu-effect} shows how different ordering generates different fill-ins required elements.
+The number of fill-ins compared based on the different orderings
 for the graph vertices. The number of colors remains the same since we change only the ordering for
 ILU factorization.
-The left table is for the matrix \textit{nos3.mtx} with $960$ rows, $960$ columns, and $15844$ nonzero elements 
-and the right one is for the matrix\textit{gyro\_m} with $17361$ rows ,$17361$ columns, $340431$ nonzero elements.
+The left table is the computation for the matrix \textit{nos3.mtx} 
+and the right one is the computation for the matrix\textit{gyro\_m}.
 Both are from the Florida sparse matrix collections.
 \begin{table}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Orders & Colors & Fillins\\\hline
+Orders & Colors & Fill-ins\\\hline
 Nat & 15 & 70\\\hline
 Min & 15 & 52\\\hline
 Metis & 15 & 52\\\hline
@@ -973,34 +1009,32 @@ Metis & 15 & 52\\\hline
 \hfill
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Orders & Colors & Fillins \\\hline
+Orders & Colors & Fill-ins \\\hline
 Nat & 34 & 8760 \\\hline
 Min & 34 & 8414 \\\hline
 Metis & 34 & 642\\\hline
 \end{tabular}
-\caption{The number of fillins compared based on the different orderings
+\caption{The number of fill-ins compared based on the different orderings
 for the graph vertices. The number of colors remains the same since we change only the ordering for
 ILU factorization.
-The left table is for the matrix \textit{nos3.mtx} with $960$ rows, $960$ columns, and $15844$ nonzero elements 
-and the right one is for the matrix\textit{gyro\_m} with $17361$ rows ,$17361$ columns, $340431$ nonzero elements.
+The left table is the computation for the matrix \textit{nos3.mtx} 
+and the right one the computation is for the matrix\textit{gyro\_m}.
 Both are from the Florida sparse matrix collections.}
 \label{ilu-effect}
 \end{table}
 
-These results are computed on the symmetric matrix \textit{nos3.mtx}
-with $960$ rows, $960$ columns, and $15844$ nonzero elements 
-and the symmetric matrix \textit{gyro\_m} with
-$17361$ rows ,$17361$ columns, $340431$ nonzero elements from 
+These results are computed on the matrix \textit{nos3.mtx}
+and the matrix \textit{gyro\_m} from 
 the Florida sparse matrix collections. The block size is
 chosen to be $50$ for the matrix \textit{gyro\_m} and $15$ for 
 the matrix \textit{nos3}. Also, the coloring algorithm would be a one-sided
 partial coloring. As it can be seen in this table, the fill-reducing Metis ordering 
-generates the minimum fillin.
+generates the minimum fill-in.
 Another observation is that the Metis and Min ordering are generating almost the same
-number of fillins for the small matrices. 
+number of fill-ins for the small matrices. 
 It is only for the big matrices which the efficiency of Metis ordering can be seen.
 
-This difference in number of fillins can affect the convergence speed
+This difference in number of fill-ins can affect the convergence speed
 relatively. Both Figure~\ref{nat_convergence}
 and Figure~\ref{metis_convergence} show
 the convergence history of the bicgstab solvers on the matrix \textit{nos3}.
@@ -1029,11 +1063,11 @@ chart in Figure~\ref{nat_convergence}.
 
 So far, we decided for the level of ILU factorization arbitrarily.
 Here, we want to see the actual influence of the level parameter on
-the fillins which is visualized in \figref{el_fillins_orderings},
+the fill-ins which is visualized in \figref{el_fillins_orderings},
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{el_fillins_orderings.jpg}
-\caption{The influence of the level parameter for ILU on the number of fillins
+\caption{The influence of the level parameter for ILU on the number of fill-ins
 while three different orderings are employed. 
 The block size is fixed to $100$. 
 The matrix is \textit{ex33} and the level parameter changes from $0$ to $25$.
@@ -1044,7 +1078,7 @@ The ordering for coloring is \textit{LFO}.}
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{bls_fillins_orderings.jpg}
-\caption{The influence of the block size for sparsification on the number of fillins
+\caption{The influence of the block size for sparsification on the number of fill-ins
 while three different orderings are employed. 
 The block size is fixed to $100$. 
 The matrix is \textit{ex33} and the block size changes from $1$ to $200$.
@@ -1063,13 +1097,13 @@ The matrix is \textit{gyro\_m}.
 \begin{table}
 \begin{tabular}{|c|c|c|c|}
 \hline
-Ordering & Colors & Fillins & Additionally required elements \\\hline
+Ordering & Colors & Fill-ins & Additionally required elements \\\hline
 LFO &  34 & 8760 & 66554 \\\hline
 SLO &  33 & 8760 & 57760 \\\hline
 IDO &  35 & 8760 & 66588 \\\hline
 \end{tabular}
 \begin{tabular}{|c|c|c|c|}
-Ordering & Colors & Fillins & Additionally required elements \\\hline
+Ordering & Colors & Fill-ins & Additionally required elements \\\hline
 LFO &  15 & 50 & 394 \\\hline
 SLO &  12 & 50 & 384 \\\hline
 IDO &  16 & 50 & 436 \\\hline
@@ -1086,7 +1120,7 @@ such that number of colors does not increase. Hence, if the number of colors are
 the freedom of choosing elements gets higher.
 As two tables~\ref{ilu-effect} and~\ref{col-effect} shows, 
 both the ordering of coloring and the ordering of preconditioning affects the number of
-additionally required elements. Although smaller number of fillin increases
+additionally required elements. Although smaller number of fill-in increases
 the number of additionally required elements, the smaller number of colors 
 decreases the number of additionally required elements.
 This is in contrast to the minimum number of colors which we are searching for, 
@@ -1251,8 +1285,8 @@ because the value of $N_nreq(a,b)$ can be very small.
 Therefore, an improvement is to select one vertex from this set of maximum values such that the number of
 additionally required elements increase. As we have seen, a potential required element can be 
 an additional required element if the addition of this element to the initially required elements
-does not introduce any new fillin. Having less number of initially required elements in a column would decrease
-the possibility of producing more fillins since it would decrease the whole number of fill paths. \todo{}
+does not introduce any new fill-in. Having less number of initially required elements in a column would decrease
+the possibility of producing more fill-ins since it would decrease the whole number of fill paths. \todo{}
 
 So, the previous algorithm is modified as follow,
 \begin{figure}
