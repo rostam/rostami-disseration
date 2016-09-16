@@ -162,32 +162,29 @@ to be more readable and extensible and to contain new heuristic algorithm.
 which is designed to teach the computational science algorithms in the classroom. 
 Finally, the conclusion and future work come in \chapref{conc}.
 
-\chapter{State of the Art}
+\chapter{Specific Graph Models from Scientific Computing}
 \label{prel}
 In this chapter, we would briefly discuss the already exisiting concepts which we need to understand
 the other parts of the paper. In each section of this chapter, 
 we provide some references to read these concepts further in details. 
 These concepts are introduced in three parts of full Jacobian computation in~\secref{s.full.jac},
 partial Jacobian computation~\secref{s.part.jac}, and the preconditioning in~\secref{s.precond}.
+\section{Determining Nonzeros of Sparse Matrices}
 %===================================================================================================
-\section{Full Jacobian Computation}
+\subsection{Full Jacobian Computation}
 \label{s.full.jac}
 %===================================================================================================
-
-\subsection{Problem}
-\label{ss.problem.full}
 If there is a program which computes the function $f(x) : \setR^n \rightarrow \setR^m$
 in the computational cost $t$,
 techniques of automatic differentiation (AD)~\cite{Griewank2008EDP,Rall1981ADT} generate
 Computer programs capable of evaluating the $m \times n$ Jacobian matrix $J$. 
 The so-called forward mode of automatic differentiation creates a program automatically 
 which computes the product of Jacobian matrix with some given so-called seed matrix $V$,
-i.e. $JV$. There is an inverse mode of automatic differentiation which computes the product $WJ$. 
-These techniques of automatic differentiation do these computations without assembling the Jacobian $J$. 
+i.e. $JV$. There is an inverse mode of automatic differentiation which computes the product $WJ$.
+These techniques of automatic computes the Jacobian $J$ without assembling it. 
+
 Suppose the matrix $V$ has $\col$ number of columns and the matrix $W$ has $\row$ number of rows, 
 the computational costs to compute these products would be $\col t$ and $\row t$, respectively.
-
-
 In general, the Jacobian $J$ is computed choosing either $c=n$ and $V$ as the identity of
 order~$n$ in the forward mode or $r = m$ and $W$ as the identity of order $m$ in the
 reverse mode. However, if $J$ is sparse and its sparsity pattern is known the number of
@@ -197,7 +194,16 @@ in the product $JV$ or $WJ$. This way, the computational cost is decreased using
 the forward mode with a suitable linear combination of the columns of~$J$ or the reverse
 mode with a suitable linear combination of the rows of~$J$; see the
 survey~\cite{Gebremedhin05whatcolor}.
-
+In \secref{ss.problem.full} and \secref{ss.problem.full}, we formulate problems to compute the 
+minimum values for $\col$ and $\row$ and the corresponding combinatorial problem.
+%===================================================================================================
+\subsubsection{Problem}
+\label{ss.problem.full}
+%===================================================================================================
+Here, we formulate a problem to find the optimal seed matrix in which
+the number of rows and columns are smaller than the actual Jacobian matrix, so called compression.
+A unidirectional compression is a compression in either rows or columns in contrast to 
+a bidirectional compression in which both rows and columns are compressed in the same time.
 The key idea behind this \emph{unidirectional compression} is now illustrated for the
 forward mode. First, we present a definition as follows, 
 \begin{definition}[Structurally Othogonality]
@@ -236,7 +242,8 @@ The technique of bidirectional, which compresses both columns and rows in the sa
 For general sparsity patterns,
 it is not straightforward to figure out how to linearly combine columns and rows such that
 the computational cost is minimized. Hence, we introduce the combinatorial
-optimization problems~\ref{p.seed.uni} and ~\ref{ p.seed.bid } for unidirectional or bidirectional compressions to determine the nonzero elements of huge Jacobians efficiently. 
+optimization problems~\ref{p.seed.uni} and ~\ref{p.seed.bid} 
+for unidirectional or bidirectional compressions to determine the nonzero elements of huge Jacobians efficiently. 
 
 \begin{problem}[\MinUniCom]
 \label{p.seed.uni} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
@@ -254,8 +261,8 @@ the matrix-matrix products $JV$ and $WJ$.
 \end{problem}
 
 %==========================================================================================
-\subsection{Combinatorial Model}
-\label{s.modeling}
+\subsubsection{Combinatorial Model}
+\label{s.modeling.full}
 %==========================================================================================
 We reformulate the scientific computing problems which 
 we have discussed in \secref{ss.problem.full}. 
@@ -408,15 +415,21 @@ complexity of Problem~\ref{p.coloring} including recent new results is given in~
 
 %To illustrate the tricky transformation from \MinBidCom\ to \MinStaBic, we design a new
 %educational module explained in Section~\ref{s.bidirectional}.
-
-\section{Partial Jacobian Computation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Partial Jacobian Computation}
 \label{s.part.jac}
-\subsection{Problem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Gebremedhin et al~\cite{Gebremedhin05whatcolor} introduced the concept of the partial Jacobian computation
-in which the assumption is that only a subset of Jacobian should be determined which is called the required elements. 
-L{\"u}lfesmann~\cite{Lulfesmann2012Fap} has studied more considerably in this area.
+in which the assumption is that only a subset of Jacobian, so called the required elements,
+should be determined. 
+L{\"u}lfesmann~\cite{Lulfesmann2012Fap} has studied more considerably in this area and 
+introduced some heuristics for partial computation.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Problem}
+\label{ss.problem.part}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Suppose the required elements are shown by $R$, the definition of
-\emph{structurally orthogonality} is adapted for the partial coloring as follows,
+\emph{structurally orthogonality} is adapted for the partial coloring as follows,a
 \begin{definition}[Partially Structurally Orthogonal]\label{d.part.str.orth}
 Two columns $c_i$ and $c_j$ are partially structurally orthogonal with respecto $R$ 
 if and only if they do not have a nonzero element in the same row where at least 
@@ -445,7 +458,7 @@ the pair of matrix-matrix products $JV$ and $WJ$.
 An equivalent graph-theoretical formulation of this problem is discussed in the next
 section.
 
-\subsection{Combinatorial Model}
+\subsubsection{Combinatorial Model}
 Based on \cite{Gebremedhin05whatcolor,Lulfesmann2012Fap}, the definitions
 of the full Jacobian colorings are adapted as follows,
 \begin{definition}[Restricted distance-$2$ coloring]\label{d.coloring.d2}
@@ -560,10 +573,10 @@ which there is a vertex set for the rows and another vertex set for the columns 
 Jacobian. Using the more general bipartite graph model, Problem~\ref{p:minblockcol} could
 be reformulated as a minimum distance-2 coloring of a bipartite graph when restricted to
 the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
-
-\section{Preconditioning}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Adapted ILU Preconditioning}
 \label{s.precond}
-\subsection{Problem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 As discussed, the computation of Jacobian is one part of solving PDEs. 
 In general, we are considering the solution to the following system of linear equations,
 $$
@@ -585,6 +598,10 @@ where the $n \times n$ matrix $M$ serves as a preconditioner that approximates
 the coefficient matrix,
 $$M \approx J.$$
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Problem}
+\label{ss.problem.precond}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Today, there is no general and established
 strategy on how to combine automatic differentiation with preconditioning. The reason is
 that standard preconditioning techniques typically need access to individual nonzero
@@ -665,7 +682,7 @@ R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
 $$ 
 in which $SILU$ means the symbolic ILU factorization.
 
-\subsection{Combinatorial Model}
+\subsubsection{Combinatorial Model}
 \label{ss.comb.precond}
 The bipartite graph model presented in~\defref{d.bip.graph} is a basic model to find new algorithms for the initially, potentially,
 and additionally required elements. Three subsets $E_i, E_p, E_a\subset E$
@@ -759,7 +776,7 @@ throughout this thesis.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% PRECONDITIONING AND COLORING
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Preconditioning and Coloring}
+\chapter{New Coloring Heuristics considering ILU preconditioning}
 \label{package}
 The different steps of computing the additionally required elements are discussed in
 \secref{ss.comb.precond}. Here, we look at effects of ordering on the number of fill-ins
@@ -799,7 +816,8 @@ throught this thesis.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiments on Effects of Orderings}
 \label{s.ilu}
-In the idea of mixing the preconditioning and AD discussed in~\secref{s.precond}, the ILU preconditioning is computed using the natural ordering of the given matrix. However,
+In the idea of mixing the preconditioning and AD discussed in~\secref{s.precond}, 
+the ILU preconditioning is computed using the natural ordering of the given matrix. However,
 it is a well-known fact that the number of fill-ins is highly dependent on the ordering.
 So, we can improve the number of fill-ins by carefully choosing an ordering.
 On the other hand, we compute the Jacobian matrix by AD techniques in which
@@ -959,7 +977,7 @@ The number of fill-ins compared based on the different orderings
 for the graph vertices. The number of colors remains the same since we change only the ordering for
 ILU factorization.
 The left table is the computation for the matrix \textit{nos3.mtx} 
-and the right one is the computation for the matrix\textit{gyro\_m}.
+and the right one is the computation for the matrix \textit{gyro\_m}.
 Both are from the Florida sparse matrix collections.
 \begin{table}
 \begin{tabular}{|c|c|c|c|c|}
@@ -981,7 +999,7 @@ Metis & 34 & 642\\\hline
 for the graph vertices. The number of colors remains the same since we change only the ordering for
 ILU factorization.
 The left table is the computation for the matrix \textit{nos3.mtx} 
-and the right one the computation is for the matrix\textit{gyro\_m}.
+and the right one the computation is for the matrix \textit{gyro\_m}.
 Both are from the Florida sparse matrix collections.}
 \label{ilu-effect}
 \end{table}
@@ -1060,13 +1078,15 @@ The matrix is \textit{gyro\_m}.
 \begin{table}
 \begin{tabular}{|c|c|c|c|}
 \hline
-Ordering & Colors & Fill-ins & Additionally required elements \\\hline
+Ordering & Colors & Fill-ins & $|R_a|$ \\\hline
 LFO & 34 & 8760 & 66554 \\\hline
 SLO & 33 & 8760 & 57760 \\\hline
 IDO & 35 & 8760 & 66588 \\\hline
 \end{tabular}
+\hfill
 \begin{tabular}{|c|c|c|c|}
-Ordering & Colors & Fill-ins & Additionally required elements \\\hline
+\hline
+Ordering & Colors & Fill-ins & $|R_a|$ \\\hline
 LFO & 15 & 50 & 394 \\\hline
 SLO & 12 & 50 & 384 \\\hline
 IDO & 16 & 50 & 436 \\\hline
@@ -1106,9 +1126,10 @@ in the automatic differentiation.
 %\item Interfaces for other languages
 %\item Parallelizaton
 %\end{itemize}
-
-\section{New heuristics for coloring}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{New heuristics Maximizing Potentially Required Elements}
 \label{s.heuristic}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In partial coloring, we compute the coloring focusing on
 required nonzero elements. However, there are other nonrequired nonzero elements which are also computed as a by-product of the computation of required elements. These are important elements for the determination of potentially required elements and additionally required elements. Look at the following example,
 \newcolumntype{r}{>{\columncolor{red!60}}c}
@@ -1144,8 +1165,10 @@ Here, we introduce a new heuristic which increases the number of survived nonreq
 \subsection{Distance-$2$ coloring}
 Since finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589},
 different heuristics are employed to obtain an estimation of minimum coloring. The greedy coloring is a widely used coloring. The greedy coloring algorithm computes a reasonable coloring~\cite{spaa14}.
-The greedy coloring algorithm for a simple graph is given in a pseudocode as follow,
-\begin{lstlisting}[caption=New coloring heuristc.,label=code.greedy,mathescape]
+The greedy coloring algorithm for a simple graph is given 
+in a pseudocode as in \coderef{code.greedy},
+\begin{figure}
+\begin{lstlisting}[caption=The greedy algorithm for the distance-$2$ coloring.,label=code.greedy,mathescape]
 function d2_color($G$,$V$)
 for $v\in V$ with $\Phi(v)=0$
 $forbiddenColors[0] = v$
@@ -1155,6 +1178,7 @@ if $\Phi(n) \neq 0$
 $forbiddenColors[\Phi(n)] = v$
 $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
 \end{lstlisting}
+\end{figure}
 The computational complexity of the greedy coloring is low. It is 
 also easy to implement. Among the various versions of this coloring, 
 the version showed here has the computational complexity of 
@@ -1184,7 +1208,8 @@ called an independent set if no edge between any of these vertices exists, i.e.,
 $$\forall u,v\in S: (u,v)\notin E.$$
 For a given vertex $v$, we show an independent set containing $v$ by $I_v$. We also define the number of nonrequired elements which survives when two columns $i$ and $j$ are compressed as $N_{nreq}(i,j)$. Now, we compute $N_{nreq}(u,v)$ for each element $u\in I_v$ and color a vertex from the set $I_v$ with the maximum value of $N_{nreq}$ beside coloring the vertex $v$ in each step and with the same color as $v$. The following pseudocode shows this approach, 
 \begin{figure}
-\begin{lstlisting}[caption=New coloring heuristc.,label=code.new.d2,mathescape]
+\begin{lstlisting}[caption=New coloring heuristc for distance-$2$ coloring
+considering the nonrequired elements.,label=code.new.d2,mathescape]
 function d2_color_nreq($G$,$V$)
 for $v\in V$ with $\Phi(v)=0$
 $forbiddenColors[0] = v$
@@ -1238,7 +1263,9 @@ The computation is carried out on the matrix \textit{ex33}. }
 The computation is carried out on the matrix \textit{ex33}. }
 \label{bls_cols_ex33_without_alpha}
 \end{figure}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{New heuristics Maximizing ...}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 So far, we select a vertex with the maximum nonrequired elements. However, it can happen
 that we have more than one vertex with the maximum nonrequired elements in each step.
 Suppose we are looking at vertex $v$ and two vertices $a$ and $b$ have maximum values of 
@@ -1491,10 +1518,12 @@ can be applied here. However it can survive less additionally required
 elements since a survived nonrequired elements from the column compression
 it is not necessary a survived nonrequired elemtns form the row compression.
 
-We consider the following implemenetation of star bicoloring based on 
-Algorithm 3.5 from Lülfesmann~\cite{Lulfesmann2012Fap}.
+We consider the implemenetation of star bicoloring in \coderef{orig.star.bicoloring} based on 
+the algorithm from Lülfesmann~\cite{Lulfesmann2012Fap}.
 Here, the notation $G[S]$ means the graph induces on the edge set $S$.
-\begin{lstlisting}[mathescape]
+\begin{figure}
+\begin{lstlisting}[caption=A version of star bicoloring algorithm.,
+label=orig.star.bicoloring,mathescape]
 $forbiddenColors = [0,0,...,0]$
 $\Phi = [-1, ..., -1]$
 $v = -1$
@@ -1521,6 +1550,7 @@ $\Phi (v_c) = \Phi (v_c) + max{\Phi (v_r): v_r \in V_r}$
 for all $v\in V_r\cup V_c$ with $\Phi(v)\neq -1$
 $\Phi (v) = 0$ 
 \end{lstlisting}
+\end{figure}
 This algorithm process a vertex either from column vertices
 or row vertices with maximum degree in each step.
 We first did some computations to find the influence of $\rho$ on the 
@@ -1579,6 +1609,10 @@ The asymmetric matrix \textit{$crystm01$} is used here.}
 \label{bls_cols_crystm01_old_star_vs_new}
 \end{figure}
 
+\section{New Heuristic Maximizing Additionally Required Elements}
+\section{New Heuristic for Structured Required elements (Diagonal Elements}
+\section{New Heuristic taking into accout the position of the required elements}
+
 
 \subsection{Parallelization}
 \label{s.parallel}
@@ -1602,12 +1636,12 @@ adapted as in \coderef{omp.greedy.bip}. This algorithm first colors the vertices
 greedily and then tries to correct the false colorings which can happend.
 \begin{figure}
 \begin{lstlisting}[caption=A OpenMP parallelized version of greedy algorithm
-adapted for the bipartite graph.,label=omp.greedy.bip]
+adapted for the bipartite graph.,label=omp.greedy.bip,mathescape]
 function d2_color_omp($G$,$V$)
 #progrma omp parallel for
 for $v\in V$
 $forbiddenColors[\Phi(n)] = v$
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
+$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
 #pragma omp barrier
 $U_0 = V$
 $i = 1$
@@ -1615,9 +1649,9 @@ while $U_{i-1}\neq \emptyset$
 $L=\emptyset$
 #pragma omp parallel for
 for $v\in U_{i-1}$
-if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v) 
+if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v)$ 
 $forbiddenColors[\Phi(n)] = v$
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
+$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
 #pragma omp barrier
 $U_i = L$
 $i = i+1$
@@ -1848,13 +1882,18 @@ This website is generated automatically by Doxygen~\cite{Lischner2013}.
 We implemented some new HTML/CSS template for doxygen to include extra
 texts and documentation in the website.
 
-\subsection{JAVA and MATLAB interface}
+\todo{zero or one}
+mohem ... discussion about the sparsification in MATLAB and C/C++
+staring from zero or one ???
+
+
+\subsection{JAVA and MATLAB interfaces}
 \label{s.interfaces}
 \textbf{JAVA interface.}
 We extend our JAVA software GraphTea~
 \cite{2014:07,2014:15,2014:16,2015:05,2015:06,2015:07,2015:08} to have a
-set of reports for graph coloring and preconditioning which call the program
-\textit{PreCol}.
+set of reports for graph coloring and preconditioning. It has two different modes
+to compute independently or to compute by calling the software \textit{PreCol}.
 %Chemical Graph theory\cite{2015:05,2015:06,2015:07,2015:08}
 GraphTea is a graph editing framework designed specifically to compute and visualize
 different parameters of graphs interactively.
@@ -1863,7 +1902,7 @@ graph window together with two additional windows that give more details on the 
 of different graph problems. These separate windows providing additional information are
 called ``reports.''
 
-A report can be computed in GraphTea in two different way:
+A report can be computed in GraphTea in two different ways:
 a single report or an incremental report.
 A single report means to compute some parameters on graph and look at the results
 in a textual way. However, an incremental report happens when we have at least 
@@ -1911,9 +1950,6 @@ This array has the size of number of rows. Each cell of this array points to
 an array which is the corresponding columns of nonzeros in this row. 
 
 \textbf{MATLAB interface.}
-\todo{zero or one}
-mohem ... discussion about the sparsification in MATLAB and C/C++
-staring from zero or one ???
 
 \chapter{Interactive Educational Module}
 \label{explain}
