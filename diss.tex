@@ -829,16 +829,18 @@ together with their information.
 
 \begin{table}
 \centering
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{|c|c|c|c|}
 \hline
-Name & Size & Nonzeros\\\hline
-\textit{nos3} & $960\times 960$ & $15844$\\\hline
-\textit{gyro\_m} & $17361\times 17361$ & $340431$ \\\hline
-\textit{ex33} & $1733\times 1733$ & $23922$\\\hline
+Name & Size & Nonzeros & Structure\\\hline
+\textit{nos3} & $960\times 960$ & $15844$ & symmetric\\\hline
+\textit{gyro\_m} & $17361\times 17361$ & $340431$ & symmetric\\\hline
+\textit{ex33} & $1733\times 1733$ & $23922$ & symmetric\\\hline
+\textit{cage8} & $1015\times 1015$ & $110003$ & unsymmetric \\\hline
+\textit{cavity16} & $4562\time 4562$ & $138187$ & unsymmetric \\\hline
 \end{tabular}
 \hfill
-\caption{The experiments are done these matrices from the Florida sparse matrix collection
-throughout this thesis.}
+\caption{The experiments are done these matrices 
+from the Florida sparse matrix collection throughout this thesis.}
 \label{florida.mats}
 \end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1668,6 +1670,23 @@ it is easy to see
 that the partial coloring restricted to diagonal is still a NP-complete problem.
 We discussed this shortly in Appendix~\ref{app.npcomp}.
 Therefore, we should still use some heuristics to compute these colorings.
+
+Star bicoloring scheme and distance-$2$ coloring
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+Name & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
+\textit{ex33} & $11$ & $12$\\\hline
+\textit{gyro\_m} & $10$ & $11$ \\\hline
+\textit{cage8} & $14$ & $15$\\\hline
+\end{tabular}
+\caption{The comparison of number of colors in star bicoloring and in
+distance-$2$ coloring restricted to diagonals.}
+\label{table.starbic.d2.diag}
+\end{table}
+
 We have developed some ideas based on Theorem~\ref{t.matching}
 for a better heuristic. The idea is that a heuristic for star bicoloring maybe
 find a better coloring because of the inequality in the theorem.
