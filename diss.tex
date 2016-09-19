@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt, twoside]{book}
+\documentclass[12pt, twoside]{book}
 \usepackage{doc}
 \usepackage{makeidx}
 \usepackage[tight,footnotesize]{subfigure}
@@ -832,13 +832,24 @@ together with their information.
 \begin{tabular}{|c|c|c|c|}
 \hline
 Name & Size & Nonzeros & Structure\\\hline
-\textit{nos3} & $960\times 960$ & $15844$ & symmetric\\\hline
-\textit{gyro\_m} & $17361\times 17361$ & $340431$ & symmetric\\\hline
-\textit{ex33} & $1733\times 1733$ & $23922$ & symmetric\\\hline
-\textit{cage8} & $1015\times 1015$ & $110003$ & unsymmetric \\\hline
-\textit{cavity16} & $4562\time 4562$ & $138187$ & unsymmetric \\\hline
+\textit{cage3} & $5\times 5$ & $19$ & unsymmetric\\\hline
+\textit{cage4} & $9\times 9$ & $49$ & unsymmetric\\\hline
+\textit{cage5} & $37\times 37$ & $233$ & unsymmetric\\\hline
+\textit{cage7} & $340\times 340$  & $3084$ & unsymmetric\\\hline
+\textit{cage8} & $1015\times 1015$  & $11003$ & unsymmetric\\\hline
+\textit{cage9} & $3534\times 3534$  & $41594$ & unsymmetric\\\hline
+\textit{cage10} & $11379\times 11379$ & $150645$& unsymmetric\\\hline
+\textit{cage12} & $130228\times 130228$ &  $2032536$ & unsymmetric\\\hline
+\textit{steam1} & $240\times 240$ & $3762$ & unsymmetric \\\hline
+\textit{steam2} & $600\times 600$ & $13760$ & unsymmetric \\\hline
+\textit{nos3} & $960\times 960$ & $8402$ & symmetric \\\hline
+\textit{ex7} & $1633\times 1633$ & $54543$ & unsymmetric \\\hline 
+\textit{ex33} & $1733\times 1733$ & $11961$ & symmetric\\\hline
+\textit{cavity16} & $4562\times 4562$ & $138187$ & unsymmetric \\\hline
+\textit{rajat01} & $6833\times 6833$ & $43250$ & unsymmetric\\\hline
+\textit{gyro\_m} & $17361\times 17361$ & $178896$ & symmetric\\\hline
 \end{tabular}
-\hfill
+
 \caption{The experiments are done these matrices 
 from the Florida sparse matrix collection throughout this thesis.}
 \label{florida.mats}
@@ -849,7 +860,10 @@ from the Florida sparse matrix collection throughout this thesis.}
 \label{s.heuristic}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In partial coloring, we compute the coloring focusing on
-required nonzero elements. However, there are other nonrequired nonzero elements which are also computed as a by-product of the computation of required elements. These are important elements for the determination of potentially required elements and additionally required elements. Look at the following example,
+required nonzero elements. However, there are other nonrequired nonzero elements 
+which are also computed as a by-product of the computation of required elements. 
+These are important elements for the determination of potentially required elements 
+and additionally required elements. Look at the following example,
 \newcolumntype{r}{>{\columncolor{red!60}}c}
 \newcolumntype{b}{>{\columncolor{blue!60}}c}
 \begin{equation}
@@ -1670,20 +1684,50 @@ it is easy to see
 that the partial coloring restricted to diagonal is still a NP-complete problem.
 We discussed this shortly in Appendix~\ref{app.npcomp}.
 Therefore, we should still use some heuristics to compute these colorings.
-
-Star bicoloring scheme and distance-$2$ coloring
-
+The examples in Table~\ref{table.starbic.d2.diag} from Florida sparse collection shows that the 
+inequality in Theorem~\ref{t.matching} can happen. The second column of this table
+shows the number of colors computed by the heurstic for star bicoloring.
+The third column shows the number of colors computed by the greedy distance-$2$ coloring
+in which the minimum number of colors between the row and column version is selected.
+It can be seen that even for a small matrix as the matrix \textit{cage3} which has only
+$5$ rows and columns, the star bicoloring can produce a better result.
+However, the difference between the number of colors is not so high for these examples. 
+So, it is not maybe efficient to run the star bicoloring to get a better coloring for
+the one-sided coloring. Hence, a new heuristic is proposed with a lower complexity 
+to compute the same coloring. 
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
 Name & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
-\textit{ex33} & $11$ & $12$\\\hline
-\textit{gyro\_m} & $10$ & $11$ \\\hline
-\textit{cage8} & $14$ & $15$\\\hline
+\textit{cage3} & $3$ & $4$\\\hline
+\textit{cage4} & $3$ & $4$ \\\hline
+\textit{cage5} & $5$ & $7$\\\hline
+\textit{cage7} & $7$  & $8$\\\hline
+\textit{cage8} & $8$  & $10$\\\hline
+\textit{cage9} & $9$  & $11$\\\hline
+\textit{cage10} & $10$ & $11$\\\hline
+\textit{cage12} & $13$ &  $14$\\\hline
 \end{tabular}
+
+\begin{tabular}{|c|c|c|}
+\hline
+Name & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
+\textit{ex7} & $18$ & $22$ \\\hline 
+\textit{nos3} & $10$ & $10$ \\\hline
+\textit{steam1} & $6$ & $6$ \\\hline
+\textit{steam2} & $8$ & $8$ \\\hline
+\textit{rajat01} & $8$ & $8$ \\\hline
+\textit{gyro\_m} & $15$ & $15$\\\hline
+\textit{ex33} & $12$ & $11$\\\hline
+\textit{cavity16} & $20$ & $18$ \\\hline
+\end{tabular}
+
 \caption{The comparison of number of colors in star bicoloring and in
-distance-$2$ coloring restricted to diagonals.}
+distance-$2$ coloring restricted to diagonals.
+The ordering is the natural ordering of the matrix for the both colorings.
+%the value of $\alpha$ is equal $1.0$
+}
 \label{table.starbic.d2.diag}
 \end{table}
 
