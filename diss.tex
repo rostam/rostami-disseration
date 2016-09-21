@@ -882,13 +882,22 @@ and additionally required elements. Look at the following example,
 \end{array}\right)
 \label{twocolorings}
 \end{equation}
-in which the symbol $r$ stands for the required element, the symbol \textit{$*$} stands for the other nonzero elements, and the number $0$ denotes the actual zero elements. If the first and second column are colored with the same color, you will get the nonzero at position $(3,1)$ as a by-product. However, there are certain degrees of freedom. In
+in which the symbol $r$ stands for the required element, 
+the symbol \textit{$*$} stands for the other nonzero elements, 
+and the number $0$ denotes the actual zero elements. 
+If the first and second column are colored with the same color, 
+you will get the nonzero at position $(3,1)$ as a by-product. 
+However, there are certain degrees of freedom. In
 this example, you could also assign the same color to columns $1$ and
 $3$ in which no nonzero element in the last row will be computed
-as a by-product. This leads to the question of maximizing the number of nonzero elements that are computed as a by-product.
+as a by-product. This leads to the question of maximizing 
+the number of nonzero elements that are computed as a by-product.
 
-Let's look at the same story differently. The columns $2$ or $3$ could have the same color with the first column to compute the
-required elements. (Of course, $2$ and $3$ are not allowed to have the same color because the required elements would sum up.) However, the number of nonrequired elements which survive would increase if
+Let's look at the same story differently. 
+The columns $2$ or $3$ could have the same color with the first column to compute the
+required elements. (Of course, $2$ and $3$ are not allowed to have the same color 
+because the required elements would sum up.) 
+However, the number of nonrequired elements which survive would increase if
 we color the first and second column with the same color and the
 other one with the other color. Now, the question is: can we save
 more nonrequired elements in the process of coloring? Can we maximize a term like $\alpha C + \beta N$ where alpha and beta are
@@ -897,33 +906,42 @@ number of survived nonrequired elements?
 Here, we introduce a new heuristic which increases the number of survived nonrequired elements such that the number of colors remains almost the same.
 \subsection{Distance-$2$ coloring}
 Since finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589},
-different heuristics are employed to obtain an estimation of minimum coloring. The greedy coloring is a widely used coloring. The greedy coloring algorithm computes a reasonable coloring~\cite{spaa14}.
-The greedy coloring algorithm for a simple graph is given
-in a pseudocode as in \coderef{code.greedy},
+different heuristics are employed to obtain an estimation of minimal coloring. 
+The greedy coloring is a widely used coloring which has a low computational complexity
+and computes a reasonable coloring~\cite{spaa14}.
+The partial greedy coloring algorithm for a bipartite graph restricted to $E_i$ 
+is given in \coderef{code.greedy}. The idea is to to iterate over all vertices
+and check the color of distance-$2$ neighbours, the computational complexity
+of this algorithm is $\mathcal{O}(n + \Delta)$ in which $n$
+and $\Delta$ are the number of vertices and the maximum vertex
+degree, respectively.
+
 \begin{figure}
-\begin{lstlisting}[caption=The greedy algorithm for the distance-$2$ coloring.,label=code.greedy,mathescape]
-function d2_color($G$,$V$)
-for $v\in V$ with $\Phi(v)=0$
-$forbiddenColors[0] = v$
-if $\exists n\in N(v): (v,n)\in E_i$
-for $n\in N(v)$
-if $\Phi(n) \neq 0$
-$forbiddenColors[\Phi(n)] = v$
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
+\begin{lstlisting}[caption=The greedy algorithm for 
+the distance-$2$ coloring for columns in which $N_2(v)$ shows 
+the distance-$2$ neighbours of $v$. 
+,label=code.greedy,mathescape]
+function d2_color($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+for $v\in V_c$
+  $\Phi(v)=-1$
+  $forbiddenColors[v] = 0$
+for $v\in V_c$
+  if $\exists n\in N_2(v): (v,n)\in E_i$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
 \end{lstlisting}
 \end{figure}
-The computational complexity of the greedy coloring is low. It is
-also easy to implement. Among the various versions of this coloring,
-the version showed here has the computational complexity of
-$\mathcal{O}(n + m)$ in which $n$ is the number of vertices
-and $m$ is the number of edges~\cite{ordering1}.
-We need to iterate over all vertices and check the incidence condition for all edges connected to each vertex. It can also be written as $\mathcal{O}(n + \Delta)$ since we need only to check neighbors of each vertex.
 
-\coderef{code.greedy} depends on the vertex ordering.
-Hence, there are many publications on how to choose a suitable ordering heuristics for a serial or parallel version of coloring~\cite{ordering1,ordering2,ordering3}.
-%NP-hard problem~\cite{npcomplete1}
+In this coloring, the assumption is that vertex, 
+equivalently each column, is available and colored one at a time. 
+Therefore, the vertex ordering plays an important role in the greedy algorithm.
+Hence, there are many publications on how to choose 
+a suitable ordering heuristics for a serial or parallel version of 
+coloring~\cite{ordering1,ordering2,ordering3}.
 Various orderings are inquired for coloring heuristics
-throughout years. Here is a list of orderings for coloring,
+throughout years. Here is some orderings for coloring,
 \begin{itemize}
 \item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with the minimum degree in each step.
 \item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
@@ -934,42 +952,56 @@ order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices 
 \end{itemize}
 The computation of this ordering can have a higher complexity than $\mathcal{O}(n+m)$ or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity.
 These various orderings can be used to improve the results of coloring.
-In this coloring, the assumption is that each column is available one at a time. Hence, we can not compare the number of nonrequired elements in the processes of coloring. For this purpose, we introduce a new heuristic coloring algorithm.
 
-Our approach in this new heuristic coloring algorithm is based on finding an independent set. 
-A subset of the vertices $S\subset V$ is
-called an independent set if no edge between any of these vertices exists, i.e.,
-$$\forall u,v\in S: (u,v)\notin E.$$
-For a given vertex $v$, we show an independent set containing $v$ by $I_v$. We also define the number of nonrequired elements which survives when two columns $i$ and $j$ are compressed as $N_{nreq}(i,j)$. Now, we compute $N_{nreq}(u,v)$ for each element $u\in I_v$ and color a vertex from the set $I_v$ with the maximum value of $N_{nreq}$ beside coloring the vertex $v$ in each step and with the same color as $v$. The following pseudocode shows this approach,
+Our goal here is to increase the number of potentially required elements.
+A potential required element is selected from the nonrequired elements such that
+number of colors does not increase. 
+In general, we say a nonrequired element at the position of $(i,j)$
+can be \textit{survived} in a compression of two columns $j$ and $k$ 
+if there is no nonzero element in the position $(i,k)$.
+Given two columns $j$ and $k$ 
+we show the number of survived nonrequired elements in the compression of 
+$j$ and $k$ as the function $Nreq(i,j)$.
+If the input parameters of this function are vertices,
+then it considers the corresponding row and column.
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
 considering the nonrequired elements.,label=code.new.d2,mathescape]
-function d2_color_nreq($G$,$V$)
-for $v\in V$ with $\Phi(v)=0$
-$forbiddenColors[0] = v$
-if $\exists n\in N(v): (v,n)\in E_i$
-for $n\in N(v)$
-if $\Phi(n) \neq 0$
-$forbiddenColors[\Phi(n)] = v$
+function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+for $v\in V_c$
+  $\Phi(v)=-1$
+  $forbiddenColors[v] = 0$
 
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
-$I_v=\{u\in V_c: u\notin N_2(v)\}$
-$nreq_v = \{n\in N(v):(n,v)\notin E_i\}$
-for $i \in I_v$
-$nreq_i = \{n\in N(i):(n,i)\notin E_i\}$
-$req_i = \{n\in N(i):(n,i)\in E_i\}$
-$mapVtoNreq = mapVtoNreq \cup (i , count (nreq_i - nreq_v))$
-$maxs = \{ a\in keys(map): map[a] = max(values(mapVtoNreq))\}$
-$\Phi(maxs[0]) = \Phi(v)$
+for $v\in V_c$ with $\Phi(v)=0$
+  $forbiddenColors[0] = v$
+  if $\exists n\in N_2(v): (v,n)\in E_i$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
+
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $M = \{ (i,Nreq(i,v)): i\in I_v\}$
+    $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
+    $\Phi(maxs[0]) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
-
+We introduce a new heuristic coloring to handle the survived nonrequired nonzeros.
+Our approach in this new heuristic coloring algorithm is based on finding an independent set. 
+A subset of the vertices $S\subset V$ is
+called an independent set~\cite{bondy2008graph} if no edge between any of these vertices exists,
+$$\forall u,v\in S: (u,v)\notin E.$$
+For a given vertex $v$, we show an independent set containing $v$ by $I_v$. 
+Now, we compute $Nreq(u,v)$ for each element $u\in I_v$ 
+and color a vertex $w$ from the set $I_v$ with the maximum value of $Nreq(v,w)$
+beside coloring the vertex $v$ in each step and with the same color as $w$. 
+\coderef{code.new.d2} represents this approach.
 The time complexity of this new heuristic is estimated as follow.
 We need to go through all vertices
 and find the maximum independent set containing each vertex.
 Then, we need to find all nonrequired elements which can be survived.
 It is to be of the order $\mathcal{O}(n^2)$
-although the comptation takes shorter actually since we color two vertices in each step.
+although the computation takes shorter actually since we color two vertices in each step.
 
 \begin{table}
 \centering
@@ -993,6 +1025,9 @@ Table~\ref{mats.pot.add.gr.vs.nreq} presents the number of potentially
 and additionally required elements computed
 by the greedy algorithm and our new heuristic. The size of diagonal blocks 
 and the ILU level parameter are fixed to $10$ and $2$, respectively.
+In this matrixes, the number of potentially required elements is increased
+by our new heuristc coloring.
+It is obvious that the number of additionally required elements would increase too.
 \figref{bls_adds_ex33_without_alpha} shows the number of additionally required elements
 computed by this new approach, compared with the greedy algorithm. Clearly,
 the new approach computes more additionally required elements als than the greedy approach.
@@ -1017,72 +1052,68 @@ The computation is carried out on the matrix \textit{ex33}. }
 The computation is carried out on the matrix \textit{ex33}. }
 \label{bls_cols_ex33_without_alpha}
 \end{figure}
-\subsection{Considering Positions of Required Elements}
-So far, we select a vertex with the maximum nonrequired elements. However, it can happen
+So far, we color a vertex with the maximum survived nonrequired elements.
+However, it can happen
 that we have more than one vertex with the maximum nonrequired elements in each step.
-Suppose we are looking at vertex $v$ and two vertices $a$ and $b$ have maximum values of
-$N_{nreq}(v,a) = N_{nreq}(v,b)$.
-Adding both elements $v_i$ and $v_j$ would not always gives us more additionally required elements
-because the value of $N_{nreq}(a,b)$ can be very small.
-Therefore, an improvement is to select one vertex from this set of maximum values such that the number of
-additionally required elements increases. As we have seen, a potential required element can be
-an additional required element if the addition of this element to the initially required elements
-does not introduce any new fill-in. Having less number of initially required elements in a column would decrease
-the possibility of producing more fill-ins since it would decrease the whole number of fill paths. \todo{}
-
-So, the previous algorithm is modified as in \coderef{code.new.impr1},
+Suppose we are looking at the vertex $v$ and two vertices $a$ and $b$ have maximum values of
+$Nreq(v,a) = Nreq(v,b)$.
+It is not always the best decision 
+to color both vertices $a$ and $b$ in a step with the same color
+because the value of $Nreq(a,b)$ can be very small and gives us smaller number
+of potentially required elements.
+So, a careful selection between computed set of vertices with the maximum number of
+nonrequired elements would increase the potentiallye required elements without
+any major changes in the structure of algorithm.
 \begin{figure}
-\begin{lstlisting}[caption=New coloring heuristc increasing the number of additionally required elements.,label=code.new.impr1,mathescape]
-function d2_color_nreq($G$,$V$)
-for $v\in V$ with $\Phi(v)=0$
-$forbiddenColors[0] = v$
-if $\exists n\in N(v): (v,n)\in E_i$
-for $n\in N(v)$
-if $\Phi(n) \neq 0$
-$forbiddenColors[\Phi(n)] = v$
+\begin{lstlisting}[
+caption=A modification of the previous algorithm in which
+a specific element is selected from the set of colums with
+the maximum survived nonrequired elements.
+we select only an arbitrary element in the previous version.,
+label=code.new.impr1,mathescape]
+function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+for $v\in V_c$
+  $\Phi(v)=-1$
+  $forbiddenColors[v] = 0$
 
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-$I_v=\{u\in V_c: u\notin N_2(v)\}$
-$nreq_v = \{n\in N(v):(n,v)\notin E_i\}$
-for $i \in I_v$
-$nreq_i = \{n\in N(i):(n,i)\notin E_i\}$
-$req_i = \{n\in N(i):(n,i)\in E_i\}$
-$mapVtoNreq = mapVtoNreq \cup (i , count (nreq_i - nreq_v))$
-$mapVtoreq = map \cup (i , count (req_i))$
-$maxs = \{ a\in keys(map): map[a] = max(values(mapVtoNreq))\}$
-$minReq = \{ a\in maxs: mapVtoreq[a] = min(values(mapVtoreq))\}$
-$\Phi(minReq) = \Phi(v)$
+for $v\in V_c$ with $\Phi(v)=0$
+  $forbiddenColors[0] = v$
+  if $\exists n\in N_2(v): (v,n)\in E_i$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
+
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
+    $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
+    $M_2 = \{ (i,req(i)): i\in maxs \}$
+    $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
+    $\Phi(mins[0]) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
 
-The time complexity is again $\mathcal{O}(n^2)$ since the sort of map happens in the lower order of
-%$\mathcal{O}(nlog(n))$.
-%\begin{table}
-%\centering
-%\begin{tabular}{|c|c|c|c|c|}
-%\hline
-%Name & \multicolumn{3}{c|}{$|R_{pot}|$} & \multicolumn{3}{c|}{$|R_{add}|$}\\\hline
-%{} & Greedy & New & Modified & Greedy & New & Modified\\\hline
-%\textit{steam1} & $64$ & $786$ & $524$ & $64$ & $630$ \\\hline
-%\textit{steam2} & $240$ & $1880$ & $240$ & $1400$ \\\hline
-%\textit{nos3} & $1638$ & $6572$ & $1106$ & $4136$ \\\hline
-%\textit{ex33} & $7408$ & $8710$ & $4920$ & $5470$\\\hline
-%\textit{crystm01} & $17822$ & $47556$& $10338$ & $28318$\\\hline
-%\end{tabular}
-%\caption{The comparison between the number of potentially and additionally required
-%elements compted by the greedy algorithm and the new heuristic.
-%The block size is $10$ and the ILU level parameter is $2$. 
-%The value of $\alpha$ is also $3$.}
-%\label{mats.pot.add.gr.vs.nreq.impr}
-%\end{table}
-%Table~\ref{mats.pot.add.gr.vs.nreq.impr} represents the comaprison of the modified new heuristic
-%with the new heuristic and the greedy results.
+In \secref{s.max.add.req}, we will select those nonrequired elements which have more possibility
+to be among the additionally required elements using the fill path theorem.
+However, a first idea would be to select a vertex with the minimum number of required elements 
+among the computed set of vertices with the maximum number of nonrequired elements.
+This facilitates gathering of more nonrequired elements in the same column since 
+it remains more free places for the other elements.
 
-\figref{bls_add_ex33_compare_max} shows how the number of additionally required elements are increased
-by the previous strategy.
+Let the function $Req(i)$ computes the number of required elements in the column $i$ or the
+number of required edges which are neighbours of the vertex $i$,
+we modify the previous algorithm as in \coderef{code.new.impr1} to
+apply this idea. The set $M_1$ and $M_2\subset M_1$ contain the set of columns with the maximum
+number of nonrequired elements and its subset with the minimal value of required elements.
+The time complexity is still the same as \coderef{code.new.d2} 
+since only an additional part of sorting is computed.
+\figref{bls_add_ex33_compare_max} shows how the number of additionally 
+required elements are increased comparing the new modified version with the previous strategy.
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{bls_add_ex33_compare_max}
+\caption{the number of additionally required elements are compared between the new heuristics
+and the modified version.}
 \label{bls_add_ex33_compare_max}
 \end{figure}
 
@@ -1116,31 +1147,33 @@ So, we propose to choose only column with the maximum number of nonrequired elem
 choose $\alpha$ other columns with the minimum number of nonrequired elements. In this case,
 we can decrease the number of colors by increasing the value $\alpha$ while the number of
 additionally required elements decrease only a little bit.
-The new algorithm would look like the following pseudocode,
+The new star bicoloring algorithm is as \coderef{code.new.impr2}.
 \begin{figure}
-\begin{lstlisting}[caption=New coloring heuristc with a controller to balance the number of colors and the number of additionally required elements.,label=code.new.impr2,mathescape]
-function d2_color_nreq($G_b$,$V_c$,$\alpha$)
-for $v\in V_c$ with $\Phi(v)=0$
-$forbiddenColors[0] = v$
-if $\exists n\in N(v): (v,n)\in E_i$
-for $n\in N(v)$
-if $\Phi(n) \neq 0$
-$forbiddenColors[\Phi(n)] = v$
+\begin{lstlisting}[
+caption=New coloring heuristc with a controller to balance 
+the number of colors and the number of additionally required elements.,
+label=code.new.impr2,mathescape]
+function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subset E$,$\alpha$)
+for $v\in V_c$
+  $\Phi(v)=-1$
+  $forbiddenColors[v] = 0$
 
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
-$I_v=\{u\in V_c: u\notin N_2(v)\}$
-$nreq_v = \{n\in N(v):(n,v)\notin E_i\}$
-for $i \in I_v$
-$nreq_i = \{n\in N(i):(n,i)\notin E_i\}$
-$req_i = \{n\in N(i):(n,i)\in E_i\}$
-$mapVtoNreq = mapVtoNreq \cup (i , count (nreq_i - nreq_v))$
-$mapVtoreq = map \cup (i , count (req_i))$
-$maxs = \{ a\in keys(map): map[a] = max(values(mapVtoNreq))\}$
-$mins = \{ a\in keys(map): map[a] = min(values(mapVtoNreq))\}$
-$minReq = \{ a\in maxs: mapVtoreq[a] = min(values(mapVtoreq))\}$
-$\Phi(minReq) = \Phi(v)$
-for $i\in\{0,1,...,\alpha\}$
-$\Phi(mins[i]) = \Phi(v)$
+for $v\in V_c$ with $\Phi(v)=0$
+  $forbiddenColors[0] = v$
+  if $\exists n\in N_2(v): (v,n)\in E_i$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
+
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
+    $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
+    $M_2 = \{ (i,req(i)): i\in maxs \}$
+    $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
+    $\Phi(mins[0]) = \Phi(v)$
+    for $i\in\{0,1,...,\alpha\}$
+      $\Phi(mins[i]) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
 
@@ -1235,39 +1268,6 @@ and value of $\alpha$ is set to $1$.}
 \label{new.col.col.alpha.one.nos3}
 \end{figure}
 
-The adaption of this new algorithm to the bipartite graph mode is straightforward.
-Only two parts of algorithm needs this adaption. The part which the incidency is checked
-in which a distance-$2$ neighbourless should be checked instead of normal neighbourless.
-Also, the part that we search for the independent set containing a given vertex should
-be computed again by a distance-$2$ neighbourless.
-\coderef{code.new.bip}
-\begin{figure}
-\begin{lstlisting}[caption=New coloring heuristc rewritten in the bipartite graph model,label=code.new.bip,mathescape]
-function d2_color_nreq($G_b$,$\alpha$)
-for $v\in V_c$ with $\Phi(v)=0$
-$forbiddenColors[0] = v$
-if $\exists n\in N_2(v): (v,n)\in E_i$
-for $n\in N_2(v)$
-if $\Phi(n) \neq 0$
-$forbiddenColors[\Phi(n)] = v$
-
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
-$I_v=\{u\in V_c: u\notin N_2(v)\}$
-$nreq_v = \{n\in N_2(v):(n,v)\notin E_i\}$
-for $i \in I_v$
-$nreq_i = \{n\in N_2(i):(n,i)\notin E_i\}$
-$req_i = \{n\in N_2(i):(n,i)\in E_i\}$
-$mapVtoNreq = mapVtoNreq \cup (i , count (nreq_i - nreq_v))$
-$mapVtoreq = map \cup (i , count (req_i))$
-$maxs = \{ a\in keys(map): map[a] = max(values(mapVtoNreq))\}$
-$mins = \{ a\in keys(map): map[a] = min(values(mapVtoNreq))\}$
-$minReq = \{ a\in maxs: mapVtoreq[a] = min(values(mapVtoreq))\}$
-$\Phi(minReq) = \Phi(v)$
-for $i\in\{0,1,...,\alpha\}$
-$\Phi(mins[i]) = \Phi(v)$
-\end{lstlisting}
-\end{figure}
-
 \subsection{Star bicoloring}
 \label{s.heuristic.starbicoloring}
 The classical approach toward star bicoloring is first introduced in
@@ -1295,33 +1295,38 @@ We consider the implemenetation of star bicoloring in \coderef{orig.star.bicolor
 the algorithm from Lülfesmann~\cite{Lulfesmann2012Fap}.
 Here, the notation $G[S]$ means the graph induces on the edge set $S$.
 \begin{figure}
-\begin{lstlisting}[caption=A version of star bicoloring algorithm.,
+\begin{lstlisting}[
+caption=A new heuristic for the star bicoloring algorithm
+considering the survived nonrequired elements.,
 label=orig.star.bicoloring,mathescape]
-$forbiddenColors = [0,0,...,0]$
-$\Phi = [-1, ..., -1]$
+function star_bicolor_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+for $v\in V_c$
+  $\Phi(v)=-1$
+  $forbiddenColors[v] = 0$
+
 $v = -1$
 $E_R^{'} = E_R$
 while $E_R^{'}$ is not empty
-if($\Delta(V_r,G[E_R^{'}]) > \rho \Delta(V_c,G[E_R^{'}])$ then
-v = $v_r\in V_r$ with maximum degree in $G[E_R^{-1}]$
-else
-v = $v_c\in V_c$ with maximum degree in $G[E_R^{-1}]$
-$E_R^{'} = E_R^{'} - {(v,w)\in E_R^{'}:w\in N_1(v,G[E_R^{'}])}$
-for all $w\in N_1(v,G)$
-if $\Phi(w) \leq 0$
-for all $x\in N_1(w,G)$ with $\Phi(w) > 0$
-if $(v,w) \in E_R$ or $(w,x) \in E_R$
-$forbiddenColors[\Phi (x)]=v$
-else
-for all $x\in N_1(w,G[E_R])$ with $\Phi(w) > 0$
-for all $y\in N_1(x,G)$ with $\Phi(y) > 0$ and $y\neq w$
-if $\Phi(w) = \Phi(y)$
-$forbiddenColors[\Phi (x)] = v$
-$\Phi(v) = min{j>0: forbiddenColors[j] \neq v}$
-for all $v_c\in V_c$ with $\Phi(v_c) > 0$
-$\Phi (v_c) = \Phi (v_c) + max{\Phi (v_r): v_r \in V_r}$
-for all $v\in V_r\cup V_c$ with $\Phi(v)\neq -1$
-$\Phi (v) = 0$
+  if($\Delta(V_r,G[E_R^{'}]) > \rho \Delta(V_c,G[E_R^{'}])$ then
+    v = $v_r\in V_r$ with maximum degree in $G[E_R^{-1}]$
+  else
+    v = $v_c\in V_c$ with maximum degree in $G[E_R^{-1}]$
+  $E_R^{'} = E_R^{'} - {(v,w)\in E_R^{'}:w\in N_1(v,G[E_R^{'}])}$
+  for all $w\in N_1(v,G)$
+    if $\Phi(w) \leq 0$
+  for all $x\in N_1(w,G)$ with $\Phi(w) > 0$
+    if $(v,w) \in E_R$ or $(w,x) \in E_R$
+  $forbiddenColors[\Phi (x)]=v$
+    else
+      for all $x\in N_1(w,G[E_R])$ with $\Phi(w) > 0$
+      for all $y\in N_1(x,G)$ with $\Phi(y) > 0$ and $y\neq w$
+      if $\Phi(w) = \Phi(y)$
+        $forbiddenColors[\Phi (x)] = v$
+        $\Phi(v) = min{j>0: forbiddenColors[j] \neq v}$
+        for all $v_c\in V_c$ with $\Phi(v_c) > 0$
+          $\Phi (v_c) = \Phi (v_c) + max{\Phi (v_r): v_r \in V_r}$
+        for all $v\in V_r\cup V_c$ with $\Phi(v)\neq -1$
+          $\Phi (v) = 0$
 \end{lstlisting}
 \end{figure}
 This algorithm process a vertex either from column vertices
@@ -1381,8 +1386,10 @@ the new star bicoloring compared with the older implementation.
 The asymmetric matrix \textit{$crystm01$} is used here.}
 \label{bls_cols_crystm01_old_star_vs_new}
 \end{figure}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Maximizing Additionally Required Elements}
+\label{s.max.add.req}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In \secref{s.heuristic}, our focus was to increase the potentially required elements
 which probably increases also the number of the additionally required elements.
 Here, we check directly in the process of coloring
@@ -1689,6 +1696,9 @@ decreases the number of additionally required elements.
 This is in contrast to the minimum number of colors which we are searching for,
 in the automatic differentiation.
 
+\subsection{Consdiering the positions of required elements}
+\subsection{Predicting the additionally required elements }
+
 \section{Structured Required elements (Diagonal Elements)}
 So far, we consider the partial Jacobian computation with an arbitrary
 set of required elements. However, a better heuristics is proposed if the
@@ -1752,7 +1762,7 @@ Name & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
 \textit{cage10} & $10$ & $11$\\\hline
 \textit{cage12} & $13$ &  $14$\\\hline
 \end{tabular}
-
+\hfill
 \begin{tabular}{|c|c|c|}
 \hline
 Name & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
