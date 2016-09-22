@@ -999,9 +999,66 @@ beside coloring the vertex $v$ in each step and with the same color as $w$.
 The time complexity of this new heuristic is estimated as follow.
 We need to go through all vertices
 and find the maximum independent set containing each vertex.
-Then, we need to find all nonrequired elements which can be survived.
-It is to be of the order $\mathcal{O}(n^2)$
-although the computation takes shorter actually since we color two vertices in each step.
+Then, we need to find all nonrequired elements which can be survived
+that results in the computational complexity of $\mathcal{O}(n^2)$.
+However, the computation takes shorter actually since we color two vertices in each step.
+
+Although we color a vertex $v$ and another vertex $u\in I_v$ 
+it does not mean that the coloring is valid.
+Given the following example,
+\begin{equation}
+\left(\begin{array}{cccc}
+r & 0 & 0 & 0  \\
+0 & * & r & 0 \\
+0 & * & * & 0 \\
+0 & r & 0 & r \\
+\end{array}\right)
+\label{twocolorings}
+\end{equation}
+\coderef{code.new.d2} colors the first and second columns with the same color
+in the first step. Then, the third column is colored with the same color as the 
+first column since there is no conflict. The fourth column gets the color of
+the third column regarding the algorithm. However, this is not a valid coloring
+since the fourth and second columns can not be compressed.  
+
+Considering this problem, we need to check the consistency of adding colors in
+any part of algorithm. Therefore, we define the following function in which
+$G_b$, $v$, and $c$ are the given bipartite graph, the vertex we want to color
+and the given color, respectively. 
+\begin{lstlisting}[mathescape]
+function consistent($G$, $v$, $c$)
+  for $n \in N_2(v)$
+    if($\Phi(n) == c$) 
+      return false 
+  return true
+\end{lstlisting}
+This function checks if the vertex $v$ can be colored with the color $c$.
+This means that \coderef{code.new.d2} should be rewritten as \coderef{},
+\begin{figure}
+\begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
+considering the nonrequired elements and checking the consistency.,label=code.new.d2,mathescape]
+function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+for $v\in V_c$
+  $\Phi(v)=-1$
+  $forbiddenColors[v] = 0$
+
+for $v\in V_c$ with $\Phi(v)=0$
+  $forbiddenColors[0] = v$
+  if $\exists n\in N_2(v): (v,n)\in E_i$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
+
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $M = \{ (i,Nreq(i,v)): i\in I_v\}$
+    $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
+    if(consistent($G$,$maxs[0]$,$\Phi(v)$))
+      $\Phi(maxs[0]) = \Phi(v)$
+\end{lstlisting}
+\end{figure}
+
+
 
 \begin{table}
 \centering
@@ -1060,7 +1117,7 @@ $Nreq(v,a) = Nreq(v,b)$.
 It is not always the best decision 
 to color both vertices $a$ and $b$ in a step with the same color
 because the value of $Nreq(a,b)$ can be very small and gives us smaller number
-of potentially required elements.
+of potentially required elements (it can decrease the number of colors too).
 So, a careful selection between computed set of vertices with the maximum number of
 nonrequired elements would increase the potentiallye required elements without
 any major changes in the structure of algorithm.
@@ -1089,7 +1146,8 @@ for $v\in V_c$ with $\Phi(v)=0$
     $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
     $M_2 = \{ (i,req(i)): i\in maxs \}$
     $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
-    $\Phi(mins[0]) = \Phi(v)$
+    if(consistent($G$,$mins[0]$,$\Phi(v)$))
+      $\Phi(mins[0]) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
 
@@ -1171,9 +1229,11 @@ for $v\in V_c$ with $\Phi(v)=0$
     $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
     $M_2 = \{ (i,req(i)): i\in maxs \}$
     $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
-    $\Phi(mins[0]) = \Phi(v)$
+    if(consistent($G$,$mins[0]$,$\Phi(v)$))
+      $\Phi(mins[0]) = \Phi(v)$
     for $i\in\{0,1,...,\alpha\}$
-      $\Phi(mins[i]) = \Phi(v)$
+      if(consistent($G$,$mins[i]$,$\Phi(v)$))
+        $\Phi(mins[i]) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
 
@@ -1696,8 +1756,8 @@ decreases the number of additionally required elements.
 This is in contrast to the minimum number of colors which we are searching for,
 in the automatic differentiation.
 
-\subsection{Consdiering the positions of required elements}
-\subsection{Predicting the additionally required elements }
+%\subsection{Consdiering the positions of required elements}
+%\subsection{Predicting the additionally required elements }
 
 \section{Structured Required elements (Diagonal Elements)}
 So far, we consider the partial Jacobian computation with an arbitrary
@@ -1729,7 +1789,8 @@ Given the graph $G=(V,E)$ and a matching $M\subset E$ representing
 the required elements, any valid partial star bicoloring $Q_{sp}$ restricted to $M$
 with the number of colors $\chi_{sp}$
 can be transformed to a valid distance-$2$ coloring restricted to $M$
-with the number of colors $\chi_{d2}$ such that $\chi_{sp} \leq \chi_{d2}$
+with the number of colors $\chi_{d2}$ such that $\chi_{sp} \leq \chi_{d2}$.
+These number of colors can be different than the minimal number of colors.
 \end{theorem}
 The proof is straightforward and can be found in Appendix~\ref{app.proof.1}.
 Based on the $\sparsifysymbol$-column intersection graph defined in~\defref{d.part.cig},
@@ -1794,7 +1855,7 @@ the nonzero in favour of minimal coloring.
 
 \section{Parallelization}
 \label{s.parallel}
-As we sawe in \secref{s.precond}, different steps should be followed
+As we saw in \secref{s.precond}, different steps should be followed
 to compute the additionally required elements. Here, we look at each of
 these steps and examine how they can be parallelized by OpenMP
 if it can be done efficiently.
@@ -1937,8 +1998,8 @@ Threads & Time & Colors \\\hline
 }
 \label{speedups}
 \end{figure}
-This idea can be applied to the new heuristic for star bicoloring which is a potential future work.
 
+This idea can be applied to the new heuristic for star bicoloring which is a potential future work.
 Apart from the parallelization of coloring, the block diagonal sparsification makes a suitable
 matrix for parallelization. It is well known the fill-ins are generated only in the nonzero blocks in such matrices. This observation gives a direct idea of parallelization in which each process
 works on each block. We do not go into details since it is already discussed in previous literature like~\cite{parblockilu}. However, it does not mean that the same idea can be applied in computation of
@@ -1948,10 +2009,10 @@ additionally required elements since those elements are outside the blocks.
 
 \section{PreCol 1.0}%Usability, Readability, and Extensibility}
 \label{s.extend}
-Here, we explain what we have done to ease the usage of the software
-either for developers or for end users. We have restructured the implementation
-to achieve these goals.
-
+We started a software to compute the different algorihtm that we propose
+here. We developed the software such taht it can be 
+extended later with any new coloring heuristc as well as any preconditioning
+algorithm.
 We employed concepts from the object-oriented programming to empower
 the developers to implement new extensions without going into
 details of core implementation. So, two main ingredients coloring
@@ -1969,7 +2030,6 @@ since the goal is to write an extension with a few code. So, the developer shoul
 move the new header file to the corresponding directory which is the ordering directory
 for this new ordering and \textit{algs} directory for coloring algorithms.
 Now, building the software would bring this new ordering into the software execution.
-
 
 Using the standard library of C++ as well as the concept of functional programming
 in new C++ release~\cite{Sutherland2015}, we provide different functions which can be used
