@@ -593,7 +593,7 @@ the set of required edges. This is called partial coloring in~\cite{Gebremedhin0
 \section{Adapted ILU Preconditioning}
 \label{s.precond}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-As discussed, the computation of Jacobian is one part of solving PDEs.
+The computation of Jacobian is always one part of solving partial differential equations.
 In general, we are considering the solution to the following system of linear equations,
 $$
 J\vek{x} = \vek{b},
@@ -604,7 +604,7 @@ these solvers are matrix-free which makes AD as a suitable method of differentia
 
 Another way to speed up these iterators are
 the preconditioning techniques~\cite{precond1,precond2}.
-Rather than solving the previous unpreconditioned system.
+Rather than solving the previous system,
 we can consider solving the preconditioned system
 \begin{equation}
 \label{e:precond}
@@ -702,7 +702,7 @@ and save colors as the properties of vertices $\Phi_{G}(E_i)$
 that $SILUR(R_i) \cup R_a = SILU(R_i \cup R_a)$
 \end{itemize}
 \coderef{code.pot.d2} and \coderef{code.pot.sb} shows the algorithms to compute the
-potentially required elemetns for the distance-$2$ coloring and star bicoloring, respectively.
+potentially required elements for the distance-$2$ coloring and star bicoloring, respectively.
 \begin{figure}
 \begin{lstlisting}[caption=Find potentially required elements for
 distance-$2$ coloring,label=code.pot.d2,mathescape]
@@ -767,7 +767,7 @@ in which a path is replaced by distance-$2$ paths.
 The details can be found in Lülfesmann~\cite{Lulfesmann2012Fap}.
 Based on the bipartite graph models for coloring and the ILU preconditioning,
 two algorithms are proposed also to compute the additionally required
-elements:\coderef{code.add} amd \coderef{code.add2}.
+elements:\coderef{code.add} and \coderef{code.add2}.
 
 \begin{figure}
 \begin{lstlisting}[caption=Find additionally required elements,
@@ -844,7 +844,7 @@ Name & Size & Nonzeros & Structure\\\hline
 \textit{steam1} & $240\times 240$ & $3762$ & unsymmetric \\\hline
 \textit{steam2} & $600\times 600$ & $13760$ & unsymmetric \\\hline
 \textit{nos3} & $960\times 960$ & $8402$ & symmetric \\\hline
-\textit{ex7} & $1633\times 1633$ & $54543$ & unsymmetric \\\hline 
+\textit{ex7} & $1633\times 1633$ & $54543$ & unsymmetric \\\hline
 \textit{ex33} & $1733\times 1733$ & $11961$ & symmetric\\\hline
 \textit{cavity16} & $4562\times 4562$ & $138187$ & unsymmetric \\\hline
 \textit{crystm01} &$4875\times 4875$ & $55107$& symmetric\\\hline
@@ -852,7 +852,7 @@ Name & Size & Nonzeros & Structure\\\hline
 \textit{gyro\_m} & $17361\times 17361$ & $178896$ & symmetric\\\hline
 \end{tabular}
 
-\caption{The experiments are done these matrices 
+\caption{The experiments are done these matrices
 from the Florida sparse matrix collection throughout this thesis.}
 \label{florida.mats}
 \end{table}
@@ -862,9 +862,9 @@ from the Florida sparse matrix collection throughout this thesis.}
 \label{s.heuristic}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In partial coloring, we compute the coloring focusing on
-required nonzero elements. However, there are other nonrequired nonzero elements 
-which are also computed as a by-product of the computation of required elements. 
-These are important elements for the determination of potentially required elements 
+required nonzero elements. However, there are other nonrequired nonzero elements
+which are also computed as a by-product of the computation of required elements.
+These are important elements for the determination of potentially required elements
 and additionally required elements. Look at the following example,
 \newcolumntype{r}{>{\columncolor{red!60}}c}
 \newcolumntype{b}{>{\columncolor{blue!60}}c}
@@ -882,21 +882,21 @@ and additionally required elements. Look at the following example,
 \end{array}\right)
 \label{twocolorings}
 \end{equation}
-in which the symbol $r$ stands for the required element, 
-the symbol \textit{$*$} stands for the other nonzero elements, 
-and the number $0$ denotes the actual zero elements. 
-If the first and second column are colored with the same color, 
-you will get the nonzero at position $(3,1)$ as a by-product. 
+in which the symbol $r$ stands for the required element,
+the symbol \textit{$*$} stands for the other nonzero elements,
+and the number $0$ denotes the actual zero elements.
+If the first and second column are colored with the same color,
+you will get the nonzero at position $(3,1)$ as a by-product.
 However, there are certain degrees of freedom. In
 this example, you could also assign the same color to columns $1$ and
 $3$ in which no nonzero element in the last row will be computed
-as a by-product. This leads to the question of maximizing 
+as a by-product. This leads to the question of maximizing
 the number of nonzero elements that are computed as a by-product.
 
-Let's look at the same story differently. 
+Let's look at the same story differently.
 The columns $2$ or $3$ could have the same color with the first column to compute the
-required elements. (Of course, $2$ and $3$ are not allowed to have the same color 
-because the required elements would sum up.) 
+required elements. (Of course, $2$ and $3$ are not allowed to have the same color
+because the required elements would sum up.)
 However, the number of nonrequired elements which survive would increase if
 we color the first and second column with the same color and the
 other one with the other color. Now, the question is: can we save
@@ -906,10 +906,10 @@ number of survived nonrequired elements?
 Here, we introduce a new heuristic which increases the number of survived nonrequired elements such that the number of colors remains almost the same.
 \subsection{Distance-$2$ coloring}
 Since finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589},
-different heuristics are employed to obtain an estimation of minimal coloring. 
+different heuristics are employed to obtain an estimation of minimal coloring.
 The greedy coloring is a widely used coloring which has a low computational complexity
 and computes a reasonable coloring~\cite{spaa14}.
-The partial greedy coloring algorithm for a bipartite graph restricted to $E_i$ 
+The partial greedy coloring algorithm for a bipartite graph restricted to $E_i$
 is given in \coderef{code.greedy}. The idea is to to iterate over all vertices
 and check the color of distance-$2$ neighbours, the computational complexity
 of this algorithm is $\mathcal{O}(n + \Delta)$ in which $n$
@@ -917,9 +917,9 @@ and $\Delta$ are the number of vertices and the maximum vertex
 degree, respectively.
 
 \begin{figure}
-\begin{lstlisting}[caption=The greedy algorithm for 
-the distance-$2$ coloring for columns in which $N_2(v)$ shows 
-the distance-$2$ neighbours of $v$. 
+\begin{lstlisting}[caption=The greedy algorithm for
+the distance-$2$ coloring for columns in which $N_2(v)$ shows
+the distance-$2$ neighbours of $v$.
 ,label=code.greedy,mathescape]
 function d2_color($G=(V_r\cup V_c,E)$,$E_i\subset E$)
 for $v\in V_c$
@@ -934,11 +934,11 @@ for $v\in V_c$
 \end{lstlisting}
 \end{figure}
 
-In this coloring, the assumption is that vertex, 
-equivalently each column, is available and colored one at a time. 
+In this coloring, the assumption is that vertex,
+equivalently each column, is available and colored one at a time.
 Therefore, the vertex ordering plays an important role in the greedy algorithm.
-Hence, there are many publications on how to choose 
-a suitable ordering heuristics for a serial or parallel version of 
+Hence, there are many publications on how to choose
+a suitable ordering heuristics for a serial or parallel version of
 coloring~\cite{ordering1,ordering2,ordering3}.
 Various orderings are inquired for coloring heuristics
 throughout years. Here is some orderings for coloring,
@@ -955,12 +955,12 @@ These various orderings can be used to improve the results of coloring.
 
 Our goal here is to increase the number of potentially required elements.
 A potential required element is selected from the nonrequired elements such that
-number of colors does not increase. 
+number of colors does not increase.
 In general, we say a nonrequired element at the position of $(i,j)$
-can be \textit{survived} in a compression of two columns $j$ and $k$ 
+can be \textit{survived} in a compression of two columns $j$ and $k$
 if there is no nonzero element in the position $(i,k)$.
-Given two columns $j$ and $k$ 
-we show the number of survived nonrequired elements in the compression of 
+Given two columns $j$ and $k$
+we show the number of survived nonrequired elements in the compression of
 $j$ and $k$ as the function $Nreq(i,j)$.
 If the input parameters of this function are vertices,
 then it considers the corresponding row and column.
@@ -987,14 +987,14 @@ for $v\in V_c$ with $\Phi(v)=0$
 \end{lstlisting}
 \end{figure}
 We introduce a new heuristic coloring to handle the survived nonrequired nonzeros.
-Our approach in this new heuristic coloring algorithm is based on finding an independent set. 
+Our approach in this new heuristic coloring algorithm is based on finding an independent set.
 A subset of the vertices $S\subset V$ is
 called an independent set~\cite{bondy2008graph} if no edge between any of these vertices exists,
 $$\forall u,v\in S: (u,v)\notin E.$$
-For a given vertex $v$, we show an independent set containing $v$ by $I_v$. 
-Now, we compute $Nreq(u,v)$ for each element $u\in I_v$ 
+For a given vertex $v$, we show an independent set containing $v$ by $I_v$.
+Now, we compute $Nreq(u,v)$ for each element $u\in I_v$
 and color a vertex $w$ from the set $I_v$ with the maximum value of $Nreq(v,w)$
-beside coloring the vertex $v$ in each step and with the same color as $w$. 
+beside coloring the vertex $v$ in each step and with the same color as $w$.
 \coderef{code.new.d2} represents this approach.
 The time complexity of this new heuristic is estimated as follow.
 We need to go through all vertices
@@ -1003,7 +1003,7 @@ Then, we need to find all nonrequired elements which can be survived
 that results in the computational complexity of $\mathcal{O}(n^2)$.
 However, the computation takes shorter actually since we color two vertices in each step.
 
-Although we color a vertex $v$ and another vertex $u\in I_v$ 
+Although we color a vertex $v$ and another vertex $u\in I_v$
 it does not mean that the coloring is valid.
 Given the following example,
 \begin{equation}
@@ -1016,20 +1016,20 @@ r & 0 & 0 & 0  \\
 \label{twocolorings}
 \end{equation}
 \coderef{code.new.d2} colors the first and second columns with the same color
-in the first step. Then, the third column is colored with the same color as the 
+in the first step. Then, the third column is colored with the same color as the
 first column since there is no conflict. The fourth column gets the color of
 the third column regarding the algorithm. However, this is not a valid coloring
-since the fourth and second columns can not be compressed.  
+since the fourth and second columns can not be compressed.
 
 Considering this problem, we need to check the consistency of adding colors in
 any part of algorithm. Therefore, we define the following function in which
 $G_b$, $v$, and $c$ are the given bipartite graph, the vertex we want to color
-and the given color, respectively. 
+and the given color, respectively.
 \begin{lstlisting}[mathescape]
 function consistent($G$, $v$, $c$)
   for $n \in N_2(v)$
-    if($\Phi(n) == c$) 
-      return false 
+    if($\Phi(n) == c$)
+      return false
   return true
 \end{lstlisting}
 This function checks if the vertex $v$ can be colored with the color $c$.
@@ -1078,9 +1078,9 @@ The block size is $10$ and the ILU level parameter is $2$.}
 \label{mats.pot.add.gr.vs.nreq}
 \end{table}
 
-Table~\ref{mats.pot.add.gr.vs.nreq} presents the number of potentially 
+Table~\ref{mats.pot.add.gr.vs.nreq} presents the number of potentially
 and additionally required elements computed
-by the greedy algorithm and our new heuristic. The size of diagonal blocks 
+by the greedy algorithm and our new heuristic. The size of diagonal blocks
 and the ILU level parameter are fixed to $10$ and $2$, respectively.
 In this matrixes, the number of potentially required elements is increased
 by our new heuristc coloring.
@@ -1114,7 +1114,7 @@ However, it can happen
 that we have more than one vertex with the maximum nonrequired elements in each step.
 Suppose we are looking at the vertex $v$ and two vertices $a$ and $b$ have maximum values of
 $Nreq(v,a) = Nreq(v,b)$.
-It is not always the best decision 
+It is not always the best decision
 to color both vertices $a$ and $b$ in a step with the same color
 because the value of $Nreq(a,b)$ can be very small and gives us smaller number
 of potentially required elements (it can decrease the number of colors too).
@@ -1153,9 +1153,9 @@ for $v\in V_c$ with $\Phi(v)=0$
 
 In \secref{s.max.add.req}, we will select those nonrequired elements which have more possibility
 to be among the additionally required elements using the fill path theorem.
-However, a first idea would be to select a vertex with the minimum number of required elements 
+However, a first idea would be to select a vertex with the minimum number of required elements
 among the computed set of vertices with the maximum number of nonrequired elements.
-This facilitates gathering of more nonrequired elements in the same column since 
+This facilitates gathering of more nonrequired elements in the same column since
 it remains more free places for the other elements.
 
 Let the function $Req(i)$ computes the number of required elements in the column $i$ or the
@@ -1163,9 +1163,9 @@ number of required edges which are neighbours of the vertex $i$,
 we modify the previous algorithm as in \coderef{code.new.impr1} to
 apply this idea. The set $M_1$ and $M_2\subset M_1$ contain the set of columns with the maximum
 number of nonrequired elements and its subset with the minimal value of required elements.
-The time complexity is still the same as \coderef{code.new.d2} 
+The time complexity is still the same as \coderef{code.new.d2}
 since only an additional part of sorting is computed.
-\figref{bls_add_ex33_compare_max} shows how the number of additionally 
+\figref{bls_add_ex33_compare_max} shows how the number of additionally
 required elements are increased comparing the new modified version with the previous strategy.
 \begin{figure}
 \centering
@@ -1208,7 +1208,7 @@ additionally required elements decrease only a little bit.
 The new star bicoloring algorithm is as \coderef{code.new.impr2}.
 \begin{figure}
 \begin{lstlisting}[
-caption=New coloring heuristc with a controller to balance 
+caption=New coloring heuristc with a controller to balance
 the number of colors and the number of additionally required elements.,
 label=code.new.impr2,mathescape]
 function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subset E$,$\alpha$)
@@ -1458,7 +1458,7 @@ For this purpose, we use the bipartite graph model for ILU preconditioning
 as well as the fill path theorem introduced
 in~\secref{ss.comb.precond} to be consistent with the bipartite graph model for coloring.
 
-In \coderef{code.new.impr1}, we compute the required nonzero elements 
+In \coderef{code.new.impr1}, we compute the required nonzero elements
 The idea is to check if the current nonzero required elements
 
 \subsection{Experiments on Effects of Orderings}
@@ -1798,17 +1798,17 @@ it is easy to see
 that the partial coloring restricted to diagonal is still a NP-complete problem.
 We discussed this shortly in Appendix~\ref{app.npcomp}.
 Therefore, we should still use some heuristics to compute these colorings.
-The examples in Table~\ref{table.starbic.d2.diag} from Florida sparse collection shows that the 
+The examples in Table~\ref{table.starbic.d2.diag} from Florida sparse collection shows that the
 inequality in Theorem~\ref{t.matching} can happen. The second column of this table
 shows the number of colors computed by the heurstic for star bicoloring.
 The third column shows the number of colors computed by the greedy distance-$2$ coloring
 in which the minimum number of colors between the row and column version is selected.
 It can be seen that even for a small matrix as the matrix \textit{cage3} which has only
 $5$ rows and columns, the star bicoloring can produce a better result.
-However, the difference between the number of colors is not so high for these examples. 
+However, the difference between the number of colors is not so high for these examples.
 So, it is not maybe efficient to run the star bicoloring to get a better coloring for
-the one-sided coloring. Hence, a new heuristic is proposed with a lower complexity 
-to compute the same coloring. 
+the one-sided coloring. Hence, a new heuristic is proposed with a lower complexity
+to compute the same coloring.
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|}
@@ -1827,7 +1827,7 @@ Name & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
 \begin{tabular}{|c|c|c|}
 \hline
 Name & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
-\textit{ex7} & $18$ & $22$ \\\hline 
+\textit{ex7} & $18$ & $22$ \\\hline
 \textit{nos3} & $10$ & $10$ \\\hline
 \textit{steam1} & $6$ & $6$ \\\hline
 \textit{steam2} & $8$ & $8$ \\\hline
@@ -1872,7 +1872,7 @@ which presents an algorithm in which only a point of synchronization is
 needed. The number of colors also remains near to the number of colors
 in the serial version. A bipartite version of the algorithm can be easily
 adapted as in \coderef{omp.greedy.bip}. This algorithm first colors the vertices
-greedily and then tries to correct the false colorings which can happend.
+greedily and then corrects the false colorings which can happen.
 \begin{figure}
 \begin{lstlisting}[caption=A OpenMP parallelized version of greedy algorithm
 adapted for the bipartite graph.,label=omp.greedy.bip,mathescape]
@@ -1901,7 +1901,7 @@ It means we compute the coloring like before by a parallelized loop.
 Then, we correct the coloring. \coderef{code.new.bip.omp} shows the parallelized
 version of \coderef{code.new.bip}.
 \begin{figure}
-\begin{lstlisting}[caption=New coloring heuristc in the bipartite graph model
+\begin{lstlisting}[caption=New coloring heuristic in the bipartite graph model
 parallelized by OpenMP,label=code.new.bip.omp,mathescape]
 function d2_color_nreq($G_b$,$\alpha$)
 #progrma omp parallel for
@@ -1943,9 +1943,9 @@ $i = i+1$
 \end{lstlisting}
 \end{figure}
 
-We color the bipartite graph intrepeted from the matrix \textit{Cavity16}
+We color the bipartite graph interpreted from the matrix \textit{Cavity16}
 from the sparse matrix collection of University of Florida.
-The timing are all from the computation carried on an intel Core i5 with 8 Gb RAM.
+The timing are all from the computation carried on an Intel Core i5 with 8 Gb RAM.
 Table~\ref{omp.res} shows the results of this computation.
 Here, we change the number of threads from $1$ to $10$ shown in the first column.
 The second colum shows the computation time in milliseconds. The third column
@@ -2010,7 +2010,7 @@ additionally required elements since those elements are outside the blocks.
 \section{PreCol 1.0}%Usability, Readability, and Extensibility}
 \label{s.extend}
 We started a software to compute the different algorihtm that we propose
-here. We developed the software such taht it can be 
+here. We developed the software such taht it can be
 extended later with any new coloring heuristc as well as any preconditioning
 algorithm.
 We employed concepts from the object-oriented programming to empower
@@ -2193,11 +2193,11 @@ an array which is the corresponding columns of nonzeros in this row.
 \label{explain}
 \mbox{EXPLAIN} is an extensible collection of educational modules for classroom use.
 It is currently not designed for self-study because the connection between the scientific computing problem and the corresponding graph problem is not available in \mbox{EXPLAIN}. The idea is that the teacher will explain this connection as well as the use of the module in classroom.
-EXPLAIN has so far two major releases \mbox{EXPLAIN 1.0} and \mbox{EXPLAIN 2.0}.
-In implementation details we explained how they differ and improved from an original version.
-
-We implemented different modules for EXPLAIN.
-Here we explain these modules and how they can be used.
+We implemented different modules for EXPLAIN as well as improving the whole structure of 
+this software.
+We created two major releases \mbox{EXPLAIN 1.0} and \mbox{EXPLAIN 2.0}.
+This chapter structured as follows. First, we look at different modules implemented 
+for these two releases.
 The implementation details comes later in ~\ref{s.impl.explain}.
 \section{Column Compression}
 \label{s.column-compression}
@@ -2967,11 +2967,11 @@ So, the time for saving and loading the image was always a problem.
 Second, since the final result was HTML/JS code and the computation part was in python,
 an overhead of the server management for \textit{Mod\_python} is always added to the system.
 
-In the new implementation, we replaced all python parts with the JS code.
+In the new implementation, we replaced all python parts with the Javascript code.
 We decided for the Javascript library D3 (Data-Driven Documents)
 because of its power of control and visualization.
 The data structure of graph is an adjacency list.
-We used the object structure of the JS which helps us to have another
+We used the object structure of the Javascript which helps us to have another
 properties also in the graph. Figure~\ref{f.graph-ds} shown an illustration
 of the data structure. There is an array representing the vertices.
 Each cell of array points to another array \textit{edges} which contains
