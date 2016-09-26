@@ -2010,25 +2010,32 @@ works on each block. We do not go into details since it is already discussed in 
 additionally required elements since those elements are outside the blocks.
 
 %\cite{mpi_greedy_coloring}
-
-\section{PreCol 1.0}%Usability, Readability, and Extensibility}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{PreCol 1.0}
 \label{s.extend}
-We started a software to compute the different algorihtm that we propose
-here. We developed the software such taht it can be
-extended later with any new coloring heuristc as well as any preconditioning
-algorithm.
-We employed concepts from the object-oriented programming to empower
-the developers to implement new extensions without going into
-details of core implementation. So, two main ingredients coloring
-and orderings can be implemented now only by deriving an interface.
-For example, a new ordering can be added as easy as the following code.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+We develop a software to compute the different algorihtm that we propose here. 
+Specially, the software is designed employing concepts from the object-oriented programming 
+such that it can be extended later with any new coloring heuristc as well as any preconditioning algorithm.
+The developers can implement new extensions without going into details of core implementation.
+This is explained in \secref{s.new.ext}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Developer Manual}
+\label{s.new.ext}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Two main ingredients coloring and orderings can be implemented now only by deriving an interface.
+For example, a new coloring and ordering can be added as easy as the following code.
 \begin{lstlisting}
-class LFO : public Ordering {
-bool order(const Graph &G_b, vector<unsigned int> &ord, bool restricted) {
-...
-}
+class New_Ordering : public Ordering {
+  bool order(const Graph &G_b, vector<unsigned int> &ord, bool restricted) {...}
+};
+
+class New_Coloring : public ColAlg {
+  int color() {...}
 };
 \end{lstlisting}
+
 The developer needs to implement this new class in an only-header fashion~\cite{headeronly},
 since the goal is to write an extension with a few code. So, the developer should
 move the new header file to the corresponding directory which is the ordering directory
@@ -2056,17 +2063,10 @@ This strategy reduces the amount of the code dramatically and
 make the code more readable.
 Also, the standard algorithms would be automatically parallel in the next
 release of C++ (C++17) next year~\cite{parallelcpp}.
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Software Design}
-In the previous version, the coloring,
-potentially required elements, and the additionally required elements
-were computed in the functions written in \text{C++}.
-The other parts of computation were done in Matlab.
-This means that the code in Matlab needs to call the
-MEX interface for three times at least.
-In this way, it was necessary to do the conversion from the Matlab sparse
-matrix to graph (or matrix) format in \text{C++}
-and converting back from \text{C++} to Matlab.
+\label{s.software.design}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 This is illustrated in Figure~\ref{f.structure} (Left).
 This results in the lack of efficiency. On the other hand,
 this mix of programming languages reduces
