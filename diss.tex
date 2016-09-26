@@ -1357,7 +1357,7 @@ the algorithm from Lülfesmann~\cite{Lulfesmann2012Fap}.
 Here, the notation $G[S]$ means the graph induces on the edge set $S$.
 \begin{figure}
 \begin{lstlisting}[
-caption=A new heuristic for the star bicoloring algorithm
+caption=A new heuristic for star bicoloring algorithm
 considering the survived nonrequired elements.,
 label=orig.star.bicoloring,mathescape]
 function star_bicolor_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
@@ -1377,17 +1377,17 @@ while $E_R^{'}$ is not empty
     if $\Phi(w) \leq 0$
   for all $x\in N_1(w,G)$ with $\Phi(w) > 0$
     if $(v,w) \in E_R$ or $(w,x) \in E_R$
-  $forbiddenColors[\Phi (x)]=v$
+      $forbiddenColors[\Phi (x)]=v$
     else
       for all $x\in N_1(w,G[E_R])$ with $\Phi(w) > 0$
       for all $y\in N_1(x,G)$ with $\Phi(y) > 0$ and $y\neq w$
-      if $\Phi(w) = \Phi(y)$
-        $forbiddenColors[\Phi (x)] = v$
-        $\Phi(v) = min{j>0: forbiddenColors[j] \neq v}$
-        for all $v_c\in V_c$ with $\Phi(v_c) > 0$
-          $\Phi (v_c) = \Phi (v_c) + max{\Phi (v_r): v_r \in V_r}$
-        for all $v\in V_r\cup V_c$ with $\Phi(v)\neq -1$
-          $\Phi (v) = 0$
+        if $\Phi(w) = \Phi(y)$
+          $forbiddenColors[\Phi (x)] = v$
+          $\Phi(v) = min(\{j>0: forbiddenColors[j] \neq v\})$
+          for all $v_c\in V_c$ with $\Phi(v_c) > 0$
+            $\Phi (v_c) = \Phi (v_c) + max(\{\Phi (v_r): v_r \in V_r\})$
+          for all $v\in V_r\cup V_c$ with $\Phi(v)\neq -1$
+            $\Phi (v) = 0$
 \end{lstlisting}
 \end{figure}
 This algorithm process a vertex either from column vertices
@@ -1760,7 +1760,7 @@ in the automatic differentiation.
 %\subsection{Consdiering the positions of required elements}
 %\subsection{Predicting the additionally required elements }
 
-\section{Structured Required elements (Diagonal Elements)}
+\section{Partial Coloring Restricted to Diagonal Elements}
 So far, we consider the partial Jacobian computation with an arbitrary
 set of required elements. However, a better heuristics is proposed if the
 pattern of the required elements is priori known.
