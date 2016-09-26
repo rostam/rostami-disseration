@@ -833,6 +833,17 @@ together with their information.
 \begin{tabular}{|c|c|c|c|}
 \hline
 Name & Size & Nonzeros & Structure\\\hline
+\textit{steam1} & $240\times 240$ & $3762$ & unsymmetric \\\hline
+\textit{steam2} & $600\times 600$ & $13760$ & unsymmetric \\\hline
+\textit{685\_bus} & $685\times 685$ & $1967$ & symmetric \\\hline
+\textit{nos3} & $960\times 960$ & $8402$ & symmetric \\\hline
+\textit{ex7} & $1633\times 1633$ & $54543$ & unsymmetric \\\hline
+\textit{ex33} & $1733\times 1733$ & $11961$ & symmetric\\\hline
+\textit{orani678} & $2529\times 2529$ & $90158$ & unsymmetric \\\hline
+\textit{cavity16} & $4562\times 4562$ & $138187$ & unsymmetric \\\hline
+\textit{crystm01} &$4875\times 4875$ & $55107$& symmetric\\\hline
+\textit{rajat01} & $6833\times 6833$ & $43250$ & unsymmetric\\\hline
+\textit{gyro\_m} & $17361\times 17361$ & $178896$ & symmetric\\\hline
 \textit{cage3} & $5\times 5$ & $19$ & unsymmetric\\\hline
 \textit{cage4} & $9\times 9$ & $49$ & unsymmetric\\\hline
 \textit{cage5} & $37\times 37$ & $233$ & unsymmetric\\\hline
@@ -841,17 +852,7 @@ Name & Size & Nonzeros & Structure\\\hline
 \textit{cage9} & $3534\times 3534$  & $41594$ & unsymmetric\\\hline
 \textit{cage10} & $11379\times 11379$ & $150645$& unsymmetric\\\hline
 \textit{cage12} & $130228\times 130228$ &  $2032536$ & unsymmetric\\\hline
-\textit{steam1} & $240\times 240$ & $3762$ & unsymmetric \\\hline
-\textit{steam2} & $600\times 600$ & $13760$ & unsymmetric \\\hline
-\textit{nos3} & $960\times 960$ & $8402$ & symmetric \\\hline
-\textit{ex7} & $1633\times 1633$ & $54543$ & unsymmetric \\\hline
-\textit{ex33} & $1733\times 1733$ & $11961$ & symmetric\\\hline
-\textit{cavity16} & $4562\times 4562$ & $138187$ & unsymmetric \\\hline
-\textit{crystm01} &$4875\times 4875$ & $55107$& symmetric\\\hline
-\textit{rajat01} & $6833\times 6833$ & $43250$ & unsymmetric\\\hline
-\textit{gyro\_m} & $17361\times 17361$ & $178896$ & symmetric\\\hline
 \end{tabular}
-
 \caption{The experiments are done these matrices
 from the Florida sparse matrix collection throughout this thesis.}
 \label{florida.mats}
@@ -1413,13 +1414,15 @@ in a change of $10000$ in the number of additionally required elements.
 
 \begin{figure}
 \includegraphics[width=0.9\linewidth]{rho_value_685_bus}
-\caption{influence of $\rho$}
+\caption{The influence of $\rho$ is computed on the additionally required elements
+for the matrix \textit{685\_bus}.}
 \label{rho_value_685_bus}
 \end{figure}
 
 \begin{figure}
 \includegraphics[width=0.9\linewidth]{rho_value_orani678}
-\caption{influence of $\rho$}
+\caption{The influence of $\rho$ is computed on the additionally required elements
+for the matrix \textit{orani678}.}
 \label{rho_value_orani678}
 \end{figure}
 
