@@ -1022,18 +1022,24 @@ in the first step. Then, the third column is colored with the same color as the
 first column since there is no conflict. The fourth column gets the color of
 the third column regarding the algorithm. However, this is not a valid coloring
 since the fourth and second columns can not be compressed.
-
-Considering this problem, we need to check the consistency of adding colors in
-any part of algorithm. Therefore, we define the following function in which
-$G_b$, $v$, and $c$ are the given bipartite graph, the vertex we want to color
-and the given color, respectively.
-\begin{lstlisting}[mathescape]
+\begin{figure}
+\begin{lstlisting}[
+label=consistency,
+caption=A function checking the consistency of the coloring when
+the vertex $v$ is supposed to be colored by the color $c$.
+,mathescape]
 function consistent($G$, $v$, $c$)
   for $n \in N_2(v)$
     if($\Phi(n) == c$)
       return false
   return true
 \end{lstlisting}
+\end{figure}
+
+Considering this problem, we need to check the consistency of adding colors in
+any part of algorithm. Therefore, we define the function in \coderef{consistency} in which
+$G_b$, $v$, and $c$ are the given bipartite graph, the vertex we want to color
+and the given color, respectively.
 This function checks if the vertex $v$ can be colored with the color $c$.
 This means that \coderef{code.new.d2} should be rewritten as \coderef{code.new.d2.consistent},
 \begin{figure}
@@ -1856,8 +1862,48 @@ find a better coloring because of the inequality in the theorem.
 As theorem proposes, every required nonzero element
 is determined by either a column or a row and not both. Hence, a heuristic
 can iterate on the required element and selects between the row and column of
-the nonzero in favour of minimal coloring.
+the nonzero in favour of minimal coloring. 
+Thus, the star bicoloring heuristic can be rewritten for a better computational complexity.
+Regarding these ideas, the star bicoloring is rewritten as in \coderef{star.diagonal}.
+\begin{figure}
+\begin{lstlisting}[
+caption=An improved star bicoloring restricted to diagonal elements.
+As the theorem says this coloring generates an equivalent distance-$2$ coloring.,
+label=star.diagonal,mathescape]
+funtion star_diag($G=(V_r\cup V_c)$, $E_R$)
+for $v\in V_c$
+  $\Phi(v)=-1$
+  $forbiddenColors1[v] = 0$
+  $forbiddenColors2[v] = 0$
 
+for $e=(v,u)\in E_R$
+  $forbiddenColors1[0] = v$
+  $forbiddenColors2[0] = u$
+
+  for $n\in N2(G_b,v)$
+    if $\Phi(n) > 0$ 
+      $forbiddenColors1[\Phi(n)] = v$
+
+  forbiddenColors[0] = u;
+  for $n\in N2(G_b,u)$
+    if $\Phi(n) > 0$ 
+      $forbiddenColors2[\Phi(n)] = u$
+
+  $c_1 = min(\{j>0: forbiddenColors1[j] \neq v\})$
+  $c_2 = min(\{j>0: forbiddenColors2[j] \neq u\})$
+
+  if $c_1 < c_2$
+    $\Phi(v) = c_1$
+  else
+    $\Phi(u) = c_2$
+
+  for $v\in V_c$ with $\Phi(v)>0$
+    $\Phi(v) = \Phi(v) + max(\{ \Phi(u):u\in V_r \})$
+
+  for $v\in V_r\cup V_c$ with $\Phi(v) = -1$
+    $\Phi(v) = 0$
+\end{lstlisting}
+\end{figure}
 \section{Parallelization}
 \label{s.parallel}
 As we saw in \secref{s.precond}, different steps should be followed
@@ -2436,40 +2482,72 @@ The other processes of coloring are completely like the previous module.
 \section{Nested Dissection Ordering}
 \subsection{Bisection}
 \cite{2014:02}
+
+%------------------------------------------------------------------------------------------------
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=0.38\textwidth]{graph_initial}}%
-\subfigure{\includegraphics[width=0.38\textwidth]{matrix_initial}}
-\caption{Two equivalent representations in terms of a graph (left) and a matrix (right).}
-\label{initial}
+\subfigure[]{%
+% Matrix C: Minimal number of colors
+\includegraphics[width=0.18\textwidth]{arrow-shaped-best-coloring-graph}
+\includegraphics[width=0.24\textwidth]{arrowshaped-best-coloring-matrix}
+}%
+\hfill
+\subfigure[]{%
+% A different matrix : after having completed the solution process
+\includegraphics[width=0.18\textwidth]{arrow-shaped2-best-coloring-graph}
+\includegraphics[width=0.24\textwidth]{arrow-shaped2-best-coloring-matrix}
+}%
+\caption{A star bicoloring (a) of the problem instance from
+Fig.~\protect\ref{f.explain} also considered in Fig.~\protect\ref{f.arrow-shaped2}. This
+star bicoloring uses $3$ colors and is an exact solution of \MinStaBic. A star bicoloring
+(b) of a different problem instance using $4$ colors which is also an exact
+solution of \MinStaBic} \label{f.arrow-shaped4}
+\end{figure}
+%------------------------------------------------------------------------------------------------
+
+\begin{figure}
+\centering
+\subfigure[]{
+\includegraphics[width=0.23\textwidth]{graph_initial}
+\includegraphics[width=0.23\textwidth]{matrix_initial}}
+\hfill
+\subfigure[]{
+\includegraphics[width=0.23\textwidth]{graph_10_selected}
+\includegraphics[width=0.23\textwidth]{matrix_10_selected}}
+\caption{
+(a) Two equivalent representations in terms of a graph and a matrix.
+(b) Graph and matrix view after selecting the vertex number~10. 
+The decomposition into two blocks is still not shown as the graph is not yet 
+decomposed into two disconnected components.}
+\label{initial_10}
 \end{figure}
 
-
 \begin{figure}
 \centering
-\subfigure{\includegraphics[width=0.38\textwidth]{graph_10_selected}}%
-\subfigure{\includegraphics[width=0.38\textwidth]{matrix_10_selected}}
-\caption{Graph and matrix view after selecting the vertex number~10. The decomposition into two blocks is still not shown as the graph is not yet decomposed into two disconnected components.}
-\label{selected10}
-\end{figure}
-
-
-\begin{figure}
-\centering
-\subfigure{\includegraphics[width=0.38\textwidth]{graph_4_10_selected}}%
-\subfigure{\includegraphics[width=0.38\textwidth]{matrix_4_10_selected}}
-\caption{Graph and matrix view after selecting the vertices number 10 and then 4. The selection is not adequate as the sizes of blocks are not balanced.}
+\subfigure[]{
 \label{selected410}
-\end{figure}
-
-
-\begin{figure}
-\centering
-\subfigure{\includegraphics[width=0.48\textwidth]{graph_8_10_selected}}%
-\subfigure{\includegraphics[width=0.48\textwidth]{matrix_8_10_selected}}
-\caption{Graph and matrix view after selecting the vertices number 10 and then 8. The block sizes are balanced and the separator size is minimized.}
+\includegraphics[width=0.23\textwidth]{graph_4_10_selected}
+\includegraphics[width=0.23\textwidth]{matrix_4_10_selected}}
+\hfill
+\subfigure[]{
 \label{selected810}
+\includegraphics[width=0.23\textwidth]{graph_8_10_selected}
+\includegraphics[width=0.23\textwidth]{matrix_8_10_selected}}
+\caption{
+(a) Graph and matrix view after selecting the vertices number 10 and then 4.
+The selection is not adequate as the sizes of blocks are not balanced.
+(b) Graph and matrix view after selecting the vertices number 10 and then 8. The block sizes are balanced and the separator size is minimized.}
+\label{selected_4_10_8_10}
 \end{figure}
+
+
+%\begin{figure}
+%\centering
+%\subfigure{\includegraphics[width=0.48\textwidth]{graph_8_10_selected}}%
+%\subfigure{\includegraphics[width=0.48\textwidth]{matrix_8_10_selected}}
+%\caption{Graph and matrix view after selecting the vertices number 10 and then 8. The block sizes are balanced and the separator size is minimized.}
+%\label{selected810}
+%\end{figure}
 
 \begin{figure}
 \centering
