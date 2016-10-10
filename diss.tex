@@ -2239,19 +2239,92 @@ This array has the size of number of rows. Each cell of this array points to
 an array which is the corresponding columns of nonzeros in this row.
 
 \textbf{MATLAB interface.}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Interactive Educational Module}
 \label{explain}
-\mbox{EXPLAIN} is an extensible collection of educational modules for classroom use.
-It is currently not designed for self-study because the connection between the scientific computing problem and the corresponding graph problem is not available in \mbox{EXPLAIN}. The idea is that the teacher will explain this connection as well as the use of the module in classroom.
-We implemented different modules for EXPLAIN as well as improving the whole structure of 
-this software.
-We created two major releases \mbox{EXPLAIN 1.0} and \mbox{EXPLAIN 2.0}.
-This chapter structured as follows. First, we look at different modules implemented 
-for these two releases.
-The implementation details comes later in ~\ref{s.impl.explain}.
-\section{Column Compression}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+We develop an extensible collection of educational modules (\mbox{EXPLAIN})
+to teach combinatorial scientific computing in classroom. 
+There is an increasing need for such educational tools since the connection
+between the problem from scientific computing and the corresponding combinatorial
+problem is tricky for the students.
+
+During this chapter, we look first at the conceptual design of the software in
+\secref{s.concept}. Then, we apply the gamification ideas on the software in 
+\secref{s.game} to involve the students more into the usage of \mbox{EXPLAIN}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conceptual Design}
+\label{s.concept}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Throughout the design stage, we were focused on the following goals. 
+This software is a self-study tool and the connection between the scientific computing
+and combinatorial problems are explained by teacher in classroom.
+The students can follow the algorithm on the graph by either 
+clicking on the vertices or edges. 
+So, neither the matrix nor its nonzeros are not clickable.
+Clicking results in the modifications in both graph and matrix.
+The available modifications on graph and matrix can be one or more actions
+from the following list,
+\begin{itemize}
+\item Removing, adding, or coloring a vertex
+\item Removing, adding, or coloring an edge
+\item Changing the positions of vertices
+\item Permutating matrix columns or rows or both.
+\item Coloring any cell, column, or row of matrix
+\end{itemize} 
+
+A sparse matrix is given as an input and the corresponding graph is built from this matrix.
+The matrix and the corresponding graph are visualized side by side.
+The graph model can be from one of the following types,
+\begin{itemize}
+\item Simple graph: an undirected graph without self-loops considering the given matrix as an adjacency matrix of graph.
+\item Column-intersection graph: the graph explained in \defref{d:cig}.
+\item Directed graph: the directed graph modle explained in \cite{Gebremedhin05whatcolor}.
+\item Bipartite graph: the bipartite graph model explained in \defref{d.bip.graph}.
+\end{itemize}
+
+We define a set of predefined list of colors which can be selected by 
+the corresponding numbers, for example  
+$\{1=\text{green}, 2=\text{turquoise}, 3=\text{orange}, 4=\text{violet}, 
+5=\text{red}, 6=\text{yellow}, ...\}$.
+There are different set of perceptually-distinct colors which user can select.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Gamification}
+\label{s.game}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Though our primary aim is to design an educational model for illustrating the connection between
+scientific computing and graph theory, we also experience with ideas from gamification
+\cite{deterding2011:gug,deterding2011}. The use of elements from game design in the context of
+computer science education is not new. In particular, programming assignments can involve
+implementations of games. In \cite{la2007:gfa}, for instance, an introductory programming course is
+taught under the common umbrella of two-dimensional game development. Similarly, a game project is
+used in a course on software architecture~\cite{Wang2011:EEU}. Programming assignment can also
+involve pieces of software that act as a player in an existing game. However, throughout the
+present paper, our focus of serious games is different. Rather than implementing a game, we are
+interested in situations where students learn by playing a game. Surprisingly, there are only a few
+publications addressing this aspect of gamification. An example is given in
+\cite{Hakulinen2011:usg} where game-based learning is used to teach a course in data structures and
+algorithms. A collaborative game is described in \cite{shl:bsc} that aims at improving the teaching
+quality of a course on mathematical logic.
+
+To engage the students more in the teaching process, we improved EXPLAIN such that the students get
+more feedback from the software. Gamification of the software does this by interpreting each
+solution to a problem instance as a \textit{round}. The score diagram reporting the results of previous
+rounds also provides another feedback. The idea of gamification is used to solve a combinatorial
+minimization problem consisting of minimizing the size of the vertex separator while, at the same
+time, balancing the size of the remaining components. The consistent use of colors in the graph
+view, the matrix view, and in the score diagram makes it easier for the student to understand
+minimizing a serial bottleneck in the Cholesky factorization while balancing the computational
+load.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Available Modules}
+\label{s.av.modules}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Column Compression}
 \label{s.column-compression}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In \cite{2013:05,2014:01}, we presented an educational module in \mbox{EXPLAIN} to visualize the
 coloring algorithm for the column compression interactively. The idea is
 summarized as follows.
@@ -2346,9 +2419,10 @@ S =
 0 & 0 & 1 \\
 \end{pmatrix}.
 $$
-
-\section{Bidirectional Compression}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Bidirectional Compression}
 \label{s.bidirectional}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In our publication~\cite{2014:09}, we design and implement an interactive module to
 teach bidirectional compression and its connection to star bicoloring.
 Figure~\ref{f.explain} shows an overview of the layout of the new module whose top and
@@ -2468,7 +2542,7 @@ patterns. Another problem instance with a different nonzero pattern is shown in
 Fig.~\ref{f.arrow-shaped4}~(b). Here, it is more difficult to find out that this star
 bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 
-\section{Partial Jacobian Computation}
+\subsection{Partial Jacobian Computation}
 The previous module of matrix compression is extended to support
 also the partial Jacobian computation. Here, the student should
 first select the required elements which are edges in Bipartite graphs.
@@ -2479,8 +2553,8 @@ As soon as the student starts to click the vertices, the required elements
 are become fixed, i.e. no new required elements can be added.
 The other processes of coloring are completely like the previous module.
 
-\section{Nested Dissection Ordering}
-\subsection{Bisection}
+\subsection{Nested Dissection Ordering}
+\textbf{Bisection.}
 \cite{2014:02}
 
 %------------------------------------------------------------------------------------------------
@@ -2556,32 +2630,7 @@ The selection is not adequate as the sizes of blocks are not balanced.
 \label{diagram}
 \end{figure}
 
-Though our primary aim is to design an educational model for illustrating the connection between
-scientific computing and graph theory, we also experience with ideas from gamification
-\cite{deterding2011:gug,deterding2011}. The use of elements from game design in the context of
-computer science education is not new. In particular, programming assignments can involve
-implementations of games. In \cite{la2007:gfa}, for instance, an introductory programming course is
-taught under the common umbrella of two-dimensional game development. Similarly, a game project is
-used in a course on software architecture~\cite{Wang2011:EEU}. Programming assignment can also
-involve pieces of software that act as a player in an existing game. However, throughout the
-present paper, our focus of serious games is different. Rather than implementing a game, we are
-interested in situations where students learn by playing a game. Surprisingly, there are only a few
-publications addressing this aspect of gamification. An example is given in
-\cite{Hakulinen2011:usg} where game-based learning is used to teach a course in data structures and
-algorithms. A collaborative game is described in \cite{shl:bsc} that aims at improving the teaching
-quality of a course on mathematical logic.
-
-
-To engage the students more in the teaching process, we improved EXPLAIN such that the students get
-more feedback from the software. Gamification of the software does this by interpreting each
-solution to a problem instance as a \textit{round}. The score diagram reporting the results of previous
-rounds also provides another feedback. The idea of gamification is used to solve a combinatorial
-minimization problem consisting of minimizing the size of the vertex separator while, at the same
-time, balancing the size of the remaining components. The consistent use of colors in the graph
-view, the matrix view, and in the score diagram makes it easier for the student to understand
-minimizing a serial bottleneck in the Cholesky factorization while balancing the computational
-load.
-\subsection{Recursive Disection}
+\textbf{Recursive Disection.}
 Based on the new features of \mbox{EXPLAIN 2.0}, we could improved the previous
 bisection to a recursive nested dissection algorithm.
 It contains the bisection itself. So, the student selects the vertex separator
@@ -2656,7 +2705,7 @@ and four bar chart grouped together shows the size history of the graph parts.
 \end{figure}
 
 
-\section{Parallel Matrix Vector Product}
+\subsection{Parallel Matrix Vector Product}
 
 In \cite{2015:3}, we extended EXPLAIN with a new module for
 the parallel sparse matrix-vector multiplication.
@@ -2934,7 +2983,7 @@ player to beat that score in subsequent rounds, thus offering an extra challenge
 this educational module, a ``high score'' would consist of a low communication value
 together with a low deviation bound.
 
-\section{Preorderings}
+\section{Algorithm Editor and Animator}
 As we discussed, the ordering is one of the main elements of heuristics algorithm
 in both preconditioning and coloring. The process of selection that we have
 considered in modules of \mbox{EXPLAIN} are the illustration of this importance.
@@ -2964,6 +3013,8 @@ of the algorithm in which the order is defined by the variable "order".
 
 \section{Implementation Details}
 \label{s.impl.explain}
+...
+Nonzero elements in the matrix are visualized by the notation $\times$
 \subsection{EXPLAIN 1.0}
 \label{s.impl.explain1}
 The previous version of the software \cite{Lulfesmann2010} needed a client with administrator privileges to install Python libraries as well as the software itself. In the new implementation, the software is moved to the online platform which means the student needs just a web browser to work with the software. In this section, we shortly describe the underlying algorithm as well as how the implementation is.
