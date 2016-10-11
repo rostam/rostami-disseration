@@ -2317,6 +2317,18 @@ time, balancing the size of the remaining components. The consistent use of colo
 view, the matrix view, and in the score diagram makes it easier for the student to understand
 minimizing a serial bottleneck in the Cholesky factorization while balancing the computational
 load.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Visualizations}
+\label{s.vis}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+\centering
+\includegraphics[width=0.45\textwidth]{explain-vis.png}
+\hfill
+\includegraphics[width=0.47\textwidth]{explain2-init.png}
+\caption{Explain Design of visu}
+\label{explain-design}
+\end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Available Modules}
 \label{s.av.modules}
@@ -2332,8 +2344,7 @@ summarized as follows.
 \begin{figure}
 \centering
 \includegraphics[width=0.5\textwidth]{fig1.png}
-\caption{The initial layout of EXPLAIN for some given column compression problem. Matrix and graph are visualized side by side to recognize the underlying connection between these two equivalent representations. Nonzero elements are indicated by the symbol $\times$.
-}
+\caption{The initial layout of EXPLAIN for some given column compression problem. Matrix and graph are visualized side by side to recognize the underlying connection between these two equivalent representations. Nonzero elements are indicated by the symbol $\times$.}
 \label{fig1}
 \end{figure}
 The module allows to select and, thus, color the vertices of a given graph step by step. The order in which the vertices are colored is interactively selected by the student. In each step, when the student selects a vertex, the program checks all of its neighbors regarding the colors. A color of the current step is then greedily selected from a predefined list, $\{1=\text{green}, 2=\text{turquoise}, 3=\text{orange}, 4=\text{violet}, 5=\text{red}, 6=\text{yellow}, ...\}$, such that it differs from the colors of those neighbors that are already colored. Recall that a group of columns corresponds to a set of vertices in the graph with the same color. To indicate this, we do not color only the vertices in the graph but also the corresponding columns in the matrix.
@@ -2983,7 +2994,10 @@ player to beat that score in subsequent rounds, thus offering an extra challenge
 this educational module, a ``high score'' would consist of a low communication value
 together with a low deviation bound.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Algorithm Editor and Animator}
+\label{s.alg.edit}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 As we discussed, the ordering is one of the main elements of heuristics algorithm
 in both preconditioning and coloring. The process of selection that we have
 considered in modules of \mbox{EXPLAIN} are the illustration of this importance.
