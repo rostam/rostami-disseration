@@ -2318,15 +2318,25 @@ view, the matrix view, and in the score diagram makes it easier for the student 
 minimizing a serial bottleneck in the Cholesky factorization while balancing the computational
 load.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Visualizations}
+\section{Visualization}
 \label{s.vis}
+Based on our goal to visualized the connection of the algorithm on the matrix and graph sides simultaneausly,
+we designed the software to have the four sections as illustrated in \figref{explain-design} (Left).
+The graph is drawn on the circular layout first. The layout can be selected later 
+in the control panel. The matrix is visualized also at the right side and 
+their nonzero elements are shown by the notation $\times$.
+\figref{explain-design} (Right) shows an actual example of the implemented view of 
+\mbox{EXPLAIN}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}
 \centering
 \includegraphics[width=0.45\textwidth]{explain-vis.png}
 \hfill
 \includegraphics[width=0.47\textwidth]{explain2-init.png}
-\caption{Explain Design of visu}
+\caption{
+(Left)~\mbox{EXPLAIN} has a fixed layout consists of four sections and a header.
+(Right)~An example of the actual implemented view of \mbox{EXPLAIN}.}
 \label{explain-design}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3025,10 +3035,13 @@ This source code can also be edited temporarily. Later, the student can
 decide to start the selection by mouse or an automatic visualization
 of the algorithm in which the order is defined by the variable "order".
 
+If the student selects the visualization based on the given ordering, 
+an animation go through the vertices and execute each line of algorithm
+one by one to visualize the algorithm during the time. 
+The speed of the execution can be set up.
+
 \section{Implementation Details}
 \label{s.impl.explain}
-...
-Nonzero elements in the matrix are visualized by the notation $\times$
 \subsection{EXPLAIN 1.0}
 \label{s.impl.explain1}
 The previous version of the software \cite{Lulfesmann2010} needed a client with administrator privileges to install Python libraries as well as the software itself. In the new implementation, the software is moved to the online platform which means the student needs just a web browser to work with the software. In this section, we shortly describe the underlying algorithm as well as how the implementation is.
@@ -3153,8 +3166,8 @@ specific element and change its behaviour and properties. For example, the follo
 code would change the color of the vertex with the id~\textit{i} and the color
 of a matrix cell,
 \begin{lstlisting}
-d3.select("ver"+i).set_color(red);
-d3.select("cell"+i+"-"+j).set_color(blue);
+d3.select("#ver"+i).set_color(red);
+d3.select("#cell"+i+"-"+j).set_color(blue);
 \end{lstlisting}
 
 There are two important aspects of implementation which we discuss here.
