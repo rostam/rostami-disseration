@@ -32,6 +32,7 @@ urlcolor=black
 \newcommand{\chapref}[1]{Chapter~\protect\ref{#1}}
 \newcommand{\defref}[1]{Definition~\protect\ref{#1}}
 \newcommand{\coderef}[1]{Algorithm~\protect\ref{#1}}
+\newcommand{\appref}[1]{Appendix~\protect\ref{#1}}
 
 
 \usepackage{color}
@@ -1803,11 +1804,11 @@ can be transformed to a valid distance-$2$ coloring restricted to $M$
 with the number of colors $\chi_{d2}$ such that $\chi_{sp} \leq \chi_{d2}$.
 These number of colors can be different than the minimal number of colors.
 \end{theorem}
-The proof is straightforward and can be found in Appendix~\ref{app.proof.1}.
+The proof is straightforward and can be found in \appref{app.proof.1}.
 Based on the $\sparsifysymbol$-column intersection graph defined in~\defref{d.part.cig},
 it is easy to see
 that the partial coloring restricted to diagonal is still a NP-complete problem.
-We discussed this shortly in Appendix~\ref{app.npcomp}.
+We discussed this shortly in \appref{app.npcomp}.
 Therefore, we should still use some heuristics to compute these colorings.
 The examples in Table~\ref{table.starbic.d2.diag} from Florida sparse collection shows that the
 inequality in Theorem~\ref{t.matching} can happen. The second column of this table
@@ -2297,7 +2298,9 @@ We define a set of predefined list of colors which can be selected by
 the corresponding numbers, for example
 $\{1=\text{green}, 2=\text{turquoise}, 3=\text{orange}, 4=\text{violet},
 5=\text{red}, 6=\text{yellow}, ...\}$.
-There are different set of perceptually-distinct colors which user can select.
+There colors are selected such that they look perceptually distinct.
+However, a user can define any new color by \textbf{rgb} function.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Gamification}
 \label{s.game}
@@ -2340,9 +2343,9 @@ their nonzero elements are shown by the notation $\times$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}
 \centering
-\includegraphics[width=0.45\textwidth]{explain-vis.png}
+\includegraphics[width=0.44\textwidth]{explain-vis.png}
 \hfill
-\includegraphics[width=0.47\textwidth]{explain2-init.png}
+\includegraphics[width=0.48\textwidth]{explain2-init.png}
 \caption{
 (Left)~\mbox{EXPLAIN} has a fixed layout consists of four sections and a header.
 (Right)~An example of the actual implemented view of \mbox{EXPLAIN}.}
@@ -3276,6 +3279,9 @@ var new_col = min(diff(colors,col_ns));
 color_column(current, new_col);
 color_vertex(current,new_col);
 \end{lstlisting}
+A complete sample source code of EXPLAIN is available for the column compression
+in \appref{app.source}.
+
 
 \chapter{Conclusion and Future Work}
 \label{conc}
@@ -3315,6 +3321,40 @@ Another future work is to consider blocks of submatrices for coloring instead of
 \label{app.npcomp}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \cite{np-complet-graph-coloring}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{A sample source code from EXPLAIN}
+\label{app.source}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{lstlisting}
+var reference_cc = function () {
+    reference_text= "H. M. Buecker, M. A. Rostami, M. Luelfesmann : " +
+        "An interactive educational module illustrating sparse matrix compression via graph coloring.";
+    reference_url= "10.1109/ICL.2013.6644591";
+};
+
+var global_cc = function () {
+    graph_format="cig";
+    colors = range(0,22);
+    chart_yaxis1_text = "Number of colors";
+    chart_group5_text = 'Number of colors';
+    start_matrix = "nestedDissection3.mtx";
+    animation = true;
+};
+
+var column_compression = function() {
+    var ns = neighbors(current);
+    var col_ns = get_colors(ns);
+    var new_col = min(diff(colors, col_ns));
+    color_column(current, new_col);
+    color_vertex(current, new_col);
+    if (get_colored_vertices().length == currentg.vertices.length) {
+     gather_round_data(min(diff(colors, get_colors(get_colored_vertices()))));
+     round_completed();
+    }
+};
+\end{lstlisting}
+
 
 \end{document}
 
