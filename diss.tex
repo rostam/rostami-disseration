@@ -1016,7 +1016,7 @@ r & 0 & 0 & 0  \\
 0 & * & * & 0 \\
 0 & r & 0 & r \\
 \end{array}\right)
-\label{twocolorings}
+\label{twocolorings2}
 \end{equation}
 \coderef{code.new.d2} colors the first and second columns with the same color
 in the first step. Then, the third column is colored with the same color as the
@@ -1769,7 +1769,19 @@ This is in contrast to the minimum number of colors which we are searching for,
 in the automatic differentiation.
 
 %\subsection{Consdiering the positions of required elements}
-%\subsection{Predicting the additionally required elements }
+\subsection{Predicting the additionally required elements}
+We consider algorithms to increase the potentially required elements in
+~\secref{s.heuristic} which increases the number of additionally required elements
+persumably. Here, we suggest a heuristic to predict if a nonrequired element would be an
+additionally required element. For this purpose, we build a bipartite graph model
+for ILU preconditioning based on the bipartite graph model for ILU formulated in \cite{Lulfesmann2012Fap}
+and \defref{d.fill.path} of fill path. Given a nonrequired element (an edge of bipartite graph),
+the idea is to check if the addition of this edge would generate any new fillin.
+If the fill level of SILU is $l$, we list all fill paths of length $l$ passing this nonrequired edge 
+in the set $L$. Each fill path in the set $L$ which all its edges except the given nonrequired edge
+are required edges would later generate a fillin. So, it is more efficient not to add the 
+nonrequired edge in this case.
+
 
 \section{Partial Coloring Restricted to Diagonal Elements}
 So far, we consider the partial Jacobian computation with an arbitrary
@@ -1797,14 +1809,14 @@ Now, we can formulate a new theorem on the comparison of one directional and
 bidirectional coloring as follows,
 \begin{theorem}
 \label{t.matching}
-Given the graph $G=(V,E)$ and a matching $M\subset E$ representing
+Given the bipartite graph $G=(V_r\cup V_c,E)$ and a matching $M\subset E$ representing
 the required elements, any valid partial star bicoloring $Q_{sp}$ restricted to $M$
 with the number of colors $\chi_{sp}$
 can be transformed to a valid distance-$2$ coloring restricted to $M$
 with the number of colors $\chi_{d2}$ such that $\chi_{sp} \leq \chi_{d2}$.
-These number of colors can be different than the minimal number of colors.
+These numbers of colors can be different than the minimal number of colors.
 \end{theorem}
-The proof is straightforward and can be found in \appref{app.proof.1}.
+This is a generalization of a theorem that its proof available in \cite{2016:03}.
 Based on the $\sparsifysymbol$-column intersection graph defined in~\defref{d.part.cig},
 it is easy to see
 that the partial coloring restricted to diagonal is still a NP-complete problem.
@@ -2586,29 +2598,6 @@ As soon as the student starts to click the vertices, the required elements
 are become fixed, i.e. no new required elements can be added.
 The other processes of coloring are completely like the previous module.
 
-
-%------------------------------------------------------------------------------------------------
-\begin{figure}
-\centering
-\subfigure[]{%
-% Matrix C: Minimal number of colors
-\includegraphics[width=0.18\textwidth]{arrow-shaped-best-coloring-graph}
-\includegraphics[width=0.24\textwidth]{arrowshaped-best-coloring-matrix}
-}%
-\hfill
-\subfigure[]{%
-% A different matrix : after having completed the solution process
-\includegraphics[width=0.18\textwidth]{arrow-shaped2-best-coloring-graph}
-\includegraphics[width=0.24\textwidth]{arrow-shaped2-best-coloring-matrix}
-}%
-\caption{A star bicoloring (a) of the problem instance from
-Fig.~\protect\ref{f.explain} also considered in Fig.~\protect\ref{f.arrow-shaped2}. This
-star bicoloring uses $3$ colors and is an exact solution of \MinStaBic. A star bicoloring
-(b) of a different problem instance using $4$ colors which is also an exact
-solution of \MinStaBic} \label{f.arrow-shaped4}
-\end{figure}
-%------------------------------------------------------------------------------------------------
-
 \subsection{Nested Dissection Ordering}
 Given a sparse symmetric matrix $A$, the nested dissection method finds a 
 symmetric permutation $P^T A P$ of $A$ 
@@ -3312,15 +3301,19 @@ Another future work is to consider blocks of submatrices for coloring instead of
 
 \appendix
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Proof of Theorem~\ref{t.matching}}
-\label{app.proof.1}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{NP-completeness of Partial Coloring Restricted to Diagonals}
 \label{app.npcomp}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\cite{np-complet-graph-coloring}
+In general we know that a graph coloring is an NP-complete problem 
+(see \cite{np-complet-graph-coloring})).
+As \defref{d:cig} shows, a distance-2 coloring on the column-intersection graph
+is actually a classical graph coloring problem. So it is also NP-complete.
+We also define a similar graph model for the partial coloring problem in 
+\cite{2016:01}. In this transformation from the matrix and graph, we encode
+the required elements also into the graph. It means we do not have any special 
+edges later in graph.
+Since the construction of this graph model is done in 
+the polynomial time, this partial coloring problem remains NP-complete too.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{A sample source code from EXPLAIN}
