@@ -859,7 +859,216 @@ Name & Size & Nonzeros & Structure\\\hline
 from the Florida sparse matrix collection throughout this thesis.}
 \label{florida.mats}
 \end{table}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Finding Better Coloring}
+\label{s.heuristic}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In~\secref{s.exact}, we present an algorithm which compute the exact coloring
+on small subgraphs first. Then, it makes a coloring for the actual graphs
+based on these small colorings. We build an example which shows that this idea
+works. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Exact Coloring of Small Subgraphs}
+\label{s.exact}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Here, we search for the better methods for coloring. 
+The best exact coloring is proposed in~\cite{bjorklund2009}.
+The complexity is still high enough that we can not compute the coloring
+of big matrices with this algorithm.
+However, if we divide the big graph into some small instances,
+we can use the exact coloring in these instances and build a valid coloring
+for the actual large graph.
+An idea is to find a vertex separator like in the nested dissection, color
+the remaining connected components, and color the separator such that putting
+all back together does not make the coloring invalid.
+A question is if it gives a better coloring at all since the coloring of vertex separator
+can lead us to a worse coloring.
+We build an example in which we found a better coloring by the second strategy.
+
+We first build a graph and its heuristic coloring which generates a worse coloring 
+than an exact coloring as shown in~\figref{f.coloring.graph} (Left). If we follow 
+the numbering of the vertices as the ordering for a greedy coloring, we would need 
+at least $4$ colors while the exact coloring needs only $3$ colors.
+Now, we make a copy of this graph and add an extra vertex $15$ as in
+~\figref{f.coloring.graph} (Right). The vertex $15$ is actually the only element of
+a vertex separator for the new graph. We added the incident edges of $15$ such that
+the resulting graph becomes a worst case for the greedy coloring here.
+In this new graph, the greedy coloring needs at least $5$ colors 
+as in~\figref{f.coloring.compared} (Left). 
+
+Suppose we color first the components after removing the vertex $15$ separately with
+an exact coloring which needs only $3$ colors. Now, a bad implementation of the 
+new idea would need $4$ colors, i.e. one colors fewer than the greedy algorithm.
+A good implementation would even color the graph only with $3$ colors.
+\begin{figure}
+\centering
+\includegraphics[width=0.18\linewidth]{coloring0}
+\hfill
+\includegraphics[width=0.48\linewidth]{coloring1}
+\caption{
+An example of a graph in which the division into two parts can be seen directly.
+The numbering of the graph vertices are the ordering that the greedy coloring 
+follows.
+}
+\label{f.coloring.graph}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.48\linewidth]{coloring2}
+\hfill
+\includegraphics[width=0.48\linewidth]{coloring3}
+\caption{Comparison of colorings}
+\label{f.coloring.compared}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{A heuristic based on independent set}
+\label{s.heuristic.indset}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+\begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
+considering the nonrequired elements.,label=code.new.d2,mathescape]
+function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+for $v\in V_c$
+  $\Phi(v)=-1$
+  $forbiddenColors[v] = 0$
+
+for $v\in V_c$ with $\Phi(v)=0$
+  $forbiddenColors[0] = v$
+  if $\exists n\in N_2(v): (v,n)\in E_i$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
+
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+
+    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $\Phi(I_v[random]) = \Phi(v)$
+\end{lstlisting}
+\end{figure}
+We introduce a new heuristic coloring to reduce the number of colors compared to
+the greedy algorithm.
+Our approach in this new heuristic coloring algorithm is based on finding an independent set.
+A subset of the vertices $S\subset V$ is
+called an independent set~\cite{bondy2008graph} if no edge between any of these vertices exists,
+$$\forall u,v\in S: (u,v)\notin E.$$
+For a given vertex $v$, we show an independent set containing $v$ by $I_v$.
+\coderef{code.new.d2} represents this approach.
+The time complexity of this new heuristic is estimated as follow.
+We need to go through all vertices
+and find the maximum independent set containing each vertex.
+Then, we consider one of the elements to be colored with the color of $v$.
+
+ $\mathcal{O}(n^2)$.
+However, the computation takes shorter actually since we color two vertices in each step.
+
+Although we color a vertex $v$ and another vertex $u\in I_v$
+it does not mean that the coloring is valid.
+Given the following example,
+\begin{equation}
+\left(\begin{array}{cccc}
+r & 0 & 0 & 0  \\
+0 & * & r & 0 \\
+0 & * & * & 0 \\
+0 & r & 0 & r \\
+\end{array}\right)
+\label{twocolorings2}
+\end{equation}
+\coderef{code.new.d2} colors the first and second columns with the same color
+in the first step. Then, the third column is colored with the same color as the
+first column since there is no conflict. The fourth column gets the color of
+the third column regarding the algorithm. However, this is not a valid coloring
+since the fourth and second columns can not be compressed.
+\begin{figure}
+\begin{lstlisting}[
+label=consistency,
+caption=A function checking the consistency of the coloring when
+the vertex $v$ is supposed to be colored by the color $c$.
+,mathescape]
+function consistent($G$, $v$, $c$)
+  for $n \in N_2(v)$
+    if($\Phi(n) == c$)
+      return false
+  return true
+\end{lstlisting}
+\end{figure}
+
+Considering this problem, we need to check the consistency of adding colors in
+any part of algorithm. Therefore, we define the function in \coderef{consistency} in which
+$G_b$, $v$, and $c$ are the given bipartite graph, the vertex we want to color
+and the given color, respectively.
+This function checks if the vertex $v$ can be colored with the color $c$.
+This means that \coderef{code.new.d2} should be rewritten as \coderef{code.new.d2.consistent},
+\begin{figure}
+\begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
+considering the nonrequired elements and checking the consistency.,
+label=code.new.d2.consistent,mathescape]
+function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+for $v\in V_c$
+  $\Phi(v)=-1$
+  $forbiddenColors[v] = 0$
+
+for $v\in V_c$ with $\Phi(v)=0$
+  $forbiddenColors[0] = v$
+  if $\exists n\in N_2(v): (v,n)\in E_i$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
+
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $M = \{ (i,Nreq(i,v)): i\in I_v\}$
+    $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
+    if(consistent($G$,$maxs[0]$,$\Phi(v)$))
+      $\Phi(maxs[0]) = \Phi(v)$
+\end{lstlisting}
+\end{figure}
+
+
+
+\begin{figure}
+\begin{lstlisting}[
+label=consistency,
+caption=A function checking the consistency of the coloring when
+the vertex $v$ is supposed to be colored by the color $c$.
+,mathescape]
+function consistent($G$, $v$, $c$)
+  for $n \in N_2(v)$
+    if($\Phi(n) == c$)
+      return false
+  return true
+\end{lstlisting}
+\end{figure}
+
+
+\begin{figure}
+\begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
+considering the nonrequired elements and checking the consistency.,
+label=code.new.d2.consistent,mathescape]
+function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+for $v\in V_c$
+  $\Phi(v)=-1$
+  $forbiddenColors[v] = 0$
+
+for $v\in V_c$ with $\Phi(v)=0$
+  $forbiddenColors[0] = v$
+  if $\exists n\in N_2(v): (v,n)\in E_i$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
+
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $M = \{ (i,Nreq(i,v)): i\in I_v\}$
+    $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
+    if(consistent($G$,$maxs[0]$,$\Phi(v)$))
+      $\Phi(maxs[0]) = \Phi(v)$
+\end{lstlisting}
+\end{figure}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Maximizing Potentially Required Elements}
 \label{s.heuristic}
@@ -1067,8 +1276,6 @@ for $v\in V_c$ with $\Phi(v)=0$
       $\Phi(maxs[0]) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
-
-
 
 \begin{table}
 \centering
@@ -1816,7 +2023,20 @@ can be transformed to a valid distance-$2$ coloring restricted to $M$
 with the number of colors $\chi_{d2}$ such that $\chi_{sp} \leq \chi_{d2}$.
 These numbers of colors can be different than the minimal number of colors.
 \end{theorem}
-This is a generalization of a theorem that its proof available in \cite{2016:03}.
+This theorem is a generalization of Theorem 3.7 of \cite{Lulfesmann2012Fap}.
+Theorem 3.7 of \cite{Lulfesmann2012Fap} discusses only the mapping with minimal colorings
+and the partial coloring restricted to diagonal elements. We consider any coloring
+and the partial coloring restricted to a matching. This generalization gives us an idea
+to find new heuristics for colorings. The proof of Theorem~\ref{t.matching} 
+is resulted from the the proof from \cite{Lulfesmann2012Fap} considering two following points,
+\begin{itemize}
+\item The minimality of mappings are only used to show the equality in the number of colors which is not 
+the case in our theorem.
+\item The property of being diagonal elements are used in the proof from \cite{Lulfesmann2012Fap} only to 
+make the required edges disjoint. This is actually the definition of a matching in a graph.
+\end{itemize}
+
+
 Based on the $\sparsifysymbol$-column intersection graph defined in~\defref{d.part.cig},
 it is easy to see
 that the partial coloring restricted to diagonal is still a NP-complete problem.
@@ -3319,6 +3539,9 @@ the polynomial time, this partial coloring problem remains NP-complete too.
 \chapter{A sample source code from EXPLAIN}
 \label{app.source}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+A sample source code from EXPLAIN computes the column compression algorithm.
+It consists of three functions for reference, global variablesm, and the acutal algorithm
+written only for one step of the computation. 
 \begin{lstlisting}
 var reference_cc = function () {
     reference_text= "H. M. Buecker, M. A. Rostami, M. Luelfesmann : " +
