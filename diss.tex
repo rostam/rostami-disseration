@@ -861,7 +861,7 @@ from the Florida sparse matrix collection throughout this thesis.}
 \end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Finding Better Coloring}
+\section{Searching for Alternative Colorings}
 \label{s.better.coloring}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Since finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589},
@@ -994,10 +994,11 @@ for $v\in V_c$ with $\Phi(v)=0$
 
       $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
       $I_v=\{u\in V_c: u\notin N_2(v)\}$
-      $\Phi(I_v) = \Phi(v)$
+      $I_v^{'} =\{u\in I_v: \forall n\in N_2(u): n=v\quad or\quad \Phi(n)!=\Phi(v)\}$
+      $\Phi(I_v^{'}) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
-We introduce a new heuristic coloring to reduce the number of colors compared to
+We introduce a new heuristic coloring which generate the at leas
 the greedy algorithm.
 Our approach in this new heuristic coloring algorithm is based on finding an independent set.
 A subset of the vertices $S\subset V$ is
@@ -1010,21 +1011,23 @@ We need to go through all vertices
 and find the maximum independent set containing each vertex.
 Then, we consider one of the elements to be colored with the color of $v$.
 The computational complexity is clearly $\mathcal{O}(n^2)$.
-The results in Table~\ref{greedy.vs.ind} shows that this coloring gives us smaller number of colors
+The results in Table~\ref{greedy.vs.ind} shows that this coloring gives us the same number of colors
 in all matrices which we tested. 
-In the following sections we look at variants of this algorithm to generate more potentially and
-additionally required elements.
+Although this algorithm neither reduces nor increases the number of colors in these examples, 
+we use variants of this algorithm to generate more potentially and
+additionally required elements in the following sections.
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|c|}
 \hline
 Name & $\chi_{greedy}$ & $\chi_{ind}$\\\hline
-\textit{ex7} & $71$ & $67$ \\\hline
-\textit{ex33} & $23$ & $21$ \\\hline
-\textit{cavity16} & $56$ & $53$\\\hline
-\textit{rajat01} & $50$ & $47$\\\hline
-\textit{gyro\_m} & $34$ & $31$ \\\hline
-\textit{cage10} & $42$ & $40$\\\hline
+\textit{steam1} & $7$ & $7$ \\\hline
+\textit{ex7} & $71$ & $71$ \\\hline
+\textit{ex33} & $23$ & $23$ \\\hline
+\textit{cavity16} & $56$ & $56$\\\hline
+\textit{rajat01} & $50$ & $50$\\\hline
+\textit{gyro\_m} & $34$ & $34$ \\\hline
+\textit{cage10} & $42$ & $42$\\\hline
 \end{tabular}
 \caption{
 The comparison between number of colors computed by the greedy algorithm and 
