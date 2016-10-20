@@ -2210,12 +2210,6 @@ We develop a software to compute the different algorihtm that we propose here.
 Specially, the software is designed employing concepts from the object-oriented programming
 such that it can be extended later with any new coloring heuristc as well as any preconditioning algorithm.
 The developers can implement new extensions without going into details of core implementation.
-This is explained in \secref{s.new.ext}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Developer Manual}
-\label{s.new.ext}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Two main ingredients coloring and orderings can be implemented now only by deriving an interface.
 For example, a new coloring and ordering can be added as easy as the following code.
 \begin{lstlisting}
@@ -2255,60 +2249,34 @@ This strategy reduces the amount of the code dramatically and
 make the code more readable.
 Also, the standard algorithms would be automatically parallel in the next
 release of C++ (C++17) next year~\cite{parallelcpp}.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Software Design}
-\label{s.software.design}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-This is illustrated in Figure~\ref{f.structure} (Left).
-This results in the lack of efficiency. On the other hand,
-this mix of programming languages reduces
-the accuracy and makes the versioning difficult.
+
+As it is presented in \figref{f.structure}, both computations of coloring and ILU preconditioning
+are in one package available in C++. we also introduced
+two interfaces in MATLAB and JAVA languages which we will explain in
+Section~\ref{s.interfaces}. 
 %-----------------------------------------------------------------------------------------------
 \begin{figure}
 \centering
-\includegraphics[width=0.42\textwidth]{old_struct}
-\hfill
 \includegraphics[width=0.52\textwidth]{new_struct}
-\caption{There were many communications between MATLAB and C/C++ version. The communication
-is done based on the MEX interface. A conversion from matrix to graph is computed
-each time that the MEX interface is used. (Left) A new implementation reduces a lot of communication.
-It brings together different parts of algorithm in a package. Two interfaces written
-in MATLAB and Java call this package as a local program.}
+\caption{
+The software Precol and its two interfaces written in MATLAB and Java are visualized.}
 \label{f.structure}
 \end{figure}
 %-----------------------------------------------------------------------------------------------
 
-We improved the design of the software to resolve these problems.
-So, all the parts of the algorithm are computed in \textit{C++} now.
-Figure~\ref{f.structure} (Left) visualizes this new implementation.
-All the parts can be computed in C++. However,
-the part of iterative solver can also be computed in MATLAB.
-The MATLAB functions in this area are in general more convincing.
-For this goal, we implemented the preconditioning and the sparsification in C++.
-As you can see in Figure~\ref{f.structure} (Left), we also introduced
-two interfaces in MATLAB and JAVA languages which we will explain in
-Section~\ref{s.interfaces}.
-
 To use the software, the user can use a command-line command in addition to
 the interfaces in JAVA and MATLAB. So, the user needs to specify different
 options for coloring algorithm, orderings, the block size, and so.
-These options can be entered directly in the terminal together with command
-or can be written in a so called config file which is imported by the software.
-The format of config file is as follows,
+These options can be entered directly in the terminal together with command.
+An example is as follows,
 \begin{lstlisting}
-alg: PartialD2Coloring
-col_ord: Min
-ilu_ord: LFO
-type: BlockDiagonal
-blk: 10
+precol PartialD2RestrictedColumns LFO_Nat BlockDiagonal 30 2 ex33.mtx
 \end{lstlisting}
-Different parameters possible in config file is as follows,
-\begin{itemize}
-\item alg:
-\item col\_ord:
-\item type:
-\item blk:
-\end{itemize}
+in which the \textit{PartialD2RestrictedColumns} is the coloring algorithm,
+two strings of \textit{LFO} and \textit{Nat} are for the coloring and ILU ordering.
+The next parameter \textit{BlockDiagonal} specifies the sparsification method
+which is followed by the size of the block $30$. The next number $2$ specifies
+the level parameter of ILU and finally comes the matrix name.
 
 We also generated a new documentation as a website which is available
 under the website: http://csc.c3e.de/precol/html.
@@ -2316,14 +2284,12 @@ This website is generated automatically by Doxygen~\cite{Lischner2013}.
 We implemented some new HTML/CSS template for doxygen to include extra
 texts and documentation in the website.
 
-\todo{zero or one}
-mohem ... discussion about the sparsification in MATLAB and C/C++
-staring from zero or one ???
-
+%\todo{zero or one}
+%mohem ... discussion about the sparsification in MATLAB and C/C++
+%staring from zero or one ???
 
 \subsection{User interfaces}
 \label{s.interfaces}
-\textbf{JAVA interface.}
 We extend our JAVA software GraphTea~
 \cite{2014:07,2014:15,2014:16,2015:05,2015:06,2015:07,2015:08} to have a
 set of reports for graph coloring and preconditioning. It has two different modes
@@ -2383,7 +2349,14 @@ to handle the large sparse matrices. This data structure is basically an array.
 This array has the size of number of rows. Each cell of this array points to
 an array which is the corresponding columns of nonzeros in this row.
 
-\textbf{MATLAB interface.}
+The MATLAB interface is just a wrapper function which calls \textit{precol} with
+the same number of parameter as follows,
+\begin{lstlisting}
+function [req,pot,add,F,num_col] = precol(coloring,
+	coloring_order,ilu_order,block_size,ILU_level_parameter,MatrixName,alpha)
+...
+end
+\end{lstlisting}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Interactive Educational Module}
 \label{explain}
