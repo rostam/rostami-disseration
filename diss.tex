@@ -141,7 +141,7 @@ my best friend \textit{Azin Azadi} for encouraging me throughout all my studies 
 \chapter{Introduction}
 \pagenumbering{arabic}
 Partial differential equations (PDE) are the most common models of the real-world problems. Iterative solvers are a solution to these linear systems which need a multiplication of Jacobian and a vector in each iteration.
-Many strategies were studied to compute these products efficiently.
+Many strategies were studied to compute these products effectively.
 Automatic Differentiation~\cite{Griewank2008EDP,Rall1981ADT} computes not only the differentiation without numerical errors but also the matrix-vector multiplication automatically.
 Based on this ability of AD techniques, different methods are analyzed to reduce the memory that is needed to store the Jacobian matrix as well as speeding up the computation. These methods are parts of a bigger area called combinatorial scientific computing.
 
@@ -182,7 +182,7 @@ a corresponding bipartite graph model in \secref{s.precond}.
 \section{Determining Nonzeros of Sparse Matrices}
 \label{s.det.nonzero}
 %===================================================================================================
-There are many literature on exploiting the sparsity pattern of the Jacobian matrix
+There are much literatures on exploiting the sparsity pattern of the Jacobian matrix
 to improve the automatic differentiation and its several applications.
 Here, we look at the two parts of full and partial Jacobian computation in
 \secref{s.full.jac} and \secref{s.part.jac}.
@@ -207,7 +207,7 @@ reverse mode. However, if $J$ is sparse and its sparsity pattern is known the nu
 columns of~$V$ in the forward mode or the number of rows of~$W$ in the reverse mode can
 be reduced to $\col < n$ or $\row < m$ such that all nonzero entries of $J$ still appear
 in the product $JV$ or $WJ$. This way, the computational cost is decreased using either
-the forward mode with a suitable linear combination of the columns of~$J$ or the reverse
+the forward mode with an appropriate linear combination of the columns of~$J$ or the reverse
 mode with a suitable linear combination of the rows of~$J$; see the
 survey~\cite{Gebremedhin05whatcolor}.
 In \secref{ss.problem.full} and \secref{ss.problem.full}, we formulate problems to compute the
@@ -217,7 +217,7 @@ minimum values for $\col$ and $\row$ and the corresponding combinatorial problem
 \label{ss.problem.full}
 %===================================================================================================
 Here, we formulate a problem to find the optimal seed matrix in which
-the number of rows and columns are smaller than the actual Jacobian matrix, so called compression.
+the number of rows and columns are smaller than the actual Jacobian matrix, so-called compression.
 A unidirectional compression is a compression in either rows or columns in contrast to
 a bidirectional compression in which both rows and columns are compressed in the same time.
 The key idea behind this \emph{unidirectional compression} is now illustrated for the
@@ -259,7 +259,7 @@ For general sparsity patterns,
 it is not straightforward to figure out how to linearly combine columns and rows such that
 the computational cost is minimized. Hence, we introduce the combinatorial
 optimization problems~\ref{p.seed.uni} and ~\ref{p.seed.bid}
-for unidirectional or bidirectional compressions to determine the nonzero elements of huge Jacobians efficiently.
+for unidirectional or bidirectional compressions to determine the nonzero elements of huge Jacobian matrices efficiently.
 
 \begin{problem}[\MinUniCom]
 \label{p.seed.uni} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
@@ -272,7 +272,7 @@ the matrix-matrix product $JV$.
 \begin{problem}[\MinBidCom]
 \label{p.seed.bid} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
 pattern. Find a pair of binary seed matrices $V$ of dimension $n\times \col$ and $W$~of
-dimension $\row \times m$ whose number of columns of $V$ and number of rows of $W$ sum up to a minimal value, $\col + \row$, such that all nonzero elements of $J$ also appear in
+dimension $\row \times m$ whose number of columns of $V$ and the number of rows of $W$ sum up to a minimal value, $\col + \row$, such that all nonzero elements of $J$ also appear in
 the matrix-matrix products $JV$ and $WJ$.
 \end{problem}
 
@@ -282,7 +282,7 @@ the matrix-matrix products $JV$ and $WJ$.
 %==========================================================================================
 We reformulate the scientific computing problems which
 we have discussed in \secref{ss.problem.full}.
-The new formulation is an equivanet problem defined on a
+The new formulation is an equivalent problem defined on a
 carefully chosen graph model. The survey \cite{Gebremedhin05whatcolor}
 discusses different methods
 to exploit the sparsity involved in derivative computations.
@@ -363,7 +363,7 @@ To represent the process of finding seed matrices using the bipartite graph mode
 necessary to consider the underlying properties, which are as follows:
 \begin{enumerate}
 \item The computational cost roughly consists of the number of groups of columns and
-rows. Since the overall cost is the sum of the costs associated to the forward mode
+rows. Since the overall cost is the sum of the costs associated with the forward mode
 and to the reverse mode, the (non-neutral) colors for the forward mode and the
 (non-neutral) colors for the reverse mode need to be different.
 
@@ -416,7 +416,7 @@ Using the bipartite graph model and the definition of a star bicoloring, the pro
 \MinBidCom\ is equivalent to the following graph problem.
 
 \begin{problem}[\MinStaBic]
-\label{p.coloring} Given the bipartite graph $G=(V_r\cup V_c, E)$ associated to a sparse Jacobian
+\label{p.coloring} Given the bipartite graph $G=(V_r\cup V_c, E)$ associated with a sparse Jacobian
 matrix~$J$, find a star bicoloring of $G$ with a minimal number of non-neutral colors.
 \end{problem}
 
@@ -436,7 +436,7 @@ complexity of Problem~\ref{p.coloring} including recent new results is given in~
 \label{s.part.jac}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Gebremedhin et al~\cite{Gebremedhin05whatcolor} introduced the concept of the partial Jacobian computation
-in which the assumption is that only a subset of Jacobian, so called the required elements,
+in which the assumption is that only a subset of Jacobian, so-called the required elements,
 should be determined.
 L{\"u}lfesmann~\cite{Lulfesmann2012Fap} has studied more considerably in this area and
 introduced some heuristics for partial computation.
@@ -445,7 +445,7 @@ introduced some heuristics for partial computation.
 \label{ss.problem.part}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Suppose the required elements are shown by $R$, the definition of
-\emph{structurally orthogonality} is adapted for the partial coloring as follows,a
+\emph{structurally orthogonality} is adapted for the partial coloring as follows,
 \begin{definition}[Partially Structurally Orthogonal]\label{d.part.str.orth}
 Two columns $c_i$ and $c_j$ are partially structurally orthogonal with respect to $R$
 if and only if they do not have a nonzero element in the same row where at least
@@ -471,7 +471,7 @@ to a minimal value, $\col + \row$, such that all nonzero elements of $R$ also ap
 the pair of matrix-matrix products $JV$ and $WJ$.
 \end{problem}
 
-An equivalent graph-theoretical formulation of this problem is discussed in the next
+We discuss an equivalent graph-theoretical formulation of this problem in the next
 section.
 
 \subsubsection{Combinatorial Model}
@@ -523,7 +523,7 @@ given by the pattern of all nonzero entries within these $k\times k$ blocks on t
 diagonal. If the block size $k$ does not divide the matrix order $n$, we adapt the size
 of the last diagonal block to some smaller value such that the sum of all block sizes
 equals $n$. We formulate the new problem that represents the assembly of the
-semi-matrix-free approach with a relative minimal cost as follows.
+semi-matrix-free approach with a relatively minimal cost as follows.
 %
 \begin{problem}[Block Seed]
 \label{p:block}
@@ -536,7 +536,7 @@ S$.
 \end{problem}
 
 We now focus on reformulating this combinatorial problem from
-scientific computing regarding an equivalent problem defined on a suitable graph model.
+scientific computing regarding a similar problem defined on a suitable graph model.
 Recall that the set of nonzero elements is divided into required and nonrequired
 elements. Two columns can be linearly combined without losing information on the
 required elements as long as one of the following conditions is satisfied:
@@ -553,7 +553,7 @@ the following definition.
 \begin{definition}[Structurally $\sparsifysymbol$-Orthogonal]
 A column $J(:,i)$ is structurally $\sparsifysymbol$-orthogonal to column $J(:,j)$ if and
 only if there is no row position $\ell$ in which $J(\ell,i)$ and $J(\ell,j)$ are nonzero
-elements and at least one of them belongs to the set of required element \sparsify{J}.
+elements and at least one of them belong to the set of required element \sparsify{J}.
 \end{definition}
 
 We now construct a modified column intersection graph in which the set of vertices is the
@@ -768,7 +768,7 @@ The concept of fill path is also redefined for bipartite graph model
 in which a path is replaced by distance-$2$ paths.
 The details can be found in Lülfesmann~\cite{Lulfesmann2012Fap}.
 Based on the bipartite graph models for coloring and the ILU preconditioning,
-two algorithms are proposed also to compute the additionally required
+two algorithms are also proposed to compute the additionally required
 elements:\coderef{code.add} and \coderef{code.add2}.
 
 \begin{figure}
@@ -816,14 +816,14 @@ throughout this thesis.
 The different steps of computing the additionally required elements are discussed in
 \secref{ss.comb.precond}. Here, we look at effects of ordering on the number of fill-ins
 in \secref{s.ilu} and how it fits into the automatic differentiation.
-In \secref{s.heuristic}, we discuss different strategies to increase the number of
+In \secref{s.heuristic}, we discuss different strategies to increase in the number of
 additionally required elements as well as first ideas toward parallelization.
 
 Lülfesmann and Bücker~\cite{Lulfesmann2012Fap} started a package for computation of the uni-
 and bidirectional (partial-)coloring as well as the partial computation and its relative preconditioning
 which we discussed in ~\ref{s.precond}.
 We improved the software in various ways explained in~\secref{s.extend}.
-Finally, a MATLAB interface and a JAVA interface for this software package is introduced
+Finally, a MATLAB interface and a JAVA interface for this software package are introduced
 in ~\secref{s.interfaces}.
 
 Throughout this thesis, we did experiments on some matrices from the Florida sparse
@@ -869,8 +869,8 @@ different heuristics are employed to obtain an estimation of minimal coloring.
 The greedy coloring is a widely used coloring which has a low computational complexity
 and computes a reasonable coloring~\cite{spaa14}.
 The partial greedy coloring algorithm for a bipartite graph restricted to $E_i$
-is given in \coderef{code.greedy}. The idea is to to iterate over all vertices
-and check the color of distance-$2$ neighbours, the computational complexity
+is given in \coderef{code.greedy}. The idea is to iterate over all vertices
+and check the color of distance-$2$ neighbors, the computational complexity
 of this algorithm is $\mathcal{O}(n + \Delta)$ in which $n$
 and $\Delta$ are the number of vertices and the maximum vertex
 degree, respectively.
@@ -878,7 +878,7 @@ degree, respectively.
 \begin{figure}
 \begin{lstlisting}[caption=The greedy algorithm for
 the distance-$2$ coloring for columns in which $N_2(v)$ shows
-the distance-$2$ neighbours of $v$.
+the distance-$2$ neighbors of $v$.
 ,label=code.greedy,mathescape]
 function d2_color($G=(V_r\cup V_c,E)$,$E_i\subset E$)
 for $v\in V_c$
@@ -895,16 +895,16 @@ for $v\in V_c$
 
 In this coloring, the assumption is that vertex,
 equivalently each column, is available and colored one at a time.
-Therefore, the vertex ordering plays an important role in the greedy algorithm.
+Therefore, the vertex ordering plays an major role in the greedy algorithm.
 Hence, there are many publications on how to choose
 a suitable ordering heuristics for a serial or parallel version of
 coloring~\cite{ordering1,ordering2,ordering3}.
 Various orderings are inquired for coloring heuristics
-throughout years. Here is some orderings for coloring,
+throughout years. Here are some orderings for coloring,
 \begin{itemize}
 \item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with the minimum degree in each step.
-\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
-\item Saturation-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
+\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
+\item Saturation-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it determines the vertex with the maximum saturation degree in
 $V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbors of $v$.
 \item Smallest last ordering (SLO)~\cite{ordering1} makes a set of vertices ${v_1,v_2,...,v_n}$ in a so-called smallest-last
 order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices $v_1,v_2,...,v_i$ for all $i$.
@@ -912,44 +912,44 @@ order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices 
 The computation of this ordering can have a higher complexity than $\mathcal{O}(n+m)$ or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity.
 These various orderings can be used to improve the results of coloring.
 
-In~\secref{s.exact}, we present an algorithm which compute the exact coloring
+In~\secref{s.exact}, we present an algorithm which computes the exact coloring
 on small subgraphs first. Then, it makes a coloring for the actual graphs
 based on these small colorings. We build an example which shows that this idea
-works. 
+works.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Exact Coloring of Small Subgraphs}
 \label{s.exact}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Here, we search for the better methods for coloring. 
+Here, we search for the better methods for coloring.
 The best exact coloring is proposed in~\cite{bjorklund2009}.
 The complexity is still high enough that we can not compute the coloring
-of big matrices with this algorithm.
+of large matrices with this algorithm.
 However, if we divide the big graph into some small instances,
-we can use the exact coloring in these instances and build a valid coloring
-for the actual large graph.
-An idea is to find a vertex separator like in the nested dissection, color
+we can use the exact coloring in these situations and build a valid coloring
+for the original large graph.
+The idea is to find a vertex separator like in the nested dissection, color
 the remaining connected components, and color the separator such that putting
 all back together does not make the coloring invalid.
 A question is if it gives a better coloring at all since the coloring of vertex separator
 can lead us to a worse coloring.
 We build an example in which we found a better coloring by the second strategy.
 
-We first build a graph and its heuristic coloring which generates a worse coloring 
-than an exact coloring as shown in~\figref{f.coloring.graph} (Left). If we follow 
-the numbering of the vertices as the ordering for a greedy coloring, we would need 
+We first build a graph and its heuristic coloring which generates a worse coloring
+than an exact coloring as shown in~\figref{f.coloring.graph} (Left). If we follow
+the numbering of the vertices as the ordering for a greedy coloring, we would need
 at least $4$ colors while the exact coloring needs only $3$ colors.
 Now, we make a copy of this graph and add an extra vertex $15$ as in
 ~\figref{f.coloring.graph} (Right). The vertex $15$ is actually the only element of
 a vertex separator for the new graph. We added the incident edges of $15$ such that
 the resulting graph becomes a worst case for the greedy coloring here.
-In this new graph, the greedy coloring needs at least $5$ colors 
-as in~\figref{f.coloring.compared} (Left). 
+In this new graph, the greedy coloring needs at least $5$ colors
+as in~\figref{f.coloring.compared} (Left).
 
 Suppose we color first the components after removing the vertex $15$ separately with
-an exact coloring which needs only $3$ colors. Now, a bad implementation of the 
+an exact coloring which needs only $3$ colors. Now, a bad implementation of the
 new idea would need $4$ colors, i.e. one colors fewer than the greedy algorithm.
-A good implementation would even color the graph only with $3$ colors.
+A good implementation color the graph only with $3$ colors.
 \begin{figure}
 \centering
 \includegraphics[width=0.18\linewidth]{coloring0}
@@ -957,7 +957,7 @@ A good implementation would even color the graph only with $3$ colors.
 \includegraphics[width=0.48\linewidth]{coloring1}
 \caption{
 An example of a graph in which the division into two parts can be seen directly.
-The numbering of the graph vertices are the ordering that the greedy coloring 
+The numbering of the graph vertices are the ordering that the greedy coloring
 follows.
 }
 \label{f.coloring.graph}
@@ -998,7 +998,7 @@ for $v\in V_c$ with $\Phi(v)=0$
       $\Phi(I_v^{'}) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
-We introduce a new heuristic coloring which generate the at leas
+We introduce a new heuristic coloring which generates the at leas
 the greedy algorithm.
 Our approach in this new heuristic coloring algorithm is based on finding an independent set.
 A subset of the vertices $S\subset V$ is
@@ -1012,8 +1012,8 @@ and find the maximum independent set containing each vertex.
 Then, we consider one of the elements to be colored with the color of $v$.
 The computational complexity is clearly $\mathcal{O}(n^2)$.
 The results in Table~\ref{greedy.vs.ind} shows that this coloring gives us the same number of colors
-in all matrices which we tested. 
-Although this algorithm neither reduces nor increases the number of colors in these examples, 
+in all matrices which we tested.
+Although this algorithm neither reduces nor increases the number of colors in these examples,
 we use variants of this algorithm to generate more potentially and
 additionally required elements in the following sections.
 \begin{table}
@@ -1030,9 +1030,9 @@ Name & $\chi_{greedy}$ & $\chi_{ind}$\\\hline
 \textit{cage10} & $42$ & $42$\\\hline
 \end{tabular}
 \caption{
-The comparison between number of colors computed by the greedy algorithm and 
-the indpendent-set algorithm.
-We use the bock size $30$ and the natural ordering in both heuristics.
+The comparison between number of colors computed by the greedy algorithm and
+the independent-set algorithm.
+We use the block size $30$ and the natural ordering in both heuristics.
 }
 \label{greedy.vs.ind}
 \end{table}
@@ -1076,7 +1076,7 @@ Let's look at the same story differently.
 The columns $2$ or $3$ could have the same color with the first column to compute the
 required elements. (Of course, $2$ and $3$ are not allowed to have the same color
 because the required elements would sum up.)
-However, the number of nonrequired elements which survive would increase if
+However, the number of nonrequired elements which survive increase if
 we color the first and second column with the same color and the
 other one with the other color. Now, the question is: can we save
 more nonrequired elements in the process of coloring? Can we maximize a term like $\alpha C + \beta N$ where alpha and beta are
@@ -1087,7 +1087,7 @@ Here, we introduce a new heuristic which increases the number of survived nonreq
 
 Our goal here is to increase the number of potentially required elements.
 A potential required element is selected from the nonrequired elements such that
-number of colors does not increase.
+the number of colors does not increase.
 In general, we say a nonrequired element at the position of $(i,j)$
 can be \textit{survived} in a compression of two columns $j$ and $k$
 if there is no nonzero element in the position $(i,k)$.
@@ -1161,9 +1161,9 @@ for $v \in V_c$
 \end{figure}
 
 Considering this problem, we need to check the consistency of coloring
-at the end of algorihtm. Therefore, we define the function in \coderef{consistency} in which
-we check if the color of each vertex $v$ is different than its neighbours. 
-If it is not the case we color that neighbour with a new color which is not used so far.
+at the end of algorithm. Therefore, we define the function in \coderef{consistency} in which
+we check if the color of each vertex $v$ is different than its neighbors.
+If it is not the case, we color that neighbour with a new color which is not used so far.
 This means that \coderef{code.new.d2} should be rewritten as \coderef{code.new.d2.consistent},
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
@@ -1203,7 +1203,7 @@ Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hli
 \textit{crystm01} & $17822$ & $47556$& $10338$ & $28318$\\\hline
 \end{tabular}
 \caption{The comparison between the number of potentially and additionally required
-elements compted by the greedy algorithm and the new heuristic.
+elements computed by the greedy algorithm and the new heuristic.
 The block size is $10$ and the ILU level parameter is $2$.}
 \label{mats.pot.add.gr.vs.nreq}
 \end{table}
@@ -1212,13 +1212,13 @@ Table~\ref{mats.pot.add.gr.vs.nreq} presents the number of potentially
 and additionally required elements computed
 by the greedy algorithm and our new heuristic. The size of diagonal blocks
 and the ILU level parameter are fixed to $10$ and $2$, respectively.
-In this matrixes, the number of potentially required elements is increased
-by our new heuristc coloring.
-It is obvious that the number of additionally required elements would increase too.
+In this matrices, the number of potentially required elements increases
+by our new heuristic coloring.
+It is obvious that the number of additionally required elements increase too.
 \figref{bls_adds_ex33_without_alpha} shows the number of additionally required elements
 computed by this new approach, compared with the greedy algorithm. Clearly,
-the new approach computes more additionally required elements als than the greedy approach.
-This is an interesting result since the number of colors remains almost the same
+the new approach computes more additionally required elements as than the greedy approach.
+This is an impressive result since the number of colors remains almost the same
 as it can be seen in~\figref{bls_cols_ex33_without_alpha}.
 Both computations is carried out on the matrix \textit{ex33}. The block size changes
 from $1$ to $70$. The number of colors in~\figref{bls_cols_ex33_without_alpha} for the greedy coloring
@@ -1245,16 +1245,16 @@ that we have more than one vertex with the maximum nonrequired elements in each 
 Suppose we are looking at the vertex $v$ and two vertices $a$ and $b$ have maximum values of
 $Nreq(v,a) = Nreq(v,b)$.
 It is not always the best decision
-to color both vertices $a$ and $b$ in a step with the same color
-because the value of $Nreq(a,b)$ can be very small and gives us smaller number
+to color both vertices $a$ and $b$ in one step with the same color
+because the value of $Nreq(a,b)$ can be slight and gives us less number
 of potentially required elements (it can decrease the number of colors too).
 So, a careful selection between computed set of vertices with the maximum number of
-nonrequired elements would increase the potentiallye required elements without
-any major changes in the structure of algorithm.
+nonrequired elements increases the potentially required elements without
+any significant changes in the structure of the algorithm.
 \begin{figure}
 \begin{lstlisting}[
 caption=A modification of the previous algorithm in which
-a specific element is selected from the set of colums with
+a particular element is selected from the set of columns with
 the maximum survived nonrequired elements.
 we select only an arbitrary element in the previous version.,
 label=code.new.impr1,mathescape]
@@ -1285,11 +1285,11 @@ In \secref{s.max.add.req}, we will select those nonrequired elements which have 
 to be among the additionally required elements using the fill path theorem.
 However, a first idea would be to select a vertex with the minimum number of required elements
 among the computed set of vertices with the maximum number of nonrequired elements.
-This facilitates gathering of more nonrequired elements in the same column since
+This idea facilitates gathering of more nonrequired elements in the same column since
 it remains more free places for the other elements.
 
 Let the function $Req(i)$ computes the number of required elements in the column $i$ or the
-number of required edges which are neighbours of the vertex $i$,
+number of required edges which are neighbors of the vertex $i$,
 we modify the previous algorithm as in \coderef{code.new.impr1} to
 apply this idea. The set $M_1$ and $M_2\subset M_1$ contain the set of columns with the maximum
 number of nonrequired elements and its subset with the minimal value of required elements.
@@ -1311,7 +1311,7 @@ What if one can have some control over colors too.
 A good heuristic for coloring is to color independent sets in each step.
 For example, \figref{bls_cols_indset_ex33_} shows a comparison between a greedy algorithm and
 an algorithm which colors the independent set first. As you can see the independent set algorithm
-produces definitely less number of colors. However, it does not perform good in the case of additionally
+produces less number of colors. However, it does not perform well in the case of additionally
 required elements as in \figref{bls_adds_indset_ex33_}.
 
 \begin{figure}
@@ -1330,15 +1330,15 @@ the greedy algorithm with respect to the number of additionally required element
 \end{figure}
 
 It is a logical result since we saw that selecting two columns with the maximum number of nonrequired
-elements does not give us always more number of additionally required elements.
-So, we propose to choose only column with the maximum number of nonrequired elements and
+elements does not give us always bigger number of additionally required elements.
+So, we propose to choose the only column with the maximum number of nonrequired elements and
 choose $\alpha$ other columns with the minimum number of nonrequired elements. In this case,
 we can decrease the number of colors by increasing the value $\alpha$ while the number of
-additionally required elements decrease only a little bit.
+additionally required elements drops only a little bit.
 The new star bicoloring algorithm is as \coderef{code.new.impr2}.
 \begin{figure}
 \begin{lstlisting}[
-caption=New coloring heuristc with a controller to balance
+caption=New coloring heuristic with a controller to balance
 the number of colors and the number of additionally required elements.,
 label=code.new.impr2,mathescape]
 function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subset E$,$\alpha$)
@@ -1368,9 +1368,9 @@ consistent_coloring(G)
 
 So if we choose $\alpha=0$, we would have the same algorithm as before.
 As in~\figref{new.col.add.alpha.zero}, the number of additionally required elements
-would increase. The number of colors is almost in the same order as in~\figref{new.col.col.alpha.zero}.
+increases. The number of colors is almost in the same order as in~\figref{new.col.col.alpha.zero}.
 It can be compared to the computation on the same configuration but with different $\alpha=6$.
-The number of colors would increase as in~\figref{new.col.col.alpha.six} while
+The number of colors increases as in~\figref{new.col.col.alpha.six} while
 the number of additionally required elements would not decrease a lot as in~\figref{new.col.col.alpha.six}.
 \begin{figure}
 \centering
@@ -1411,7 +1411,7 @@ and the results for $\alpha=10$ are shown in~\figref{new.col.add.alpha.ten.nos3}
 and~\figref{new.col.col.alpha.ten.nos3}
 and for $\alpha=1$ are shown in~\figref{new.col.add.alpha.one.nos3} and
 in~\figref{new.col.col.alpha.one.nos3}.
-The new computations shows almost the same results. However,
+The new computations show almost the same results. However,
 the only difference is that all the results change dramatically
 after the size of block $40$. In general, an observation can be
 summarized that the results are better than for the smaller size of blocks
@@ -1476,9 +1476,9 @@ matrices.
 As same as the last section, we search for a modified version of star bicoloring
 which increases the number of additionally required elements without
 a high increase the number of colors. The idea from the new heuristic
-can be applied here. However it can survive less additionally required
+can be applied here. However, it can survive less additionally required
 elements since a survived nonrequired elements from the column compression
-it is not necessary a survived nonrequired elemtns form the row compression.
+it is not necessary a survived nonrequired elements form the row compression.
 
 We consider the implemenetation of star bicoloring in \coderef{orig.star.bicoloring} based on
 the algorithm from Lülfesmann~\cite{Lulfesmann2012Fap}.
@@ -1518,20 +1518,20 @@ while $E_R^{'}$ is not empty
             $\Phi (v) = 0$
 \end{lstlisting}
 \end{figure}
-This algorithm process a vertex either from column vertices
-or row vertices with maximum degree in each step.
+This algorithm processes a vertex either from column vertices
+or row vertices with a maximum degree in each step.
 We first did some computations to find the influence of $\rho$ on the
 number of additioanlly required elements. The value of $\rho$ is a weightening factor which
 is a balance between columns or row vertices. A higher value of $\rho$
 makes the compression mostly in the column vertices and vice versa.
 There are some discussion on how to choose the value of $\rho$ in
 \cite{Gebremedhin05whatcolor}. Also,
-Lülfesmann~\cite{Lulfesmann2012Fap,LulfesmannMaster} did som computation for some
+Lülfesmann~\cite{Lulfesmann2012Fap,LulfesmannMaster} did some computation for some
 specific $\rho$.
-However, the main goal in these previous literature
+However, the goal in these previous literatures
 is to minimize the number of colors.
 As the \figref{rho_value_685_bus} and \figref{rho_value_orani678},
-the value of $\rho$ has definitely a direct influence on
+the value of $\rho$ has a direct influence on
 the number of additionally required elements.
 The interesting observation is that a tiny change
 on the value of $\rho$ can dramatically change the
@@ -1557,7 +1557,7 @@ As we said, the first part of algorithms chooses the next vertex
 which should be processed from the maximum degree vertices
 in a graph induces on the required edges.
 We change this part of algorithm to process a specific algorithm
-with maximum degree and maximum nonrequired elements instead of
+with a maximum degree and maximum nonrequired elements instead of
 an arbitrary vertex. After the first step, this processes can be
 repeated or we can process the vertices with
 minimum number of nonrequired elements.
@@ -1583,7 +1583,7 @@ The asymmetric matrix \textit{$crystm01$} is used here.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In \secref{s.heuristic}, our focus was to increase the potentially required elements
 which probably increases also the number of the additionally required elements.
-Here, we check directly in the process of coloring
+Here, we check directly into the process of coloring
 if a potential required element can be an additionally required elements.
 For this purpose, we use the bipartite graph model for ILU preconditioning
 as well as the fill path theorem introduced
@@ -1596,10 +1596,10 @@ The idea is to check if the current nonzero required elements
 \label{s.ilu}
 In the idea of mixing the preconditioning and AD discussed in~\secref{s.precond},
 the ILU preconditioning is computed using the natural ordering of the given matrix. However,
-it is a well-known fact that the number of fill-ins is highly dependent on the ordering.
+it is a well-known fact that the number of fill-ins is heavily dependent on the ordering.
 So, we can improve the number of fill-ins by carefully choosing an ordering.
 On the other hand, we compute the Jacobian matrix by AD techniques in which
-the matrix computed in a specific ordering. We need a reformulation to
+the matrix computed in a particular ordering. We need a reformulation to
 fit these two computations from ILU preconditioning and the automatic differentiation.
 
 As we discussed in the iterative solvers, like BICGSTAB,
@@ -1649,7 +1649,7 @@ vertex $j$ with a directed edge if the corresponding element $(i,j)$ in matrix
 in nonzero. If the matrix is symmetric, these edges are undirected. This means
 the graph is a simple graph and the given matrix is actually the adjacency
 matrix of the graph.
-Now, we look at the effects of preordering for the vertices of the given preconditioning graph to reduce fill-ins in ILU factorization. Later, we would study further how this fill-in reduction would increase the additionally required elements.
+Now, we look at the effects of preordering for the vertices of the given preconditioning graph to reduce fill-ins in ILU factorization. Later, we would study further how this fill-in reduction increases the additionally required elements.
 
 As same as coloring algorithms, finding an ILU factorization with the minimum
 fill-ins is also an NP-complete problem. There are a lot of literature
@@ -1736,7 +1736,7 @@ As we discussed in the previous section, there are different ordering for colori
 like \textit{LFO}, \textit{IDO}, and \textit{SLO}.
 %Here, we have a list of such orderings for coloring
 %which is available in \textit{PreCol}.
-%In each item, we explain how the algorithm select the next vertex.
+%In each item, we explain how the algorithm selects the next vertex.
 %\begin{itemize}
 %\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with minimum degree in each step.
 %\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the %matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
@@ -1782,7 +1782,7 @@ Both are from the Florida sparse matrix collections.}
 \label{ilu-effect}
 \end{table}
 
-These results are computed on the matrix \textit{nos3.mtx}
+The computation are carried out on the matrices \textit{nos3.mtx}
 and the matrix \textit{gyro\_m} from
 the Florida sparse matrix collections. The block size is
 chosen to be $50$ for the matrix \textit{gyro\_m} and $15$ for
@@ -1791,7 +1791,7 @@ partial coloring. In this table, the fill-reducing Metis ordering
 generates the minimum fill-in.
 Another observation is that the Metis and Min ordering are generating almost the same
 number of fill-ins for the small matrices.
-It is only for the big matrices which the efficiency of Metis ordering can be seen.
+It is only for the big matrices which the efficiency of Metis ordering is visible.
 
 This difference in the number of fill-ins can affect the convergence speed
 relatively. Both Figure~\ref{nat_convergence}
@@ -1896,22 +1896,22 @@ additionally required element. For this purpose, we build a bipartite graph mode
 for ILU preconditioning based on the bipartite graph model for ILU formulated in \cite{Lulfesmann2012Fap}
 and \defref{d.fill.path} of fill path. Given a nonrequired element (an edge of bipartite graph),
 the idea is to check if the addition of this edge would generate any new fillin.
-If the fill level of SILU is $l$, we list all fill paths of length $l$ passing this nonrequired edge 
+If the fill level of SILU is $l$, we list all fill paths of length $l$ passing this nonrequired edge
 in the set $L$. Each fill path in the set $L$ which all its edges except the given nonrequired edge
-are required edges would later generate a fillin. So, it is more efficient not to add the 
+are required edges would later generate a fillin. So, it is more efficient not to add the
 nonrequired edge in this case.
 
-As we discussed, for a fixed ordering of vertices, 
+As we discussed, for a fixed ordering of vertices,
 a fill path from the vertex $v_i$ to $v_j$ is a path $v_i,...,v_k,...,v_j$
 in which all intermediate vertices has smaller indices than $i$ and $k$.
-Given a nonrequired edge $t=(r_i,c_j)$, we define the set of all fill paths starting 
-from $c_i$ passing the edge $t$ with the size of $k$ as 
+Given a nonrequired edge $t=(r_i,c_j)$, we define the set of all fill paths starting
+from $c_i$ passing the edge $t$ with the size of $k$ as
 $pr_k^t = \{\{ r_i,c_j,...,c_a\},...,\{ r_i,c_j,...,c_b\}\}$.
 Equivalently, we define the set of all fill paths ending to the vertex $c_j$
-passing the edge $t$ with the size of $k$ as 
+passing the edge $t$ with the size of $k$ as
 $pl_k^t = \{ \{c_d,...,r_i,c_j\},..., \{c_e,...,r_i,c_j\}\}$.
-With these defintions, \coderef{code.new.d2.add.fp} is a coloring heuristic 
-for distance-$2$ coloring which checks if a survived nonzero element can be an 
+With these defintions, \coderef{code.new.d2.add.fp} is a coloring heuristic
+for distance-$2$ coloring which checks if a survived nonzero element can be an
 additionally required element.
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
@@ -1955,7 +1955,7 @@ Name & \textit{d2\_color}& \textit{d2\_color\_nreq} & \textit{d2\_color\_fillpat
 \textit{crystm01} & $10338$ & $28318$ & $29934$\\\hline
 \end{tabular}
 \caption{The comparison between the number of additionally required
-elements compted by different algorithms .
+elements computed by different algorithms.
 The block size is $10$ and the ILU level parameter is $2$.}
 \label{mats.add.gr.vs.nreq.vs.fillpath}
 \end{table}
@@ -1963,9 +1963,9 @@ The block size is $10$ and the ILU level parameter is $2$.}
 \section{Partial Coloring Restricted to Diagonal Elements}
 So far, we consider the partial Jacobian computation with an arbitrary
 set of required elements. However, a better heuristics is proposed if the
-pattern of the required elements is priori known.
+pattern of the required elements is prior known.
 
-In Lülfesmann~\cite{Lulfesmann2012Fap}, it is shown that the number of colors of
+Lülfesmann~\cite{Lulfesmann2012Fap} shows that the number of colors of
 a partial star bicoloring restricted to diagonals is equal to
 the minimal number of colors in a partial distance-$2$ coloring restricted
 to diagonals. It means the bidirectional compression is not better than
@@ -1997,24 +1997,24 @@ This theorem is a generalization of Theorem 3.7 of \cite{Lulfesmann2012Fap}.
 Theorem 3.7 of \cite{Lulfesmann2012Fap} discusses only the mapping with minimal colorings
 and the partial coloring restricted to diagonal elements. We consider any coloring
 and the partial coloring restricted to a matching. This generalization gives us an idea
-to find new heuristics for colorings. The proof of Theorem~\ref{t.matching} 
-is resulted from the the proof from \cite{Lulfesmann2012Fap} considering two following points,
+to find new heuristics for colorings. The proof of Theorem~\ref{t.matching}
+is resulted from the proof from \cite{Lulfesmann2012Fap} considering two following points,
 \begin{itemize}
-\item The minimality of mappings are only used to show the equality in the number of colors which is not 
+\item The minimality of mappings are only used to show the equality in the number of colors which is not
 the case in our theorem.
-\item The property of being diagonal elements are used in the proof from \cite{Lulfesmann2012Fap} only to 
-make the required edges disjoint. This is actually the definition of a matching in a graph.
+\item The property of being diagonal elements are used in the proof from \cite{Lulfesmann2012Fap} only to
+make the required edges disjoint from each other which is the definition of a matching in graphs.
 \end{itemize}
 
 
 Based on the $\sparsifysymbol$-column intersection graph defined in~\defref{d.part.cig},
 it is easy to see
-that the partial coloring restricted to diagonal is still a NP-complete problem.
+that the partial coloring restricted to diagonal is still an NP-complete problem.
 We discussed this shortly in \appref{app.npcomp}.
 Therefore, we should still use some heuristics to compute these colorings.
 The examples in Table~\ref{table.starbic.d2.diag} from Florida sparse collection shows that the
 inequality in Theorem~\ref{t.matching} can happen. The second column of this table
-shows the number of colors computed by the heurstic for star bicoloring.
+shows the number of colors computed by the heuristic for star bicoloring.
 The third column shows the number of colors computed by the greedy distance-$2$ coloring
 in which the minimum number of colors between the row and column version is selected.
 It can be seen that even for a small matrix as the matrix \textit{cage3} which has only
@@ -2109,16 +2109,15 @@ for $e=(v,u)\in E_R$
 \end{figure}
 \section{Parallelization}
 \label{s.parallel}
-As we saw in \secref{s.precond}, different steps should be followed
+As we saw in \secref{s.precond}, different steps are followed
 to compute the additionally required elements. Here, we look at each of
-these steps and examine how they can be parallelized by OpenMP
-if it can be done efficiently.
+these steps and examine how they can be efficiently parallelized by OpenMP.
 
 First, we look at the coloring algorithm.
-There are many literature for a parallelized coloring algorithm.
+There are much literatures for a parallelized coloring algorithm.
 For example,
-{\c{C}}ataly{\"{u}}rek~\cite{cataly2012} itroduced an OpenMP parallelized
-algorithm which comptues the same number of colors as the serial version.
+{\c{C}}ataly{\"{u}}rek~\cite{cataly2012} introduced an OpenMP parallelized
+algorithm which computes the same number of colors as the serial version.
 However, there are two points in each step of the algorithm in which two threads
 need to be synchronized.
 However, we focus on another algorithm from Rokos et al~\cite{Rokos2015}
@@ -2150,7 +2149,7 @@ $U_i = L$
 $i = i+1$
 \end{lstlisting}
 \end{figure}
-This idea of parallelization can be applied to our new coloring heuristics.
+We apply this idea of parallelization to our new coloring heuristics.
 It means we compute the coloring like before by a parallelized loop.
 Then, we correct the coloring. \coderef{code.new.bip.omp} shows the parallelized
 version of \coderef{omp.greedy.bip}.
@@ -2198,11 +2197,11 @@ $i = i+1$
 \end{figure}
 
 We color the bipartite graph interpreted from the matrix \textit{Cavity16}
-from the sparse matrix collection of University of Florida.
+from the sparse matrix collection of the University of Florida.
 The timing are all from the computation carried on an Intel Core i5 with 8 Gb RAM.
 Table~\ref{omp.res} shows the results of this computation.
 Here, we change the number of threads from $1$ to $10$ shown in the first column.
-The second colum shows the computation time in milliseconds. The third column
+The second column shows the computation time in milliseconds. The third column
 is also the number of colors which changes based on the number of colors.
 Table~\ref{omp.res}(Left) shows the results of computation of \coderef{omp.greedy.bip}
 and Table~\ref{omp.res}(Right) for \coderef{code.new.bip.omp}.
@@ -2264,9 +2263,9 @@ additionally required elements since those elements are outside the blocks.
 \section{PreCol 1.0}
 \label{s.extend}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-We develop a software to compute the different algorihtm that we propose here.
+We develop a software to compute the different algorithm that we propose here.
 Specially, the software is designed employing concepts from the object-oriented programming
-such that it can be extended later with any new coloring heuristc as well as any preconditioning algorithm.
+such that it can be extended later with any new coloring heuristic as well as any preconditioning algorithm.
 The developers can implement new extensions without going into details of core implementation.
 Two main ingredients coloring and orderings can be implemented now only by deriving an interface.
 For example, a new coloring and ordering can be added as easy as the following code.
@@ -2311,7 +2310,7 @@ release of C++ (C++17) next year~\cite{parallelcpp}.
 As it is presented in \figref{f.structure}, both computations of coloring and ILU preconditioning
 are in one package available in C++. we also introduced
 two interfaces in MATLAB and JAVA languages which we will explain in
-Section~\ref{s.interfaces}. 
+Section~\ref{s.interfaces}.
 %-----------------------------------------------------------------------------------------------
 \begin{figure}
 \centering
@@ -2324,7 +2323,7 @@ The software Precol and its two interfaces written in MATLAB and Java are visual
 
 To use the software, the user can use a command-line command in addition to
 the interfaces in JAVA and MATLAB. So, the user needs to specify different
-options for coloring algorithm, orderings, the block size, and so.
+options for coloring algorithms, orderings, the block size, and so.
 These options can be entered directly in the terminal together with command.
 An example is as follows,
 \begin{lstlisting}
@@ -2351,11 +2350,11 @@ texts and documentation in the website.
 We extend our JAVA software GraphTea~
 \cite{2014:07,2014:15,2014:16,2015:05,2015:06,2015:07,2015:08} to have a
 set of reports for graph coloring and preconditioning. It has two different modes
-to compute independently or to compute by calling the software \textit{PreCol}.
+to compute independently or to call the software \textit{PreCol}.
 %Chemical Graph theory\cite{2015:05,2015:06,2015:07,2015:08}
 GraphTea is a graph editing framework designed specifically to compute and visualize
 different parameters of graphs interactively.
-Figure~\ref{f.graphtea} shows a snapshot of the main
+Figure~\ref{f.graphtea} shows a snapshot of the
 graph window together with two additional windows that give more details on the solution
 of different graph problems. These separate windows providing additional information are
 called ``reports.''
@@ -2364,10 +2363,10 @@ A report can be computed in GraphTea in two different ways:
 a single report or an incremental report.
 A single report means to compute some parameters on graph and look at the results
 in a textual way. However, an incremental report happens when we have at least
-two parameter for computation. So, we would change one of the parameter in
+two parameters for computation. So, we change one of the parameters in
 some range and would generate a table.
 
-The main goal of developing GraphTea was to help the researcher through their research.
+The primary goal of developing GraphTea is to support the researcher through their research.
 The following abilities of GraphTea could help the research in different dimensions:
 \begin{itemize}
 \item Generate different class of graphs and compute the parameters on them.
@@ -2388,7 +2387,7 @@ However, the researcher can only do this evaluation for small examples if they d
 use computer tools.
 Different aspects of GraphTea can be used to overcome this evaluation.
 The researchers can generate any graph up to any computationally-reasonable size
-(i.e. commutable in a reasonable time) and compute the parameter.
+and compute the parameter.
 This process of so-called conjecture checking on different graphs could often lead to a better guess.
 %-----------------------------------------------------------------------------------------------
 \begin{figure}
@@ -2403,8 +2402,8 @@ two floating dialogs with reports on a given graph.}
 Beside the automatic generation of graphs up to any size, we added the ability of loading
 different sparse matrix as graphs to GraphTea.
 A new data structure for the sparse matrix, called \textit{SpMat}, is designed
-to handle the large sparse matrices. This data structure is basically an array.
-This array has the size of number of rows. Each cell of this array points to
+to handle the large sparse matrices. This data structure is an array.
+The size of this array is the number of rows. Each cell of this array points to
 an array which is the corresponding columns of nonzeros in this row.
 
 The MATLAB interface is just a wrapper function which calls \textit{precol} with
@@ -2425,7 +2424,7 @@ There is an increasing need for such educational tools since the connection
 between the problem from scientific computing and the corresponding combinatorial
 problem is tricky for the students.
 
-\mbox{EXPLAIN} has two releases 1.0 and 2.0 so far which we will explain in more 
+\mbox{EXPLAIN} has two releases 1.0 and 2.0 so far which we will explain in more
 details in \secref{s.impl.explain}. Some of the modules which will be explained
 are only available in the new release because of the efficiency. Both releases
 are available now since they were developed on different technologies and have
@@ -2436,19 +2435,19 @@ During this chapter, we look first at the conceptual design of the software in
 \secref{s.concept}. Then, we apply the gamification ideas on the software in
 \secref{s.game} to involve the students more into the usage of \mbox{EXPLAIN}.
 We explain how the conceptual design is finally visualized in \secref{s.vis}.
-After looking at the available modules in \secref{s.av.modules}, we look at 
+After looking at the available modules in \secref{s.av.modules}, we look at
 some implementation details in \secref{s.impl.explain}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conceptual Design}
 \label{s.concept}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Throughout the design stage, we were focused on the following goals.
+Throughout the design stage, our focus is on the following goals.
 This software is a self-study tool and the connection between the scientific computing
 and combinatorial problems are explained by teacher in classroom.
 The students can follow the algorithm on the graph by either
 clicking on the vertices or edges.
 So, neither the matrix nor its nonzeros are not clickable.
-Clicking results in the modifications in both graph and matrix.
+Clicking vertices or edges results in the modifications in both graph and matrix.
 The available modifications on graph and matrix can be one or more actions
 from the following list,
 \begin{itemize}
@@ -2459,7 +2458,7 @@ from the following list,
 \item Coloring any cell, column, or row of matrix
 \end{itemize}
 
-A sparse matrix is given as an input and the corresponding graph is built from this matrix.
+The input to the program is a sparse matrix. We build the corresponding graph from the the matrix.
 The matrix and the corresponding graph are visualized side by side.
 The graph model can be from one of the following types,
 \begin{itemize}
@@ -2548,7 +2547,7 @@ The module allows to select and, thus, color the vertices of a given graph step 
 
 \figurename~\ref{fig1} shows a screenshot of the column compression module. The nonzero elements of the matrix are denoted by the symbol $\times$ in the matrix view; the corresponding column intersection graph is given immediately next to the matrix. In the bottom of the page, different preloaded matrices can be selected or a new matrix can be uploaded from a file on the file system of the student's computer. The tool provides an interactive interface for the student who can control the algorithm such as returning to previous steps or loading different graphs and matrices. Selecting the vertices in different orderings generates different colorings corresponding to different column compressions.
 
-Suppose a vertex is selected in the first step. This vertex is then colored using the first color of the predefined list. Continuing this process of vertex selection, different colors are chosen and an ordered list of vertices is created which is already indicated in \figurename~\ref{fig1} marked by ''Ordering of colored vertices.'' In this figure the list is empty but it will become non-empty in later figures. Each button of this list is clickable, causing \mbox{EXPLAIN} to return to that step of the algorithm. The process is continued until all vertices are colored. The button labeled by the minus sign will go back to the first step keeping the whole process history.
+Suppose a vertex is selected in the first step. This vertex is then colored using the first color of the predefined list. Continuing the process of vertex selection, different colors are chosen and an ordered list of vertices is created which is already indicated in \figurename~\ref{fig1} marked by ''Ordering of colored vertices.'' In this figure the list is empty but it will become non-empty in following figures. Each button of this list is clickable, causing \mbox{EXPLAIN} to return to that step of the algorithm. The process continues until all vertices are colored. The button labeled by the minus sign will go back to the first step keeping the whole process history.
 
 
 \begin{figure}
@@ -2611,7 +2610,7 @@ J \cdot
 15 & 0 & 0 & 0
 \end{bmatrix}.
 \end{equation}
-Furthermore, the coloring of \figurename~\ref{fig3} is exactly the one corresponding to that compressed Jacobian~\eqref{e:matrixS}.
+Furthermore, the coloring of \figurename~\ref{fig3} is the one corresponding to that compressed Jacobian~\eqref{e:matrixS}.
 
 Since we want to provide the possibility to return to some step of the algorithm, a history of the selection process is kept in the ordered vertex list. Now, suppose the student selects to return to the step $1$ where the vertex $v_2$ was selected, then the program returns to that step of the algorithm. The resulting state is depicted in \figurename~\ref{fig4}. Notice that the program keeps the whole history and the student can click on any other vertex in the history.
 
@@ -2741,8 +2740,8 @@ round is started using the initial situation depicted in Fig.~\ref{f.explain}~(a
 history of the number of non-neutral colors used in previous rounds is displayed below
 the matrix in a score diagram as shown in Fig~\ref{f.explain}~(b). The idea behind this
 score diagram is to use elements of game design to motivate and increase the student's
-activity in the learning process. This way, the student can see how successful he or she
-was in reducing the number of non-neutral colors.
+activity in the learning process. This way, the student can see the success
+in reducing the number of non-neutral colors.
 
 The subtle issues in understanding the connection between bidirectional compression and
 star bicoloring are more lucid when considering more irregularly-structured nonzero
@@ -2751,8 +2750,8 @@ Fig.~\ref{f.arrow-shaped4}~(b). Here, it is more difficult to find out that this
 bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 
 \subsection{Partial Jacobian Computation}
-The previous module of matrix compression is extended to support
-also the partial Jacobian computation. Here, the student should
+We extend the previous module of matrix compression to support
+the partial Jacobian computation. Here, the student should
 first select the required elements which are edges in Bipartite graphs.
 So, when the student clicks on the edges, the colors of those edges change to red
 and the corresponding nonzero elements are added to required elements.
@@ -2762,8 +2761,8 @@ are become fixed, i.e. no new required elements can be added.
 The other processes of coloring are completely like the previous module.
 
 \subsection{Nested Dissection Ordering}
-Given a sparse symmetric matrix $A$, the nested dissection method finds a 
-symmetric permutation $P^T A P$ of $A$ 
+Given a sparse symmetric matrix $A$, the nested dissection method finds a
+symmetric permutation $P^T A P$ of $A$
 such that the permutated matrix gets the following form,
 $$
 A^{\prime} =
@@ -2775,30 +2774,30 @@ A_1 & 0   & \cdots & 0 & B_1^T \\
 B_1 & B_2 & \cdots & B_p& C
 \end{bmatrix},
 $$
-in which the size of the block matrices $A_1,...,A_p$ are balanced, 
+in which the size of the block matrices $A_1,...,A_p$ are balanced,
 and the size of block $C$ is minimum.
-This reduces the computational work in different application areas.
+This approach reduces the computational work in different application areas.
 An example can be found in \cite{2014:02}.
 
 The graph model of this problem has the simple graph layout considering the matrix
-as the adjacency matrix of a graph. 
+as the adjacency matrix of a graph.
 The algorithm from~\cite{2014:02} searches for a so-called vertex-separator set
-corresponding to the block $C$ here. A vertex separator $S$ of the given graph $G$ 
+corresponding to the block $C$ here. A vertex separator $S$ of the given graph $G$
 is a subgraph of $G$ if removing $S$ and its adjacent edges from $G$ results in two
-disconnected components $V_1$ and $V_2$ of $G$. 
+disconnected components $V_1$ and $V_2$ of $G$.
 Suppose we move rows and columns corresponding to the vertex separator to the end of
-the matrix and bringing together 
+the matrix and bringing together
 the corresponding columns of $V_1$ and $V_2$ by a permutation,
 then a nested dissection would be visualized on the matrix.
 
 We extended \mbox{EXPLAIN} with
 a new module that considers the nested dissection ordering
 of a given matrix and the equivalent graph problem, i.e.,
-finding a vertex separator (see~\cite{2014:02} for the bisection). 
+finding a vertex separator (see~\cite{2014:02} for the bisection).
 In this module, a round consists of finding a vertex separator.
-We look first at a bisection, i.e. $p=2$. 
-Figure~\ref{initial_10} shows the initial layout of an example 
-and the selection of the vertex $10$ for the set of vertex separator. The module moves the 
+We look first at a bisection, i.e. $p=2$.
+Figure~\ref{initial_10} shows the initial layout of an example
+and the selection of the vertex $10$ for the set of vertex separator. The module moves the
 corresponding column to the selected vertex to the end of the matrix
 and both the vertex and its corresponding column get the orange color.
 Additionally, the adjacent edges of the vertex are removed for a better visualization.
@@ -2820,12 +2819,12 @@ decomposed into two disconnected components.}
 \label{initial_10}
 \end{figure}
 
-Figure~\ref{selected_4_10_8_10} shows two scenario of selection with 
+Figure~\ref{selected_4_10_8_10} shows two scenario of selection with
 the worst and best case of selection. The left selection~\figref{selected_4_10_8_10}(a)
 in which the vertex
 $4$ is selected after the initial selection of $10$, we have an unbalanced result.
 However, the right selection~\figref{selected_4_10_8_10}(b) results in a balanced result
-by only selecting $8$ instead of $4$. 
+by only selecting $8$ instead of $4$.
 When a vertex separator is found, the software colors the two disconnected components of graph
 as well as the distinct block on diagonals after permutation
 with blue and red.
@@ -2851,7 +2850,7 @@ The selection is not adequate as the sizes of blocks are not balanced.
 A resulting score diagram from different rounds looks
 like \figref{diagram}. Here, the blue and red curves should have
 values close to each other since this indicates the balancing condition.
-The orange curve should be as low as possible
+The orange curve should be as small as possible
 because it represents the minimization of the separator size.
 In this figure, the separator size is indeed minimal and the
 balance condition is satisfied in the last round.
@@ -2862,14 +2861,14 @@ balance condition is satisfied in the last round.
 \label{diagram}
 \end{figure}
 
-Based on the new features of \mbox{EXPLAIN 2.0}, we could improved the previous
-bisection to a recursive nested dissection algorithm.
+Based on the new features of \mbox{EXPLAIN 2.0}, we update the previous
+bisection to a nested dissection algorithm.
 It contains the bisection itself. So, the student selects the vertex separator
 as before until the graph becomes disconnected.
-In this new version, the vertex separator will be shown on the bottom
+In this new version, the vertex separator is shown on the bottom
 of the graph. Also the two remaining parts of graph are shown separately
 in two different circles at right and left.
-In Figure~\ref{bad_bisection}, the result of a selection is visualized which
+In Figure~\ref{bad_bisection}, the result of selection is visualized which
 is inefficient since the parts of graphs are not balanced.
 Figure~\ref{good_bisection} also shows the results of an efficient selection.
 
@@ -2919,15 +2918,15 @@ both parts of the graphs become disconnected. The vertex separators
 would be moved to the bottom of the graph parts as well as the graph parts
 would be shown separately. Figure~\ref{bad_disection} and Figure~\ref{good_disection} illustrated two inefficient and efficient results of nested dissection,
 respectively. Figure~\ref{good_disection2} shows how the results can
-get even better by a suitable order of selection.
+get even better by a proper order of selection.
 
 The corresponding diagram of the history of rounds is improved such that
 both the size of vertex separator as well as the size of four graph parts
 can be visualized. Figure~\ref{barchart} shows a possible selection history.
-As it can be seen the line chart shows the size history of the vertex separator
+The line chart shows the size history of the vertex separator
 and four bar chart grouped together shows the size history of the graph parts.
-The colors are also the same colors which are used in the graph and matrix visualizations.
-Since the goal here is to minimize the size of vertex separator as well as balancing the 
+The colors are also the same colors used in the graph and matrix visualizations.
+Since the goal here is to minimize the size of vertex separator as well as balancing the
 size of subgraphs, we achieved the optimum results in the fourth round of selection.
 \begin{figure}
 \centering
@@ -3112,15 +3111,15 @@ vertices~1, 2 and 3 to the blue process and the vertices~7, 8 and 10 to the gree
 process. By interactively assigning a vertex to a process, not only the vertex is colored
 by the color representing this process, but also the row in the matrix as well as the
 corresponding vector entry of \vek{x} are simultaneously colored with the same color.
-This way, the data distribution is visualized in the graph and in the matrix
+This way, the data distribution is visualized in the graph and the matrix
 simultaneously which emphasizes the connection between the matrix representation and the
 graph representation of that problem. The panel labeled ``Order of selection'' records
-the order of the vertices that are interactively chosen. By inspection from that panel
+the order of the vertices that are interactively chosen. By inspection of that panel
 in~\figref{f.explain}, we find out that the status depicted in \figref{f.beginning} is an
 intermediate step of the interactive session that led to the data distribution
 in~\figref{f.explain}. Any box labeled with the number of the chosen vertex in that panel
 is also clickable allowing the student to return to any intermediate state and start a
-rearrangement of the data distribution form that state.
+rearrangement of the data distribution from that state.
 
 
 %------------------------------------------------------------------------------------------
@@ -3176,8 +3175,7 @@ defined by~\eqref{e.cut} using the label ``communication volume.'' As mentioned 
 previous section, the cut size in this undirected graph model is not an exact
 representation of the communication volume. However, it often captures the nature of the
 communication volume quite well. Therefore, this graph model uses the cut size as a
-measure of the communication volume. In that score diagram, the student can check his or
-her attempt to minimize the communication volume over some rounds.
+measure of the communication volume. In that score diagram, the student can attempt to minimize the communication volume over some rounds.
 
 %------------------------------------------------------------------------------------------
 % Score diagram
@@ -3208,14 +3206,14 @@ question. The extreme cases for the deviation bound are given by 0 if the distri
 perfectly balanced and $p-1$ if there is one process that gets all the data. The score
 diagram shows the value of the deviation bound for each round. A low deviation bound
 indicates a partition that balances the computational load evenly, whereas a large
-deviation bound represents a large imbalance of the load. The score diagram helps the
+deviation bound represents a significant imbalance of the load. The score diagram helps the
 student to evaluate the quality of a single data distribution and to compare it with
-distributions obtained in previous rounds. This feedback to the student is designed in
+distributions obtained in previous rounds. This feedback to the student is in
 the spirit of computer games, where a score has only a low immediate relevance to the
 current game. However, the idea is to achieve a ``high score'' and try to motivate the
 player to beat that score in subsequent rounds, thus offering an extra challenge. For
 this educational module, a ``high score'' would consist of a low communication value
-together with a low deviation bound.
+together with a small deviation bound.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Algorithm Editor and Animator}
@@ -3249,7 +3247,7 @@ decide to start the selection by mouse or an automatic visualization
 of the algorithm in which the order is defined by the variable "order".
 
 If the student selects the visualization based on the given ordering,
-an animation go through the vertices and execute each line of algorithm
+an animation goes through the vertices and execute each line of the algorithm
 one by one to visualize the algorithm during the time.
 The speed of the execution can be set up.
 
@@ -3259,11 +3257,12 @@ The speed of the execution can be set up.
 \label{s.impl.explain1}
 The previous version of the software \cite{Lulfesmann2010} needed a client with administrator privileges to install Python libraries as well as the software itself. In the new implementation, the software is moved to the online platform which means the student needs just a web browser to work with the software. In this section, we shortly describe the underlying algorithm as well as how the implementation is.
 
-The underlying algorithm of coloring and keeping the history is shown in the pseudo-codes given in \figurename~\ref{f:alg}. The first procedure represents what happens when a student clicks on a vertex. The second one shows how the history of matrix and graph images are loaded when the student clicks on one of the history buttons.
+The basic algorithm of coloring and keeping the history is shown in the pseudo-codes given in \figurename~\ref{f:alg}. The first procedure represents what happens when a student clicks on a vertex. The second one shows how the history of matrix and graph images are loaded when the student clicks on one of the history buttons.
 
-The first procedure, \textsc{VertexClicked}, takes the selected vertex $v$ as an input parameter. To color this vertex $v$, it finds the first color from the list $ColorList$ that is different from the colors of the neighbors of $v$. The coloring of the graph is then changed, shown, and saved as an image. Also, the vertex $v$ is added to the ordered list, $Hist$, of selected vertices for the history.
+The first procedure, \textsc{VertexClicked}, takes the selected vertex $v$ as an input parameter. To color this vertex $v$, it finds the first color from the list $ColorList$ that is different from the colors of the neighbors of $v$. The coloring of the graph is then changed, shown, and saved as an image. 
+Also, the vertex $v$ is added to the ordered list, $Hist$, of selected vertices for the history.
 
-The second procedure, \textsc{HistClicked}, takes the selected history $h$. This history will be used to find and plot the previously stored images of the matrix and the graph. Also, the variable $IsInHist$ specifies that the program is in the ``history mode'' which is important if the user selects a vertex different from the previous order. In this case, the program overwrites the existing history and new images will be saved.
+The second procedure, \textsc{HistClicked}, takes the selected history $h$. This history will be used to find and plot the previously stored images of the matrix and the graph. Also, the variable $IsInHist$ specifies that the program is in the ``history mode'' which is important if the user selects a vertex different from the previous order. In this case, the program overwrites the current history and saves new images.
 
 \begin{figure}
 \centering
@@ -3318,13 +3317,13 @@ The second procedure, \textsc{HistClicked}, takes the selected history $h$. This
 \label{f:alg}
 \end{figure}
 
-\mbox{EXPLAIN} combines several Python packages to implement these algorithms. More precisely, the graph data structure is handled by \textit{NetworkX} \cite{networkx2008}. It provides different operations like creation and deletion of vertices and edges. It also allows the programmer to access typical graph information such as the neighbor vertices and the number of vertices. Using this library together with \textit{matplotlib} \cite{matplotlib2007} covers the different aspects of visualization. Different layouts of graphs as well as the properties of vertices and edges are produced by this library. The matrix manipulation and visualization is handled by \textit{Scipy}~\cite{scipy2001}, specifically the construction and the visual layout of sparse matrices.
+\mbox{EXPLAIN} combines several Python packages to implement these algorithms. More precisely, the graph data structure is handled by \textit{NetworkX} \cite{networkx2008}. It provides different operations like creation and deletion of vertices and edges. It also allows the programmer to access characteristic graph information such as the neighbor vertices and the number of vertices. Using this library together with \textit{matplotlib} \cite{matplotlib2007} covers the different aspects of visualization. This library produces different layouts of graphs as well as the properties of vertices and edges. The matrix manipulation and visualization are handled by \textit{Scipy}~\cite{scipy2001}, specifically the construction and the visual layout of sparse matrices.
 
 The conversion from the standalone to the online version needs the Python library \textit{Mod\_python}~\cite{modpython2013}. It comes from the \textit{Apache} project including the Python interpreter in the given Apache web server. Using this library helps to keep the previous program structure as much as possible.
 
-The library \textit{Mod\_python} assists to implement folder management, user interaction, cookie handling, and the web interface. Specifically, the \textit{Mod\_python} modules like \textit{Apache}, \textit{util}, and \textit{PSession} are used to migrate the previous version of \mbox{EXPLAIN} to a web version. As already mentioned, the Python interpreter is embedded into the web server by the \textit{Mod\_python} module. As a result, the Python code can be run as a web application.
+The library \textit{Mod\_python} assists to implement folder management, user interaction, cookie handling, and the web interface. Specifically, the \textit{Mod\_python} modules like \textit{Apache}, \textit{util}, and \textit{PSession} are used to migrate the previous version of \mbox{EXPLAIN} to a web version. As already mentioned, the Python interpreter is embedded into the web server by the \textit{Mod\_python} module.
 
-Previously, an event was handled by a local Python function but, in the new version, there are two sides: server and client. The web browser at client side shows HTML websites with embedded Javascript source code while the server side is written in Python. Since the buttons are HTML buttons and the events are Javascript functions, a form is submitted to the Python server by a Javascript function containing the execution request and parameters to the related Python function. Then, the called Python function writes the dynamically generated result as an HTML string to the Apache request. The server sends back the HTML string and the client shows the string as a web page.
+In the standalone version, an event was handled by a local Python function but, in the new version, there are two sides: server and client. The web browser at client side shows HTML websites with embedded Javascript source code while the server side is a Python server. Since the buttons are HTML buttons and the events are Javascript functions, a Javascript function submit a form the server containing the execution request and parameters to the related Python function. Then, the called Python function writes the dynamically generated result as an HTML string to the Apache request. The server sends back the HTML string and the client shows the string as a web page.
 
 \subsection{EXPLAIN 2.0}
 \label{s.impl.explain2}
@@ -3344,7 +3343,7 @@ an overhead of the server management for \textit{Mod\_python} is always added to
 In the new implementation, we replaced all python parts with the Javascript code.
 We decided for the Javascript library D3 (Data-Driven Documents)
 because of its power of control and visualization.
-The data structure of graph is an adjacency list.
+We selected the data structure of adjacency list for graph.
 We used the object structure of the Javascript which helps us to have another
 properties also in the graph. Figure~\ref{f.graph-ds} shown an illustration
 of the data structure. There is an array representing the vertices.
@@ -3365,7 +3364,7 @@ in the implementation of Breadth-First Search (BFS).
 
 Another important aspect of our design is the suitable connection of the
 model and view. A practical approach enables the direct change in view while keeps the
-separation of the view and model. So, we decided to have unique ids for the view of
+separation of the view and model. So, we decided to have unique ids for
 edges and vertices. The unique ids for vertices are the concatenation of the
 string “ver” and the actual id of the vertex. Similarly, the unique ids for edges are
 defined as the concatenation of the four strings “edge”, the source vertex, “-“,
@@ -3375,7 +3374,7 @@ is accessible through a unique id combining the strings “cell”, the row inde
 while inserting the string “nnz” instead of the string “cell”.
 
 The previous discussion of the view access enables us to select the
-specific element and change its behaviour and properties. For example, the following
+specific element and change its behavior and properties. For example, the following
 code would change the color of the vertex with the id~\textit{i} and the color
 of a matrix cell,
 \begin{lstlisting}
@@ -3383,28 +3382,26 @@ d3.select("#ver"+i).set_color(red);
 d3.select("#cell"+i+"-"+j).set_color(blue);
 \end{lstlisting}
 
-There are two important aspects of implementation which we discuss here.
-An aspect of implementation is the real connection of an edge to its
-source and target vertices. It means that the locations of the source and target
-vertices are read directly from the vertex component in view. This aspect prevents
-to repaint the view several times.
-Another aspect is to paint the components in the correct order. So, no edges
-are displayed above vertices, or no cells of matrix are shown above the nonzeros.
-We did this by using the group component of D3 in which it can be managed
-to be always drawn in the given order.
+There are two important aspects of implementation: the real connection 
+of an edge to its source and target vertices as well as 
+the order of painting components.
+If we read the locations of the source and target from the painted vertex component
+we would prevent to repaint the view several times.
+The correct order of painting components is important to to prevent 
+edges over vertices or cell of matrices over the nonzeros.
+We draw the components in order by using the grouping concepts of D3.
 
 After the first design of the software, we then considered the actual interface
 for the developer. Since we do not need all the functionality which the
-programming language provides; we decided to have a new script language which
-has only functionality regarding the matrix and the graph and their
-connections. Also, this new script language does everything by simple functions
-such that each function does a concrete action on the graph or matrix.
+programming language provides, we design a new script language which
+has particular functions for working with matrix and graph.
+
 Table~\ref{command-table} shows a list of functions which are available
 now in EXPLAIN 2.0.
 \begin{table}
 \begin{tabular}{ | c | c |}
 \hline
-neighbors($l_v$) & returns the neighbours of the vertex $l_v$ \\ \hline
+neighbors($l_v$) & returns the neighbors of the vertex $l_v$ \\ \hline
 color\_vertex($v$,$c$) & colors the vertex $v$ with the color $c$ \\\hline
 color\_column($i$,$c$) & colors the column $i$ with the color $c$ \\\hline
 color\_row($j$,$c$) & colors the row $j$ with the color $c$ \\\hline
@@ -3444,9 +3441,9 @@ remains almost the same. Additionally, we extend an interactive educational modu
 Although there is much research, many dimensions of the problem can be improved. Most of the works toward mixing AD and preconditioning looks at solutions for a general matrix. However, the study of Hessian matrix and its connection to fill-in of Cholesky factorization might offer more degree of freedom in coloring.
 
 On the other hand, we considered only the ILU preconditioning. What if we replace ILU with the approximate inverse preconditioning (AINV)~\cite{ainv98} which produces no fill-in. There is a need to review the AINV algorithms. An algorithm for this technique takes a pattern for preconditioner $M$ as input and gradually updates this starting pattern and the nonzero values.
-So we can do first a sparsification as usual which leads to $R_p$ and take $R_i + R_p$ as starting pattern for $M$. Then, we would have two separate problems of coloring and AINV preconditioning. 
+So we can do first a sparsification as usual which leads to $R_p$ and take $R_i + R_p$ as starting pattern for $M$. Then, we would have two separate problems of coloring and AINV preconditioning.
 So, we color the graph given two input matrices $R_i$ and $M$.
-It is a different coloring problem than the usual partial coloring problem. 
+It is a different coloring problem than the usual partial coloring problem.
 However, this seems to be the same as partial coloring with a larger set of required elements.
 When applying AINV to an initial $M$, is there any effect on $M$? For
 instance, does the pattern of $M$ vary? How does it vary? Does the
@@ -3458,7 +3455,7 @@ would then be similar to the fill-in when using ILU.) Need to look
 at AINV algorithms more closely.
 What if we transform program for function $f(x)$ not only to a program for $\frac{df}{dx}$ (traditional AD), but also to another program for matrix-vector product $Mx$ where $M$ is an AINV preconditioner for the Jacobian $\frac{df}{dx}$.
 
-Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph model as before and show it has advantages in the unidirectional coloring. A first improvement is to search for the equivalent approach in the bidirectional coloring and partial coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
+Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph model as before and show it has advantages in the unidirectional coloring. A first improvement is to search for the similar approach in the bidirectional coloring and partial coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
 
@@ -3467,15 +3464,15 @@ Another future work is to consider blocks of submatrices for coloring instead of
 \chapter{NP-completeness of Partial Coloring Restricted to Diagonals}
 \label{app.npcomp}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In general we know that a graph coloring is an NP-complete problem 
+In general, we know that a graph coloring is an NP-complete problem
 (see \cite{np-complet-graph-coloring})).
 As \defref{d:cig} shows, a distance-2 coloring on the column-intersection graph
-is actually a classical graph coloring problem. So it is also NP-complete.
-We also define a similar graph model for the partial coloring problem in 
-\cite{2016:01}. In this transformation from the matrix and graph, we encode
-the required elements also into the graph. It means we do not have any special 
-edges later in graph.
-Since the construction of this graph model is done in 
+is a classical graph coloring problem. So it is also NP-complete.
+We also define a similar graph model for the partial coloring problem in
+\cite{2016:01}. In this transformation from the matrix and graph, we encode also 
+required elements. It means we do not have any special
+edges later in the graph.
+Since the construction of this graph model is done in
 the polynomial time, this partial coloring problem remains NP-complete too.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3483,8 +3480,8 @@ the polynomial time, this partial coloring problem remains NP-complete too.
 \label{app.source}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 A sample source code from EXPLAIN computes the column compression algorithm.
-It consists of three functions for reference, global variablesm, and the acutal algorithm
-written only for one step of the computation. 
+It consists of three functions for reference, global variables, and the actual algorithm
+written only for one step of the computation.
 \begin{lstlisting}
 var reference_cc = function () {
     reference_text= "H. M. Buecker, M. A. Rostami, M. Luelfesmann : " +
