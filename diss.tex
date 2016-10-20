@@ -1,4 +1,4 @@
-\documentclass[11pt, twoside,a4paper]{book}
+\documentclass[12pt, twoside,a4paper]{book}
 \usepackage{doc}
 \usepackage{a4wide}
 \usepackage{makeidx}
@@ -1185,6 +1185,7 @@ for $v\in V_c$ with $\Phi(v)=0$
     $I_v=\{u\in V_c: u\notin N_2(v)\}$
     $M = \{ (i,Nreq(i,v)): i\in I_v\}$
     $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
+    $\Phi(maxs[0]) = \Phi(v)$
 consistent_coloring(G)
 \end{lstlisting}
 \end{figure}
@@ -1275,8 +1276,8 @@ for $v\in V_c$ with $\Phi(v)=0$
     $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
     $M_2 = \{ (i,req(i)): i\in maxs \}$
     $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
-    if(consistent($G$,$mins[0]$,$\Phi(v)$))
-      $\Phi(mins[0]) = \Phi(v)$
+    $\Phi(mins[0]) = \Phi(v)$
+consistent_coloring(G)
 \end{lstlisting}
 \end{figure}
 
@@ -1358,11 +1359,10 @@ for $v\in V_c$ with $\Phi(v)=0$
     $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
     $M_2 = \{ (i,req(i)): i\in maxs \}$
     $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
-    if(consistent($G$,$mins[0]$,$\Phi(v)$))
-      $\Phi(mins[0]) = \Phi(v)$
+    $\Phi(mins[0]) = \Phi(v)$
     for $i\in\{0,1,...,\alpha\}$
-      if(consistent($G$,$mins[i]$,$\Phi(v)$))
         $\Phi(mins[i]) = \Phi(v)$
+consistent_coloring(G)
 \end{lstlisting}
 \end{figure}
 
@@ -1901,6 +1901,64 @@ in the set $L$. Each fill path in the set $L$ which all its edges except the giv
 are required edges would later generate a fillin. So, it is more efficient not to add the 
 nonrequired edge in this case.
 
+As we discussed, for a fixed ordering of vertices, 
+a fill path from the vertex $v_i$ to $v_j$ is a path $v_i,...,v_k,...,v_j$
+in which all intermediate vertices has smaller indices than $i$ and $k$.
+Given a nonrequired edge $t=(r_i,c_j)$, we define the set of all fill paths starting 
+from $c_i$ passing the edge $t$ with the size of $k$ as 
+$pr_k^t = \{\{ r_i,c_j,...,c_a\},...,\{ r_i,c_j,...,c_b\}\}$.
+Equivalently, we define the set of all fill paths ending to the vertex $c_j$
+passing the edge $t$ with the size of $k$ as 
+$pl_k^t = \{ \{c_d,...,r_i,c_j\},..., \{c_e,...,r_i,c_j\}\}$.
+With these defintions, \coderef{code.new.d2.add.fp} is a coloring heuristic 
+for distance-$2$ coloring which checks if a survived nonzero element can be an 
+additionally required element.
+\begin{figure}
+\begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
+predicting if a survived nonrequired elements can be an additionally required element.,
+label=code.new.d2.add.fp,mathescape]
+function d2_color_fillpath($G=(V_r\cup V_c,E)$,$E_i\subset E$, $k$)
+for $v\in V_c$
+  $\Phi(v)=-1$
+  $forbiddenColors[v] = 0$
+
+for $v\in V_c$ with $\Phi(v)=0$
+  $forbiddenColors[0] = v$
+  if $\exists n\in N_2(v): (v,n)\in E_i$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
+
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $M = \{ (i,Nreq(i,v)): i\in I_v\}$
+    $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
+    for $t\in \{(v,u): u\in maxs\}$
+      if $pr_k^t = \emptyset$ and $pl_k^t = \emptyset$
+        $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+consistent_coloring(G)
+\end{lstlisting}
+\end{figure}
+Table~\ref{mats.add.gr.vs.nreq.vs.fillpath} shows the comparison between the number of additionally required elements
+which is computed by three algorithms \textit{d2\_color},
+ \textit{d2\_color\_nreq}, and \textit{d2\_color\_fillpath}. We generated more additionally required elements
+by considering this new method.
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Name & \textit{d2\_color}& \textit{d2\_color\_nreq} & \textit{d2\_color\_fillpath}\\\hline
+\textit{steam1} & $64$ & $630$ & $450$ \\\hline
+\textit{steam2} & $240$ & $1400$ & $1466$ \\\hline
+\textit{nos3} & $1106$ & $4136$ & $4145$\\\hline
+\textit{ex33} & $4920$ & $5470$ & $5534$\\\hline
+\textit{crystm01} & $10338$ & $28318$ & $29934$\\\hline
+\end{tabular}
+\caption{The comparison between the number of additionally required
+elements compted by different algorithms .
+The block size is $10$ and the ILU level parameter is $2$.}
+\label{mats.add.gr.vs.nreq.vs.fillpath}
+\end{table}
 
 \section{Partial Coloring Restricted to Diagonal Elements}
 So far, we consider the partial Jacobian computation with an arbitrary
