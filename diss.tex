@@ -1150,22 +1150,20 @@ since the fourth and second columns can not be compressed.
 \begin{figure}
 \begin{lstlisting}[
 label=consistency,
-caption=A function checking the consistency of the coloring when
-the vertex $v$ is supposed to be colored by the color $c$.
+caption=A function checking the consistency of the coloring.
 ,mathescape]
-function consistent($G$, $v$, $c$)
+function consistent_coloring($G$)
+for $v \in V_c$
   for $n \in N_2(v)$
-    if($\Phi(n) == c$)
-      return false
-  return true
+    if($\Phi(n) == \Phi(v)$)
+      $\Phi(n) = $new_color
 \end{lstlisting}
 \end{figure}
 
-Considering this problem, we need to check the consistency of adding colors in
-any part of algorithm. Therefore, we define the function in \coderef{consistency} in which
-$G_b$, $v$, and $c$ are the given bipartite graph, the vertex we want to color
-and the given color, respectively.
-This function checks if the vertex $v$ can be colored with the color $c$.
+Considering this problem, we need to check the consistency of coloring
+at the end of algorihtm. Therefore, we define the function in \coderef{consistency} in which
+we check if the color of each vertex $v$ is different than its neighbours. 
+If it is not the case we color that neighbour with a new color which is not used so far.
 This means that \coderef{code.new.d2} should be rewritten as \coderef{code.new.d2.consistent},
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
@@ -1187,8 +1185,7 @@ for $v\in V_c$ with $\Phi(v)=0$
     $I_v=\{u\in V_c: u\notin N_2(v)\}$
     $M = \{ (i,Nreq(i,v)): i\in I_v\}$
     $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
-    if(consistent($G$,$maxs[0]$,$\Phi(v)$))
-      $\Phi(maxs[0]) = \Phi(v)$
+consistent_coloring(G)
 \end{lstlisting}
 \end{figure}
 
