@@ -862,8 +862,56 @@ from the Florida sparse matrix collection throughout this thesis.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Finding Better Coloring}
-\label{s.heuristic}
+\label{s.better.coloring}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Since finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589},
+different heuristics are employed to obtain an estimation of minimal coloring.
+The greedy coloring is a widely used coloring which has a low computational complexity
+and computes a reasonable coloring~\cite{spaa14}.
+The partial greedy coloring algorithm for a bipartite graph restricted to $E_i$
+is given in \coderef{code.greedy}. The idea is to to iterate over all vertices
+and check the color of distance-$2$ neighbours, the computational complexity
+of this algorithm is $\mathcal{O}(n + \Delta)$ in which $n$
+and $\Delta$ are the number of vertices and the maximum vertex
+degree, respectively.
+
+\begin{figure}
+\begin{lstlisting}[caption=The greedy algorithm for
+the distance-$2$ coloring for columns in which $N_2(v)$ shows
+the distance-$2$ neighbours of $v$.
+,label=code.greedy,mathescape]
+function d2_color($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+for $v\in V_c$
+  $\Phi(v)=-1$
+  $forbiddenColors[v] = 0$
+for $v\in V_c$
+  if $\exists n\in N_2(v): (v,n)\in E_i$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+\end{lstlisting}
+\end{figure}
+
+In this coloring, the assumption is that vertex,
+equivalently each column, is available and colored one at a time.
+Therefore, the vertex ordering plays an important role in the greedy algorithm.
+Hence, there are many publications on how to choose
+a suitable ordering heuristics for a serial or parallel version of
+coloring~\cite{ordering1,ordering2,ordering3}.
+Various orderings are inquired for coloring heuristics
+throughout years. Here is some orderings for coloring,
+\begin{itemize}
+\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with the minimum degree in each step.
+\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
+\item Saturation-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
+$V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbors of $v$.
+\item Smallest last ordering (SLO)~\cite{ordering1} makes a set of vertices ${v_1,v_2,...,v_n}$ in a so-called smallest-last
+order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices $v_1,v_2,...,v_i$ for all $i$.
+\end{itemize}
+The computation of this ordering can have a higher complexity than $\mathcal{O}(n+m)$ or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity.
+These various orderings can be used to improve the results of coloring.
+
 In~\secref{s.exact}, we present an algorithm which compute the exact coloring
 on small subgraphs first. Then, it makes a coloring for the actual graphs
 based on these small colorings. We build an example which shows that this idea
@@ -923,8 +971,9 @@ follows.
 \caption{Comparison of colorings}
 \label{f.coloring.compared}
 \end{figure}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{A heuristic based on independent set}
+\subsection{A Heuristic from Independent Sets}
 \label{s.heuristic.indset}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}
@@ -936,16 +985,16 @@ for $v\in V_c$
   $forbiddenColors[v] = 0$
 
 for $v\in V_c$ with $\Phi(v)=0$
-  $forbiddenColors[0] = v$
-  if $\exists n\in N_2(v): (v,n)\in E_i$
-    for $n\in N_2(v)$
-      if $\Phi(n) \neq 0$
-        $forbiddenColors[\Phi(n)] = v$
+  if $\Phi(v) -1$
+    $forbiddenColors[0] = v$
+    if $\exists n\in N_2(v): (v,n)\in E_i$
+      for $n\in N_2(v)$
+        if $\Phi(n) \neq 0$
+          $forbiddenColors[\Phi(n)] = v$
 
-    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-
-    $I_v=\{u\in V_c: u\notin N_2(v)\}$
-    $\Phi(I_v[random]) = \Phi(v)$
+      $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+      $I_v=\{u\in V_c: u\notin N_2(v)\}$
+      $\Phi(I_v) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
 We introduce a new heuristic coloring to reduce the number of colors compared to
@@ -960,115 +1009,30 @@ The time complexity of this new heuristic is estimated as follow.
 We need to go through all vertices
 and find the maximum independent set containing each vertex.
 Then, we consider one of the elements to be colored with the color of $v$.
-
- $\mathcal{O}(n^2)$.
-However, the computation takes shorter actually since we color two vertices in each step.
-
-Although we color a vertex $v$ and another vertex $u\in I_v$
-it does not mean that the coloring is valid.
-Given the following example,
-\begin{equation}
-\left(\begin{array}{cccc}
-r & 0 & 0 & 0  \\
-0 & * & r & 0 \\
-0 & * & * & 0 \\
-0 & r & 0 & r \\
-\end{array}\right)
-\label{twocolorings2}
-\end{equation}
-\coderef{code.new.d2} colors the first and second columns with the same color
-in the first step. Then, the third column is colored with the same color as the
-first column since there is no conflict. The fourth column gets the color of
-the third column regarding the algorithm. However, this is not a valid coloring
-since the fourth and second columns can not be compressed.
-\begin{figure}
-\begin{lstlisting}[
-label=consistency,
-caption=A function checking the consistency of the coloring when
-the vertex $v$ is supposed to be colored by the color $c$.
-,mathescape]
-function consistent($G$, $v$, $c$)
-  for $n \in N_2(v)$
-    if($\Phi(n) == c$)
-      return false
-  return true
-\end{lstlisting}
-\end{figure}
-
-Considering this problem, we need to check the consistency of adding colors in
-any part of algorithm. Therefore, we define the function in \coderef{consistency} in which
-$G_b$, $v$, and $c$ are the given bipartite graph, the vertex we want to color
-and the given color, respectively.
-This function checks if the vertex $v$ can be colored with the color $c$.
-This means that \coderef{code.new.d2} should be rewritten as \coderef{code.new.d2.consistent},
-\begin{figure}
-\begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
-considering the nonrequired elements and checking the consistency.,
-label=code.new.d2.consistent,mathescape]
-function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
-for $v\in V_c$
-  $\Phi(v)=-1$
-  $forbiddenColors[v] = 0$
-
-for $v\in V_c$ with $\Phi(v)=0$
-  $forbiddenColors[0] = v$
-  if $\exists n\in N_2(v): (v,n)\in E_i$
-    for $n\in N_2(v)$
-      if $\Phi(n) \neq 0$
-        $forbiddenColors[\Phi(n)] = v$
-
-    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-    $I_v=\{u\in V_c: u\notin N_2(v)\}$
-    $M = \{ (i,Nreq(i,v)): i\in I_v\}$
-    $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
-    if(consistent($G$,$maxs[0]$,$\Phi(v)$))
-      $\Phi(maxs[0]) = \Phi(v)$
-\end{lstlisting}
-\end{figure}
-
-
-
-\begin{figure}
-\begin{lstlisting}[
-label=consistency,
-caption=A function checking the consistency of the coloring when
-the vertex $v$ is supposed to be colored by the color $c$.
-,mathescape]
-function consistent($G$, $v$, $c$)
-  for $n \in N_2(v)$
-    if($\Phi(n) == c$)
-      return false
-  return true
-\end{lstlisting}
-\end{figure}
-
-
-\begin{figure}
-\begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
-considering the nonrequired elements and checking the consistency.,
-label=code.new.d2.consistent,mathescape]
-function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
-for $v\in V_c$
-  $\Phi(v)=-1$
-  $forbiddenColors[v] = 0$
-
-for $v\in V_c$ with $\Phi(v)=0$
-  $forbiddenColors[0] = v$
-  if $\exists n\in N_2(v): (v,n)\in E_i$
-    for $n\in N_2(v)$
-      if $\Phi(n) \neq 0$
-        $forbiddenColors[\Phi(n)] = v$
-
-    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-    $I_v=\{u\in V_c: u\notin N_2(v)\}$
-    $M = \{ (i,Nreq(i,v)): i\in I_v\}$
-    $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
-    if(consistent($G$,$maxs[0]$,$\Phi(v)$))
-      $\Phi(maxs[0]) = \Phi(v)$
-\end{lstlisting}
-\end{figure}
-
-
+The computational complexity is clearly $\mathcal{O}(n^2)$.
+The results in Table~\ref{greedy.vs.ind} shows that this coloring gives us smaller number of colors
+in all matrices which we tested. 
+In the following sections we look at variants of this algorithm to generate more potentially and
+additionally required elements.
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+Name & $\chi_{greedy}$ & $\chi_{ind}$\\\hline
+\textit{ex7} & $71$ & $67$ \\\hline
+\textit{ex33} & $23$ & $21$ \\\hline
+\textit{cavity16} & $56$ & $53$\\\hline
+\textit{rajat01} & $50$ & $47$\\\hline
+\textit{gyro\_m} & $34$ & $31$ \\\hline
+\textit{cage10} & $42$ & $40$\\\hline
+\end{tabular}
+\caption{
+The comparison between number of colors computed by the greedy algorithm and 
+the indpendent-set algorithm.
+We use the bock size $30$ and the natural ordering in both heuristics.
+}
+\label{greedy.vs.ind}
+\end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Maximizing Potentially Required Elements}
 \label{s.heuristic}
@@ -1117,53 +1081,6 @@ weighting coefficients, $C$ is the coloring number, and $N$ is the
 number of survived nonrequired elements?
 Here, we introduce a new heuristic which increases the number of survived nonrequired elements such that the number of colors remains almost the same.
 \subsection{Distance-$2$ coloring}
-Since finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589},
-different heuristics are employed to obtain an estimation of minimal coloring.
-The greedy coloring is a widely used coloring which has a low computational complexity
-and computes a reasonable coloring~\cite{spaa14}.
-The partial greedy coloring algorithm for a bipartite graph restricted to $E_i$
-is given in \coderef{code.greedy}. The idea is to to iterate over all vertices
-and check the color of distance-$2$ neighbours, the computational complexity
-of this algorithm is $\mathcal{O}(n + \Delta)$ in which $n$
-and $\Delta$ are the number of vertices and the maximum vertex
-degree, respectively.
-
-\begin{figure}
-\begin{lstlisting}[caption=The greedy algorithm for
-the distance-$2$ coloring for columns in which $N_2(v)$ shows
-the distance-$2$ neighbours of $v$.
-,label=code.greedy,mathescape]
-function d2_color($G=(V_r\cup V_c,E)$,$E_i\subset E$)
-for $v\in V_c$
-  $\Phi(v)=-1$
-  $forbiddenColors[v] = 0$
-for $v\in V_c$
-  if $\exists n\in N_2(v): (v,n)\in E_i$
-    for $n\in N_2(v)$
-      if $\Phi(n) \neq 0$
-        $forbiddenColors[\Phi(n)] = v$
-    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-\end{lstlisting}
-\end{figure}
-
-In this coloring, the assumption is that vertex,
-equivalently each column, is available and colored one at a time.
-Therefore, the vertex ordering plays an important role in the greedy algorithm.
-Hence, there are many publications on how to choose
-a suitable ordering heuristics for a serial or parallel version of
-coloring~\cite{ordering1,ordering2,ordering3}.
-Various orderings are inquired for coloring heuristics
-throughout years. Here is some orderings for coloring,
-\begin{itemize}
-\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with the minimum degree in each step.
-\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
-\item Saturation-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it chooses the vertex with the maximum saturation degree in
-$V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbors of $v$.
-\item Smallest last ordering (SLO)~\cite{ordering1} makes a set of vertices ${v_1,v_2,...,v_n}$ in a so-called smallest-last
-order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices $v_1,v_2,...,v_i$ for all $i$.
-\end{itemize}
-The computation of this ordering can have a higher complexity than $\mathcal{O}(n+m)$ or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity.
-These various orderings can be used to improve the results of coloring.
 
 Our goal here is to increase the number of potentially required elements.
 A potential required element is selected from the nonrequired elements such that
@@ -1178,7 +1095,7 @@ If the input parameters of this function are vertices,
 then it considers the corresponding row and column.
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
-considering the nonrequired elements.,label=code.new.d2,mathescape]
+considering the nonrequired elements.,label=code.new.d2.nreq,mathescape]
 function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
 for $v\in V_c$
   $\Phi(v)=-1$
@@ -1198,16 +1115,11 @@ for $v\in V_c$ with $\Phi(v)=0$
     $\Phi(maxs[0]) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
-We introduce a new heuristic coloring to handle the survived nonrequired nonzeros.
-Our approach in this new heuristic coloring algorithm is based on finding an independent set.
-A subset of the vertices $S\subset V$ is
-called an independent set~\cite{bondy2008graph} if no edge between any of these vertices exists,
-$$\forall u,v\in S: (u,v)\notin E.$$
-For a given vertex $v$, we show an independent set containing $v$ by $I_v$.
-Now, we compute $Nreq(u,v)$ for each element $u\in I_v$
+We modify the heuristic presented in \coderef{code.new.d2} as follows.
+We compute $Nreq(u,v)$ for each element $u\in I_v$
 and color a vertex $w$ from the set $I_v$ with the maximum value of $Nreq(v,w)$
 beside coloring the vertex $v$ in each step and with the same color as $w$.
-\coderef{code.new.d2} represents this approach.
+\coderef{code.new.d2.nreq} represents this approach.
 The time complexity of this new heuristic is estimated as follow.
 We need to go through all vertices
 and find the maximum independent set containing each vertex.
