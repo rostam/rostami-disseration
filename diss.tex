@@ -926,18 +926,24 @@ The best exact coloring is proposed in~\cite{bjorklund2009}.
 The complexity is still high enough that we can not compute the coloring
 of large matrices with this algorithm.
 However, if we divide the big graph into some small instances,
-we can use the exact coloring in these situations and build a valid coloring
+we can use the exact coloring in small graphs and build a valid coloring
 for the original large graph.
-The idea is to find a vertex separator like in the nested dissection, color
-the remaining connected components, and color the separator such that putting
-all back together does not make the coloring invalid.
+
+More clearly, these are the steps which we follow,
+\begin{itemize}
+\item find a vertex separator (for examply the nested dissection)
+\item remove the vertex separator
+\item find the exact coloring of the remaining components separtely
+\item color the subgraph of vertex separator in the original graph considering
+the computed exact coloring in the remaining components 
+\end{itemize}
+
 A question is if it gives a better coloring at all since the coloring of vertex separator
 can lead us to a worse coloring.
 We build an example in which we found a better coloring by the second strategy.
-
 We first build a graph and its heuristic coloring which generates a worse coloring
 than an exact coloring as shown in~\figref{f.coloring.graph} (Left). If we follow
-the numbering of the vertices as the ordering for a greedy coloring, we would need
+the numbering of the vertices as the ordering for a greedy coloring, we need
 at least $4$ colors while the exact coloring needs only $3$ colors.
 Now, we make a copy of this graph and add an extra vertex $15$ as in
 ~\figref{f.coloring.graph} (Right). The vertex $15$ is actually the only element of
@@ -947,9 +953,12 @@ In this new graph, the greedy coloring needs at least $5$ colors
 as in~\figref{f.coloring.compared} (Left).
 
 Suppose we color first the components after removing the vertex $15$ separately with
-an exact coloring which needs only $3$ colors. Now, a bad implementation of the
+an exact coloring which needs only $3$ colors. Now, even a bad implementation of the
 new idea would need $4$ colors, i.e. one colors fewer than the greedy algorithm.
 A good implementation color the graph only with $3$ colors.
+The construction of given example can go further by create several copies of 
+this graph, make the separator part a complete graph, and connect the separator vertices
+with same fashion to each copy.
 \begin{figure}
 \centering
 \includegraphics[width=0.18\linewidth]{coloring0}
@@ -968,9 +977,14 @@ follows.
 \includegraphics[width=0.48\linewidth]{coloring2}
 \hfill
 \includegraphics[width=0.48\linewidth]{coloring3}
-\caption{Comparison of colorings}
+\caption{Comparison of colorings by a greedy coloring and
+by the new suggested coloring.}
 \label{f.coloring.compared}
 \end{figure}
+
+Although this algorithm seems convincing, the computation of nested dissection is still
+a tricky part. Hence, we present another heuristic which is more useful for
+the following sections. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{A Heuristic from Independent Sets}
@@ -998,8 +1012,8 @@ for $v\in V_c$ with $\Phi(v)=0$
       $\Phi(I_v^{'}) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
-We introduce a new heuristic coloring which generates the at leas
-the greedy algorithm.
+We introduce a new heuristic coloring which has the number of colors at least as same as
+the number of colors in the greedy algorithm.
 Our approach in this new heuristic coloring algorithm is based on finding an independent set.
 A subset of the vertices $S\subset V$ is
 called an independent set~\cite{bondy2008graph} if no edge between any of these vertices exists,
@@ -1084,7 +1098,6 @@ weighting coefficients, $C$ is the coloring number, and $N$ is the
 number of survived nonrequired elements?
 Here, we introduce a new heuristic which increases the number of survived nonrequired elements such that the number of colors remains almost the same.
 \subsection{Distance-$2$ coloring}
-
 Our goal here is to increase the number of potentially required elements.
 A potential required element is selected from the nonrequired elements such that
 the number of colors does not increase.
