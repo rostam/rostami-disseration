@@ -846,6 +846,7 @@ Name & Size & Nonzeros & Structure\\\hline
 \textit{crystm01} &$4875\times 4875$ & $55107$& symmetric\\\hline
 \textit{rajat01} & $6833\times 6833$ & $43250$ & unsymmetric\\\hline
 \textit{gyro\_m} & $17361\times 17361$ & $178896$ & symmetric\\\hline
+\textit{ford2} & $100196\times 100196$ & $544688$ & symmetric \\\hline
 \textit{cage3} & $5\times 5$ & $19$ & unsymmetric\\\hline
 \textit{cage4} & $9\times 9$ & $49$ & unsymmetric\\\hline
 \textit{cage5} & $37\times 37$ & $233$ & unsymmetric\\\hline
@@ -864,8 +865,15 @@ from the Florida sparse matrix collection throughout this thesis.}
 \section{Searching for Alternative Colorings}
 \label{s.better.coloring}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Since finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589},
-different heuristics are employed to obtain an estimation of minimal coloring.
+Findin an exact coloring is a known NP-complete problem~\cite{SPINRAD198589}.
+Here, we search for the better methods for coloring.
+The best exact coloring is proposed in~\cite{bjorklund2009}.
+The complexity is still high enough that we can not compute the coloring
+of large matrices with this algorithm. In \appref{exactcol}, we discussed
+first ideas how to divide a big graph into small instances can be an efficient
+coloring. Here, our focus is to find some coloring heuristics
+to obtain an estimation of minimal coloring.
+
 The greedy coloring is a widely used coloring which has a low computational complexity
 and computes a reasonable coloring~\cite{spaa14}.
 The partial greedy coloring algorithm for a bipartite graph restricted to $E_i$
@@ -912,79 +920,10 @@ order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices 
 The computation of this ordering can have a higher complexity than $\mathcal{O}(n+m)$ or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity.
 These various orderings can be used to improve the results of coloring.
 
-In~\secref{s.exact}, we present an algorithm which computes the exact coloring
-on small subgraphs first. Then, it makes a coloring for the actual graphs
-based on these small colorings. We build an example which shows that this idea
-works.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Exact Coloring of Small Subgraphs}
-\label{s.exact}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Here, we search for the better methods for coloring.
-The best exact coloring is proposed in~\cite{bjorklund2009}.
-The complexity is still high enough that we can not compute the coloring
-of large matrices with this algorithm.
-However, if we divide the big graph into some small instances,
-we can use the exact coloring in small graphs and build a valid coloring
-for the original large graph.
-
-More clearly, these are the steps which we follow,
-\begin{itemize}
-\item find a vertex separator (for examply the nested dissection)
-\item remove the vertex separator
-\item find the exact coloring of the remaining components separtely
-\item color the subgraph of vertex separator in the original graph considering
-the computed exact coloring in the remaining components 
-\end{itemize}
-
-A question is if it gives a better coloring at all since the coloring of vertex separator
-can lead us to a worse coloring.
-We build an example in which we found a better coloring by the second strategy.
-We first build a graph and its heuristic coloring which generates a worse coloring
-than an exact coloring as shown in~\figref{f.coloring.graph} (Left). If we follow
-the numbering of the vertices as the ordering for a greedy coloring, we need
-at least $4$ colors while the exact coloring needs only $3$ colors.
-Now, we make a copy of this graph and add an extra vertex $15$ as in
-~\figref{f.coloring.graph} (Right). The vertex $15$ is actually the only element of
-a vertex separator for the new graph. We added the incident edges of $15$ such that
-the resulting graph becomes a worst case for the greedy coloring here.
-In this new graph, the greedy coloring needs at least $5$ colors
-as in~\figref{f.coloring.compared} (Left).
-
-Suppose we color first the components after removing the vertex $15$ separately with
-an exact coloring which needs only $3$ colors. Now, even a bad implementation of the
-new idea would need $4$ colors, i.e. one colors fewer than the greedy algorithm.
-A good implementation color the graph only with $3$ colors.
-The construction of given example can go further by create several copies of 
-this graph, make the separator part a complete graph, and connect the separator vertices
-with same fashion to each copy.
-\begin{figure}
-\centering
-\includegraphics[width=0.18\linewidth]{coloring0}
-\hfill
-\includegraphics[width=0.48\linewidth]{coloring1}
-\caption{
-An example of a graph in which the division into two parts can be seen directly.
-The numbering of the graph vertices are the ordering that the greedy coloring
-follows.
-}
-\label{f.coloring.graph}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.48\linewidth]{coloring2}
-\hfill
-\includegraphics[width=0.48\linewidth]{coloring3}
-\caption{Comparison of colorings by a greedy coloring and
-by the new suggested coloring.}
-\label{f.coloring.compared}
-\end{figure}
-
-Although this algorithm seems convincing, the computation of nested dissection is still
-a tricky part. Hence, we present another heuristic which is more useful for
-the following sections. 
+%In~\secref{s.exact}, we present an algorithm which computes the exact coloring
+%on small subgraphs first. Then, it makes a coloring for the actual graphs
+%based on these small colorings. We build an example which shows that this idea
+%works.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{A Heuristic from Independent Sets}
@@ -1042,6 +981,7 @@ Name & $\chi_{greedy}$ & $\chi_{ind}$\\\hline
 \textit{rajat01} & $50$ & $50$\\\hline
 \textit{gyro\_m} & $34$ & $34$ \\\hline
 \textit{cage10} & $42$ & $42$\\\hline
+\textit{ford2} & $33$ & $33$  \\\hline
 \end{tabular}
 \caption{
 The comparison between number of colors computed by the greedy algorithm and
@@ -3525,6 +3465,71 @@ var column_compression = function() {
     }
 };
 \end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Exact Coloring of Small Subgraphs}
+\label{exactcol}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The idea is to dived a large graphs to small subgraphs and apply an exact coloring
+on these small subgraphs. Then, integrate the remaining parts into these colored
+subgraphs.
+More clearly, these are the steps which we follow,
+\begin{itemize}
+\item find a vertex separator for example by the nested dissection algorithm
+\item remove the vertex separator
+\item find the exact coloring of the remaining components separtely
+\item color the subgraph of vertex separator in the original graph considering
+the computed exact coloring in the remaining components 
+\end{itemize}
+
+A question is if it gives a better coloring at all since the coloring of vertex separator
+can lead us to a worse coloring.
+We build an example in which we found a better coloring by the second strategy.
+We first build a graph and its heuristic coloring which generates a worse coloring
+than an exact coloring as shown in~\figref{f.coloring.graph} (Left). If we follow
+the numbering of the vertices as the ordering for a greedy coloring, we need
+at least $4$ colors while the exact coloring needs only $3$ colors.
+Now, we make a copy of this graph and add an extra vertex $15$ as in
+~\figref{f.coloring.graph} (Right). The vertex $15$ is actually the only element of
+a vertex separator for the new graph. We added the incident edges of $15$ such that
+the resulting graph becomes a worst case for the greedy coloring here.
+In this new graph, the greedy coloring needs at least $5$ colors
+as in~\figref{f.coloring.compared} (Left).
+
+Suppose we color first the components after removing the vertex $15$ separately with
+an exact coloring which needs only $3$ colors. Now, even a bad implementation of the
+new idea would need $4$ colors, i.e. one colors fewer than the greedy algorithm.
+A good implementation color the graph only with $3$ colors.
+The construction of given example can go further by create several copies of 
+this graph, make the separator part a complete graph, and connect the separator vertices
+with same fashion to each copy.
+\begin{figure}
+\centering
+\includegraphics[width=0.18\linewidth]{coloring0}
+\hfill
+\includegraphics[width=0.48\linewidth]{coloring1}
+\caption{
+An example of a graph in which the division into two parts can be seen directly.
+The numbering of the graph vertices are the ordering that the greedy coloring
+follows.
+}
+\label{f.coloring.graph}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.48\linewidth]{coloring2}
+\hfill
+\includegraphics[width=0.48\linewidth]{coloring3}
+\caption{Comparison of colorings by a greedy coloring and
+by the new suggested coloring.}
+\label{f.coloring.compared}
+\end{figure}
+
+Although this algorithm seems convincing, the computation of nested dissection is still
+a tricky part. Hence, we present another heuristic which is more useful for
+the following sections. 
+
 
 
 \end{document}
