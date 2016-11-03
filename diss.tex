@@ -1,4 +1,4 @@
-\documentclass[12pt, twoside,a4paper]{book}
+\documentclass[12pt, twoside,a4paper,toc=bibliography]{scrbook}
 \usepackage{doc}
 \usepackage{a4wide}
 \usepackage{makeidx}
@@ -3415,57 +3415,6 @@ Another future work is to consider blocks of submatrices for coloring instead of
 \bibliography{refs}
 
 \appendix
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{NP-completeness of Partial Coloring Restricted to Diagonals}
-\label{app.npcomp}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In general, we know that a graph coloring is an NP-complete problem
-(see \cite{np-complet-graph-coloring})).
-As \defref{d:cig} shows, a distance-2 coloring on the column-intersection graph
-is a classical graph coloring problem. So it is also NP-complete.
-We also define a similar graph model for the partial coloring problem in
-\cite{2016:01}. In this transformation from the matrix and graph, we encode also 
-required elements. It means we do not have any special
-edges later in the graph.
-Since the construction of this graph model is done in
-the polynomial time, this partial coloring problem remains NP-complete too.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{A sample source code from EXPLAIN}
-\label{app.source}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-A sample source code from EXPLAIN computes the column compression algorithm.
-It consists of three functions for reference, global variables, and the actual algorithm
-written only for one step of the computation.
-\begin{lstlisting}
-var reference_cc = function () {
-    reference_text= "H. M. Buecker, M. A. Rostami, M. Luelfesmann : " +
-        "An interactive educational module illustrating sparse matrix compression via graph coloring.";
-    reference_url= "10.1109/ICL.2013.6644591";
-};
-
-var global_cc = function () {
-    graph_format="cig";
-    colors = range(0,22);
-    chart_yaxis1_text = "Number of colors";
-    chart_group5_text = 'Number of colors';
-    start_matrix = "nestedDissection3.mtx";
-    animation = true;
-};
-
-var column_compression = function() {
-    var ns = neighbors(current);
-    var col_ns = get_colors(ns);
-    var new_col = min(diff(colors, col_ns));
-    color_column(current, new_col);
-    color_vertex(current, new_col);
-    if (get_colored_vertices().length == currentg.vertices.length) {
-     gather_round_data(min(diff(colors, get_colors(get_colored_vertices()))));
-     round_completed();
-    }
-};
-\end{lstlisting}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Exact Coloring of Small Subgraphs}
 \label{exactcol}
@@ -3527,10 +3476,58 @@ by the new suggested coloring.}
 \end{figure}
 
 Although this algorithm seems convincing, the computation of nested dissection is still
-a tricky part. Hence, we present another heuristic which is more useful for
-the following sections. 
+a tricky part.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{NP-completeness of Partial Coloring Restricted to Diagonals}
+\label{app.npcomp}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In general, we know that a graph coloring is an NP-complete problem
+(see \cite{np-complet-graph-coloring})).
+As \defref{d:cig} shows, a distance-2 coloring on the column-intersection graph
+is a classical graph coloring problem. So it is also NP-complete.
+We also define a similar graph model for the partial coloring problem in
+\cite{2016:01}. In this transformation from the matrix and graph, we encode also 
+required elements. It means we do not have any special
+edges later in the graph.
+Since the construction of this graph model is done in
+the polynomial time, this partial coloring problem remains NP-complete too.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{A sample source code from EXPLAIN}
+\label{app.source}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+A sample source code from EXPLAIN computes the column compression algorithm.
+It consists of three functions for reference, global variables, and the actual algorithm
+written only for one step of the computation.
+\begin{lstlisting}
+var reference_cc = function () {
+    reference_text= "H. M. Buecker, M. A. Rostami, M. Luelfesmann : " +
+        "An interactive educational module illustrating sparse matrix compression via graph coloring.";
+    reference_url= "10.1109/ICL.2013.6644591";
+};
+
+var global_cc = function () {
+    graph_format="cig";
+    colors = range(0,22);
+    chart_yaxis1_text = "Number of colors";
+    chart_group5_text = 'Number of colors';
+    start_matrix = "nestedDissection3.mtx";
+    animation = true;
+};
+
+var column_compression = function() {
+    var ns = neighbors(current);
+    var col_ns = get_colors(ns);
+    var new_col = min(diff(colors, col_ns));
+    color_column(current, new_col);
+    color_vertex(current, new_col);
+    if (get_colored_vertices().length == currentg.vertices.length) {
+     gather_round_data(min(diff(colors, get_colors(get_colored_vertices()))));
+     round_completed();
+    }
+};
+\end{lstlisting}
 
 \end{document}
 
