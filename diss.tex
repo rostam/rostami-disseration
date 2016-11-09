@@ -110,7 +110,9 @@ captionpos=b
 Solving problems originating from the real-world applications are often based
 on the solution of some system of linear equations leading to a huge sparse Jacobian matrix.
 Hence, there
-is much research to exploit the sparsity structure and to decrease the amount of needed storage. In contrast to full Jacobian computation in which all elements are meant to be determined, partial Jacobian computation is looking at a subset of these elements. This property brings a lot of conventions leading to a faster
+is much research to exploit the sparsity structure and to decrease the amount of needed storage. 
+In contrast to full Jacobian computation in which all elements are meant to be determined, 
+partial Jacobian computation is looking at a subset of these elements. This property brings a lot of conventions leading to a faster
 and more efficient computation.
 Determining these nonzero elements in full or partial Jacobian computations by automatic differentiation techniques
 can be modeled as graph coloring in graph language.
@@ -123,7 +125,7 @@ There is a procedure which selects a subset of the remaining nonrequired element
 The current thesis first looks at different ways to optimize
 the processes of selecting elements.
 At the second part of this thesis, we introduce an interactive educational module to teach these
-tricky concepts in the classroom.
+tricky concepts as well as other concepts from combinatorial scientific computing in the classroom.
 
 \chapter*{Zusammenfassung}
 Die Lösung von Real-world Anwendungen basieren oft auf der Lösung von Lineares Gleichungssystem,
@@ -145,10 +147,13 @@ my best friend \textit{Azin Azadi} for encouraging me throughout all my studies 
 \tableofcontents
 \chapter{Introduction}
 \pagenumbering{arabic}
-Partial differential equations (PDE) are the most common models of the real-world problems. Iterative solvers are a solution to these linear systems which need a multiplication of Jacobian and a vector in each iteration.
+Partial differential equations (PDE) are the most common models of the real-world problems. 
+Iterative solvers are a solution to these linear systems which need a multiplication of Jacobian and a vector in each iteration.
 Many strategies were studied to compute these products effectively.
 Automatic Differentiation~\cite{Griewank2008EDP,Rall1981ADT} computes not only the differentiation without numerical errors but also the matrix-vector multiplication automatically.
-Based on this ability of AD techniques, different methods are analyzed to reduce the memory that is needed to store the Jacobian matrix as well as speeding up the computation. These methods are parts of a bigger area called combinatorial scientific computing.
+Based on this ability of AD techniques, different methods are analyzed 
+to reduce the memory that is needed to store the Jacobian matrix as well as speeding up the computation. 
+These methods are parts of a bigger area called combinatorial scientific computing.
 
 On the other hand, another method to speed up the convergence of the linear solver
 is preconditioning. The preconditioning techniques need most of the time access to
@@ -166,10 +171,10 @@ mix of automatic differentiation and preconditioning.
 \chapref{package} discusses new heuristics for distance-$2$ coloring and
 star bicoloring. We also look at a simple parallelization technique for the
 coloring algorithm. Also, we look at the ordering for the ILU preconditioning.
-In this chapter, we restructure a previous software
-to be more readable and extensible and to contain new heuristic algorithm.
+In this chapter, we introduce a new software
+containing new heuristic algorithm.
 \chapref{explain} discuss an interactive educational module
-which is designed to teach the computational science algorithms in the classroom.
+which is designed to teach the algorithms from the combinatorial scientific computing in the classroom.
 Finally, the conclusion and future work come in \chapref{conc}.
 
 \chapter{Graph Models from Scientific Computing}
@@ -1923,17 +1928,45 @@ So far, we consider the partial Jacobian computation with an arbitrary
 set of required elements. However, a better heuristics is proposed if the
 pattern of the required elements is prior known.
 
-Lülfesmann~\cite{Lulfesmann2012Fap} shows that the number of colors of
-a partial star bicoloring restricted to diagonals is equal to
-the minimal number of colors in a partial distance-$2$ coloring restricted
-to diagonals. It means the bidirectional compression is not better than
-a distance-$2$ coloring.
+Lülfesmann~\cite{Lulfesmann2012Fap} shows that the minimum number of colors of
+the partial star bicoloring restricted to diagonals $\chi_{sb}$ is equal to
+the minimal number of colors of the partial distance-$2$ coloring restricted
+to diagonals $\chi_{d2}$. It means the bidirectional compression restricting to diagonals is not better than
+a distance-$2$ coloring. 
+This theorem can be written as two Lemmas,
+\begin{itemize}
+\item Lemma 1: $\chi_{sb} > \chi_{d2}$
+\item Lemma 2: $\chi_{sb} < \chi_{d2}$
+\end{itemize}
+The proof of Lemma 1 is clear since
+a given distance-$2$ coloring with the fewest number of colors is also a star bicoloring.
+The proof of Lemma 2 is more tricky. A sketch of the proof comes as follow.
+\begin{figure}
+\includegraphics[width=\linewidth]{proof1.png}
+\caption{
+(Right) An example of a partial star bicoloring restricted to diagonals
+transformed to a valid distance-$2$ coloring.}
+\label{proof1}
+\end{figure}
+
+
+The idea is to transform a valid star bicoloring with the fewest number of colors $\Phi_{sb}$ to 
+a valid distance-$2$ coloring where the number of colors is not larger.
+This transformation includes two steps:
+\begin{enumerate}
+\item The minimal star bicoloring $\Phi_{sb}$ is transformed 
+to the valid star bicoloring $\Phi_{sb}^{*}$ 
+where exactly one of both incident vertices of each required edge is colored nonzero.
+\item The valid coloring $\Phi_{sb}^{*}$ is transformed 
+to the valid starbicoloring $\Phi_{sb}^{'}$ where all row vertices are colored by zero.
+This starbicoloring is also a distance-$2$ coloring.
+\end{enumerate}
+
 Looking at the proof, this theorem can be generalized by considering any
 coloring instead of the optimal coloring.
-
 On the other hand, the set of diagonal elements in the theorem
 can be replaced by any set of required elements
-in which each column and row should contain only one required nonzero elements.
+in which each column and row contain only one required nonzero elements.
 This property is nothing than a matching~\cite{bondy2008graph} in a graph language.
 Given a graph and the vertex and edge set $G=(V,E)$, a matching $M\subset E$ contains
 a list of edges which do not have any vertex in common.
@@ -3421,7 +3454,7 @@ Another future work is to consider blocks of submatrices for coloring instead of
 
 \appendix
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Exact Coloring of Small Subgraphs}
+\chapter{A Heuristic based on Exact Coloring of Small Subgraphs}
 \label{exactcol}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The idea is to dived a large graphs to small subgraphs and apply an exact coloring
