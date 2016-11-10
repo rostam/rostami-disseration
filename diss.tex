@@ -847,20 +847,7 @@ the special case of partial coloring restricted to diagonals in~\secref{s.part.c
 Then, a parallel version of the proposed algorithms are introduced in~\secref{s.parallel}.
 Finally, we introduce our new software in~\secref{s.extend} that computes the 
 unidirectional and bidirectional (partial-)coloring with different algorithms
-as well as the ILU preconditioning.
-
-%The different steps of computing the additionally required elements are discussed in
-%\secref{ss.comb.precond}. Here, we look at effects of ordering on the number of fill-ins
-%in \secref{s.ilu} and how it fits into the automatic differentiation.
-%In \secref{s.heuristic}, we discuss different strategies to increase in the number of
-%additionally required elements as well as first ideas toward parallelization.
-
-%Lülfesmann and Bücker~\cite{Lulfesmann2012Fap} started a package for computation of the uni-
-%and bidirectional (partial-)coloring as well as the partial computation and its relative preconditioning
-%which we discussed in ~\ref{s.precond}.
-%We improved the software in various ways explained in~\secref{s.extend}.
-%Finally, a MATLAB interface and a JAVA interface for this software package are introduced
-%in ~\secref{s.interfaces}.
+as well as the ILU preconditioning. 
 
 Throughout this chapter, we did experiments on some matrices from the Florida sparse
 matrix collection~\cite{florida.matrices}. Table~\ref{florida.mats} shows these matrices
@@ -947,11 +934,6 @@ order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices 
 The computation of this ordering can have a higher complexity than $\mathcal{O}(n+m)$ or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity.
 These various orderings can be used to improve the results of coloring.
 
-%In~\secref{s.exact}, we present an algorithm which computes the exact coloring
-%on small subgraphs first. Then, it makes a coloring for the actual graphs
-%based on these small colorings. We build an example which shows that this idea
-%works.
-
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
 considering the nonrequired elements.,label=code.new.d2,mathescape]
@@ -974,6 +956,7 @@ for $v\in V_c$ with $\Phi(v)=0$
       $\Phi(I_v^{'}) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
+
 We introduce a new heuristic coloring which has the number of colors at least as same as
 the number of colors in the greedy algorithm.
 Our approach in this new heuristic coloring algorithm is based on finding an independent set.
@@ -1060,6 +1043,7 @@ more nonrequired elements in the process of coloring? Can we maximize a term lik
 weighting coefficients, $C$ is the coloring number, and $N$ is the
 number of survived nonrequired elements?
 Here, we introduce a new heuristic which increases the number of survived nonrequired elements such that the number of colors remains almost the same.
+
 \subsection{Distance-$2$ coloring}
 Our goal here is to increase the number of potentially required elements.
 A potential required element is selected from the nonrequired elements such that
