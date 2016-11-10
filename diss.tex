@@ -821,22 +821,48 @@ throughout this thesis.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% PRECONDITIONING AND COLORING
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter[New Coloring Heuristics]{New Coloring Heuristics considering incomplete LU Preconditioning}
+\chapter{New Coloring Heuristics considering ILU}
 \label{package}
-The different steps of computing the additionally required elements are discussed in
-\secref{ss.comb.precond}. Here, we look at effects of ordering on the number of fill-ins
-in \secref{s.ilu} and how it fits into the automatic differentiation.
-In \secref{s.heuristic}, we discuss different strategies to increase in the number of
-additionally required elements as well as first ideas toward parallelization.
+Finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589}.
+Recently, Bjorklund~\cite{bjorklund2009} proposed a coloring based on 
+the set partitioning via inclusion-exclusion which has the minimal
+computational complexity between the known exact algorithms.
+In \appref{exactcol}, we discuss
+first ideas for an effective heuristcs in which we apply this exact coloring
+on the small subgraphs. We show also with a set of examples that 
+this heuristc generates a effective coloring with fewer number of colors
+compared to the classical greedy coloring. 
 
-Lülfesmann and Bücker~\cite{Lulfesmann2012Fap} started a package for computation of the uni-
-and bidirectional (partial-)coloring as well as the partial computation and its relative preconditioning
-which we discussed in ~\ref{s.precond}.
-We improved the software in various ways explained in~\secref{s.extend}.
-Finally, a MATLAB interface and a JAVA interface for this software package are introduced
-in ~\secref{s.interfaces}.
+The complexity is still high enough that we can not compute the coloring
+of large matrices with this algorithm in an efficient time. 
+Hence, we search for different coloring heuristics with the polynomial complexity.
+In \secref{s.heuristic.indset}, we disucss a new heuristic 
+which has the results similar to the greedy coloring.
+This new heuristic has a property which gives the possibility to 
+define other new heuristics in which we increase the number of potentially
+required elements in~\secref{s.max.pot.req} and the number of additionally required elements
+in~\secref{s.max.add.req}. Later, 
+we search for a better heuristic for
+the special case of partial coloring restricted to diagonals in~\secref{s.part.color.diag}. 
+Then, a parallel version of the proposed algorithms are introduced in~\secref{s.parallel}.
+Finally, we introduce our new software in~\secref{s.extend} that computes the 
+unidirectional and bidirectional (partial-)coloring with different algorithms
+as well as the ILU preconditioning.
 
-Throughout this thesis, we did experiments on some matrices from the Florida sparse
+%The different steps of computing the additionally required elements are discussed in
+%\secref{ss.comb.precond}. Here, we look at effects of ordering on the number of fill-ins
+%in \secref{s.ilu} and how it fits into the automatic differentiation.
+%In \secref{s.heuristic}, we discuss different strategies to increase in the number of
+%additionally required elements as well as first ideas toward parallelization.
+
+%Lülfesmann and Bücker~\cite{Lulfesmann2012Fap} started a package for computation of the uni-
+%and bidirectional (partial-)coloring as well as the partial computation and its relative preconditioning
+%which we discussed in ~\ref{s.precond}.
+%We improved the software in various ways explained in~\secref{s.extend}.
+%Finally, a MATLAB interface and a JAVA interface for this software package are introduced
+%in ~\secref{s.interfaces}.
+
+Throughout this chapter, we did experiments on some matrices from the Florida sparse
 matrix collection~\cite{florida.matrices}. Table~\ref{florida.mats} shows these matrices
 together with their information.
 
@@ -872,18 +898,9 @@ from the Florida sparse matrix collection throughout this thesis.}
 \end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Searching for Alternative Colorings}
-\label{s.better.coloring}
+\section{A Heuristic from Independent Sets}
+\label{s.heuristic.indset}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Findin an exact coloring is a known NP-complete problem~\cite{SPINRAD198589}.
-Here, we search for the better methods for coloring.
-The best exact coloring is proposed in~\cite{bjorklund2009}.
-The complexity is still high enough that we can not compute the coloring
-of large matrices with this algorithm. In \appref{exactcol}, we discussed
-first ideas how to divide a big graph into small instances can be an efficient
-coloring. Here, our focus is to find some coloring heuristics
-to obtain an estimation of minimal coloring.
-
 The greedy coloring is a widely used coloring which has a low computational complexity
 and computes a reasonable coloring~\cite{spaa14}.
 The partial greedy coloring algorithm for a bipartite graph restricted to $E_i$
@@ -935,10 +952,6 @@ These various orderings can be used to improve the results of coloring.
 %based on these small colorings. We build an example which shows that this idea
 %works.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{A Heuristic from Independent Sets}
-\label{s.heuristic.indset}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
 considering the nonrequired elements.,label=code.new.d2,mathescape]
@@ -1002,7 +1015,7 @@ We use the block size $30$ and the natural ordering in both heuristics.
 \end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Maximizing Potentially Required Elements}
-\label{s.heuristic}
+\label{s.max.pot.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In partial coloring, we compute the coloring focusing on
 required nonzero elements. However, there are other nonrequired nonzero elements
@@ -1544,7 +1557,7 @@ The asymmetric matrix \textit{$crystm01$} is used here.}
 \section{Maximizing Additionally Required Elements}
 \label{s.max.add.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In \secref{s.heuristic}, our focus was to increase the potentially required elements
+In \secref{s.max.pot.req}, our focus was to increase the potentially required elements
 which probably increases also the number of the additionally required elements.
 Here, we check directly into the process of coloring
 if a potential required element can be an additionally required elements.
@@ -1853,7 +1866,7 @@ in the automatic differentiation.
 %\subsection{Consdiering the positions of required elements}
 \subsection{Predicting the additionally required elements}
 We consider algorithms to increase the potentially required elements in
-~\secref{s.heuristic} which increases the number of additionally required elements
+~\secref{s.max.pot.req} which increases the number of additionally required elements
 persumably. Here, we suggest a heuristic to predict if a nonrequired element would be an
 additionally required element. For this purpose, we build a bipartite graph model
 for ILU preconditioning based on the bipartite graph model for ILU formulated in \cite{Lulfesmann2012Fap}
@@ -1922,8 +1935,10 @@ elements computed by different algorithms.
 The block size is $10$ and the ILU level parameter is $2$.}
 \label{mats.add.gr.vs.nreq.vs.fillpath}
 \end{table}
-
-\section{Partial Coloring Restricted to Diagonal Elements}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Partial Coloring Restricted to Diagonal Elements}\
+\label{s.part.color.diag}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 So far, we consider the partial Jacobian computation with an arbitrary
 set of required elements. However, a better heuristics is proposed if the
 pattern of the required elements is prior known.
@@ -2098,8 +2113,11 @@ for $e=(v,u)\in E_R$
     $\Phi(v) = 0$
 \end{lstlisting}
 \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parallelization}
 \label{s.parallel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 As we saw in \secref{s.precond}, different steps are followed
 to compute the additionally required elements. Here, we look at each of
 these steps and examine how they can be efficiently parallelized by OpenMP.
