@@ -147,21 +147,21 @@ my best friend \textit{Azin Azadi} for encouraging me throughout all my studies 
 \tableofcontents
 \chapter{Introduction}
 \pagenumbering{arabic}
-Partial differential equations (PDE) are the most common models of the real-world problems. 
-Iterative solvers are a solution to these linear systems which need a multiplication of Jacobian and a vector in each iteration.
-Many strategies were studied to compute these products effectively.
-Automatic Differentiation~\cite{Griewank2008EDP,Rall1981ADT} computes not only the differentiation without numerical errors but also the matrix-vector multiplication automatically.
-Based on this ability of AD techniques, different methods are analyzed 
-to reduce the memory that is needed to store the Jacobian matrix as well as speeding up the computation. 
-These methods are parts of a bigger area called combinatorial scientific computing.
+In \textit{Combinatorial Scientific Computing} (CSC), it is common to solve the scientific computing problems by the methods from the combinatorial mathematics. In particular, graphs are ubiquitous in the numerical linear algebra if the underlying matrices are sparse. 
 
-On the other hand, another method to speed up the convergence of the linear solver
-is preconditioning. The preconditioning techniques need most of the time access to
+The origin of the scientific computing problems in this thesis is the solution of a linear equation whose coefficient matrix is a sparse, large, and nonsingular Jacobian matrix $J$. 
+This Jacobian matrix is computed by Automatic Differentiation (AD)~\cite{Griewank2008EDP,Rall1981ADT} without numerical errors.
+AD computes actually a product of Jacobian and a give so-called seed matrix.
+A careful choice of the seed matrix would reduce the computational effort as well as 
+the storage which can be formulated to different graph problems.
+
+These systems of equations are solved using iterative methods which are accelerated by preconditioning techniques in practice.
+The preconditioning techniques need most of the time access to
 the elements of Jacobian which is in contrast to the requirements of automatic differentiation.
 Applying a sparsification operator first on the Jacobian matrix and do the ILU preconditioning
 on the sparsified matrix would be a solution to the problem of determination of
 all elements. This process becomes complete by trying to add more elements to the matrix
-without producing more fill-ins or colors. We introduce new heuristics to for this purpose.
+without producing more fill-ins or colors. We introduce new heuristics for this purpose.
 
 This dissertation is structured as follows.
 First, we go through basic definitions in \chapref{prel} needed in other chapters.
