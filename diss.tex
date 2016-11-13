@@ -818,23 +818,13 @@ while $|E_a|$ is increased in the last iteration
 We consider the improved version in \coderef{code.add2}
 to compute the additionally required elements
 throughout this thesis.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% PRECONDITIONING AND COLORING
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{New Coloring Heuristics considering ILU}
 \label{package}
 Finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589}.
-Recently, Bjorklund~\cite{bjorklund2009} proposed a coloring based on 
-the set partitioning via inclusion-exclusion which has the minimal
-computational complexity between the known exact algorithms.
-In \appref{exactcol}, we discuss
-first ideas for an effective heuristcs in which we apply this exact coloring
-on the small subgraphs. We show also with a set of examples that 
-this heuristc generates a effective coloring with fewer number of colors
-compared to the classical greedy coloring. 
-
-The complexity is still high enough that we can not compute the coloring
-of large matrices with this algorithm in an efficient time. 
 Hence, we search for different coloring heuristics with the polynomial complexity.
 In \secref{s.heuristic.indset}, we disucss a new heuristic 
 which has the results similar to the greedy coloring.
@@ -890,16 +880,23 @@ from the Florida sparse matrix collection throughout this thesis.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The greedy coloring is a widely used coloring which has a low computational complexity
 and computes a reasonable coloring~\cite{spaa14}.
-The partial greedy coloring algorithm for a bipartite graph restricted to $E_i$
-is given in \coderef{code.greedy}. The idea is to iterate over all vertices
-and check the color of distance-$2$ neighbors, the computational complexity
-of this algorithm is $\mathcal{O}(n + \Delta)$ in which $n$
-and $\Delta$ are the number of vertices and the maximum vertex
-degree, respectively.
+The partial greedy coloring algorithm for a bipartite graph restricted to 
+the initially required edge set $E_i$ is given in \coderef{code.greedy}. 
+The idea is to iterate over all vertices incident
+to a required edge and give a color to these vertices which is different from
+the color of their distance-$2$ neighbors. In this algorithm, the function $N_2$
+finds all distance-$2$ neighbors. 
+Suppose we want to find the color for the vertex $v$ in an iteration, 
+the array $forbiddenColors$ assigns the color of the distance-$2$ neighbors
+to $v$. After considering all neighbors, the smallest index $i$ of this array
+is the color of $v$ such that the value of $forbiddenColors$ is not $v$.
+The computational complexity of this algorithm is $\mathcal{O}(n + \Delta)$ in which $n$
+and $\Delta$ are the number of vertices and the maximum vertex degree, respectively.
 
 \begin{figure}
 \begin{lstlisting}[caption=The greedy algorithm for
-the distance-$2$ coloring for columns in which $N_2(v)$ shows
+the distance-$2$ coloring restricted to the edge set $E_i$
+for columns in which $N_2(v)$ shows
 the distance-$2$ neighbors of $v$.
 ,label=code.greedy,mathescape]
 function d2_color($G=(V_r\cup V_c,E)$,$E_i\subset E$)
@@ -922,17 +919,10 @@ Hence, there are many publications on how to choose
 a suitable ordering heuristics for a serial or parallel version of
 coloring~\cite{ordering1,ordering2,ordering3}.
 Various orderings are inquired for coloring heuristics
-throughout years. Here are some orderings for coloring,
-\begin{itemize}
-\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with the minimum degree in each step.
-\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
-\item Saturation-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it determines the vertex with the maximum saturation degree in
-$V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbors of $v$.
-\item Smallest last ordering (SLO)~\cite{ordering1} makes a set of vertices ${v_1,v_2,...,v_n}$ in a so-called smallest-last
-order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices $v_1,v_2,...,v_i$ for all $i$.
-\end{itemize}
-The computation of this ordering can have a higher complexity than $\mathcal{O}(n+m)$ or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity.
-These various orderings can be used to improve the results of coloring.
+throughout years. Here are some orderings for coloring which are applied before doing the coloring:
+the largest-first ordering (LFO)~\cite{LFO}, the incidence-degree ordering (IDO)~\cite{IDO},
+the saturation-degree ordering (SDO)~\cite{SDO}, and the smallest-last ordering (SLO)~\cite{ordering1}.
+A short description of these ordering are available in \appref{app.ord}.
 
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
@@ -960,11 +950,17 @@ for $v\in V_c$ with $\Phi(v)=0$
 We introduce a new heuristic coloring which has the number of colors at least as same as
 the number of colors in the greedy algorithm.
 Our approach in this new heuristic coloring algorithm is based on finding an independent set.
-A subset of the vertices $S\subset V$ is
+In the simple graph model, a subset of the vertices $S\subset V$ is
 called an independent set~\cite{bondy2008graph} if no edge between any of these vertices exists,
 $$\forall u,v\in S: (u,v)\notin E.$$
-For a given vertex $v$, we show an independent set containing $v$ by $I_v$.
+In the bipartite graph model, we need to change this definition as follow,
+$$\forall u,v\in S: u\notin N_2(v).$$
+For a given vertex $v$, we show an independent set containing the vertex $v$ by $I_v$.
+Then we build another set $I_v^{'} \subset I_v$ in which we keep only 
+the elements such that their neighbours (other than $v$) have different colors than the color of $v$.
+Finally, we color the vertices in the set $I_v^{'}$ with the color of $v$.
 \coderef{code.new.d2} represents this approach.
+
 The time complexity of this new heuristic is estimated as follow.
 We need to go through all vertices
 and find the maximum independent set containing each vertex.
@@ -3453,71 +3449,21 @@ What if we transform program for function $f(x)$ not only to a program for $\fra
 Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph model as before and show it has advantages in the unidirectional coloring. A first improvement is to search for the similar approach in the bidirectional coloring and partial coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
-
-\appendix
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{A Heuristic based on Exact Coloring of Small Subgraphs}
-\label{exactcol}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The idea is to dived a large graphs to small subgraphs and apply an exact coloring
-on these small subgraphs. Then, integrate the remaining parts into these colored
-subgraphs.
-More clearly, these are the steps which we follow,
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Different Orderings for Coloring}
+\label{app.ord}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Here are some orderings for coloring,
 \begin{itemize}
-\item find a vertex separator for example by the nested dissection algorithm
-\item remove the vertex separator
-\item find the exact coloring of the remaining components separtely
-\item color the subgraph of vertex separator in the original graph considering
-the computed exact coloring in the remaining components 
+\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with the minimum degree in each step.
+\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
+\item Saturation-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it determines the vertex with the maximum saturation degree in
+$V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbors of $v$.
+\item Smallest last ordering (SLO)~\cite{ordering1} makes a set of vertices ${v_1,v_2,...,v_n}$ in a so-called smallest-last
+order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices $v_1,v_2,...,v_i$ for all $i$.
 \end{itemize}
-
-A question is if it gives a better coloring at all since the coloring of vertex separator
-can lead us to a worse coloring.
-We build an example in which we found a better coloring by the second strategy.
-We first build a graph and its heuristic coloring which generates a worse coloring
-than an exact coloring as shown in~\figref{f.coloring.graph} (Left). If we follow
-the numbering of the vertices as the ordering for a greedy coloring, we need
-at least $4$ colors while the exact coloring needs only $3$ colors.
-Now, we make a copy of this graph and add an extra vertex $15$ as in
-~\figref{f.coloring.graph} (Right). The vertex $15$ is actually the only element of
-a vertex separator for the new graph. We added the incident edges of $15$ such that
-the resulting graph becomes a worst case for the greedy coloring here.
-In this new graph, the greedy coloring needs at least $5$ colors
-as in~\figref{f.coloring.compared} (Left).
-
-Suppose we color first the components after removing the vertex $15$ separately with
-an exact coloring which needs only $3$ colors. Now, even a bad implementation of the
-new idea would need $4$ colors, i.e. one colors fewer than the greedy algorithm.
-A good implementation color the graph only with $3$ colors.
-The construction of given example can go further by create several copies of 
-this graph, make the separator part a complete graph, and connect the separator vertices
-with same fashion to each copy.
-\begin{figure}
-\centering
-\includegraphics[width=0.18\linewidth]{coloring0}
-\hfill
-\includegraphics[width=0.48\linewidth]{coloring1}
-\caption{
-An example of a graph in which the division into two parts can be seen directly.
-The numbering of the graph vertices are the ordering that the greedy coloring
-follows.
-}
-\label{f.coloring.graph}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.48\linewidth]{coloring2}
-\hfill
-\includegraphics[width=0.48\linewidth]{coloring3}
-\caption{Comparison of colorings by a greedy coloring and
-by the new suggested coloring.}
-\label{f.coloring.compared}
-\end{figure}
-
-Although this algorithm seems convincing, the computation of nested dissection is still
-a tricky part.
-
+The computation of this ordering can have a higher complexity than the complexity of the greedy coloring ($\mathcal{O}(n+m)$) or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity. These various orderings should be considered in new heuristic coloring which we propose. to improve the results of coloring.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{NP-completeness of Partial Coloring Restricted to Diagonals}
 \label{app.npcomp}
