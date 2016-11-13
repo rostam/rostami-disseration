@@ -927,7 +927,7 @@ A short description of these ordering are available in \appref{app.ord}.
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
 considering the nonrequired elements.,label=code.new.d2,mathescape]
-function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+function d2_color_ind($G=(V_r\cup V_c,E)$,$E_i\subset E$)
 for $v\in V_c$
   $\Phi(v)=-1$
   $forbiddenColors[v] = 0$
