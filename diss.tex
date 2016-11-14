@@ -822,62 +822,10 @@ throughout this thesis.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% PRECONDITIONING AND COLORING
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{New Coloring Heuristics considering ILU}
+\chapter{New Coloring Heuristics}
 \label{package}
 Finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589}.
 Hence, we search for different coloring heuristics with the polynomial complexity.
-In \secref{s.heuristic.indset}, we disucss a new heuristic 
-which has the results similar to the greedy coloring.
-This new heuristic has a property which gives the possibility to 
-define other new heuristics in which we increase the number of potentially
-required elements in~\secref{s.max.pot.req} and the number of additionally required elements
-in~\secref{s.max.add.req}. Later, 
-we search for a better heuristic for
-the special case of partial coloring restricted to diagonals in~\secref{s.part.color.diag}. 
-Then, a parallel version of the proposed algorithms are introduced in~\secref{s.parallel}.
-Finally, we introduce our new software in~\secref{s.extend} that computes the 
-unidirectional and bidirectional (partial-)coloring with different algorithms
-as well as the ILU preconditioning. 
-
-Throughout this chapter, we did experiments on some matrices from the Florida sparse
-matrix collection~\cite{florida.matrices}. Table~\ref{florida.mats} shows these matrices
-together with their information.
-
-\begin{table}
-\centering
-\begin{tabular}{|c|c|c|c|}
-\hline
-Name & Size & Nonzeros & Structure\\\hline
-\textit{steam1} & $240\times 240$ & $3762$ & unsymmetric \\\hline
-\textit{steam2} & $600\times 600$ & $13760$ & unsymmetric \\\hline
-\textit{685\_bus} & $685\times 685$ & $1967$ & symmetric \\\hline
-\textit{nos3} & $960\times 960$ & $8402$ & symmetric \\\hline
-\textit{ex7} & $1633\times 1633$ & $54543$ & unsymmetric \\\hline
-\textit{ex33} & $1733\times 1733$ & $11961$ & symmetric\\\hline
-\textit{orani678} & $2529\times 2529$ & $90158$ & unsymmetric \\\hline
-\textit{cavity16} & $4562\times 4562$ & $138187$ & unsymmetric \\\hline
-\textit{crystm01} &$4875\times 4875$ & $55107$& symmetric\\\hline
-\textit{rajat01} & $6833\times 6833$ & $43250$ & unsymmetric\\\hline
-\textit{gyro\_m} & $17361\times 17361$ & $178896$ & symmetric\\\hline
-\textit{ford2} & $100196\times 100196$ & $544688$ & symmetric \\\hline
-\textit{cage3} & $5\times 5$ & $19$ & unsymmetric\\\hline
-\textit{cage4} & $9\times 9$ & $49$ & unsymmetric\\\hline
-\textit{cage5} & $37\times 37$ & $233$ & unsymmetric\\\hline
-\textit{cage7} & $340\times 340$  & $3084$ & unsymmetric\\\hline
-\textit{cage8} & $1015\times 1015$  & $11003$ & unsymmetric\\\hline
-\textit{cage9} & $3534\times 3534$  & $41594$ & unsymmetric\\\hline
-\textit{cage10} & $11379\times 11379$ & $150645$& unsymmetric\\\hline
-\textit{cage12} & $130228\times 130228$ &  $2032536$ & unsymmetric\\\hline
-\end{tabular}
-\caption{The experiments are done these matrices
-from the Florida sparse matrix collection throughout this thesis.}
-\label{florida.mats}
-\end{table}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A Heuristic from Independent Sets}
-\label{s.heuristic.indset}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The greedy coloring is a widely used coloring which has a low computational complexity
 and computes a reasonable coloring~\cite{spaa14}.
 The partial greedy coloring algorithm for a bipartite graph restricted to 
@@ -924,80 +872,57 @@ the largest-first ordering (LFO)~\cite{LFO}, the incidence-degree ordering (IDO)
 the saturation-degree ordering (SDO)~\cite{SDO}, and the smallest-last ordering (SLO)~\cite{ordering1}.
 A short description of these ordering are available in \appref{app.ord}.
 
-\begin{figure}
-\begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
-considering the nonrequired elements.,label=code.new.d2,mathescape]
-function d2_color_ind($G=(V_r\cup V_c,E)$,$E_i\subset E$)
-for $v\in V_c$
-  $\Phi(v)=-1$
-  $forbiddenColors[v] = 0$
+We adapt the greedy algorithm in \secref{s.max.pot.req} and \secref{s.max.add.req}
+ such that the number of potentially required elements
+and addtioanlly required elements are increased.
+Later, 
+we search for a better heuristic for
+the special case of partial coloring restricted to diagonals in~\secref{s.part.color.diag}. 
+Finally, we introduce our computational package \textit{PrecOl} in~\secref{s.extend} that computes the 
+unidirectional and bidirectional (partial-)coloring with different algorithms
+as well as the ILU preconditioning. 
 
-for $v\in V_c$ with $\Phi(v)=0$
-  if $\Phi(v) -1$
-    $forbiddenColors[0] = v$
-    if $\exists n\in N_2(v): (v,n)\in E_i$
-      for $n\in N_2(v)$
-        if $\Phi(n) \neq 0$
-          $forbiddenColors[\Phi(n)] = v$
+Throughout this chapter, we did experiments on some matrices from the Florida sparse
+matrix collection~\cite{florida.matrices}. Table~\ref{florida.mats} shows these matrices
+together with their information.
 
-      $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-      $I_v=\{u\in V_c: u\notin N_2(v)\}$
-      $I_v^{'} =\{u\in I_v: \forall n\in N_2(u): n=v\quad or\quad \Phi(n)!=\Phi(v)\}$
-      $\Phi(I_v^{'}) = \Phi(v)$
-\end{lstlisting}
-\end{figure}
-
-We introduce a new heuristic coloring which has the number of colors at least as same as
-the number of colors in the greedy algorithm.
-Our approach in this new heuristic coloring algorithm is based on finding an independent set.
-In the simple graph model, a subset of the vertices $S\subset V$ is
-called an independent set~\cite{bondy2008graph} if no edge between any of these vertices exists,
-$$\forall u,v\in S: (u,v)\notin E.$$
-In the bipartite graph model, we need to change this definition as follow,
-$$\forall u,v\in S: u\notin N_2(v).$$
-For a given vertex $v$, we show an independent set containing the vertex $v$ by $I_v$.
-Then we build another set $I_v^{'} \subset I_v$ in which we keep only 
-the elements such that their neighbours (other than $v$) have different colors than the color of $v$.
-Finally, we color the vertices in the set $I_v^{'}$ with the color of $v$.
-\coderef{code.new.d2} represents this approach.
-
-The time complexity of this new heuristic is estimated as follow.
-We need to go through all vertices
-and find the maximum independent set containing each vertex.
-Then, we consider one of the elements to be colored with the color of $v$.
-The computational complexity is clearly $\mathcal{O}(n^2)$.
-The results in Table~\ref{greedy.vs.ind} shows that this coloring gives us the same number of colors
-in all matrices which we tested.
-Although this algorithm neither reduces nor increases the number of colors in these examples,
-we use variants of this algorithm to generate more potentially and
-additionally required elements in the following sections.
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|c|}
 \hline
-Name & $\chi_{greedy}$ & $\chi_{ind}$\\\hline
-\textit{steam1} & $7$ & $7$ \\\hline
-\textit{ex7} & $71$ & $71$ \\\hline
-\textit{ex33} & $23$ & $23$ \\\hline
-\textit{cavity16} & $56$ & $56$\\\hline
-\textit{rajat01} & $50$ & $50$\\\hline
-\textit{gyro\_m} & $34$ & $34$ \\\hline
-\textit{cage10} & $42$ & $42$\\\hline
-\textit{ford2} & $33$ & $33$  \\\hline
+Name & Size & Nonzeros & Structure\\\hline
+\textit{steam1} & $240\times 240$ & $3762$ & unsymmetric \\\hline
+\textit{steam2} & $600\times 600$ & $13760$ & unsymmetric \\\hline
+\textit{685\_bus} & $685\times 685$ & $1967$ & symmetric \\\hline
+\textit{nos3} & $960\times 960$ & $8402$ & symmetric \\\hline
+\textit{ex7} & $1633\times 1633$ & $54543$ & unsymmetric \\\hline
+\textit{ex33} & $1733\times 1733$ & $11961$ & symmetric\\\hline
+\textit{orani678} & $2529\times 2529$ & $90158$ & unsymmetric \\\hline
+\textit{cavity16} & $4562\times 4562$ & $138187$ & unsymmetric \\\hline
+\textit{crystm01} &$4875\times 4875$ & $55107$& symmetric\\\hline
+\textit{rajat01} & $6833\times 6833$ & $43250$ & unsymmetric\\\hline
+\textit{gyro\_m} & $17361\times 17361$ & $178896$ & symmetric\\\hline
+\textit{ford2} & $100196\times 100196$ & $544688$ & symmetric \\\hline
+\textit{cage3} & $5\times 5$ & $19$ & unsymmetric\\\hline
+\textit{cage4} & $9\times 9$ & $49$ & unsymmetric\\\hline
+\textit{cage5} & $37\times 37$ & $233$ & unsymmetric\\\hline
+\textit{cage7} & $340\times 340$  & $3084$ & unsymmetric\\\hline
+\textit{cage8} & $1015\times 1015$  & $11003$ & unsymmetric\\\hline
+\textit{cage9} & $3534\times 3534$  & $41594$ & unsymmetric\\\hline
+\textit{cage10} & $11379\times 11379$ & $150645$& unsymmetric\\\hline
+\textit{cage12} & $130228\times 130228$ &  $2032536$ & unsymmetric\\\hline
 \end{tabular}
-\caption{
-The comparison between number of colors computed by the greedy algorithm and
-the independent-set algorithm.
-We use the block size $30$ and the natural ordering in both heuristics.
-}
-\label{greedy.vs.ind}
+\caption{The experiments are done these matrices
+from the Florida sparse matrix collection throughout this thesis.}
+\label{florida.mats}
 \end{table}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Maximizing Potentially Required Elements}
 \label{s.max.pot.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In partial coloring, we compute the coloring focusing on
-required nonzero elements. However, there are other nonrequired nonzero elements
+required nonzero elements. However, there are nonrequired nonzero elements
 which are also computed as a by-product of the computation of required elements.
 These are important elements for the determination of potentially required elements
 and additionally required elements. Look at the following example,
@@ -1040,7 +965,7 @@ weighting coefficients, $C$ is the coloring number, and $N$ is the
 number of survived nonrequired elements?
 Here, we introduce a new heuristic which increases the number of survived nonrequired elements such that the number of colors remains almost the same.
 
-\subsection{Distance-$2$ coloring}
+\subsection{Distance-$2$ Coloring}
 Our goal here is to increase the number of potentially required elements.
 A potential required element is selected from the nonrequired elements such that
 the number of colors does not increase.
@@ -1074,7 +999,15 @@ for $v\in V_c$ with $\Phi(v)=0$
     $\Phi(maxs[0]) = \Phi(v)$
 \end{lstlisting}
 \end{figure}
-We modify the heuristic presented in \coderef{code.new.d2} as follows.
+We modify the greedy algorithm  presented in \coderef{code.greedy} as follows.
+Our approach in this new heuristic coloring algorithm is based on finding an independent set.
+In the simple graph model, a subset of the vertices $S\subset V$ is
+called an independent set~\cite{bondy2008graph} if no edge between any of these vertices exists,
+$$\forall u,v\in S: (u,v)\notin E.$$
+In the bipartite graph model, we need to change this definition as follow,
+$$\forall u,v\in S: u\notin N_2(v).$$
+For a given vertex $v$, we show an independent set containing the vertex $v$ by $I_v$.
+
 We compute $Nreq(u,v)$ for each element $u\in I_v$
 and color a vertex $w$ from the set $I_v$ with the maximum value of $Nreq(v,w)$
 beside coloring the vertex $v$ in each step and with the same color as $w$.
@@ -1098,7 +1031,7 @@ r & 0 & 0 & 0  \\
 \end{array}\right)
 \label{twocolorings2}
 \end{equation}
-\coderef{code.new.d2} colors the first and second columns with the same color
+\coderef{code.new.d2.nreq} colors the first and second columns with the same color
 in the first step. Then, the third column is colored with the same color as the
 first column since there is no conflict. The fourth column gets the color of
 the third column regarding the algorithm. However, this is not a valid coloring
@@ -1120,7 +1053,7 @@ Considering this problem, we need to check the consistency of coloring
 at the end of algorithm. Therefore, we define the function in \coderef{consistency} in which
 we check if the color of each vertex $v$ is different than its neighbors.
 If it is not the case, we color that neighbour with a new color which is not used so far.
-This means that \coderef{code.new.d2} should be rewritten as \coderef{code.new.d2.consistent},
+This means that \coderef{code.new.d2.nreq} should be rewritten as \coderef{code.new.d2.consistent},
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
 considering the nonrequired elements and checking the consistency.,
@@ -1249,7 +1182,7 @@ number of required edges which are neighbors of the vertex $i$,
 we modify the previous algorithm as in \coderef{code.new.impr1} to
 apply this idea. The set $M_1$ and $M_2\subset M_1$ contain the set of columns with the maximum
 number of nonrequired elements and its subset with the minimal value of required elements.
-The time complexity is still the same as \coderef{code.new.d2}
+The time complexity is still the same as \coderef{code.new.d2.nreq}
 since only an additional part of sorting is computed.
 \figref{bls_add_ex33_compare_max} shows how the number of additionally
 required elements are increased comparing the new modified version with the previous strategy.
@@ -1533,6 +1466,161 @@ the new star bicoloring compared with the older implementation.
 The asymmetric matrix \textit{$crystm01$} is used here.}
 \label{bls_cols_crystm01_old_star_vs_new}
 \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Parallelization}
+\label{s.parallel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+As we saw in \secref{s.precond}, different steps are followed
+to compute the additionally required elements. Here, we look at each of
+these steps and examine how they can be efficiently parallelized by OpenMP.
+
+First, we look at the coloring algorithm.
+There are much literatures for a parallelized coloring algorithm.
+For example,
+{\c{C}}ataly{\"{u}}rek~\cite{cataly2012} introduced an OpenMP parallelized
+algorithm which computes the same number of colors as the serial version.
+However, there are two points in each step of the algorithm in which two threads
+need to be synchronized.
+However, we focus on another algorithm from Rokos et al~\cite{Rokos2015}
+which presents an algorithm in which only a point of synchronization is
+needed. The number of colors also remains near to the number of colors
+in the serial version. A bipartite version of the algorithm can be easily
+adapted as in \coderef{omp.greedy.bip}. This algorithm first colors the vertices
+greedily and then corrects the false colorings which can happen.
+\begin{figure}
+\begin{lstlisting}[caption=A OpenMP parallelized version of greedy algorithm
+adapted for the bipartite graph.,label=omp.greedy.bip,mathescape]
+function d2_color_omp($G$,$V$)
+#progrma omp parallel for
+for $v\in V$
+$forbiddenColors[\Phi(n)] = v$
+$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+#pragma omp barrier
+$U_0 = V$
+$i = 1$
+while $U_{i-1}\neq \emptyset$
+$L=\emptyset$
+#pragma omp parallel for
+for $v\in U_{i-1}$
+if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v)$
+$forbiddenColors[\Phi(n)] = v$
+$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+#pragma omp barrier
+$U_i = L$
+$i = i+1$
+\end{lstlisting}
+\end{figure}
+We apply this idea of parallelization to our new coloring heuristics.
+It means we compute the coloring like before by a parallelized loop.
+Then, we correct the coloring. \coderef{code.new.bip.omp} shows the parallelized
+version of \coderef{omp.greedy.bip}.
+\begin{figure}
+\begin{lstlisting}[caption=New coloring heuristic in the bipartite graph model
+parallelized by OpenMP,label=code.new.bip.omp,mathescape]
+function d2_color_nreq($G_b$,$\alpha$)
+#progrma omp parallel for
+for $v\in V_c$ with $\Phi(v)=0$
+$forbiddenColors[0] = v$
+if $\exists n\in N_2(v): (v,n)\in E_i$
+for $n\in N_2(v)$
+if $\Phi(n) \neq 0$
+$forbiddenColors[\Phi(n)] = v$
+
+$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
+$I_v=\{u\in V_c: u\notin N_2(v)\}$
+$nreq_v = \{n\in N_2(v):(n,v)\notin E_i\}$
+for $i \in I_v$
+$nreq_i = \{n\in N_2(i):(n,i)\notin E_i\}$
+$req_i = \{n\in N_2(i):(n,i)\in E_i\}$
+$mapVtoNreq = mapVtoNreq \cup (i , count (nreq_i - nreq_v))$
+$mapVtoreq = map \cup (i , count (req_i))$
+$maxs = \{ a\in keys(map): map[a] = max(values(mapVtoNreq))\}$
+$mins = \{ a\in keys(map): map[a] = min(values(mapVtoNreq))\}$
+$minReq = \{ a\in maxs: mapVtoreq[a] = min(values(mapVtoreq))\}$
+$\Phi(minReq) = \Phi(v)$
+for $i\in\{0,1,...,\alpha\}$
+$\Phi(mins[i]) = \Phi(v)$
+
+#pragma omp barrier
+$U_0 = V$
+$i = 1$
+while $U_{i-1}\neq \emptyset$
+$L=\emptyset$
+#pragma omp parallel for
+for $v\in U_{i-1}$
+if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v)$
+$forbiddenColors[\Phi(n)] = v$
+$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
+#pragma omp barrier
+$U_i = L$
+$i = i+1$
+\end{lstlisting}
+\end{figure}
+
+We color the bipartite graph interpreted from the matrix \textit{Cavity16}
+from the sparse matrix collection of the University of Florida.
+The timing are all from the computation carried on an Intel Core i5 with 8 Gb RAM.
+Table~\ref{omp.res} shows the results of this computation.
+Here, we change the number of threads from $1$ to $10$ shown in the first column.
+The second column shows the computation time in milliseconds. The third column
+is also the number of colors which changes based on the number of colors.
+Table~\ref{omp.res}(Left) shows the results of computation of \coderef{omp.greedy.bip}
+and Table~\ref{omp.res}(Right) for \coderef{code.new.bip.omp}.
+Also \figref{speedups} (Left) and \figref{speedups} (Right) visualize the speedup
+based on the number of threads.
+\begin{figure}
+\begin{tabular}{|c|c|c|}
+\hline
+Threads & Time & Colors \\\hline
+1 & 42.8745 & 47 \\\hline
+2 & 33.9665 & 47 \\\hline
+3 & 25.2741 & 48 \\\hline
+4 & 20.6863 & 48 \\\hline
+5 & 21.4943 & 47 \\\hline
+6 & 20.1796 & 50 \\\hline
+7 & 17.9640 & 49 \\\hline
+8 & 16.1068 & 52 \\\hline
+9 & 15.4174 & 47 \\\hline
+10 & 16.1545 & 47 \\\hline
+\end{tabular}\hfill
+\begin{tabular}{|c|c|c|}
+\hline
+Threads & Time & Colors \\\hline
+1 & 96.795 & 48 \\\hline
+2 & 75.744 & 47 \\\hline
+3 & 55.605 & 49 \\\hline
+4 & 49.335 & 49 \\\hline
+5 & 49.360 & 47 \\\hline
+6 & 49.365 & 51 \\\hline
+7 & 45.342 & 47 \\\hline
+8 & 43.254 & 51 \\\hline
+9 & 40.742 & 48 \\\hline
+10 & 39.416 & 47 \\\hline
+\end{tabular}
+\caption{
+(Left) The results of computation of greedy coloring parallelized by OpenMP.
+(Right) The results of computation of new heuristics parallelized by OpenMP}
+\label{omp.res}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=0.44\linewidth]{ths_spd.jpg}\hfill
+\includegraphics[width=0.47\linewidth]{ths_spd2.jpg}
+\caption{
+(Left) Speedup for the computation of greedy coloring in bipartite graph model parallelized by OpenMP.
+(Right)Speedup for the computation of new coloring heurtistic in bipartite graph model parallelized by OpenMP.
+}
+\label{speedups}
+\end{figure}
+
+This idea can be applied to the new heuristic for star bicoloring which is a potential future work.
+Apart from the parallelization of coloring, the block diagonal sparsification makes a suitable
+matrix for parallelization. It is well known the fill-ins are generated only in the nonzero blocks in such matrices. This observation gives a direct idea of parallelization in which each process
+works on each block. We do not go into details since it is already discussed in previous literature like~\cite{parblockilu}. However, it does not mean that the same idea can be applied in computation of
+additionally required elements since those elements are outside the blocks.
+
+%\cite{mpi_greedy_coloring}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Maximizing Additionally Required Elements}
 \label{s.max.add.req}
@@ -1844,7 +1932,7 @@ This is in contrast to the minimum number of colors which we are searching for,
 in the automatic differentiation.
 
 %\subsection{Consdiering the positions of required elements}
-\subsection{Predicting the additionally required elements}
+\subsection{Predicting Additionally Required Elements}
 We consider algorithms to increase the potentially required elements in
 ~\secref{s.max.pot.req} which increases the number of additionally required elements
 persumably. Here, we suggest a heuristic to predict if a nonrequired element would be an
@@ -2094,162 +2182,8 @@ for $e=(v,u)\in E_R$
 \end{lstlisting}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Parallelization}
-\label{s.parallel}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-As we saw in \secref{s.precond}, different steps are followed
-to compute the additionally required elements. Here, we look at each of
-these steps and examine how they can be efficiently parallelized by OpenMP.
-
-First, we look at the coloring algorithm.
-There are much literatures for a parallelized coloring algorithm.
-For example,
-{\c{C}}ataly{\"{u}}rek~\cite{cataly2012} introduced an OpenMP parallelized
-algorithm which computes the same number of colors as the serial version.
-However, there are two points in each step of the algorithm in which two threads
-need to be synchronized.
-However, we focus on another algorithm from Rokos et al~\cite{Rokos2015}
-which presents an algorithm in which only a point of synchronization is
-needed. The number of colors also remains near to the number of colors
-in the serial version. A bipartite version of the algorithm can be easily
-adapted as in \coderef{omp.greedy.bip}. This algorithm first colors the vertices
-greedily and then corrects the false colorings which can happen.
-\begin{figure}
-\begin{lstlisting}[caption=A OpenMP parallelized version of greedy algorithm
-adapted for the bipartite graph.,label=omp.greedy.bip,mathescape]
-function d2_color_omp($G$,$V$)
-#progrma omp parallel for
-for $v\in V$
-$forbiddenColors[\Phi(n)] = v$
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-#pragma omp barrier
-$U_0 = V$
-$i = 1$
-while $U_{i-1}\neq \emptyset$
-$L=\emptyset$
-#pragma omp parallel for
-for $v\in U_{i-1}$
-if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v)$
-$forbiddenColors[\Phi(n)] = v$
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-#pragma omp barrier
-$U_i = L$
-$i = i+1$
-\end{lstlisting}
-\end{figure}
-We apply this idea of parallelization to our new coloring heuristics.
-It means we compute the coloring like before by a parallelized loop.
-Then, we correct the coloring. \coderef{code.new.bip.omp} shows the parallelized
-version of \coderef{omp.greedy.bip}.
-\begin{figure}
-\begin{lstlisting}[caption=New coloring heuristic in the bipartite graph model
-parallelized by OpenMP,label=code.new.bip.omp,mathescape]
-function d2_color_nreq($G_b$,$\alpha$)
-#progrma omp parallel for
-for $v\in V_c$ with $\Phi(v)=0$
-$forbiddenColors[0] = v$
-if $\exists n\in N_2(v): (v,n)\in E_i$
-for $n\in N_2(v)$
-if $\Phi(n) \neq 0$
-$forbiddenColors[\Phi(n)] = v$
-
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
-$I_v=\{u\in V_c: u\notin N_2(v)\}$
-$nreq_v = \{n\in N_2(v):(n,v)\notin E_i\}$
-for $i \in I_v$
-$nreq_i = \{n\in N_2(i):(n,i)\notin E_i\}$
-$req_i = \{n\in N_2(i):(n,i)\in E_i\}$
-$mapVtoNreq = mapVtoNreq \cup (i , count (nreq_i - nreq_v))$
-$mapVtoreq = map \cup (i , count (req_i))$
-$maxs = \{ a\in keys(map): map[a] = max(values(mapVtoNreq))\}$
-$mins = \{ a\in keys(map): map[a] = min(values(mapVtoNreq))\}$
-$minReq = \{ a\in maxs: mapVtoreq[a] = min(values(mapVtoreq))\}$
-$\Phi(minReq) = \Phi(v)$
-for $i\in\{0,1,...,\alpha\}$
-$\Phi(mins[i]) = \Phi(v)$
-
-#pragma omp barrier
-$U_0 = V$
-$i = 1$
-while $U_{i-1}\neq \emptyset$
-$L=\emptyset$
-#pragma omp parallel for
-for $v\in U_{i-1}$
-if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v)$
-$forbiddenColors[\Phi(n)] = v$
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
-#pragma omp barrier
-$U_i = L$
-$i = i+1$
-\end{lstlisting}
-\end{figure}
-
-We color the bipartite graph interpreted from the matrix \textit{Cavity16}
-from the sparse matrix collection of the University of Florida.
-The timing are all from the computation carried on an Intel Core i5 with 8 Gb RAM.
-Table~\ref{omp.res} shows the results of this computation.
-Here, we change the number of threads from $1$ to $10$ shown in the first column.
-The second column shows the computation time in milliseconds. The third column
-is also the number of colors which changes based on the number of colors.
-Table~\ref{omp.res}(Left) shows the results of computation of \coderef{omp.greedy.bip}
-and Table~\ref{omp.res}(Right) for \coderef{code.new.bip.omp}.
-Also \figref{speedups} (Left) and \figref{speedups} (Right) visualize the speedup
-based on the number of threads.
-\begin{figure}
-\begin{tabular}{|c|c|c|}
-\hline
-Threads & Time & Colors \\\hline
-1 & 42.8745 & 47 \\\hline
-2 & 33.9665 & 47 \\\hline
-3 & 25.2741 & 48 \\\hline
-4 & 20.6863 & 48 \\\hline
-5 & 21.4943 & 47 \\\hline
-6 & 20.1796 & 50 \\\hline
-7 & 17.9640 & 49 \\\hline
-8 & 16.1068 & 52 \\\hline
-9 & 15.4174 & 47 \\\hline
-10 & 16.1545 & 47 \\\hline
-\end{tabular}\hfill
-\begin{tabular}{|c|c|c|}
-\hline
-Threads & Time & Colors \\\hline
-1 & 96.795 & 48 \\\hline
-2 & 75.744 & 47 \\\hline
-3 & 55.605 & 49 \\\hline
-4 & 49.335 & 49 \\\hline
-5 & 49.360 & 47 \\\hline
-6 & 49.365 & 51 \\\hline
-7 & 45.342 & 47 \\\hline
-8 & 43.254 & 51 \\\hline
-9 & 40.742 & 48 \\\hline
-10 & 39.416 & 47 \\\hline
-\end{tabular}
-\caption{
-(Left) The results of computation of greedy coloring parallelized by OpenMP.
-(Right) The results of computation of new heuristics parallelized by OpenMP}
-\label{omp.res}
-\end{figure}
-
-\begin{figure}
-\includegraphics[width=0.44\linewidth]{ths_spd.jpg}\hfill
-\includegraphics[width=0.47\linewidth]{ths_spd2.jpg}
-\caption{
-(Left) Speedup for the computation of greedy coloring in bipartite graph model parallelized by OpenMP.
-(Right)Speedup for the computation of new coloring heurtistic in bipartite graph model parallelized by OpenMP.
-}
-\label{speedups}
-\end{figure}
-
-This idea can be applied to the new heuristic for star bicoloring which is a potential future work.
-Apart from the parallelization of coloring, the block diagonal sparsification makes a suitable
-matrix for parallelization. It is well known the fill-ins are generated only in the nonzero blocks in such matrices. This observation gives a direct idea of parallelization in which each process
-works on each block. We do not go into details since it is already discussed in previous literature like~\cite{parblockilu}. However, it does not mean that the same idea can be applied in computation of
-additionally required elements since those elements are outside the blocks.
-
-%\cite{mpi_greedy_coloring}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{PreCol 1.0}
+\section{The Computational Package: PreCol 1.0}
 \label{s.extend}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We develop a software to compute the different algorithm that we propose here.
