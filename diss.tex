@@ -877,8 +877,10 @@ We adapt the greedy algorithm in \secref{s.max.pot.req} and \secref{s.max.add.re
 and addtioanlly required elements are increased.
 Later, 
 we search for a better heuristic for
-the special case of partial coloring restricted to diagonals in~\secref{s.part.color.diag}. 
-Finally, we introduce our computational package \textit{PrecOl} in~\secref{s.extend} that computes the 
+the special case of partial coloring restricted to diagonals in~\secref{s.part.color.diag}.
+Later, we discuss the first ideas toward a new heuristics based on the exact coloring in small
+subgraphs in~\secref{s.exact}.
+Finally, we introduce our computational package \textit{PreCol} in~\secref{s.extend} that computes the 
 unidirectional and bidirectional (partial-)coloring with different algorithms
 as well as the ILU preconditioning. 
 
@@ -2181,6 +2183,86 @@ for $e=(v,u)\in E_R$
     $\Phi(v) = 0$
 \end{lstlisting}
 \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Heuristic based on Exact Coloring of Small Subgraphs}
+\label{s.exact}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Recently, Bjorklund~\cite{bjorklund2009} proposed a coloring based on 
+the set partitioning via inclusion-exclusion which has the minimal
+computational complexity between the known exact algorithms.
+Here, we discuss
+first ideas for an effective heuristcs in which we apply this exact coloring
+on the small subgraphs. We show also with a set of examples that 
+this heuristc generates a effective coloring with fewer number of colors
+compared to the classical greedy coloring. 
+The complexity is still high enough that we can not compute the coloring
+of large matrices with this algorithm in an efficient time. 
+
+The idea is to dived a large graphs to small subgraphs and apply an exact coloring
+on these small subgraphs. Then, integrate the remaining parts into these colored
+subgraphs.
+More clearly, these are the steps which we follow,
+\begin{itemize}
+\item find a vertex separator for example by the nested dissection algorithm
+\item remove the vertex separator
+\item find the exact coloring of the remaining components separtely
+\item color the subgraph of vertex separator in the original graph considering
+the computed exact coloring in the remaining components 
+\end{itemize}
+
+A question is if it gives a better coloring at all since the coloring of vertex separator
+can lead us to a worse coloring.
+We build an example in which we found a better coloring by the second strategy.
+We first build a graph and its heuristic coloring which generates a worse coloring
+than an exact coloring as shown in~\figref{f.coloring.graph} (Left). If we follow
+the numbering of the vertices as the ordering for a greedy coloring, we need
+at least $4$ colors while the exact coloring needs only $3$ colors.
+Now, we make a copy of this graph and add an extra vertex $15$ as in
+~\figref{f.coloring.graph} (Right). The vertex $15$ is actually the only element of
+a vertex separator for the new graph. We added the incident edges of $15$ such that
+the resulting graph becomes a worst case for the greedy coloring here.
+In this new graph, the greedy coloring needs at least $5$ colors
+as in~\figref{f.coloring.compared} (Left).
+
+Suppose we color first the components after removing the vertex $15$ separately with
+an exact coloring which needs only $3$ colors. Now, even a bad implementation of the
+new idea would need $4$ colors, i.e. one colors fewer than the greedy algorithm.
+A good implementation color the graph only with $3$ colors.
+The construction of given example can go further by create several copies of 
+this graph, make the separator part a complete graph, and connect the separator vertices
+with same fashion to each copy.
+\begin{figure}
+\centering
+\includegraphics[width=0.18\linewidth]{coloring0}
+\hfill
+\includegraphics[width=0.48\linewidth]{coloring1}
+\caption{
+An example of a graph in which the division into two parts can be seen directly.
+The numbering of the graph vertices are the ordering that the greedy coloring follows.
+}
+\label{f.coloring.graph}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.48\linewidth]{coloring2}
+\hfill
+\includegraphics[width=0.48\linewidth]{coloring3}
+\caption{Comparison of colorings by a greedy coloring and
+by the new suggested coloring.}
+\label{f.coloring.compared}
+\end{figure}
+
+For a further evaluation of this algorithm, we use the toolbox \textit{MESHND}
+of MATLAB to generate
+a set of matrix and its equivalent nested dissection ordering.
+
+implementation details??
+
+Although this algorithm seems convincing, the computation of nested dissection is still
+a tricky part.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Computational Package: PreCol 1.0}
