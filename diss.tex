@@ -2185,21 +2185,66 @@ for $e=(v,u)\in E_R$
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A Heuristic based on Exact Coloring of Small Subgraphs}
+\section{A New Heuristic based on Exact Coloring of Small Subgraphs}
 \label{s.exact}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Recently, Bjorklund~\cite{bjorklund2009} proposed a coloring based on 
-the set partitioning via inclusion-exclusion which has the minimal
-computational complexity between the known exact algorithms.
-Here, we discuss
-first ideas for an effective heuristcs in which we apply this exact coloring
-on the small subgraphs. We show also with a set of examples that 
-this heuristc generates a effective coloring with fewer number of colors
-compared to the classical greedy coloring. 
-The complexity is still high enough that we can not compute the coloring
-of large matrices with this algorithm in an efficient time. 
+In the classical paper
+\cite{karp:1972}, the graph coloring problem is proved to be NP-complete for general
+graphs with $k\ge 3$.
+As discussed in \cite{Fomin2013}, a prominent approach used by various graph coloring
+algorithms is based on finding independent sets. A subset of the vertices $S\subset V$ is
+called an independent set if there is no edge between any of these vertices, i.e.,
+$$
+\forall u,v\in S: (u,v)\notin E.
+$$
 
-The idea is to dived a large graphs to small subgraphs and apply an exact coloring
+An exhaustive search iterating over all possibilities to color the $n$ vertices using $k$
+colors has the computational complexity $k^n$. However, the dynamic programming approach
+can improve this complexity. The fastest exact algorithm of graph coloring is proposed by
+Bj{\"o}rklund, Husfeldt, and Koivisto~\cite{bjorklund2009} and has the complexity
+$O(2.2416^n)$. The idea behind this recent algorithm is based on the principle of
+inclusion and exclusion, which leads to the following definition.
+
+Let $A$ and~$B$ denote two sets whose elements are also sets. Their product, $A\times B$,
+is then defined as
+$$
+A\times B := \bigcup_{a\in A, b\in B}{a \cup b}.
+$$
+For example, if $A=\bigl\{ \{1\}, \{3,4\} \bigr\}$ and $B=\bigl\{ \{2\}, \{3,5\} \bigr\}$, then
+their product is given by
+\begin{equation}
+\label{eq:axb}
+A \times B=\bigl\{ \{1,2\}, \{1,3,5\}, \{2,3,4\}, \{3,4,5\} \bigr\} .
+\end{equation}
+
+The graph coloring algorithm proposed in \cite{bjorklund2009} consists of computing $k$
+products of a set $I$, i.e.,
+$$
+I^k := I \times I  \times \cdots \times I .
+$$
+Here, $I$ is the set of all independent sets of the graph~$G$. Then, the chromatic number
+of $G$ is shown to be the smallest~$k$ such that $V\in I^k$.
+
+In general, larger powers of $I$ are necessary for the solution of graph coloring
+problems. We stress that these powers may be difficult to compute. An elegant way
+introduced in~\cite{bjorklund2009} is to compute these powers via zeta transforms. The
+underlying idea is based on first transforming a set $A$ into its zeta transform defined
+by
+$$
+Z(A) := \cup_{a \subset A} a.
+$$
+The product $A \times B$ is then computed by first transforming $A$ and $B$ into $Z(A)$
+and $Z(B)$ and then using the identity
+$$
+A\times B = Z^{-1} \bigl( Z(A) \cup Z(B) \bigr)
+$$
+where the inverse of the zeta transform can be defined similarly. This way, the product
+of sets is transformed into a union of sets in the zeta space. Finally, there is a way to
+compute a zeta transform and its inverse efficiently by means of a so-called fast zeta
+transform \cite{Knuth:1997:ACP:270146}.
+
+Here, we introduce a new heuristic based on this exact coloring.
+The idea is to divide a large graphs to small subgraphs and apply an exact coloring
 on these small subgraphs. Then, integrate the remaining parts into these colored
 subgraphs.
 More clearly, these are the steps which we follow,
@@ -2255,8 +2300,35 @@ by the new suggested coloring.}
 \end{figure}
 
 For a further evaluation of this algorithm, we use the toolbox \textit{MESHND}
-of MATLAB to generate
-a set of matrix and its equivalent nested dissection ordering.
+of MATLAB to generate a set of matrices and their equivalent nested dissection ordering.
+The command \textit{meshnd($m$,$n$,$k$)} constructs an $m$-by-$n$-by-$k$ 3D mesh $M$
+and computes the nested dissection ordering of the corresponding sparse matrix.
+To get the corresponding sparse matrix, we need to call the command 
+\textit{meshsparse($M$,$S$)} in which the variable $S$ specifies the size
+of the stencil.
+Table~\ref{table.exact.greedy} compares the number of colors in our new 
+heuristics considering the exact coloring on subgraphs $\chi_{x}$ and 
+the number of colors in the greedy coloring.
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Matrix & Size & Nonzeros & Stencil & Greedy Coloring & $\chi_{x}$ \\\hline
+\textit{meshnd(10,10,4)} & $400$ & $1740$ & $7$ & $14$ & $12$\\\hline
+\textit{meshnd(10,10,5)} & $500$ & $3100$ & $7$ & $15$ & $12$\\\hline
+\textit{meshnd(5,10,10)} & $500$ & $3100$ & $7$ & $15$ & $12$\\\hline
+\textit{meshnd(10,10,10)} & $1000$ & $6400$ & $7$ & $16$ & $13$\\\hline
+\textit{meshnd(20,20,20)} & $8000$ & $53600$ & $7$ & $15$ & $13$\\\hline
+\textit{meshnd(20,30,40)} & $24000$ & $162800$ & $7$ & $17$ & $13$\\\hline
+\textit{meshnd(20,20,20)} & $8000$ & $67280$ & $9$ & $16$ & $10$\\\hline
+\textit{meshnd(20,30,40)} & $24000$ & $204160$ & $9$ & $17$ & $10$\\\hline
+\end{tabular}
+\caption{
+}
+\label{table.exact.greedy}
+\end{table}
+
+
 
 implementation details??
 
