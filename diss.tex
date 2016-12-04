@@ -2299,6 +2299,15 @@ by the new suggested coloring.}
 \label{f.coloring.compared}
 \end{figure}
 
+We saw that large powers of $I$ are comptued during the algorithm.
+The storage size increases dramatically when the number of vertices
+in the graph increases. To solve the storage size, we consider each 
+subset as a binary number as follows. A binary number in which
+the number of bits is the number of vertices, represents a subset.
+It means if the $i$th bit is $1$ then the $i$th element is in that subset.
+We used the class \text{bitset} from C++ to decrease the memory usage as much
+as possible.
+
 For a further evaluation of this algorithm, we use the toolbox \textit{MESHND}
 of MATLAB to generate a set of matrices and their equivalent nested dissection ordering.
 The command \textit{meshnd($m$,$n$,$k$)} constructs an $m$-by-$n$-by-$k$ 3D mesh $M$
@@ -2323,17 +2332,13 @@ Matrix & Size & Nonzeros & Stencil & Greedy Coloring & $\chi_{x}$ \\\hline
 \textit{meshnd(20,20,20)} & $8000$ & $67280$ & $9$ & $16$ & $10$\\\hline
 \textit{meshnd(20,30,40)} & $24000$ & $204160$ & $9$ & $17$ & $10$\\\hline
 \end{tabular}
-\caption{
-}
+\caption{The number of colors in the new heuristics considering the exact coloring on subgraphs
+compared with the number of colors in the greedy coloring.}
 \label{table.exact.greedy}
 \end{table}
 
-
-
-implementation details??
-
-Although this algorithm seems convincing, the computation of nested dissection is still
-a tricky part.
+%Although this algorithm seems convincing, the computation of nested dissection is still
+%a tricky part.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
