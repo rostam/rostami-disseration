@@ -134,7 +134,7 @@ die zu größe dünnbesetze Jacobi-Matrix führen. Deshalb gibt es viele Rechech
 die Struktur von Matrix ausnutzt, um die Speicher reduzieren.
 
 
-\chapter*{Acknowledgements}
+\chapter*{Acknowledgments}
 \noindent This project would not have been possible without
 the support of many people. I must express my first gratitude
 towards \textit{Prof. Dr. Martin B\"ucker} for his continuous
@@ -270,7 +270,7 @@ For general sparsity patterns,
 it is not straightforward to figure out how to linearly combine columns and rows such that
 the computational cost is minimized. Hence, we introduce the combinatorial
 optimization problems~\ref{p.seed.uni} and ~\ref{p.seed.bid}
-for unidirectional or bidirectional compressions to determine the nonzero elements of huge Jacobian matrices efficiently.
+for unidirectional or bidirectional compression to determine the nonzero elements of huge Jacobian matrices efficiently.
 
 \begin{problem}[\MinUniCom]
 \label{p.seed.uni} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
@@ -308,7 +308,7 @@ $E$ if and only if the columns $J(:,i)$ and $J(:,j)$ represented by $v_i$ and $v
 a nonzero element in at least a same row position.
 \end{definition}
 
-As we have a graph model intrepreted from our Jacobian matrix in \defref{d:cig},
+As we have a graph model interpreted from our Jacobian matrix in \defref{d:cig},
 the grouping of columns can be encoded in the following well-know graph coloring problem.
 %
 \begin{definition}[Coloring]
@@ -487,7 +487,7 @@ section.
 
 \subsubsection{Combinatorial Model}
 Based on \cite{Gebremedhin05whatcolor,Lulfesmann2012Fap}, the definitions
-of the full Jacobian colorings are adapted as follows,
+of the full Jacobian coloring are adapted as follows,
 \begin{definition}[Restricted distance-$2$ coloring]\label{d.coloring.d2}
 Given a bipartite graph $G=(V_c\cup V_r, E)$ and a subset of required edges
 $E_R\subset E$ , then a mapping $\Phi:V_c \to
@@ -875,7 +875,7 @@ A short description of these ordering are available in \appref{app.ord}.
 
 We adapt the greedy algorithm in \secref{s.max.pot.req} and \secref{s.max.add.req}
  such that the number of potentially required elements
-and addtioanlly required elements are increased.
+and additionally required elements are increased.
 Later, 
 we search for a better heuristic for
 the special case of partial coloring restricted to diagonals in~\secref{s.part.color.diag}.
@@ -1055,7 +1055,7 @@ for $v \in V_c$
 Considering this problem, we need to check the consistency of coloring
 at the end of algorithm. Therefore, we define the function in \coderef{consistency} in which
 we check if the color of each vertex $v$ is different than its neighbors.
-If it is not the case, we color that neighbour with a new color which is not used so far.
+If it is not the case, we color that neighbor with a new color which is not used so far.
 This means that \coderef{code.new.d2.nreq} should be rewritten as \coderef{code.new.d2.consistent},
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
@@ -1372,7 +1372,7 @@ can be applied here. However, it can survive less additionally required
 elements since a survived nonrequired elements from the column compression
 it is not necessary a survived nonrequired elements form the row compression.
 
-We consider the implemenetation of star bicoloring in \coderef{orig.star.bicoloring} based on
+We consider the implementation of star bicoloring in \coderef{orig.star.bicoloring} based on
 the algorithm from Lülfesmann~\cite{Lulfesmann2012Fap}.
 Here, the notation $G[S]$ means the graph induces on the edge set $S$.
 \begin{figure}
@@ -1413,7 +1413,7 @@ while $E_R^{'}$ is not empty
 This algorithm processes a vertex either from column vertices
 or row vertices with a maximum degree in each step.
 We first did some computations to find the influence of $\rho$ on the
-number of additioanlly required elements. The value of $\rho$ is a weightening factor which
+number of additionally required elements. The value of $\rho$ is a weightening factor which
 is a balance between columns or row vertices. A higher value of $\rho$
 makes the compression mostly in the column vertices and vice versa.
 There are some discussion on how to choose the value of $\rho$ in
@@ -1489,7 +1489,7 @@ which presents an algorithm in which only a point of synchronization is
 needed. The number of colors also remains near to the number of colors
 in the serial version. A bipartite version of the algorithm can be easily
 adapted as in \coderef{omp.greedy.bip}. This algorithm first colors the vertices
-greedily and then corrects the false colorings which can happen.
+greedily and then corrects the false coloring which can happen.
 \begin{figure}
 \begin{lstlisting}[caption=A OpenMP parallelized version of greedy algorithm
 adapted for the bipartite graph.,label=omp.greedy.bip,mathescape]
@@ -1611,7 +1611,7 @@ Threads & Time & Colors \\\hline
 \includegraphics[width=0.47\linewidth]{ths_spd2.jpg}
 \caption{
 (Left) Speedup for the computation of greedy coloring in bipartite graph model parallelized by OpenMP.
-(Right)Speedup for the computation of new coloring heurtistic in bipartite graph model parallelized by OpenMP.
+(Right)Speedup for the computation of new coloring heuristic in bipartite graph model parallelized by OpenMP.
 }
 \label{speedups}
 \end{figure}
@@ -1957,7 +1957,7 @@ $pr_k^t = \{\{ r_i,c_j,...,c_a\},...,\{ r_i,c_j,...,c_b\}\}$.
 Equivalently, we define the set of all fill paths ending to the vertex $c_j$
 passing the edge $t$ with the size of $k$ as
 $pl_k^t = \{ \{c_d,...,r_i,c_j\},..., \{c_e,...,r_i,c_j\}\}$.
-With these defintions, \coderef{code.new.d2.add.fp} is a coloring heuristic
+With these definitions, \coderef{code.new.d2.add.fp} is a coloring heuristic
 for distance-$2$ coloring which checks if a survived nonzero element can be an
 additionally required element.
 \begin{figure}
@@ -2044,8 +2044,8 @@ This transformation includes two steps:
 to the valid star bicoloring $\Phi_{sb}^{*}$ 
 where exactly one of both incident vertices of each required edge is colored nonzero.
 \item The valid coloring $\Phi_{sb}^{*}$ is transformed 
-to the valid starbicoloring $\Phi_{sb}^{'}$ where all row vertices are colored by zero.
-This starbicoloring is also a distance-$2$ coloring.
+to the valid star bicoloring $\Phi_{sb}^{'}$ where all row vertices are colored by zero.
+This star bicoloring is also a distance-$2$ coloring.
 \end{enumerate}
 
 Looking at the proof, this theorem can be generalized by considering any
@@ -2071,10 +2071,10 @@ with the number of colors $\chi_{d2}$ such that $\chi_{sp} \leq \chi_{d2}$.
 These numbers of colors can be different than the minimal number of colors.
 \end{theorem}
 This theorem is a generalization of Theorem 3.7 of \cite{Lulfesmann2012Fap}.
-Theorem 3.7 of \cite{Lulfesmann2012Fap} discusses only the mapping with minimal colorings
+Theorem 3.7 of \cite{Lulfesmann2012Fap} discusses only the mapping with minimal coloring
 and the partial coloring restricted to diagonal elements. We consider any coloring
 and the partial coloring restricted to a matching. This generalization gives us an idea
-to find new heuristics for colorings. The proof of Theorem~\ref{t.matching}
+to find new heuristics for coloring. The proof of Theorem~\ref{t.matching}
 is resulted from the proof from \cite{Lulfesmann2012Fap} considering two following points,
 \begin{itemize}
 \item The minimality of mappings are only used to show the equality in the number of colors which is not
@@ -2142,7 +2142,7 @@ find a better coloring because of the inequality in the theorem.
 As theorem proposes, every required nonzero element
 is determined by either a column or a row and not both. Hence, a heuristic
 can iterate on the required element and selects between the row and column of
-the nonzero in favour of minimal coloring.
+the nonzero in favor of minimal coloring.
 Thus, the star bicoloring heuristic can be rewritten for a better computational complexity.
 Regarding these ideas, the star bicoloring is rewritten as in \coderef{star.diagonal}.
 \begin{figure}
@@ -2150,7 +2150,7 @@ Regarding these ideas, the star bicoloring is rewritten as in \coderef{star.diag
 caption=An improved star bicoloring restricted to diagonal elements.
 As the theorem says this coloring generates an equivalent distance-$2$ coloring.,
 label=star.diagonal,mathescape]
-funtion star_diag($G=(V_r\cup V_c)$, $E_R$)
+function star_diag($G=(V_r\cup V_c)$, $E_R$)
 for $v\in V_c$
   $\Phi(v)=-1$
   $forbiddenColors1[v] = 0$
@@ -2189,7 +2189,7 @@ for $e=(v,u)\in E_R$
 \section{A new heuristic based on exact coloring of small subgraphs}
 \label{s.exact}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Karp!\cite{karp:1972} proves that the graph coloring problem is an NP-complete problem
+Karp~\cite{karp:1972} proves that the graph coloring problem is an NP-complete problem
 for general graphs.
 As discussed in \cite{Fomin2013}, a prominent approach used by various graph coloring
 algorithms is based on finding independent sets. A subset of the vertices $S\subset V$ is
@@ -2400,7 +2400,7 @@ Section~\ref{s.interfaces}.
 \centering
 \includegraphics[width=0.52\textwidth]{new_struct}
 \caption{
-The software Precol and its two interfaces written in MATLAB and Java are visualized.}
+The software PreCol and its two interfaces written in MATLAB and Java are visualized.}
 \label{f.structure}
 \end{figure}
 %-----------------------------------------------------------------------------------------------
@@ -2538,7 +2538,7 @@ from the following list,
 \item Removing, adding, or coloring a vertex
 \item Removing, adding, or coloring an edge
 \item Changing the positions of vertices
-\item Permutating matrix columns or rows or both.
+\item Permuting matrix columns or rows or both.
 \item Coloring any cell, column, or row of matrix
 \end{itemize}
 
@@ -2548,7 +2548,7 @@ The graph model can be from one of the following types,
 \begin{itemize}
 \item Simple graph: an undirected graph without self-loops considering the given matrix as an adjacency matrix of graph.
 \item Column-intersection graph: the graph explained in \defref{d:cig}.
-\item Directed graph: the directed graph modle explained in \cite{Gebremedhin05whatcolor}.
+\item Directed graph: the directed graph model explained in \cite{Gebremedhin05whatcolor}.
 \item Bipartite graph: the bipartite graph model explained in \defref{d.bip.graph}.
 \end{itemize}
 
@@ -3036,7 +3036,7 @@ or by elements as follows,
 \vek{y} \leftarrow \mat{A} \vek{x}
 \end{equation}
 where the $N$-dimensional vector $\vek{y}$ is the result of applying \mat{A} to some
-given $N$-dimen\-sional vector $\vek{x}$. Then, the $i$th entry of~$\vek{y}$ is given by
+given $N$-dimensional vector $\vek{x}$. Then, the $i$th entry of~$\vek{y}$ is given by
 \begin{equation}
 \label{e.mvp}
 y_i = \sum_{j \text{ with } a_{ij} \neq 0} a_{ij} \cdot x_j ,
