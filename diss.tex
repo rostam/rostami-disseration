@@ -128,6 +128,7 @@ At the second part of this thesis, we introduce an interactive educational modul
 tricky concepts as well as other concepts from combinatorial scientific computing in the classroom.
 
 \chapter*{Zusammenfassung}
+
 Die Lösung von Real-world Anwendungen basieren oft auf der Lösung von Lineares Gleichungssystem,
 die zu größe dünnbesetze Jacobi-Matrix führen. Deshalb gibt es viele Rechechen, die 
 die Struktur von Matrix ausnutzt, um die Speicher reduzieren.
@@ -151,7 +152,7 @@ In \textit{Combinatorial Scientific Computing} (CSC), it is common to solve the 
 
 The origin of the scientific computing problems in this thesis is the solution of a linear equation whose coefficient matrix is a sparse, large, and nonsingular Jacobian matrix $J$. 
 This Jacobian matrix is computed by Automatic Differentiation (AD)~\cite{Griewank2008EDP,Rall1981ADT} without numerical errors.
-AD computes actually a product of Jacobian and a give so-called seed matrix.
+AD computes a product of Jacobian and a give so-called seed matrix.
 A careful choice of the seed matrix would reduce the computational effort as well as 
 the storage which can be formulated to different graph problems.
 
@@ -174,7 +175,7 @@ coloring algorithm. Also, we look at the ordering for the ILU preconditioning.
 In this chapter, we introduce a new software
 containing new heuristic algorithm.
 \chapref{explain} discuss an interactive educational module
-which is designed to teach the algorithms from the combinatorial scientific computing in the classroom.
+which is designed to teach algorithms from the combinatorial scientific computing in the classroom.
 Finally, the conclusion and future work come in \chapref{conc}.
 
 \chapter{Graph Models from Scientific Computing}
@@ -189,7 +190,7 @@ Finally, we look at definitions on mixing ILU preconditioning and AD, and
 a corresponding bipartite graph model in \secref{s.precond}.
 
 %===================================================================================================
-\section{Determining Nonzeros of Sparse Matrices}
+\section{Determining nonzeros of sparse matrices}
 \label{s.det.nonzero}
 %===================================================================================================
 There are much literatures on exploiting the sparsity pattern of the Jacobian matrix
@@ -197,7 +198,7 @@ to improve the automatic differentiation and its several applications.
 Here, we look at the two parts of full and partial Jacobian computation in
 \secref{s.full.jac} and \secref{s.part.jac}.
 %===================================================================================================
-\subsection{Full Jacobian Computation}
+\subsection{Full Jacobian computation}
 \label{s.full.jac}
 %===================================================================================================
 If there is a program which computes the function $f(x) : \setR^n \rightarrow \setR^m$
@@ -243,7 +244,7 @@ Analogously, two rows are
 \emph{structurally orthogonal} if they do not have any nonzero element in the same column.
 \end{definition}
 We can compute a linear combination of structurally orthogonal columns of the seed matrix
-to reduce the number of columns of the seed matrix. This linear combination contains actually all elements of each columns. The definition of the structurally orthogonal columns can be similarly adapted to rows. The number of structurally orthogonal groups scales with the computational cost either for columns or rows.
+to reduce the number of columns of the seed matrix. This linear combination contains all elements of each columns. The definition of the structurally orthogonal columns can be similarly adapted to rows. The number of structurally orthogonal groups scales with the computational cost either for columns or rows.
 \figref{f.mat-ex-for-orth} (Left) and \figref{f.mat-ex-for-orth} (Middle) shows two examples
 of the matrices which can be compressed efficiently by columns and rows, respectively.
 \begin{figure}
@@ -287,7 +288,7 @@ the matrix-matrix products $JV$ and $WJ$.
 \end{problem}
 
 %==========================================================================================
-\subsubsection{Combinatorial Model}
+\subsubsection{Combinatorial model}
 \label{s.modeling.full}
 %==========================================================================================
 We reformulate the scientific computing problems which
@@ -442,7 +443,7 @@ complexity of Problem~\ref{p.coloring} including recent new results is given in~
 %To illustrate the tricky transformation from \MinBidCom\ to \MinStaBic, we design a new
 %educational module explained in Section~\ref{s.bidirectional}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Partial Jacobian Computation}
+\subsection{Partial Jacobian computation}
 \label{s.part.jac}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Gebremedhin et al~\cite{Gebremedhin05whatcolor} introduced the concept of the partial Jacobian computation
@@ -520,7 +521,7 @@ $\Phi (c_k)\neq \Phi (c_j)$ or $\Phi (r_i)\neq \Phi (r_l)$
 The optimization problems would be to
 find the minimum restricted distance-$2$ coloring
 and the minimum restricted star bicoloring.
-\section{Block Diagonal Sparsification}
+\section{Block diagonal sparsification}
 \label{s.block.diag.sp}
 Here, we look at the sparsification of the coefficient matrix $J$. The
 sparsification of $J$ is represented by the symbol \sparsify{J}. The idea is to select a
@@ -602,7 +603,7 @@ Jacobian. Using the more general bipartite graph model, Problem~\ref{p:minblockc
 be reformulated as a minimum distance-2 coloring of a bipartite graph when restricted to
 the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Adapted ILU Preconditioning}
+\section{Adapted ILU preconditioning}
 \label{s.precond}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The computation of Jacobian is always one part of solving partial differential equations.
@@ -693,7 +694,7 @@ R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
 $$
 in which $SILU$ means the symbolic ILU factorization.
 
-\subsection{Combinatorial Model}
+\subsection{Combinatorial model}
 \label{ss.comb.precond}
 The bipartite graph model presented in~\defref{d.bip.graph} is
 a basic model to find new algorithms for the initially, potentially,
@@ -822,7 +823,7 @@ throughout this thesis.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% PRECONDITIONING AND COLORING
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{New Coloring Heuristics}
+\chapter{New coloring heuristics}
 \label{package}
 Finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589}.
 Hence, we search for different coloring heuristics with the polynomial complexity.
@@ -920,7 +921,7 @@ from the Florida sparse matrix collection throughout this thesis.}
 \end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Maximizing Potentially Required Elements}
+\section{Maximizing potentially required elements}
 \label{s.max.pot.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In partial coloring, we compute the coloring focusing on
@@ -967,7 +968,7 @@ weighting coefficients, $C$ is the coloring number, and $N$ is the
 number of survived nonrequired elements?
 Here, we introduce a new heuristic which increases the number of survived nonrequired elements such that the number of colors remains almost the same.
 
-\subsection{Distance-$2$ Coloring}
+\subsection{Distance-$2$ coloring}
 Our goal here is to increase the number of potentially required elements.
 A potential required element is selected from the nonrequired elements such that
 the number of colors does not increase.
@@ -1019,7 +1020,7 @@ We need to go through all vertices
 and find the maximum independent set containing each vertex.
 Then, we need to find all nonrequired elements which can be survived
 that results in the computational complexity of $\mathcal{O}(n^2)$.
-However, the computation takes shorter actually since we color two vertices in each step.
+However, the computation takes shorter since we color two vertices in each step.
 
 Although we color a vertex $v$ and another vertex $u\in I_v$
 it does not mean that the coloring is valid.
@@ -1624,7 +1625,7 @@ additionally required elements since those elements are outside the blocks.
 %\cite{mpi_greedy_coloring}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Maximizing Additionally Required Elements}
+\section{Maximizing additionally required elements}
 \label{s.max.add.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In \secref{s.max.pot.req}, our focus was to increase the potentially required elements
@@ -1638,7 +1639,7 @@ in~\secref{ss.comb.precond} to be consistent with the bipartite graph model for 
 In \coderef{code.new.impr1}, we compute the required nonzero elements
 The idea is to check if the current nonzero required elements
 
-\subsection{Experiments on Effects of Orderings}
+\subsection{Experiments on effects of orderings}
 \label{s.ilu}
 In the idea of mixing the preconditioning and AD discussed in~\secref{s.precond},
 the ILU preconditioning is computed using the natural ordering of the given matrix. However,
@@ -1693,7 +1694,7 @@ model in ~\cite{precond-pothen}. If the given matrix is asymmetric,
 we put a vertex for each row. We also connect the vertex $i$ to the
 vertex $j$ with a directed edge if the corresponding element $(i,j)$ in matrix
 in nonzero. If the matrix is symmetric, these edges are undirected. This means
-the graph is a simple graph and the given matrix is actually the adjacency
+the graph is a simple graph and the given matrix is the adjacency
 matrix of the graph.
 Now, we look at the effects of preordering for the vertices of the given preconditioning graph to reduce fill-ins in ILU factorization. Later, we would study further how this fill-in reduction increases the additionally required elements.
 
@@ -1934,7 +1935,7 @@ This is in contrast to the minimum number of colors which we are searching for,
 in the automatic differentiation.
 
 %\subsection{Consdiering the positions of required elements}
-\subsection{Predicting Additionally Required Elements}
+\subsection{Predicting additionally required elements}
 We consider algorithms to increase the potentially required elements in
 ~\secref{s.max.pot.req} which increases the number of additionally required elements
 persumably. Here, we suggest a heuristic to predict if a nonrequired element would be an
@@ -2006,7 +2007,7 @@ The block size is $10$ and the ILU level parameter is $2$.}
 \label{mats.add.gr.vs.nreq.vs.fillpath}
 \end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Partial Coloring Restricted to Diagonal Elements}\
+\section{Partial coloring restricted to diagonal elements}
 \label{s.part.color.diag}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 So far, we consider the partial Jacobian computation with an arbitrary
@@ -2185,12 +2186,11 @@ for $e=(v,u)\in E_R$
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A New Heuristic based on Exact Coloring of Small Subgraphs}
+\section{A new heuristic based on exact coloring of small subgraphs}
 \label{s.exact}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In the classical paper
-\cite{karp:1972}, the graph coloring problem is proved to be NP-complete for general
-graphs with $k\ge 3$.
+Karp!\cite{karp:1972} proves that the graph coloring problem is an NP-complete problem
+for general graphs.
 As discussed in \cite{Fomin2013}, a prominent approach used by various graph coloring
 algorithms is based on finding independent sets. A subset of the vertices $S\subset V$ is
 called an independent set if there is no edge between any of these vertices, i.e.,
@@ -2200,9 +2200,9 @@ $$
 
 An exhaustive search iterating over all possibilities to color the $n$ vertices using $k$
 colors has the computational complexity $k^n$. However, the dynamic programming approach
-can improve this complexity. The fastest exact algorithm of graph coloring is proposed by
+can improve this computational complexity. The fastest exact algorithm of graph coloring is proposed by
 Bj{\"o}rklund, Husfeldt, and Koivisto~\cite{bjorklund2009} and has the complexity
-$O(2.2416^n)$. The idea behind this recent algorithm is based on the principle of
+$O(2.2416^n)$. The idea behind this novel algorithm is based on the principle of
 inclusion and exclusion, which leads to the following definition.
 
 Let $A$ and~$B$ denote two sets whose elements are also sets. Their product, $A\times B$,
@@ -2244,14 +2244,14 @@ compute a zeta transform and its inverse efficiently by means of a so-called fas
 transform \cite{Knuth:1997:ACP:270146}.
 
 Here, we introduce a new heuristic based on this exact coloring.
-The idea is to divide a large graphs to small subgraphs and apply an exact coloring
+The idea is to divide a large graph to small subgraphs and apply an exact coloring
 on these small subgraphs. Then, integrate the remaining parts into these colored
 subgraphs.
 More clearly, these are the steps which we follow,
 \begin{itemize}
 \item find a vertex separator for example by the nested dissection algorithm
 \item remove the vertex separator
-\item find the exact coloring of the remaining components separtely
+\item find the exact coloring of the remaining components separately
 \item color the subgraph of vertex separator in the original graph considering
 the computed exact coloring in the remaining components 
 \end{itemize}
@@ -2264,7 +2264,7 @@ than an exact coloring as shown in~\figref{f.coloring.graph} (Left). If we follo
 the numbering of the vertices as the ordering for a greedy coloring, we need
 at least $4$ colors while the exact coloring needs only $3$ colors.
 Now, we make a copy of this graph and add an extra vertex $15$ as in
-~\figref{f.coloring.graph} (Right). The vertex $15$ is actually the only element of
+~\figref{f.coloring.graph} (Right). The vertex $15$ is the only element of
 a vertex separator for the new graph. We added the incident edges of $15$ such that
 the resulting graph becomes a worst case for the greedy coloring here.
 In this new graph, the greedy coloring needs at least $5$ colors
@@ -2274,7 +2274,7 @@ Suppose we color first the components after removing the vertex $15$ separately 
 an exact coloring which needs only $3$ colors. Now, even a bad implementation of the
 new idea would need $4$ colors, i.e. one colors fewer than the greedy algorithm.
 A good implementation color the graph only with $3$ colors.
-The construction of given example can go further by create several copies of 
+The construction of given example can go further by creating several copies of 
 this graph, make the separator part a complete graph, and connect the separator vertices
 with same fashion to each copy.
 \begin{figure}
@@ -2299,7 +2299,7 @@ by the new suggested coloring.}
 \label{f.coloring.compared}
 \end{figure}
 
-We saw that large powers of $I$ are comptued during the algorithm.
+We saw that large powers of $I$ are computed during the algorithm.
 The storage size increases dramatically when the number of vertices
 in the graph increases. To solve the storage size, we consider each 
 subset as a binary number as follows. A binary number in which
@@ -2342,10 +2342,10 @@ compared with the number of colors in the greedy coloring.}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Computational Package: PreCol 1.0}
+\section{The computational package: PreCol 1.0}
 \label{s.extend}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-We develop a software to compute the different algorithm that we propose here.
+We develop a piece of software to compute the different algorithm that we propose here.
 Specially, the software is designed employing concepts from the object-oriented programming
 such that it can be extended later with any new coloring heuristic as well as any preconditioning algorithm.
 The developers can implement new extensions without going into details of core implementation.
@@ -2499,7 +2499,7 @@ function [req,pot,add,F,num_col] = precol(coloring,
 end
 \end{lstlisting}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Interactive Educational Module}
+\chapter{Interactive educational module}
 \label{explain}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We develop an extensible collection of educational modules (\mbox{EXPLAIN})
@@ -2522,7 +2522,7 @@ We explain how the conceptual design is finally visualized in \secref{s.vis}.
 After looking at the available modules in \secref{s.av.modules}, we look at
 some implementation details in \secref{s.impl.explain}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conceptual Design}
+\section{Conceptual design}
 \label{s.concept}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Throughout the design stage, our focus is on the following goals.
@@ -2610,11 +2610,11 @@ their nonzero elements are shown by the notation $\times$.
 \label{explain-design}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Available Modules}
+\section{Available modules}
 \label{s.av.modules}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Column Compression}
+\subsection{Column compression}
 \label{s.column-compression}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In \cite{2013:05,2014:01}, we presented an educational module in \mbox{EXPLAIN} to visualize the
@@ -2698,7 +2698,7 @@ Furthermore, the coloring of \figurename~\ref{fig3} is the one corresponding to 
 
 Since we want to provide the possibility to return to some step of the algorithm, a history of the selection process is kept in the ordered vertex list. Now, suppose the student selects to return to the step $1$ where the vertex $v_2$ was selected, then the program returns to that step of the algorithm. The resulting state is depicted in \figurename~\ref{fig4}. Notice that the program keeps the whole history and the student can click on any other vertex in the history.
 
-On the other hand, the student can select a completely new selection order from the current step which can generate a smaller or larger number of colors. Employing the different ordering $(v_2,v_1,v_3,v_4,v_5,v_6)$ shown in \figurename~\ref{fig5} leads to a reduction of one color compared to the first ordering given in \figurename~\ref{fig3}. Actually, this is the minimum number of colors needed to color this graph. The corresponding seed matrix is given by
+On the other hand, the student can select a completely new selection order from the current step which can generate a smaller or larger number of colors. Employing the different ordering $(v_2,v_1,v_3,v_4,v_5,v_6)$ shown in \figurename~\ref{fig5} leads to a reduction of one color compared to the first ordering given in \figurename~\ref{fig3}. In fact, this is the minimum number of colors needed to color this graph. The corresponding seed matrix is given by
 $$
 S =
 \begin{pmatrix}
@@ -2711,7 +2711,7 @@ S =
 \end{pmatrix}.
 $$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Bidirectional Compression}
+\subsection{Bidirectional compression}
 \label{s.bidirectional}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In our publication~\cite{2014:09}, we design and implement an interactive module to
@@ -2833,7 +2833,7 @@ patterns. Another problem instance with a different nonzero pattern is shown in
 Fig.~\ref{f.arrow-shaped4}~(b). Here, it is more difficult to find out that this star
 bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 
-\subsection{Partial Jacobian Computation}
+\subsection{Partial Jacobian computation}
 We extend the previous module of matrix compression to support
 the partial Jacobian computation. Here, the student should
 first select the required elements which are edges in Bipartite graphs.
@@ -2844,7 +2844,7 @@ As soon as the student starts to click the vertices, the required elements
 are become fixed, i.e. no new required elements can be added.
 The other processes of coloring are completely like the previous module.
 
-\subsection{Nested Dissection Ordering}
+\subsection{Nested dissection ordering}
 Given a sparse symmetric matrix $A$, the nested dissection method finds a
 symmetric permutation $P^T A P$ of $A$
 such that the permutated matrix gets the following form,
@@ -3022,7 +3022,7 @@ The curve of the orange color is also the size of vertex separator.}
 \label{barchart}
 \end{figure}
 
-\subsection{Parallel Matrix Vector Product}
+\subsection{Parallel matrix-vector product}
 
 In \cite{2015:3}, we extended EXPLAIN with a new module for
 the parallel sparse matrix-vector multiplication.
@@ -3300,7 +3300,7 @@ this educational module, a ``high score'' would consist of a low communication v
 together with a small deviation bound.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Algorithm Editor and Animator}
+\section{Algorithm editor and animator}
 \label{s.alg.edit}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 As we discussed, the ordering is one of the main elements of heuristics algorithm
@@ -3516,7 +3516,7 @@ A complete sample source code of EXPLAIN is available for the column compression
 in \appref{app.source}.
 
 
-\chapter{Conclusion and Future Work}
+\chapter{Conclusion and future Work}
 \label{conc}
 This work is to develop the new ideas in combinatorial scientific
 computing. Our focus is the new idea of mixing AD and preconditioning which we explained in \secref{s.precond}. The whole idea is to save storage as well as to optimize the convergence of iterative linear solvers. We introduce new heuristics here for a better convergence and to increase the number of elements of the matrix which appear in preconditioner while the memory usage for the Jacobian computation
@@ -3543,7 +3543,7 @@ Another future work is to consider blocks of submatrices for coloring instead of
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Different Orderings for Coloring}
+\chapter{Different orderings for coloring}
 \label{app.ord}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Here are some orderings for coloring,
@@ -3556,9 +3556,9 @@ $V$. The saturation degree of the vertex $v$ is the number of different colored 
 order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices $v_1,v_2,...,v_i$ for all $i$.
 \end{itemize}
 The computation of this ordering can have a higher complexity than the complexity of the greedy coloring ($\mathcal{O}(n+m)$) or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity. These various orderings should be considered in new heuristic coloring which we propose. to improve the results of coloring.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{NP-completeness of Partial Coloring Restricted to Diagonals}
+\chapter{NP-completeness of partial coloring restricted to diagonals}
 \label{app.npcomp}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In general, we know that a graph coloring is an NP-complete problem
