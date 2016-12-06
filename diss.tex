@@ -97,7 +97,7 @@ captionpos=b
 \includegraphics[width=0.3\linewidth]{logo}
 \par
 \vspace{2cm}
-{\Large\textbf{Combining partial coloring and preconditioning: 
+{\Large\textbf{Combining partial Jacobian computation and preconditioning: 
 New heuristics, educational module, and applications}\par}
 \vspace{2cm}
 {\Large Mohammad Ali Rostami\par}
@@ -2007,6 +2007,73 @@ elements computed by different algorithms.
 The block size is $10$ and the ILU level parameter is $2$.}
 \label{mats.add.gr.vs.nreq.vs.fillpath}
 \end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Application in geoscience}
+\label{s.application}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Here, we apply our new heuristics to the carbon sequestration example from geoscience.
+The geophysics group of RWTH Aachen simulates the injection of CO\textsubscript{2}
+in a reservoir by a two-phase flow model in porous media. These two phases are a wetting
+and non-wetting phase like water and gas. A 2D two-phase flow can be formulated as
+a system of coupled non-linear partial differential equations in which the bounday conditions
+are Dirichlet and Neumann. Integrating the time with the implicit Euler method
+based on~\cite{Lulfesmann2012Fap}, the following system of non-linear equations are resulted,
+$$F(u)=0 \, \text{ with } \, u = \binom{p_w}{S_n} \in \R^{2MN} \, \text{ and } \, F = \binom{F_1}{F_2} \in \R^{2MN},$$
+where the variable $p_w \in \R^{MN}$ is the pressure for the wetting phase and $S_n \in \R^{MN}$ is the non-wetting saturation. The Newton's method solves this system of equations.
+Hence, the $2MN \times 2MN$ Jacobian matrix $A$ is determined with a transformed verion of the original function $F$ (The AD tool \mbox{ADiMat}~\cite{Bischof2005AML} transforms $F$),
+$$
+A =
+\left({\begin{array}{l|l}
+	\displaystyle \frac{\partial F_1}{\partial p_w} & \displaystyle \frac{\partial F_1}{\partial S_n} \\[1em]
+	\hline
+	\displaystyle \frac{\partial F_2}{\partial p_w} \rule[-7.5pt]{0pt}{30pt} & \displaystyle \frac{\partial F_2}{\partial S_n} \\
+ \end{array}} \right).
+$$
+
+This Jacobian matrix is divided into four quadrants: the derivative $\partial F_1 / \partial p_w$ in the top left quadrant, $\partial F_1 / \partial S_n$ in the top right, $\partial F_2 / \partial p_w$ in the bottom left, and $\partial F_2 / \partial S_n$ in the bottom right. The sparsity patterns of the $462 \times 462$ Jacobian matrix $A$
+with $3,236$ nonzeros arised from a specific discretization is depicted in \figref{f:geophysik_J_matrices}.
+The four quadrants are indicated by crossed black lines. The Jacobian matrix~$A$ is based on the five-point stencil in the north west, south east, and south west quadrant. In the north east, the two-point stencil~$\{(m,n), (m,n-1)\}$ with the center~$(m,n)$ is used.
+$$
+A =
+\left({\begin{array}{l|l}
+	\text{five-point stencil} & \text{two-point stencil} \\[0.25em]
+	\hline
+	\text{five-point stencil} \rule[-7.5pt]{0pt}{21pt} & \text{five-point stencil} \\
+ \end{array}} \right)
+\quad.
+$$
+
+\begin{figure}%
+	\footnotesize
+	\centering
+         \includegraphics[width=0.6\linewidth]{co2_jac}
+\caption{Sparsity pattern of Jacobian matrix~$A$.}%
+\label{f:geophysik_J_matrices}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{jac_convergence_greedy_new.jpg}
+\caption{}
+\label{f.convergence_greedy_new10}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{jac_convergence_greedy_new_bl2.jpg}
+\caption{}
+\label{f.convergence_greedy_new2}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{jac_convergence_greedy_new_bl20.jpg}
+\caption{}
+\label{f.convergence_greedy_new20}
+\end{figure}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Partial coloring restricted to diagonal elements}
 \label{s.part.color.diag}
