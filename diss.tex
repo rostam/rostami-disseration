@@ -149,7 +149,7 @@ my best friend \textit{Azin Azadi} for encouraging me throughout all my studies 
 \tableofcontents
 \chapter{Introduction}
 \pagenumbering{arabic}
-In \textit{Combinatorial Scientific Computing} (CSC), it is common to solve the scientific computing problems by the methods from the combinatorial mathematics. In particular, graphs are ubiquitous in the numerical linear algebra if the underlying matrices are sparse. 
+In scientific computing, it is common to solve the scientific computing problems by the methods from the combinatorial mathematics. In particular, graphs are ubiquitous in the numerical linear algebra if the underlying matrices are sparse. 
 
 The origin of the scientific computing problems in this thesis is the solution of a linear equation whose coefficient matrix is a sparse, large, and nonsingular Jacobian matrix $J$. 
 This Jacobian matrix is computed by Automatic Differentiation (AD)~\cite{Griewank2008EDP,Rall1981ADT} without numerical errors.
@@ -2051,28 +2051,50 @@ $$
 \label{f:geophysik_J_matrices}
 \end{figure}
 
+We solved a system of linear equations with the
+coefficient matrix $A$ with the BICGSTAB iterative solver.
+We compute the ILU preconditioning on a set of selected elements $S$
+instead of the whole Jacobian matrix. 
+We compare the convergence histories of the BICGSTAB solver 
+on the four different methods of preconditioning:
+without preconditioning,
+with preconditioning with $S=R_i$,
+with preconditioning with $S=R_i + R_a$ in which 
+the set $R_a$ is computed based on the greedy coloring,
+and with preconditioning with $S=R_i + R_a$ in which 
+the set $R_a$ is computed based on the new coloring.
+
+We do this comparison for different block sizes.
+The results of the computation of the block size
+$10$ and $20$ in
+Figure~\ref{f.convergence_greedy_new2} (Top) and
+Figure~\ref{f.convergence_greedy_new2} (Bottom), respectively.
+In both block $10$ and $20$, the preconditioning computed based
+on the new coloring converges in the fewer number of matrix-vector products.
+However, it does not mean that the bigger block results always in the 
+better convergence.
 
 \begin{figure}
 \centering
+%\includegraphics[width=0.8\linewidth]{jac_convergence_greedy_new_bl2.jpg}
 \includegraphics[width=\linewidth]{jac_convergence_greedy_new.jpg}
-\caption{}
-\label{f.convergence_greedy_new10}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{jac_convergence_greedy_new_bl2.jpg}
-\caption{}
+\vfill
+\includegraphics[width=\linewidth]{jac_convergence_greedy_new_bl20.jpg}
+\caption{
+The history of the residual norms is visualized based on the 
+the number of matrix-vector products comapring four different methods:
+without preconditioning (red color), 
+with preconditioning with $S=R_i$ (blue color),
+with preconditioning with $S=R_i + R_a$ in which 
+the set $R_a$ is computed based on the greedy coloring (black color),
+and with preconditioning with $S=R_i + R_a$ in which 
+the set $R_a$ is computed based on the new coloring (green color).
+The level parameter of the ILU preconditioning is $2$.
+(Top) The block size is $10$. 
+(Bottom) The block size is $20$.
+}
 \label{f.convergence_greedy_new2}
 \end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{jac_convergence_greedy_new_bl20.jpg}
-\caption{}
-\label{f.convergence_greedy_new20}
-\end{figure}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Partial coloring restricted to diagonal elements}
@@ -2081,7 +2103,6 @@ $$
 So far, we consider the partial Jacobian computation with an arbitrary
 set of required elements. However, a better heuristics is proposed if the
 pattern of the required elements is prior known.
-
 Lülfesmann~\cite{Lulfesmann2012Fap} shows that the minimum number of colors of
 the partial star bicoloring restricted to diagonals $\chi_{sb}$ is equal to
 the minimal number of colors of the partial distance-$2$ coloring restricted
@@ -2155,7 +2176,18 @@ make the required edges disjoint from each other which is the definition of a ma
 Based on the $\sparsifysymbol$-column intersection graph defined in~\defref{d.part.cig},
 it is easy to see
 that the partial coloring restricted to diagonal is still an NP-complete problem.
-We discussed this shortly in \appref{app.npcomp}.
+A suggestion for the proof is as follows.
+In general, we know that a graph coloring is an NP-complete problem
+(see \cite{np-complet-graph-coloring})).
+As \defref{d:cig} shows, a distance-2 coloring on the column-intersection graph
+is a classical graph coloring problem. So it is also NP-complete.
+We also define a similar graph model for the partial coloring problem in
+\cite{2016:01}. In this transformation from the matrix and graph, we encode also 
+required elements. It means we do not have any special
+edges later in the graph.
+Since the construction of this graph model is done in
+the polynomial time, this partial coloring problem remains NP-complete too.
+
 Therefore, we should still use some heuristics to compute these colorings.
 The examples in Table~\ref{table.starbic.d2.diag} from Florida sparse collection shows that the
 inequality in Theorem~\ref{t.matching} can happen. The second column of this table
@@ -2588,7 +2620,7 @@ During this chapter, we look first at the conceptual design of the software in
 \secref{s.game} to involve the students more into the usage of \mbox{EXPLAIN}.
 We explain how the conceptual design is finally visualized in \secref{s.vis}.
 After looking at the available modules in \secref{s.av.modules}, we look at
-some implementation details in \secref{s.impl.explain}.
+implementation details in \secref{s.impl.explain}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conceptual design}
 \label{s.concept}
@@ -2610,11 +2642,15 @@ from the following list,
 \item Coloring any cell, column, or row of matrix
 \end{itemize}
 
-The input to the program is a sparse matrix. We build the corresponding graph from the the matrix.
+The input to the program is a sparse matrix. 
+We build the corresponding graph from the the matrix.
 The matrix and the corresponding graph are visualized side by side.
 The graph model can be from one of the following types,
 \begin{itemize}
-\item Simple graph: an undirected graph without self-loops considering the given matrix as an adjacency matrix of graph.
+\item Simple graph: an undirected graph without self-loops considering 
+the given symmetric matrix as an adjacency matrix of graph.
+\item Directed graph: a directed graph without self-loops considering
+the given asymmetric matrix as an adjacency matrix of graph.
 \item Column-intersection graph: the graph explained in \defref{d:cig}.
 \item Directed graph: the directed graph model explained in \cite{Gebremedhin05whatcolor}.
 \item Bipartite graph: the bipartite graph model explained in \defref{d.bip.graph}.
@@ -2650,16 +2686,19 @@ To engage the students more in the teaching process, we improved EXPLAIN such th
 more feedback from the software. Gamification of the software does this by interpreting each
 solution to a problem instance as a \textit{round}. The score diagram reporting the results of previous
 rounds also provides another feedback. The idea of gamification is used to solve a combinatorial
-minimization problem consisting of minimizing the size of the vertex separator while, at the same
+minimization problem. For example, the gamification in the nested dissection ordering 
+consists of minimizing the size of the vertex separator while, at the same
 time, balancing the size of the remaining components. The consistent use of colors in the graph
 view, the matrix view, and in the score diagram makes it easier for the student to understand
-minimizing a serial bottleneck in the Cholesky factorization while balancing the computational
-load.
+minimizing a serial bottleneck in the Cholesky factorization while balancing the computational load.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Visualization}
 \label{s.vis}
-Based on our goal to visualized the connection of the algorithm on the matrix and graph sides simultaneously,
-we designed the software to have the four sections as illustrated in \figref{explain-design} (Left).
+Based on our goal to visualize the connection of the algorithm on the matrix and graph sides simultaneously,
+we design the software to have the four sections and a header as illustrated in \figref{explain-design} (Left).
+The header contains the textual feedback to the user. For example, the completion of a round
+is a textual feedback. The four sections are the graph view, the matrix view, the control panel, and
+the feedback diagram.
 The graph is drawn on the circular layout first. The layout can be selected later
 in the control panel. The matrix is visualized also at the right side and
 their nonzero elements are shown by the notation $\times$.
@@ -2681,6 +2720,11 @@ their nonzero elements are shown by the notation $\times$.
 \section{Available modules}
 \label{s.av.modules}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In \mbox{EXPLAIN}, we have already implemented several modules.
+After discussing the module for the full one-sided Jacobian compression,
+we explain the modules for the full and partial two-sided Jacobian computation. 
+Then, two other modules of nested dissection ordering and parallel matrix vector
+are presented to see other features of the software.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Column compression}
 \label{s.column-compression}
@@ -2779,7 +2823,7 @@ S =
 \end{pmatrix}.
 $$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Bidirectional compression}
+\subsection{Full and partial Jacobian computation}%Bidirectional compression}
 \label{s.bidirectional}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In our publication~\cite{2014:09}, we design and implement an interactive module to
@@ -2901,16 +2945,22 @@ patterns. Another problem instance with a different nonzero pattern is shown in
 Fig.~\ref{f.arrow-shaped4}~(b). Here, it is more difficult to find out that this star
 bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 
-\subsection{Partial Jacobian computation}
+%\subsection{Partial Jacobian computation}
 We extend the previous module of matrix compression to support
 the partial Jacobian computation. Here, the student should
 first select the required elements which are edges in Bipartite graphs.
-So, when the student clicks on the edges, the colors of those edges change to red
-and the corresponding nonzero elements are added to required elements.
+So, when the student clicks on the edges, the colors of those edges 
+as well as the color of the nonzero elements will be changed to red.
+These selected edges and nonzero elements are added to the required elements
+as shown in Figure~\ref{partial_coloring_bad_coloring}.
 
-As soon as the student starts to click the vertices, the required elements
+As soon as the student starts to click the edges, the required elements
 are become fixed, i.e. no new required elements can be added.
 The other processes of coloring are completely like the previous module.
+Figure~\ref{partial_coloring_good_coloring} (a) shows a selection in which the graph coloring
+needs at least four colors since the user did not select any row vertex.
+A better coloring is possible as shown in Figure~\ref{partial_coloring_good_coloring} (b)
+in which a row vertex is selected first.
 
 \begin{figure}
 \centering
@@ -2922,8 +2972,9 @@ The other processes of coloring are completely like the previous module.
 \includegraphics[width=0.18\textwidth]{arrow_shaped_partial_coloring_init_graph}
 \includegraphics[width=0.26\textwidth]{arrow_shaped_partial_coloring_init_matrix}}
 \caption{
-(a) 
-(b)}
+(a) The inital view of the module when no required edges are selected.
+(b) The user selects first the required edges. The selected edge and the corresponding
+nonzero of the matrix become the red color.}
 \label{partial_coloring_bad_coloring}
 \end{figure}
 
@@ -2937,8 +2988,9 @@ The other processes of coloring are completely like the previous module.
 \includegraphics[width=0.18\textwidth]{arrow_shaped_partial_coloring_init_graph_good_coloring}
 \includegraphics[width=0.26\textwidth]{arrow_shaped_partial_coloring_init_matrix_good_coloring}}
 \caption{
-(a) 
-(b)}
+(a) A graph coloring with four colors in which only column vertices are selected.
+(b) A better graph coloring with three vertices in which the user colors 
+a row vertex first.}
 \label{partial_coloring_good_coloring}
 \end{figure}
 
@@ -3654,21 +3706,6 @@ $V$. The saturation degree of the vertex $v$ is the number of different colored 
 order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices $v_1,v_2,...,v_i$ for all $i$.
 \end{itemize}
 The computation of this ordering can have a higher complexity than the complexity of the greedy coloring ($\mathcal{O}(n+m)$) or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity. These various orderings should be considered in new heuristic coloring which we propose. to improve the results of coloring.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{NP-completeness of partial coloring restricted to diagonals}
-\label{app.npcomp}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In general, we know that a graph coloring is an NP-complete problem
-(see \cite{np-complet-graph-coloring})).
-As \defref{d:cig} shows, a distance-2 coloring on the column-intersection graph
-is a classical graph coloring problem. So it is also NP-complete.
-We also define a similar graph model for the partial coloring problem in
-\cite{2016:01}. In this transformation from the matrix and graph, we encode also 
-required elements. It means we do not have any special
-edges later in the graph.
-Since the construction of this graph model is done in
-the polynomial time, this partial coloring problem remains NP-complete too.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{A sample source code from EXPLAIN}
