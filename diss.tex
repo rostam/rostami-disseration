@@ -190,7 +190,7 @@ we provide some references to read these concepts further in details.
 We look at the ideas to determine the nonzeros of sparse matrices in
 \secref{s.det.nonzero}. Then, the block diagonal sparsification
 and its corresponding combinatorial model is discussed~\secref{s.block.diag.sp}.
-Finally, we look at definitions on mixing ILU preconditioning and AD, and
+Finally, we look at definitions on combining ILU preconditioning and AD, and
 a corresponding bipartite graph model in \secref{s.precond}.
 
 %===================================================================================================
@@ -607,7 +607,7 @@ Jacobian. Using the more general bipartite graph model, Problem~\ref{p:minblockc
 be reformulated as a minimum distance-2 coloring of a bipartite graph when restricted to
 the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Adapted ILU preconditioning}
+\section{Combining AD and  ILU preconditioning}
 \label{s.precond}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The computation of Jacobian is always one part of solving partial differential equations.
