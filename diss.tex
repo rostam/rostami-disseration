@@ -2453,6 +2453,8 @@ compared with the number of colors in the greedy coloring.}
 \section{The computational package: PreCol 1.0}
 \label{s.extend}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 We develop a piece of software to compute the different algorithm that we propose here.
 Specially, the software is designed employing concepts from the object-oriented programming
 such that it can be extended later with any new coloring heuristic as well as any preconditioning algorithm.
@@ -2474,6 +2476,11 @@ since the goal is to write an extension with a few code. So, the developer shoul
 move the new header file to the corresponding directory which is the ordering directory
 for this new ordering and \textit{algs} directory for coloring algorithms.
 Now, building the software would bring this new ordering into the software execution.
+
+The input matrix is in the format of the matrix market~\cite{matrix-market}. 
+After reading this matrix, we convert it to the different graph models 
+like a column-intersection graph or a bipartite graph. 
+Any result matrix like the sparsified matrix also will be saved in this file format.
 
 \textit{PreCol} is developed in \textit{C++} using STL (the standard library),
 the boost library\cite{boost}.
