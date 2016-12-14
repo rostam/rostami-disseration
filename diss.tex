@@ -211,7 +211,7 @@ containing new heuristic algorithm.
 which is designed to teach algorithms from the combinatorial scientific computing in the classroom.
 Finally, the conclusion and future work come in \chapref{conc}.
 
-\chapter{Graph Models from Scientific Computing}
+\chapter{Known graph models from scientific computing}
 \label{prel}
 In this chapter, we would briefly discuss already existing concepts which we need to understand
 the other parts of the paper. In each section of this chapter,
@@ -219,8 +219,9 @@ we provide some references to read these concepts further in details.
 We look at the ideas to determine the nonzeros of sparse matrices in
 \secref{s.det.nonzero}. Then, the block diagonal sparsification
 and its corresponding combinatorial model is discussed~\secref{s.block.diag.sp}.
-Finally, we look at definitions on combining ILU preconditioning and AD, and
-a corresponding bipartite graph model in \secref{s.precond}.
+Finally, we look at definitions on combining ILU preconditioning and 
+partial Jacobian computation
+, and a corresponding bipartite graph model in \secref{s.precond}.
 
 %===================================================================================================
 \section{Determining nonzeros of sparse matrices}
@@ -636,7 +637,7 @@ Jacobian. Using the more general bipartite graph model, Problem~\ref{p:minblockc
 be reformulated as a minimum distance-2 coloring of a bipartite graph when restricted to
 the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Combining AD and  ILU preconditioning}
+\section{Combining partial Jacobian computataion and ILU preconditioning}
 \label{s.precond}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The computation of Jacobian is always one part of solving partial differential equations.
