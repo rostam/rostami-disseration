@@ -170,28 +170,26 @@ on the sparsified matrix would be a solution to the problem of determination of
 all elements. This process becomes complete by trying to add more elements to the matrix
 without producing more fill-ins or colors. We introduce new heuristics for this purpose.
 
-Related Works
-
-Our work is based on the idea of exploiting the sparsity pattern of a matrix in favour of 
+Our work is based on the idea of exploiting the sparsity pattern of a matrix in favor of 
 reducing the computational complexity. The assumption here is that the sparsity pattern is
-known beforehead formulated from the actual physical problem.
+known beforehand formulated from the actual physical problem.
 Curtis, Powell, and Reid~\cite{Curtis1974117} was first to study the determination of 
 a sparse Jacobian matrix based on the sparsity exploitation.
 Coleman and Mor{\'e}~\cite{Coleman1983EoS} transformed this problem in a sparse matrix
 to the problem of vertex coloring in the graph theory. The idea was to formulate
 the compression of the columns such that all the nonzeros are survived, so called
 a one-sided compression.
-Later, A two-sided compression is introudced and analysed in~\cite{Coleman1996SaE}
+Later, A two-sided compression is introduced and analysed in~\cite{Coleman1996SaE}
 and~\cite{hs:csj} which can result in a better computational complexity.
 Several other graph models are studied further in Hossain and Steihaug~\cite{hs:gmei} 
 like the pattern graph which keeps explicitly the structure of the matrix.
 A recent graph formulation is to group together rows into blocks 
 and partition the resulting column segments in~\cite{optimal_diret_determination}.
 On the other hand, some other problems from scientific computing targets the computation
-of only a proper subset of the nonzero elements (so called required elemnnts)
+of only a proper subset of the nonzero elements (so called required elements)
 rather than computing all nonzero elements.
 These problems are called partial Jacobian computation.
-Gebremedhin, Manne, and Pothen\cite{Gebremedhin05whatcolor} first introduced
+Gebremedhin, Manne, and Pothen~\cite{Gebremedhin05whatcolor} first introduced
 the rules of the partial jacobian computation and its corresponding graph problems. 
 Several examples in the partial Jacobian computation are studies later in
 \cite{CalotoiuMaster}, \cite{LulfesmannMaster}, and \cite{Lulfesmann2012Fap}.
