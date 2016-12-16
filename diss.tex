@@ -173,13 +173,13 @@ without producing more fill-ins or colors. We introduce new heuristics for this 
 Our work is based on the idea of exploiting the sparsity pattern of a matrix in favor of 
 reducing the computational complexity. The assumption here is that the sparsity pattern is
 known beforehand formulated from the actual physical problem.
-Curtis, Powell, and Reid~\cite{Curtis1974117} was first to study the determination of 
+Curtis, Powell, and Reid~\cite{Curtis1974117} were first to study the determination of 
 a sparse Jacobian matrix based on the sparsity exploitation.
 Coleman and Mor{\'e}~\cite{Coleman1983EoS} transformed this problem in a sparse matrix
-to the problem of vertex coloring in the graph theory. The idea was to formulate
+to the problem of vertex coloring in the graph theory. The idea is to formulate
 the compression of the columns such that all the nonzeros are survived, so called
 a one-sided compression.
-Later, A two-sided compression is introduced and analysed in~\cite{Coleman1996SaE}
+Later, a two-sided compression is introduced and analysed in~\cite{Coleman1996SaE}
 and~\cite{hs:csj} which can result in a better computational complexity.
 Several other graph models are studied further in Hossain and Steihaug~\cite{hs:gmei} 
 like the pattern graph which keeps explicitly the structure of the matrix.
@@ -192,7 +192,11 @@ These problems are called partial Jacobian computation.
 Gebremedhin, Manne, and Pothen~\cite{Gebremedhin05whatcolor} first introduced
 the rules of the partial jacobian computation and its corresponding graph problems. 
 Several examples in the partial Jacobian computation are studies later in
-\cite{CalotoiuMaster}, \cite{LulfesmannMaster}, and \cite{Lulfesmann2012Fap}.
+\cite{CalotoiuMaster} and \cite{LulfesmannMaster}. 
+
+Lülfesmann~\cite{Lulfesmann2012Fap} introduced for the first time in his dissertation
+the idea of combining of the partial coloring and the ILU preconditioning. 
+...
 %This should be distinguished from the partial coloring ()
 
 This dissertation is structured as follows.
