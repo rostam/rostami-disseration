@@ -3704,10 +3704,58 @@ var new_col = min(diff(colors,col_ns));
 color_column(current, new_col);
 color_vertex(current,new_col);
 \end{lstlisting}
-A complete sample source code of EXPLAIN is available for the column compression
-in \appref{app.source}.
+Each module in EXPLAIN 2.0 consists of four functions with particular
+name conventions. For example, Table~\ref{module-cc} represents these functions
+for the column compression module. Here, the ending of the function names are 
+made from the first characters of the name of the module.
+\begin{table}
+\begin{tabular}{ | c | c |}
+\hline
+Name convention & purpose \\\hline
+column_compression & The function which computes one step of the algorithm. \\\hline
+reference_cc & This function defines two strings: a bibliography for a reference (\textit{reference\_text}) and the actual reference url (\textit{reference\_url}).\\\hline
+global_cc & This function contains any global variable. Particularly, the user should define some required variables which we discuss in the following paragraph. \\\hline
+post_processing_cc & This is an action to a post processing button. As the name suggests, it is computed
+when a round is completed. For example, the edges between the vertex separators and the subgraphs are removed during the algorithm for a better view. The post processing step shows these missing edges.\\\hline
+\end{tabular}
+\caption{module-cc}
+\label{The source code of column compression module.}
+\end{table}
 
+A sample source code from EXPLAIN computes the column compression algorithm is as follows.
+\begin{lstlisting}
+var reference_cc = function () {
+    reference_text= "H. M. Buecker, M. A. Rostami, M. Luelfesmann : " +
+        "An interactive educational module illustrating sparse matrix compression via graph coloring.";
+    reference_url= "10.1109/ICL.2013.6644591";
+};
 
+var global_cc = function () {
+    graph_format="cig";
+    colors = range(0,22);
+    chart_yaxis1_text = "Number of colors";
+    chart_group5_text = 'Number of colors';
+    start_matrix = "nestedDissection3.mtx";
+    animation = true;
+};
+
+var column_compression = function() {
+    var ns = neighbors(current);
+    var col_ns = get_colors(ns);
+    var new_col = min(diff(colors, col_ns));
+    color_column(current, new_col);
+    color_vertex(current, new_col);
+    if (get_colored_vertices().length == currentg.vertices.length) {
+     gather_round_data(min(diff(colors, get_colors(get_colored_vertices()))));
+     round_completed();
+    }
+};
+
+var post_processing_cc = function () {
+
+};
+\end{lstlisting}
+An extensive source code of nested dissection module in EXPLAIN is available in \appref{app.source}.
 \chapter{Conclusion and future Work}
 \label{conc}
 This work is to develop the new ideas in combinatorial scientific
@@ -3750,47 +3798,18 @@ order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices 
 The computation of this ordering can have a higher complexity than the complexity of the greedy coloring ($\mathcal{O}(n+m)$) or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity. These various orderings should be considered in new heuristic coloring which we propose. to improve the results of coloring.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{A sample source code from EXPLAIN}
+\chapter{The source code of the nested dissection ordering in \emph{EXPLAIN}}
 \label{app.source}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-A sample source code from EXPLAIN computes the column compression algorithm.
-It consists of three functions for reference, global variables, and the actual algorithm
-written only for one step of the computation.
-\begin{lstlisting}
-var reference_cc = function () {
-    reference_text= "H. M. Buecker, M. A. Rostami, M. Luelfesmann : " +
-        "An interactive educational module illustrating sparse matrix compression via graph coloring.";
-    reference_url= "10.1109/ICL.2013.6644591";
-};
-
-var global_cc = function () {
-    graph_format="cig";
-    colors = range(0,22);
-    chart_yaxis1_text = "Number of colors";
-    chart_group5_text = 'Number of colors';
-    start_matrix = "nestedDissection3.mtx";
-    animation = true;
-};
-
-var column_compression = function() {
-    var ns = neighbors(current);
-    var col_ns = get_colors(ns);
-    var new_col = min(diff(colors, col_ns));
-    color_column(current, new_col);
-    color_vertex(current, new_col);
-    if (get_colored_vertices().length == currentg.vertices.length) {
-     gather_round_data(min(diff(colors, get_colors(get_colored_vertices()))));
-     round_completed();
-    }
-};
-\end{lstlisting}
+The nested dissection module has a lot of details compared to other modules of EXPLAIN.
+Here is a complete source code of the nested dissection module.
 
 \begin{lstlisting}
 var reference_nd = function () {
     reference_text= "H. M. Buecker, M. A. Rostami : Interactively exploring " +
         "the connection between nested dissection orderings for parallel Cholesky factorization " +
         "and vertex separators. IPDPS 2014.";
-    reference_url= "10.1109/IPDPSW.2014.125";
+    reference_url= "10.1109/IPDPSW.2014.125";7
 };
 
 var global_nd = function () {
@@ -3876,7 +3895,6 @@ var nested_dissection = function() {
         g = removeVertices(g, selected);
 
         drawGraphHierarchichal(g, selectedArchive, seenArchive, notSeenArchive);
-        //drawGraph(g, orderArchive);
         colorVertices(seenArchive, blue_alpha);
         colorVertices(notSeenArchive, red_alpha);
         colorVertices(selected, orange_alpha);
@@ -3923,7 +3941,6 @@ var nested_dissection = function() {
                 partitions.seen.length + partitions.notSeen.length - tmp2.length, orange_alpha);
         }
 
-        // drawGraph(g, orderArchive);
         drawGraphHierarchichal(g, selectedArchive, seenArchive, notSeenArchive);
         colorVertices(selected, orange_alpha);
         if (first_seen.length != ns1.length && second_seen.length != ns2.length) {
@@ -3995,7 +4012,6 @@ var nested_dissection = function() {
         notSeenArchive = partitions.notSeen.slice();
         orderArchive = partitions.order.slice();
         gather_round_data(selected.length, partitions.seen.length, partitions.notSeen.length, 0, 0);
-        // document.getElementById("show_edge").disabled  = false;
     }
 };
 
