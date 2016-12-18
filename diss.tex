@@ -216,8 +216,8 @@ Finally, the conclusion and future work come in \chapref{conc}.
 
 \chapter{Known graph models from scientific computing}
 \label{prel}
-In this chapter, we would briefly discuss already existing concepts which we need to understand
-the other parts of the paper. In each section of this chapter,
+In this chapter, we briefly discuss known graph formulations and
+models needed in this thesis. In each section of this chapter,
 we provide some references to read these concepts further in details.
 We look at the ideas to determine the nonzeros of sparse matrices in
 \secref{s.det.nonzero}. Then, the block diagonal sparsification
@@ -230,7 +230,7 @@ partial Jacobian computation
 \section{Determining nonzeros of sparse matrices}
 \label{s.det.nonzero}
 %===================================================================================================
-There are much literatures on exploiting the sparsity pattern of the Jacobian matrix
+There are numerous literatures on exploiting the sparsity pattern of the Jacobian matrix
 to improve the automatic differentiation and its several applications.
 Here, we look at the two parts of full and partial Jacobian computation in
 \secref{s.full.jac} and \secref{s.part.jac}.
@@ -238,20 +238,20 @@ Here, we look at the two parts of full and partial Jacobian computation in
 \subsection{Full Jacobian computation}
 \label{s.full.jac}
 %===================================================================================================
-If there is a program which computes the function $f(x) : \setR^n \rightarrow \setR^m$
+Assume a program computes the function $f(x) : \setR^n \rightarrow \setR^m$
 in the computational cost $t$,
 techniques of automatic differentiation (AD)~\cite{Griewank2008EDP,Rall1981ADT} generate
 Computer programs capable of evaluating the $m \times n$ Jacobian matrix $J$.
 The so-called forward mode of automatic differentiation creates a program automatically
-which computes the product of Jacobian matrix with some given so-called seed matrix $V$,
+which computes the product of Jacobian matrix with a given so-called seed matrix $V$,
 i.e. $JV$. There is an inverse mode of automatic differentiation which computes the product $WJ$.
 These techniques of automatic computes the Jacobian $J$ without assembling it.
 
 Suppose the matrix $V$ has $\col$ number of columns and the matrix $W$ has $\row$ number of rows,
-the computational costs to compute these products would be $\col t$ and $\row t$, respectively.
+the computational costs of these products would be $\col t$ and $\row t$, respectively.
 In general, the Jacobian $J$ is computed choosing either $c=n$ and $V$ as the identity of
 order~$n$ in the forward mode or $r = m$ and $W$ as the identity of order $m$ in the
-reverse mode. However, if $J$ is sparse and its sparsity pattern is known the number of
+reverse mode. However, if $J$ is sparse and its sparsity pattern is known, the number of
 columns of~$V$ in the forward mode or the number of rows of~$W$ in the reverse mode can
 be reduced to $\col < n$ or $\row < m$ such that all nonzero entries of $J$ still appear
 in the product $JV$ or $WJ$. This way, the computational cost is decreased using either
@@ -267,7 +267,7 @@ minimum values for $\col$ and $\row$ and the corresponding combinatorial problem
 Here, we formulate a problem to find the optimal seed matrix in which
 the number of rows and columns are smaller than the actual Jacobian matrix, so-called compression.
 A unidirectional compression is a compression in either rows or columns in contrast to
-a bidirectional compression in which both rows and columns are compressed in the same time.
+a bidirectional compression in which both rows and columns are compressed at the same time.
 The key idea behind this \emph{unidirectional compression} is now illustrated for the
 forward mode. First, we present a definition as follows,
 \begin{definition}[Structurally Orthogonality]
@@ -280,8 +280,9 @@ row in which both columns, $c_i$ and $c_j$, have a nonzero element.
 Analogously, two rows are
 \emph{structurally orthogonal} if they do not have any nonzero element in the same column.
 \end{definition}
-We can compute a linear combination of structurally orthogonal columns of the seed matrix
-to reduce the number of columns of the seed matrix. This linear combination contains all elements of each columns. The definition of the structurally orthogonal columns can be similarly adapted to rows. The number of structurally orthogonal groups scales with the computational cost either for columns or rows.
+We can compute a linear combination of structurally orthogonal columns of the Jacobian matrix
+such that this linear combination contains all elements of each column.
+The definition of the structurally orthogonal columns can be similarly adapted to rows. The number of structurally orthogonal groups scales with the computational cost either for columns or rows.
 \figref{f.mat-ex-for-orth} (Left) and \figref{f.mat-ex-for-orth} (Middle) shows two examples
 of the matrices which can be compressed efficiently by columns and rows, respectively.
 \begin{figure}
@@ -301,7 +302,7 @@ Now, consider the matrix $C$ in \figref{f.mat-ex-for-orth} (Right) that has neit
 Therefore, there is no unidirectional compression of the
 matrix $C$, neither by \col\ columns nor by \row\ rows which reduce \col\ or \row\ below
 the number of columns or rows.
-The technique of bidirectional, which compresses both columns and rows in the same time, will reduce the computational cost. This technique computes both forward and reverse mode of automatic differentiation.
+The technique of bidirectional, which compresses both columns and rows at the same time, will reduce the computational cost. This technique computes both forward and reverse mode of automatic differentiation.
 
 For general sparsity patterns,
 it is not straightforward to figure out how to linearly combine columns and rows such that
@@ -338,7 +339,7 @@ We first look at a simple graph model for the unidirectional compression,
 %
 \begin{definition}[Column Intersection Graph]
 \label{d:cig}
-The column intersection graph $G = (V,E)$ associated with an $n \times n$ Jacobian $J$
+The column intersection graph $G = (V,E)$ associated with an $n \times n$ Jacobian matrix $J$
 consists of a set of vertices $V=\{v_1, v_2, \dots, v_n\}$ whose vertex $v_i$ represents
 the $i$th column $J(:,i)$. Furthermore, there is an edge $(v_i,v_j)$ in the set of edges
 $E$ if and only if the columns $J(:,i)$ and $J(:,j)$ represented by $v_i$ and $v_j$ have
@@ -363,7 +364,7 @@ Find a coloring $\Phi$ of the column intersection graph $G$ with a minimal numbe
 colors.
 \end{problem}
 
-As shown, there is an intimate connection between the sparse Jacobian computations described in Problem~\ref{p.seed.uni} and the graph coloring issues described by Problem~\ref{p:mincol}.
+It is shown in~\cite{Coleman1983EoS} that there is an intimate connection between the sparse Jacobian computations described in Problem~\ref{p.seed.uni} and the graph coloring issues described by Problem~\ref{p:mincol}.
 If a vertex represents a row and an edge represents structural
 non-orthogonality of two rows a row-intersection graph can be adapted too.
 
@@ -565,7 +566,7 @@ sparsification of $J$ is represented by the symbol \sparsify{J}. The idea is to 
 subset of all nonzero elements of $J$, described by~\sparsify{J}, and construct a
 preconditioner based on these selected nonzero elements~\cite{Cullum2006}. These nonzero
 elements selected by \sparsify{J} are called \emph{required} nonzero elements. Throughout
-this paper we consider the special case of a sparsification in the form of $k\times k$
+this thesis we consider the special case of a sparsification in the form of $k\times k$
 blocks on the main diagonal. That is, the pattern of the required nonzero elements is
 given by the pattern of all nonzero entries within these $k\times k$ blocks on the
 diagonal. If the block size $k$ does not divide the matrix order $n$, we adapt the size
@@ -2717,8 +2718,7 @@ computer science education is not new. In particular, programming assignments ca
 implementations of games. In \cite{la2007:gfa}, for instance, an introductory programming course is
 taught under the common umbrella of two-dimensional game development. Similarly, a game project is
 used in a course on software architecture~\cite{Wang2011:EEU}. Programming assignment can also
-involve pieces of software that act as a player in an existing game. However, throughout the
-present paper, our focus of serious games is different. Rather than implementing a game, we are
+involve pieces of software that act as a player in an existing game. However, throughout this thesis, our focus of serious games is different. Rather than implementing a game, we are
 interested in situations where students learn by playing a game. Surprisingly, there are only a few
 publications addressing this aspect of gamification. An example is given in
 \cite{Hakulinen2011:usg} where game-based learning is used to teach a course in data structures and
