@@ -218,37 +218,40 @@ Finally, the conclusion and future work come in \chapref{conc}.
 \label{prel}
 In this chapter, we briefly discuss known graph formulations and
 models needed in this thesis. In each section of this chapter,
-we provide some references to read these concepts further in details.
+we provide some references which explains further these concepts in details.
 We look at the ideas to determine the nonzeros of sparse matrices in
 \secref{s.det.nonzero}. Then, the block diagonal sparsification
 and its corresponding combinatorial model is discussed~\secref{s.block.diag.sp}.
-Finally, we look at definitions on combining ILU preconditioning and 
-partial Jacobian computation
-, and a corresponding bipartite graph model in \secref{s.precond}.
+We look at definitions of combining ILU preconditioning and 
+partial Jacobian computation. Finally, a corresponding bipartite graph model 
+is explained in \secref{s.precond}.
 
 %===================================================================================================
 \section{Determining nonzeros of sparse matrices}
 \label{s.det.nonzero}
 %===================================================================================================
-There are numerous literatures on exploiting the sparsity pattern of the Jacobian matrix
-to improve the automatic differentiation and its several applications.
-Here, we look at the two parts of full and partial Jacobian computation in
+There are many references on exploiting the sparsity pattern of Jacobian matrix
+to improve the performance of automatic differentiation.
+Here, we look at full and partial Jacobian computation in
 \secref{s.full.jac} and \secref{s.part.jac}.
 %===================================================================================================
 \subsection{Full Jacobian computation}
 \label{s.full.jac}
 %===================================================================================================
-Assume a program computes the function $f(x) : \setR^n \rightarrow \setR^m$
-in the computational cost $t$,
-techniques of automatic differentiation (AD)~\cite{Griewank2008EDP,Rall1981ADT} generate
-Computer programs capable of evaluating the $m \times n$ Jacobian matrix $J$.
-The so-called forward mode of automatic differentiation creates a program automatically
-which computes the product of Jacobian matrix with a given so-called seed matrix $V$,
-i.e. $JV$. There is an inverse mode of automatic differentiation which computes the product $WJ$.
-These techniques of automatic computes the Jacobian $J$ without assembling it.
+Assume a program computes a function $f(x) : \setR^n \rightarrow \setR^m$
+at the computational cost $t$.
+Techniques of automatic differentiation (AD)~\cite{Griewank2008EDP,Rall1981ADT} generate
+computer programs capable of evaluating the $m \times n$ Jacobian matrix $J$.
+The so-called forward mode of automatic differentiation generates a program automatically
+which computes the product of the Jacobian matrix with a given so-called seed matrix $V$,
+i.e., $JV$. There is an reverse mode of automatic differentiation which computes the product $WJ$
+where $W$ is another seed matrix.
+These techniques of automatic computes the matrix-matrix products $JV$ amd $WJ$
+without assembling it.
 
-Suppose the matrix $V$ has $\col$ number of columns and the matrix $W$ has $\row$ number of rows,
-the computational costs of these products would be $\col t$ and $\row t$, respectively.
+Suppose the matrix $V$ has $\col$ columns and the matrix $W$ has $\row$ rows,
+the computational costs of these products using the forward and reverse modes
+would be $\col t$ and $\row t$, respectively.
 In general, the Jacobian $J$ is computed choosing either $c=n$ and $V$ as the identity of
 order~$n$ in the forward mode or $r = m$ and $W$ as the identity of order $m$ in the
 reverse mode. However, if $J$ is sparse and its sparsity pattern is known, the number of
@@ -258,33 +261,36 @@ in the product $JV$ or $WJ$. This way, the computational cost is decreased using
 the forward mode with an appropriate linear combination of the columns of~$J$ or the reverse
 mode with a suitable linear combination of the rows of~$J$; see the
 survey~\cite{Gebremedhin05whatcolor}.
-In \secref{ss.problem.full} and \secref{ss.problem.full}, we formulate problems to compute the
+Later in this chapter, we formulate problems to compute the
 minimum values for $\col$ and $\row$ and the corresponding combinatorial problem.
 %===================================================================================================
-\subsubsection{Problem}
+\subsubsection{Scientific computing problem}
 \label{ss.problem.full}
 %===================================================================================================
-Here, we formulate a problem to find the optimal seed matrix in which
-the number of rows and columns are smaller than the actual Jacobian matrix, so-called compression.
+Here, we find a seed matrix in which
+the number of rows and columns is smaller than the actual Jacobian matrix, so-called compression.
 A unidirectional compression is a compression in either rows or columns in contrast to
 a bidirectional compression in which both rows and columns are compressed at the same time.
 The key idea behind this \emph{unidirectional compression} is now illustrated for the
 forward mode. First, we present a definition as follows,
 \begin{definition}[Structurally Orthogonality]
 \label{d:struct_orth}
-Let $J=[c_1, c_2, \dots, c_n]$ denote the Jacobian matrix in which $c_i \in \setR^m$ is the $i$th
+Let $J=[c_1, c_2, \dots, c_n]$ denote the $m\times n$ Jacobian matrix 
+in which $c_i \in \setR^m$ is the $i$th
 column. Two columns $c_i$ and $c_j$ are
 called \emph{structurally orthogonal} if they do not have any nonzero element in a same
 row. Two columns are called \emph{structurally non-orthogonal} if there is at least one
 row in which both columns, $c_i$ and $c_j$, have a nonzero element.
 Analogously, two rows are
-\emph{structurally orthogonal} if they do not have any nonzero element in the same column.
+\emph{structurally orthogonal} if they do not have any nonzero element in a same column.
 \end{definition}
 We can compute a linear combination of structurally orthogonal columns of the Jacobian matrix
-such that this linear combination contains all elements of each column.
-The definition of the structurally orthogonal columns can be similarly adapted to rows. The number of structurally orthogonal groups scales with the computational cost either for columns or rows.
-\figref{f.mat-ex-for-orth} (Left) and \figref{f.mat-ex-for-orth} (Middle) shows two examples
-of the matrices which can be compressed efficiently by columns and rows, respectively.
+such that this linear combination contains all elements of these columns.
+The definition of the structurally orthogonal columns can be similarly adapted to rows. 
+It follows that the number of structurally orthogonal groups scales 
+with the computational cost either for columns or rows.
+\figref{f.mat-ex-for-orth} (Left) and \figref{f.mat-ex-for-orth} (Middle) show two examples
+of matrices which can be compressed efficiently by columns and rows, respectively.
 \begin{figure}
 \includegraphics[width=0.3\linewidth]{diag-col}
 \hfill
@@ -298,23 +304,26 @@ of the matrices which can be compressed efficiently by columns and rows, respect
 }
 \label{f.mat-ex-for-orth}
 \end{figure}
-Now, consider the matrix $C$ in \figref{f.mat-ex-for-orth} (Right) that has neither structurally orthogonal columns nor structurally orthogonal rows.
+Now, consider the matrix in \figref{f.mat-ex-for-orth} (Right) that has neither structurally orthogonal columns nor structurally orthogonal rows.
 Therefore, there is no unidirectional compression of the
-matrix $C$, neither by \col\ columns nor by \row\ rows which reduce \col\ or \row\ below
-the number of columns or rows.
-The technique of bidirectional, which compresses both columns and rows at the same time, will reduce the computational cost. This technique computes both forward and reverse modes of automatic differentiation.
+matrix, neither by columns nor rows.
+However, the technique of bidirectional compression, 
+which compresses both columns and rows at the same time, 
+will reduce the computational cost at that example. 
+This technique uses both forward and reverse modes of automatic differentiation.
 
 For general sparsity patterns,
 it is not straightforward to figure out how to linearly combine columns and rows such that
 the computational cost is minimized. Hence, we introduce the combinatorial
 optimization problems~\ref{p.seed.uni} and ~\ref{p.seed.bid}
-for unidirectional or bidirectional compression to determine the nonzero elements of huge Jacobian matrices efficiently.
+for unidirectional and bidirectional compression to determine 
+the nonzero elements of large Jacobian matrices efficiently.
 
 \begin{problem}[\MinUniCom]
 \label{p.seed.uni} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with a known sparsity
-pattern. Find a seed matrix $V$ of dimension $n\times \col$
+pattern. Find a binary seed matrix $V$ of dimension $n\times \col$
 whose number of columns of $V$ sums up
-to a minimal value, $\col$, such that all nonzero elements of $J$ also appear in
+to a minimal value such that all nonzero elements of $J$ also appear in
 the matrix-matrix product $JV$.
 \end{problem}
 
@@ -335,15 +344,15 @@ The new formulation is an equivalent problem defined on a
 carefully chosen graph model. The survey \cite{Gebremedhin05whatcolor}
 discusses different methods
 to exploit the sparsity involved in derivative computations.
-We first look at a simple graph model for the unidirectional compression,
+We first look at a simple graph model for the unidirectional compression.
 %
 \begin{definition}[Column Intersection Graph]
 \label{d:cig}
 The column intersection graph $G = (V,E)$ associated with an $n \times n$ Jacobian matrix $J$
 consists of a set of vertices $V=\{v_1, v_2, \dots, v_n\}$ whose vertex $v_i$ represents
 the $i$th column $J(:,i)$. Furthermore, there is an edge $(v_i,v_j)$ in the set of edges
-$E$ if and only if the columns $J(:,i)$ and $J(:,j)$ represented by $v_i$ and $v_j$ have
-a nonzero element in at least a same row position.
+$E$ if and only if the columns $J(:,i)$ and $J(:,j)$ represented by $v_i$ and $v_j$ 
+are structurally non-orthogonal.
 \end{definition}
 
 As we have a graph model interpreted from our Jacobian matrix in \defref{d:cig},
@@ -351,7 +360,7 @@ the grouping of columns can be encoded in the following well-known graph colorin
 %
 \begin{definition}[Coloring]
 A coloring of $G$ is a mapping $\Phi : V \to {1, \dots, p}$ with the property
-$\Phi(v_i)\neq \Phi(v_j)$ for $(v_i,v_j) \in E$.
+$\Phi(v_i)\neq \Phi(v_j)$ if $(v_i,v_j) \in E$.
 \end{definition}
 %
 Coleman and Mor\'{e} \cite{Coleman1983EoS} then showed that Problem~\ref{p.seed.uni}, which
@@ -363,10 +372,6 @@ coloring problem.
 Find a coloring $\Phi$ of the column intersection graph $G$ with a minimal number of
 colors.
 \end{problem}
-
-It is shown in~\cite{Coleman1983EoS} that there is an intimate connection between the sparse Jacobian computations described in Problem~\ref{p.seed.uni} and the graph coloring issues described by Problem~\ref{p:mincol}.
-If a vertex represents a row and an edge represents structural
-non-orthogonality of two rows a row-intersection graph can be adapted too.
 
 Although, this model is convincing for the unidirectional compression,
 the bidirectional compression can not be an instance of this model.
@@ -388,7 +393,7 @@ that are connected by a path of length two, are called \emph{distance-$2$ neighb
 The coloring problem in the column-intersection graph \ref{p.seed.uni} can also be represented in
 this bipartite graph model. This equivalent coloring is done only in the set of
 column vertices. Also, \emph{distance-$2$ neighbors} should be considered instead of
-the classic definition of neighborhood.
+edges.
 
 The overall idea behind transforming Problem \ref{p.seed.bid}, \MinBidCom, into an equivalent
 problem using the bipartite graph model is as follows. The grouping of the columns and
@@ -398,9 +403,8 @@ coloring of a bipartite graph. Such a coloring is mapping
 $$
 \Phi:V_c \cup V_r \to \{0,1,\dots ,p\}
 $$
-that assigns to each vertex a color represented by an integer. Recall from the previous
-section that, in general, there can be columns or rows that are not chosen in the
-grouping at all. Therefore, the coloring~$\Phi$ also involves a ``neutral'' color
+that assigns to each vertex a color represented by an integer. 
+The coloring~$\Phi$ also involves a ``neutral'' color
 representing this ``don't color'' situation. A vertex $v \in V_c \cup V_r$ that is not
 used in the grouping of columns/rows is assigned the neutral color $\Phi(v)=0$. More
 precisely, if $\Phi(v)=0$ for a column vertex $v$ then every nonzero represented by an
@@ -413,19 +417,17 @@ necessary to consider the underlying properties, which are as follows:
 \begin{enumerate}
 \item The computational cost roughly consists of the number of groups of columns and
 rows. Since the overall cost is the sum of the costs associated with the forward mode
-and to the reverse mode, the (non-neutral) colors for the forward mode and the
+and the reverse mode, the (non-neutral) colors for the forward mode and the
 (non-neutral) colors for the reverse mode need to be different.
 
-\item Recall from our example with the products $CV$ and $WC$ that some nonzero
+\item It may happen that some nonzero
 elements may be computed twice, by the forward mode in $JV$ and by the reverse mode
 in $WJ$. Therefore, an edge representing such a nonzero element connects two
 vertices with two different non-neutral colors. In general, since the
 \MinBidCom problem asks for computing \emph{all} nonzero elements, at least one vertex of
 every edge has to be colored with a non-neutral color.
 
-\item Recall from the example that structural orthogonality is no longer required for
-grouping the rows and columns. However, there is still the following restriction.
-Suppose two columns are structurally non-orthogonal and have a nonzero element in a
+\item Suppose two columns are structurally non-orthogonal and have a nonzero element in a
 same row. If this row is not handled by the reverse mode, these two columns need to
 be in different column groups. The same argument holds for corresponding situations
 with row groups.
@@ -438,7 +440,6 @@ $r_j$. Now, if $(i,\ell)$ is already determined by the reverse mode for the row 
 column vertex $c_\ell$ is assigned the neutral color. However, if $(i,\ell)$ is
 computed by the forward mode, a third (non-neutral) color is needed for $c_\ell$. A
 similar argument holds if $(i,k)$ is computed by the forward mode.
-
 \end{enumerate}
 
 Based on these considerations, the following definition captures these properties.
