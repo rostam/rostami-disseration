@@ -302,7 +302,7 @@ Now, consider the matrix $C$ in \figref{f.mat-ex-for-orth} (Right) that has neit
 Therefore, there is no unidirectional compression of the
 matrix $C$, neither by \col\ columns nor by \row\ rows which reduce \col\ or \row\ below
 the number of columns or rows.
-The technique of bidirectional, which compresses both columns and rows at the same time, will reduce the computational cost. This technique computes both forward and reverse mode of automatic differentiation.
+The technique of bidirectional, which compresses both columns and rows at the same time, will reduce the computational cost. This technique computes both forward and reverse modes of automatic differentiation.
 
 For general sparsity patterns,
 it is not straightforward to figure out how to linearly combine columns and rows such that
@@ -311,7 +311,7 @@ optimization problems~\ref{p.seed.uni} and ~\ref{p.seed.bid}
 for unidirectional or bidirectional compression to determine the nonzero elements of huge Jacobian matrices efficiently.
 
 \begin{problem}[\MinUniCom]
-\label{p.seed.uni} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
+\label{p.seed.uni} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with a known sparsity
 pattern. Find a seed matrix $V$ of dimension $n\times \col$
 whose number of columns of $V$ sums up
 to a minimal value, $\col$, such that all nonzero elements of $J$ also appear in
@@ -347,7 +347,7 @@ a nonzero element in at least a same row position.
 \end{definition}
 
 As we have a graph model interpreted from our Jacobian matrix in \defref{d:cig},
-the grouping of columns can be encoded in the following well-know graph coloring problem.
+the grouping of columns can be encoded in the following well-known graph coloring problem.
 %
 \begin{definition}[Coloring]
 A coloring of $G$ is a mapping $\Phi : V \to {1, \dots, p}$ with the property
@@ -369,7 +369,7 @@ If a vertex represents a row and an edge represents structural
 non-orthogonality of two rows a row-intersection graph can be adapted too.
 
 Although, this model is convincing for the unidirectional compression,
-the bidirectional compression can not be an instance of model.
+the bidirectional compression can not be an instance of this model.
 A bidirectional compression needs the information of both rows and columns. Therefore, a bipartite graph model is defined for this purpose as in~\cite{Coleman1996SaE,cv:ecs,hs:csj}.
 
 \begin{definition}[Bipartite Graph Model]
@@ -419,8 +419,8 @@ and to the reverse mode, the (non-neutral) colors for the forward mode and the
 \item Recall from our example with the products $CV$ and $WC$ that some nonzero
 elements may be computed twice, by the forward mode in $JV$ and by the reverse mode
 in $WJ$. Therefore, an edge representing such a nonzero element connects two
-vertices with two different non-neutral colors. In general, since problem
-\MinBidCom\ asks for computing \emph{all} nonzero elements, at least one vertex of
+vertices with two different non-neutral colors. In general, since the
+\MinBidCom problem asks for computing \emph{all} nonzero elements, at least one vertex of
 every edge has to be colored with a non-neutral color.
 
 \item Recall from the example that structural orthogonality is no longer required for
@@ -430,11 +430,11 @@ same row. If this row is not handled by the reverse mode, these two columns need
 be in different column groups. The same argument holds for corresponding situations
 with row groups.
 
-\item Consider three nonzero elements in matrix positions $(i,k)$, $(i,\ell)$, and
+\item Consider three nonzero elements in the matrix positions $(i,k)$, $(i,\ell)$, and
 $(j,k)$. Suppose that the nonzero at $(i,k)$ is computed by the reverse mode
 assigning some (non-neutral) color to the row vertex $r_i$. Then, if $(j,k)$ is
 also computed via the reverse mode, a second (non-neutral) color is needed for
-$r_j$. Now, if $(i,\ell)$ is already determined by the reverse mode for row $i$ the
+$r_j$. Now, if $(i,\ell)$ is already determined by the reverse mode for the row $i$ the
 column vertex $c_\ell$ is assigned the neutral color. However, if $(i,\ell)$ is
 computed by the forward mode, a third (non-neutral) color is needed for $c_\ell$. A
 similar argument holds if $(i,k)$ is computed by the forward mode.
@@ -544,7 +544,7 @@ if the following conditions are satisfied:
 is, for every $c_i \in V_c$ and $r_j \in V_r$, either $\Phi(c_i) \neq \Phi(r_j)$ or
 $\Phi(c_i)=\Phi(r_j)=0$.
 
-\item At least one end point of and edge in $E_R$ receives a nonzero color.
+\item At least one end point of an edge in $E_R$ receives a nonzero color.
 \item For every edge $(r_i,c_j)\in E_R$, $r_i, r_l\in V_r$, and
 $c_j, c_k\in V_c$,
 \begin{itemize}
@@ -641,7 +641,7 @@ Jacobian. Using the more general bipartite graph model, Problem~\ref{p:minblockc
 be reformulated as a minimum distance-2 coloring of a bipartite graph when restricted to
 the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Combining partial Jacobian computataion and ILU preconditioning}
+\section{Combining partial Jacobian computation and ILU preconditioning}
 \label{s.precond}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The computation of Jacobian is always one part of solving partial differential equations.
@@ -649,8 +649,9 @@ In general, we are considering the solution to the following system of linear eq
 $$
 J\vek{x} = \vek{b},
 $$
-in which $J$ is a large sparse non-symmetric nonsingular Jacobian matrix. An approximative iterative solver is an
-effective solution since they have a faster convergence and need less memory. As we discussed,
+in which $J$ is a large sparse nonsymmetric nonsingular Jacobian matrix. 
+An approximative iterative solver is an
+effective solution since it has a faster convergence and needs less memory. As we discussed,
 these solvers are matrix-free which makes AD as a suitable method of differentiation in this case.
 
 Another way to speed up these iterators are
@@ -745,7 +746,7 @@ and the corresponding algorithm on the bipartite graph model
 (details can be found in~\cite{Lulfesmann2012Fap},
 \begin{itemize}
 \item compute the initially required elements $R_i = \rho(A)$.
-\item setup the bipartite graph $G$ from $A$ and the subset $E_i\subset E$ fom $R_i$.
+\item setup the bipartite graph $G$ from $A$ and the subset $E_i\subset E$ of $R_i$.
 \item compute the partial coloring the bipartite graph $G$ restricted to $E_i$
 and save colors as the properties of vertices $\Phi_{G}(E_i)$
 \item find a subset of edges $E_p\subset E - E_i$ such that $\Phi_{G}(E_i) = \Phi_{G}(E_i \cup E_p)$
