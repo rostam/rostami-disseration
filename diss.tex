@@ -491,7 +491,7 @@ should be determined.
 L{\"u}lfesmann~\cite{Lulfesmann2012Fap} has studied more considerably in this area and
 introduced some heuristics for partial computation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Problem}
+\subsubsection{Scientific computing problem}
 \label{ss.problem.part}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Suppose the required elements are shown by $R$, the definition of
@@ -502,8 +502,9 @@ if and only if they do not have a nonzero element in the same row where at least
 one of these nonzero elements is required.
 \end{definition}
 
-The corresponding problem can be formulated as follows for either unidirectional
-or bidirectional compression,
+The corresponding combinatorial optimization problem for the unidirectional and bidirectioanl 
+compression restricted to the required elements
+can be formulated as follows.
 \begin{problem}[\MinRUniCom]
 \label{p.seed.runi} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
 pattern and $R$ be a proper subset of $J$. Find a seed matrix $V$ of dimension $n\times \col$
@@ -521,12 +522,11 @@ to a minimal value, $\col + \row$, such that all nonzero elements of $R$ also ap
 the pair of matrix-matrix products $JV$ and $WJ$.
 \end{problem}
 
-We discuss an equivalent graph-theoretical formulation of this problem in the next
-section.
+Now, we discuss an equivalent graph-theoretical formulation of this problem.
 
-\subsubsection{Combinatorial Model}
+\subsubsection{Combinatorial model}
 Based on \cite{Gebremedhin05whatcolor,Lulfesmann2012Fap}, the definitions
-of the full Jacobian coloring are adapted as follows,
+of the full Jacobian coloring are adapted for the partial coloring as follows,
 \begin{definition}[Restricted distance-$2$ coloring]\label{d.coloring.d2}
 Given a bipartite graph $G=(V_c\cup V_r, E)$ and a subset of required edges
 $E_R\subset E$ , then a mapping $\Phi:V_c \to
