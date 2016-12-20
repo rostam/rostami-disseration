@@ -39,10 +39,11 @@ urlcolor=black
 \definecolor{lightgray}{rgb}{.9,.9,.9}
 \definecolor{darkgray}{rgb}{.4,.4,.4}
 \definecolor{purple}{rgb}{0.65, 0.12, 0.82}
-
+\renewcommand{\ttdefault}{pcr}
 \lstdefinelanguage{JavaScript}{
-keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break,for},
-keywordstyle=\color{blue}\bfseries,
+keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break,for,with},
+basicstyle=\ttfamily,
+keywordstyle=\bfseries,
 ndkeywords={class, export, boolean, throw, implements, import},
 ndkeywordstyle=\color{darkgray}\bfseries,
 identifierstyle=\color{black},
@@ -69,6 +70,7 @@ tabsize=2,
 breaklines=true,
 showtabs=false,
 captionpos=b
+keywords={with},
 }
 \renewcommand{\lstlistingname}{Algorithm}
 
@@ -640,7 +642,8 @@ Finally, an alternative formulation can be derived by using a bipartite graph mo
 which there is a vertex set for the rows and another vertex set for the columns of the
 Jacobian. Using the more general bipartite graph model, Problem~\ref{p:minblockcol} could
 be reformulated as a minimum distance-2 coloring of a bipartite graph when restricted to
-the set of required edges. This is called partial coloring in~\cite{Gebremedhin05whatcolor}.
+the set of required edges. This is the partial coloring which we discuss
+in the previous section restricted to $\rho(J)$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Combining partial Jacobian computation and ILU preconditioning}
 \label{s.precond}
@@ -668,7 +671,7 @@ the coefficient matrix,
 $$M \approx J.$$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Problem}
+\subsection{Scientific computing problem}
 \label{ss.problem.precond}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Today, there is no general and established
@@ -734,62 +737,81 @@ R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
 $$
 in which $SILU$ means the symbolic ILU factorization.
 
+Finally, the optimization problem is formulated as follows,
+\begin{problem}[Maximum Additionally Required Elements]
+\label{p:max_add}
+%
+Let $J$ be a sparse $m\times n$ Jacobian matrix with known sparsity patttern and
+$R_i$ is a set of required elements selected by $\rho(J)$.
+Find a maximal set of additionally required elements $R_a$.
+\end{problem}
+
+
 \subsection{Combinatorial model}
 \label{ss.comb.precond}
 The bipartite graph model presented in~\defref{d.bip.graph} is
-a basic model to find new algorithms for the initially, potentially,
-and additionally required elements. Three subsets $E_i, E_p, E_a\subset E$
+a suitable model to find new algorithms for the initially, potentially,
+and additionally required elements. 
+Since each edge in the bipartite graph model is related to a nonzero element in 
+the matrix, three subsets $E_i, E_p, E_a\subset E$
 are considered for the initially, potentially,
 and additionally required elements, respectively.
-Given the sparsification operator $\rho$ and the Jacobian matrix $A$,
+Given the sparsification operator $\rho$ and the Jacobian matrix $J$,
 here is a list of steps in the computation of additionally required elements
 and the corresponding algorithm on the bipartite graph model
-(details can be found in~\cite{Lulfesmann2012Fap},
+(details in~\cite{Lulfesmann2012Fap}),
 \begin{itemize}
-\item compute the initially required elements $R_i = \rho(A)$.
-\item setup the bipartite graph $G$ from $A$ and the subset $E_i\subset E$ of $R_i$.
-\item compute the partial coloring the bipartite graph $G$ restricted to $E_i$
-and save colors as the properties of vertices $\Phi_{G}(E_i)$
-\item find a subset of edges $E_p\subset E - E_i$ such that $\Phi_{G}(E_i) = \Phi_{G}(E_i \cup E_p)$
+\item compute the initially required elements $R_i = \rho(J)$.
+\item setup the bipartite graph $G$ from the Jacobian matrix $J$ and the subset $E_i\subset E$ of $R_i$.
+\item compute the partial coloring of the bipartite graph $G$ restricted to $E_i$: $\Phi_{G}(E_i)$.
+\item find a subset of nonrequired edges $E_p\subset E - E_i$ such that $\Phi_{G}(E_i) = \Phi_{G}(E_i \cup E_p)$. The subset $E_p$ contains the potentially required edges.
 \item find a subset of potentially required edges $E_a\subset E_p$ such
-that $SILUR(R_i) \cup R_a = SILU(R_i \cup R_a)$
+that $SILUR(R_i) \cup R_a = SILU(R_i \cup R_a)$. 
+The subset $E_a$ contains the additionally required edges.
 \end{itemize}
 \coderef{code.pot.d2} and \coderef{code.pot.sb} shows the algorithms to compute the
 potentially required elements for the distance-$2$ coloring and star bicoloring, respectively.
+Given a bipartite graph $G_b$, the required edges $E_i$, and a distance-$2$ coloring $\Phi$,
+\coderef{code.pot.d2} computes a set of potentially required elements. This algorithm
+iterates over nonrequired edges ($E - E_i$) and checks if it can be added to the 
+potentially required elements. Similarly, \coderef{code.pot.sb} computes 
+the potentially required elements when the given coloring $\phi$ is star bicoloring.
 \begin{figure}
 \begin{lstlisting}[caption=Find potentially required elements for
 distance-$2$ coloring,label=code.pot.d2,mathescape]
-function pot_d2_color($G_b$,$E_i$)
-$R_p=\emptyset$
-for $(r_i,c_j)\in E_i$ with $\Phi(c_j)\neq 0$
-for $c_k\in N_1(r_i,c_j)$ with $j\neq k$ and $(r_i,c_k)\notin E_i$
-if $\Phi(c_j) = \Phi(c_k)$
-continue
-E_p = E_p \cup {(r_i,c_j)}
+function pot_d2_color($G_b$,$E_i$,$\phi$)
+  $R_p=\emptyset$
+  for $(r_i,c_j)\in E_i$ with $\Phi(c_j)\neq 0$
+    for $c_k\in N_1(r_i,c_j)$ with $j\neq k$ and $(r_i,c_k)\notin E_i$
+      if $\Phi(c_j) = \Phi(c_k)$
+        continue
+    $E_p = E_p \cup {(r_i,c_j)}$
+  return $E_p$
 \end{lstlisting}
 \end{figure}
 \begin{figure}
 \begin{lstlisting}[caption=Find potentially required elements for star bicoloring,label=code.pot.sb,mathescape]
-function pot_star_bicoloring($G_b$,$E_i$)
-$E_p = \emptyset$
-for $(r_i,c_j)\in E-E_i$ with $\Phi(r_i)\notin 0$ or $\Phi(c_j)\notin 0$
-if($\Phi(r_i) = 0$)
-for $c_k\in N_1(r_i,G)$ with $j\neq k$ and $(r_i,c_k)\notin E_i$
-if($\Phi(c_j)==\Phi(c_k)$)
-continue with the next edge $(r_i,c_j)\in E - E_i$
+function pot_star_bicoloring($G_b$,$E_i$,$\phi$)
+  $E_p = \emptyset$
+  for $(r_i,c_j)\in E-E_i$ with $\Phi(r_i)\notin 0$ or $\Phi(c_j)\notin 0$
+    if($\Phi(r_i) = 0$)
+      for $c_k\in N_1(r_i,G)$ with $j\neq k$ and $(r_i,c_k)\notin E_i$
+        if($\Phi(c_j)==\Phi(c_k)$)
+          continue with the next edge $(r_i,c_j)\in E - E_i$
 
-if($\Phi(c_j) = 0$)
-for $r_l\in N_1(c_j,G)$ with $j\neq l$ and $(r_l,c_j)\notin E_i$
-if($\Phi(r_i)==\Phi(r_l)$)
-continue with the next edge $(r_i,c_j)\in E - E_i$
+    if($\Phi(c_j) = 0$)
+      for $r_l\in N_1(c_j,G)$ with $j\neq l$ and $(r_l,c_j)\notin E_i$
+        if($\Phi(r_i)==\Phi(r_l)$)
+          continue with the next edge $(r_i,c_j)\in E - E_i$
 
-if($\Phi(r_i) \neq 0$ and $\Phi(c_j) \neq 0$)
-for $c_k\in N_1(r_i,G)$ with $i\notin k$
-for $r_l\in N_1(c_j,G)$ with $j\notin l$
-if($\Phi(c_j)==\Phi(c_k)$ and $\Phi(r_i)==\Phi(r_l)$)
-continue with the next edge $(r_i,c_j)\in E - E_i$
+    if($\Phi(r_i) \neq 0$ and $\Phi(c_j) \neq 0$)
+      for $c_k\in N_1(r_i,G)$ with $i\notin k$
+        for $r_l\in N_1(c_j,G)$ with $j\notin l$
+          if($\Phi(c_j)==\Phi(c_k)$ and $\Phi(r_i)==\Phi(r_l)$)
+            continue with the next edge $(r_i,c_j)\in E - E_i$
 
-$E_p = E_p \cup {(r_i,c_j)}$
+    $E_p = E_p \cup {(r_i,c_j)}$
+  return $E_p$
 \end{lstlisting}
 \end{figure}
 
@@ -806,59 +828,56 @@ should be smaller than indices of the vertices $v_i$ and $v_j$.
 Equivalently, a matrix element $(i,j)$ is a fill-in if there is a fill path between
 $v_i$ and $v_j$.
 \end{definition}
+
 In addition to the concept of fill path, another concept of fill level $l$ is needed to
 formulate the level-based incomplete LU factorization~\cite{precond-pothen}.
 This parameter is used to filter the generated fill-ins.
 This parameter is the length of the fill path.
-The level-based incomplete LU factorization the generated fill-ins are allowed
+In the level-based incomplete LU factorization, the generated fill-ins are allowed
 to be considered only up to the level $l$.
-
-Lülfesmann~\cite{Lulfesmann2012Fap} adapted a
-corresponding bipartite graph model for ILU preconditioning.
-The concept of fill path is also redefined for bipartite graph model
-in which a path is replaced by distance-$2$ paths.
-The details can be found in Lülfesmann~\cite{Lulfesmann2012Fap}.
-Based on the bipartite graph models for coloring and the ILU preconditioning,
-two algorithms are also proposed to compute the additionally required
-elements: \coderef{code.add} and \coderef{code.add2}.
 
 \begin{figure}
 \begin{lstlisting}[caption=Find additionally required elements,
 label=code.add,mathescape]
 function add($G_b$,$E_i$,$E_p$)
-$E_a = \emptyset$
-for $(r_i,c_j)\in E_p$
-if $i > j$
-if $\exists c_l\in N_1(r_j,G[E_i \cup (E_f\cup E_a)])$ with $l>j$
-continue with next edge $(r_i,c_j)\in E_p$
-else if $i > j$
-if $\exists r_k\in N_1(c_i,G[E_i \cup (E_f\cup E_a)])$ with $k>i$
-continue with next edge $(r_i,c_j)\in E_p$
-$E_a = E_a \cup {(r_i,c_j)}$
+  $E_a = \emptyset$
+  do
+    for $(r_i,c_j)\in E_p$
+      if $i > j$
+        if $\exists c_l\in N_1(r_j,G[E_i \cup (E_f\cup E_a)])$ with $l>j$
+          continue with next edge $(r_i,c_j)\in E_p$
+      else if $i > j$
+        if $\exists r_k\in N_1(c_i,G[E_i \cup (E_f\cup E_a)])$ with $k>i$
+          continue with next edge $(r_i,c_j)\in E_p$
+      $E_a = E_a \cup {(r_i,c_j)}$
+      $E_p = E_p - {(r_i,c_j)}$
+  while $|E_a|$ is increased in the last iteration
+  return $E_a$
 \end{lstlisting}
 \end{figure}
+Lülfesmann~\cite{Lulfesmann2012Fap} adapted a
+corresponding bipartite graph model for ILU preconditioning.
+The concept of fill path is also redefined for bipartite graph model
+in which a path is replaced by distance-$2$ paths.
+\begin{definition}[Fill path in bipartite graph]\label{d.fill.path.bipartite}
+A path $(r_i,c_k,r_k,c_l,r_l,...,c_j)$ in the bipartite graph model starting
+from a row vertex is an adapted fill path in bipartite graph model 
+if and only if all vertices between $r_i$ and $c_j$ have a lower index than $i$
+and $j$. Eqivalently, there is a fill-in $(i,j)$ in the matrix if there is a
+fill path between $r_i$ and $c_j$ in the corresponding bipartite graph.
+\end{definition}
 
-\begin{figure}
-\begin{lstlisting}[caption=Find additionally required elements (an improved version),
-label=code.add2,mathescape]
-function add_improved($G_b$,$E_i$,$E_p$)
-$E_a = \emptyset$
-do
-for $(r_i,c_j)\in E_p$
-if $i > j$
-if $\exists c_l\in N_1(r_j,G[E_i \cup (E_f\cup E_a)])$ with $l>j$
-continue with next edge $(r_i,c_j)\in E_p$
-else if $i > j$
-if $\exists r_k\in N_1(c_i,G[E_i \cup (E_f\cup E_a)])$ with $k>i$
-continue with next edge $(r_i,c_j)\in E_p$
-$E_a = E_a \cup {(r_i,c_j)}$
-$E_p = E_p - {(r_i,c_j)}$
-while $|E_a|$ is increased in the last iteration
-\end{lstlisting}
-\end{figure}
-We consider the improved version in \coderef{code.add2}
+Based on the bipartite graph models for coloring and the ILU preconditioning,
+two algorithms are also proposed to compute the additionally required
+elements: conservative and sophisticated. 
+We consider the sophisticated algorithm shown in \coderef{code.add}
 to compute the additionally required elements
-throughout this thesis.
+throughout this thesis. This algorithm looks at each potentially required edge.
+If it is possible that a fill path generated by adding this edge,
+the edge is not considered for the set of additionally required edges.
+In this sophisticated approach, the algorithm iterates once again over 
+all potentailly required elements. This processes repeated until 
+no new additionally required edges are found.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% PRECONDITIONING AND COLORING
@@ -889,15 +908,16 @@ for columns in which $N_2(v)$ shows
 the distance-$2$ neighbors of $v$.
 ,label=code.greedy,mathescape]
 function d2_color($G=(V_r\cup V_c,E)$,$E_i\subset E$)
-for $v\in V_c$
-  $\Phi(v)=-1$
-  $forbiddenColors[v] = 0$
-for $v\in V_c$
-  if $\exists n\in N_2(v): (v,n)\in E_i$
-    for $n\in N_2(v)$
-      if $\Phi(n) \neq 0$
-        $forbiddenColors[\Phi(n)] = v$
+  for $v\in V_c$
+    $\Phi(v)=-1$
+    $forbiddenColors[v] = 0$
+  for $v\in V_c$
+    if $\exists n\in N_2(v): (v,n)\in E_i$
+      for $n\in N_2(v)$
+        if $\Phi(n) \neq 0$
+          $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+  return $\Phi$
 \end{lstlisting}
 \end{figure}
 
@@ -1024,22 +1044,23 @@ then it considers the corresponding row and column.
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
 considering the nonrequired elements.,label=code.new.d2.nreq,mathescape]
 function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
-for $v\in V_c$
-  $\Phi(v)=-1$
-  $forbiddenColors[v] = 0$
+  for $v\in V_c$
+    $\Phi(v)=-1$
+    $forbiddenColors[v] = 0$
 
-for $v\in V_c$ with $\Phi(v)=0$
-  $forbiddenColors[0] = v$
-  if $\exists n\in N_2(v): (v,n)\in E_i$
-    for $n\in N_2(v)$
-      if $\Phi(n) \neq 0$
-        $forbiddenColors[\Phi(n)] = v$
+  for $v\in V_c$ with $\Phi(v)=0$
+    $forbiddenColors[0] = v$
+    if $\exists n\in N_2(v): (v,n)\in E_i$
+      for $n\in N_2(v)$
+        if $\Phi(n) \neq 0$
+          $forbiddenColors[\Phi(n)] = v$
 
-    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-    $I_v=\{u\in V_c: u\notin N_2(v)\}$
-    $M = \{ (i,Nreq(i,v)): i\in I_v\}$
-    $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
-    $\Phi(maxs[0]) = \Phi(v)$
+      $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+      $I_v=\{u\in V_c: u\notin N_2(v)\}$
+      $M = \{ (i,Nreq(i,v)): i\in I_v\}$
+      $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
+      $\Phi(maxs[0]) = \Phi(v)$
+  return $\Phi$
 \end{lstlisting}
 \end{figure}
 We modify the greedy algorithm  presented in \coderef{code.greedy} as follows.
@@ -1085,10 +1106,11 @@ label=consistency,
 caption=A function checking the consistency of the coloring.
 ,mathescape]
 function consistent_coloring($G$)
-for $v \in V_c$
-  for $n \in N_2(v)$
-    if($\Phi(n) == \Phi(v)$)
-      $\Phi(n) = $new_color
+  for $v \in V_c$
+    for $n \in N_2(v)$
+      if($\Phi(n) == \Phi(v)$)
+        $\Phi(n) = $new_color
+  return $\Phi$
 \end{lstlisting}
 \end{figure}
 
@@ -1102,23 +1124,24 @@ This means that \coderef{code.new.d2.nreq} should be rewritten as \coderef{code.
 considering the nonrequired elements and checking the consistency.,
 label=code.new.d2.consistent,mathescape]
 function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
-for $v\in V_c$
-  $\Phi(v)=-1$
-  $forbiddenColors[v] = 0$
+  for $v\in V_c$
+    $\Phi(v)=-1$
+    $forbiddenColors[v] = 0$
 
-for $v\in V_c$ with $\Phi(v)=0$
-  $forbiddenColors[0] = v$
-  if $\exists n\in N_2(v): (v,n)\in E_i$
-    for $n\in N_2(v)$
-      if $\Phi(n) \neq 0$
-        $forbiddenColors[\Phi(n)] = v$
+  for $v\in V_c$ with $\Phi(v)=0$
+    $forbiddenColors[0] = v$
+    if $\exists n\in N_2(v): (v,n)\in E_i$
+      for $n\in N_2(v)$
+        if $\Phi(n) \neq 0$
+          $forbiddenColors[\Phi(n)] = v$
 
-    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-    $I_v=\{u\in V_c: u\notin N_2(v)\}$
-    $M = \{ (i,Nreq(i,v)): i\in I_v\}$
-    $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
-    $\Phi(maxs[0]) = \Phi(v)$
-consistent_coloring(G)
+      $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+      $I_v=\{u\in V_c: u\notin N_2(v)\}$
+      $M = \{ (i,Nreq(i,v)): i\in I_v\}$
+      $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
+      $\Phi(maxs[0]) = \Phi(v)$
+  consistent_coloring(G)
+  return $\Phi$
 \end{lstlisting}
 \end{figure}
 
@@ -1191,25 +1214,26 @@ the maximum survived nonrequired elements.
 we select only an arbitrary element in the previous version.,
 label=code.new.impr1,mathescape]
 function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subset E$)
-for $v\in V_c$
-  $\Phi(v)=-1$
-  $forbiddenColors[v] = 0$
+  for $v\in V_c$
+    $\Phi(v)=-1$
+    $forbiddenColors[v] = 0$
 
-for $v\in V_c$ with $\Phi(v)=0$
-  $forbiddenColors[0] = v$
-  if $\exists n\in N_2(v): (v,n)\in E_i$
-    for $n\in N_2(v)$
-      if $\Phi(n) \neq 0$
-        $forbiddenColors[\Phi(n)] = v$
+  for $v\in V_c$ with $\Phi(v)=0$
+    $forbiddenColors[0] = v$
+    if $\exists n\in N_2(v): (v,n)\in E_i$
+      for $n\in N_2(v)$
+        if $\Phi(n) \neq 0$
+          $forbiddenColors[\Phi(n)] = v$
 
-    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-    $I_v=\{u\in V_c: u\notin N_2(v)\}$
-    $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
-    $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
-    $M_2 = \{ (i,req(i)): i\in maxs \}$
-    $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
-    $\Phi(mins[0]) = \Phi(v)$
-consistent_coloring(G)
+      $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+      $I_v=\{u\in V_c: u\notin N_2(v)\}$
+      $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
+      $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
+      $M_2 = \{ (i,req(i)): i\in maxs \}$
+      $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
+      $\Phi(mins[0]) = \Phi(v)$
+  consistent_coloring(G)
+  return $\Phi$
 \end{lstlisting}
 \end{figure}
 
@@ -1274,27 +1298,28 @@ caption=New coloring heuristic with a controller to balance
 the number of colors and the number of additionally required elements.,
 label=code.new.impr2,mathescape]
 function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subset E$,$\alpha$)
-for $v\in V_c$
-  $\Phi(v)=-1$
-  $forbiddenColors[v] = 0$
+  for $v\in V_c$
+    $\Phi(v)=-1$
+    $forbiddenColors[v] = 0$
 
-for $v\in V_c$ with $\Phi(v)=0$
-  $forbiddenColors[0] = v$
-  if $\exists n\in N_2(v): (v,n)\in E_i$
-    for $n\in N_2(v)$
-      if $\Phi(n) \neq 0$
-        $forbiddenColors[\Phi(n)] = v$
+  for $v\in V_c$ with $\Phi(v)=0$
+    $forbiddenColors[0] = v$
+    if $\exists n\in N_2(v): (v,n)\in E_i$
+      for $n\in N_2(v)$
+        if $\Phi(n) \neq 0$
+          $forbiddenColors[\Phi(n)] = v$
 
-    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-    $I_v=\{u\in V_c: u\notin N_2(v)\}$
-    $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
-    $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
-    $M_2 = \{ (i,req(i)): i\in maxs \}$
-    $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
-    $\Phi(mins[0]) = \Phi(v)$
-    for $i\in\{0,1,...,\alpha\}$
-        $\Phi(mins[i]) = \Phi(v)$
-consistent_coloring(G)
+      $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+      $I_v=\{u\in V_c: u\notin N_2(v)\}$
+      $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
+      $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
+      $M_2 = \{ (i,req(i)): i\in maxs \}$
+      $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
+      $\Phi(mins[0]) = \Phi(v)$
+      for $i\in\{0,1,...,\alpha\}$
+          $\Phi(mins[i]) = \Phi(v)$
+  consistent_coloring(G)
+  return $\Phi$
 \end{lstlisting}
 \end{figure}
 
@@ -1421,33 +1446,35 @@ caption=A new heuristic for star bicoloring algorithm
 considering the survived nonrequired elements.,
 label=orig.star.bicoloring,mathescape]
 function star_bicolor_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
-for $v\in V_c$
-  $\Phi(v)=-1$
-  $forbiddenColors[v] = 0$
+  for $v\in V_c$
+    $\Phi(v)=-1$
+    $forbiddenColors[v] = 0$
 
-$v = -1$
-$E_R^{'} = E_R$
-while $E_R^{'}$ is not empty
-  if($\Delta(V_r,G[E_R^{'}]) > \rho \Delta(V_c,G[E_R^{'}])$ then
-    v = $v_r\in V_r$ with maximum degree in $G[E_R^{-1}]$
-  else
-    v = $v_c\in V_c$ with maximum degree in $G[E_R^{-1}]$
-  $E_R^{'} = E_R^{'} - {(v,w)\in E_R^{'}:w\in N_1(v,G[E_R^{'}])}$
-  for all $w\in N_1(v,G)$
-    if $\Phi(w) \leq 0$
-  for all $x\in N_1(w,G)$ with $\Phi(w) > 0$
-    if $(v,w) \in E_R$ or $(w,x) \in E_R$
-      $forbiddenColors[\Phi (x)]=v$
+  $v = -1$
+  $E_R^{'} = E_R$
+  while $E_R^{'}$ is not empty
+    if($\Delta(V_r,G[E_R^{'}]) > \rho \Delta(V_c,G[E_R^{'}])$ then
+      v = $v_r\in V_r$ with maximum degree in $G[E_R^{-1}]$
     else
-      for all $x\in N_1(w,G[E_R])$ with $\Phi(w) > 0$
-      for all $y\in N_1(x,G)$ with $\Phi(y) > 0$ and $y\neq w$
-        if $\Phi(w) = \Phi(y)$
-          $forbiddenColors[\Phi (x)] = v$
-          $\Phi(v) = min(\{j>0: forbiddenColors[j] \neq v\})$
-          for all $v_c\in V_c$ with $\Phi(v_c) > 0$
-            $\Phi (v_c) = \Phi (v_c) + max(\{\Phi (v_r): v_r \in V_r\})$
-          for all $v\in V_r\cup V_c$ with $\Phi(v)\neq -1$
-            $\Phi (v) = 0$
+      v = $v_c\in V_c$ with maximum degree in $G[E_R^{-1}]$
+    $E_R^{'} = E_R^{'} - {(v,w)\in E_R^{'}:w\in N_1(v,G[E_R^{'}])}$
+    for all $w\in N_1(v,G)$
+      if $\Phi(w) \leq 0$
+    for all $x\in N_1(w,G)$ with $\Phi(w) > 0$
+      if $(v,w) \in E_R$ or $(w,x) \in E_R$
+       $forbiddenColors[\Phi (x)]=v$
+      else
+        for all $x\in N_1(w,G[E_R])$ with $\Phi(w) > 0$
+        for all $y\in N_1(x,G)$ with $\Phi(y) > 0$ and $y\neq w$
+          if $\Phi(w) = \Phi(y)$
+            $forbiddenColors[\Phi (x)] = v$
+            $\Phi(v) = min(\{j>0: forbiddenColors[j] \neq v\})$
+            for all $v_c\in V_c$ with $\Phi(v_c) > 0$
+              $\Phi (v_c) = \Phi (v_c) + max(\{\Phi (v_r): v_r \in V_r\})$
+            for all $v\in V_r\cup V_c$ with $\Phi(v)\neq -1$
+              $\Phi (v) = 0$
+
+  return $\Phi$
 \end{lstlisting}
 \end{figure}
 This algorithm processes a vertex either from column vertices
@@ -1534,23 +1561,23 @@ greedily and then corrects the false coloring which can happen.
 \begin{lstlisting}[caption=A OpenMP parallelized version of greedy algorithm
 adapted for the bipartite graph.,label=omp.greedy.bip,mathescape]
 function d2_color_omp($G$,$V$)
-#progrma omp parallel for
-for $v\in V$
-$forbiddenColors[\Phi(n)] = v$
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-#pragma omp barrier
-$U_0 = V$
-$i = 1$
-while $U_{i-1}\neq \emptyset$
-$L=\emptyset$
-#pragma omp parallel for
-for $v\in U_{i-1}$
-if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v)$
-$forbiddenColors[\Phi(n)] = v$
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-#pragma omp barrier
-$U_i = L$
-$i = i+1$
+  #progrma omp parallel for
+  for $v\in V$
+    $forbiddenColors[\Phi(n)] = v$
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+  #pragma omp barrier
+  $U_0 = V$
+  $i = 1$
+  while $U_{i-1}\neq \emptyset$
+    $L=\emptyset$
+    #pragma omp parallel for
+    for $v\in U_{i-1}$
+      if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v)$
+        $forbiddenColors[\Phi(n)] = v$
+        $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+    #pragma omp barrier
+    $U_i = L$
+    $i = i+1$
 \end{lstlisting}
 \end{figure}
 We apply this idea of parallelization to our new coloring heuristics.
@@ -1561,42 +1588,43 @@ version of \coderef{omp.greedy.bip}.
 \begin{lstlisting}[caption=New coloring heuristic in the bipartite graph model
 parallelized by OpenMP,label=code.new.bip.omp,mathescape]
 function d2_color_nreq($G_b$,$\alpha$)
-#progrma omp parallel for
-for $v\in V_c$ with $\Phi(v)=0$
-$forbiddenColors[0] = v$
-if $\exists n\in N_2(v): (v,n)\in E_i$
-for $n\in N_2(v)$
-if $\Phi(n) \neq 0$
-$forbiddenColors[\Phi(n)] = v$
+  #progrma omp parallel for
+  for $v\in V_c$ with $\Phi(v)=0$
+    $forbiddenColors[0] = v$
+    if $\exists n\in N_2(v): (v,n)\in E_i$
+      for $n\in N_2(v)$
+        if $\Phi(n) \neq 0$
+          $forbiddenColors[\Phi(n)] = v$
 
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
-$I_v=\{u\in V_c: u\notin N_2(v)\}$
-$nreq_v = \{n\in N_2(v):(n,v)\notin E_i\}$
-for $i \in I_v$
-$nreq_i = \{n\in N_2(i):(n,i)\notin E_i\}$
-$req_i = \{n\in N_2(i):(n,i)\in E_i\}$
-$mapVtoNreq = mapVtoNreq \cup (i , count (nreq_i - nreq_v))$
-$mapVtoreq = map \cup (i , count (req_i))$
-$maxs = \{ a\in keys(map): map[a] = max(values(mapVtoNreq))\}$
-$mins = \{ a\in keys(map): map[a] = min(values(mapVtoNreq))\}$
-$minReq = \{ a\in maxs: mapVtoreq[a] = min(values(mapVtoreq))\}$
-$\Phi(minReq) = \Phi(v)$
-for $i\in\{0,1,...,\alpha\}$
-$\Phi(mins[i]) = \Phi(v)$
+  $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
+  $I_v=\{u\in V_c: u\notin N_2(v)\}$
+  $nreq_v = \{n\in N_2(v):(n,v)\notin E_i\}$
+  for $i \in I_v$
+    $nreq_i = \{n\in N_2(i):(n,i)\notin E_i\}$
+    $req_i = \{n\in N_2(i):(n,i)\in E_i\}$
+    $mapVtoNreq = mapVtoNreq \cup (i , count (nreq_i - nreq_v))$
+    $mapVtoreq = map \cup (i , count (req_i))$
+    $maxs = \{ a\in keys(map): map[a] = max(values(mapVtoNreq))\}$
+    $mins = \{ a\in keys(map): map[a] = min(values(mapVtoNreq))\}$
+    $minReq = \{ a\in maxs: mapVtoreq[a] = min(values(mapVtoreq))\}$
+    $\Phi(minReq) = \Phi(v)$
+  for $i\in\{0,1,...,\alpha\}$
+    $\Phi(mins[i]) = \Phi(v)$
 
-#pragma omp barrier
-$U_0 = V$
-$i = 1$
-while $U_{i-1}\neq \emptyset$
-$L=\emptyset$
-#pragma omp parallel for
-for $v\in U_{i-1}$
-if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v)$
-$forbiddenColors[\Phi(n)] = v$
-$\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
-#pragma omp barrier
-$U_i = L$
-$i = i+1$
+  #pragma omp barrier
+  $U_0 = V$
+  $i = 1$
+  while $U_{i-1}\neq \emptyset$
+    $L=\emptyset$
+    #pragma omp parallel for
+    for $v\in U_{i-1}$
+      if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v)$
+        $forbiddenColors[\Phi(n)] = v$
+        $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
+
+    #pragma omp barrier
+    $U_i = L$
+    $i = i+1$
 \end{lstlisting}
 \end{figure}
 
@@ -1979,9 +2007,10 @@ in the automatic differentiation.
 We consider algorithms to increase the potentially required elements in
 ~\secref{s.max.pot.req} which increases the number of additionally required elements
 persumably. Here, we suggest a heuristic to predict if a nonrequired element would be an
-additionally required element. For this purpose, we build a bipartite graph model
-for ILU preconditioning based on the bipartite graph model for ILU formulated in \cite{Lulfesmann2012Fap}
-and \defref{d.fill.path} of fill path. Given a nonrequired element (an edge of bipartite graph),
+additionally required element. 
+For this purpose, we use the bipartite graph model for ILU preconditionioning
+presented in \secref{ss.comb.precond} and the its adapted concept of fill path in 
+\defref{d.fill.path.bipartite}. Given a nonrequired element (an edge of bipartite graph),
 the idea is to check if the addition of this edge would generate any new fillin.
 If the fill level of SILU is $l$, we list all fill paths of length $l$ passing this nonrequired edge
 in the set $L$. Each fill path in the set $L$ which all its edges except the given nonrequired edge
@@ -2005,25 +2034,26 @@ additionally required element.
 predicting if a survived nonrequired elements can be an additionally required element.,
 label=code.new.d2.add.fp,mathescape]
 function d2_color_fillpath($G=(V_r\cup V_c,E)$,$E_i\subset E$, $k$)
-for $v\in V_c$
-  $\Phi(v)=-1$
-  $forbiddenColors[v] = 0$
+  for $v\in V_c$
+    $\Phi(v)=-1$
+    $forbiddenColors[v] = 0$
 
-for $v\in V_c$ with $\Phi(v)=0$
-  $forbiddenColors[0] = v$
-  if $\exists n\in N_2(v): (v,n)\in E_i$
-    for $n\in N_2(v)$
-      if $\Phi(n) \neq 0$
-        $forbiddenColors[\Phi(n)] = v$
+  for $v\in V_c$ with $\Phi(v)=0$
+    $forbiddenColors[0] = v$
+    if $\exists n\in N_2(v): (v,n)\in E_i$
+      for $n\in N_2(v)$
+        if $\Phi(n) \neq 0$
+          $forbiddenColors[\Phi(n)] = v$
 
-    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-    $I_v=\{u\in V_c: u\notin N_2(v)\}$
-    $M = \{ (i,Nreq(i,v)): i\in I_v\}$
-    $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
-    for $t\in \{(v,u): u\in maxs\}$
-      if $pr_k^t = \emptyset$ and $pl_k^t = \emptyset$
-        $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-consistent_coloring(G)
+      $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+      $I_v=\{u\in V_c: u\notin N_2(v)\}$
+      $M = \{ (i,Nreq(i,v)): i\in I_v\}$
+      $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
+      for $t\in \{(v,u): u\in maxs\}$
+        if $pr_k^t = \emptyset$ and $pl_k^t = \emptyset$
+          $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+  consistent_coloring(G)
+  return $\Phi$
 \end{lstlisting}
 \end{figure}
 Table~\ref{mats.add.gr.vs.nreq.vs.fillpath} shows the comparison between the number of additionally required elements
@@ -2290,37 +2320,37 @@ caption=An improved star bicoloring restricted to diagonal elements.
 As the theorem says this coloring generates an equivalent distance-$2$ coloring.,
 label=star.diagonal,mathescape]
 function star_diag($G=(V_r\cup V_c)$, $E_R$)
-for $v\in V_c$
-  $\Phi(v)=-1$
-  $forbiddenColors1[v] = 0$
-  $forbiddenColors2[v] = 0$
+  for $v\in V_c$
+    $\Phi(v)=-1$
+    $forbiddenColors1[v] = 0$
+    $forbiddenColors2[v] = 0$
 
-for $e=(v,u)\in E_R$
-  $forbiddenColors1[0] = v$
-  $forbiddenColors2[0] = u$
+  for $e=(v,u)\in E_R$
+    $forbiddenColors1[0] = v$
+    $forbiddenColors2[0] = u$
 
-  for $n\in N2(G_b,v)$
-    if $\Phi(n) > 0$
-      $forbiddenColors1[\Phi(n)] = v$
+    for $n\in N2(G_b,v)$
+      if $\Phi(n) > 0$
+        $forbiddenColors1[\Phi(n)] = v$
 
-  forbiddenColors[0] = u;
-  for $n\in N2(G_b,u)$
-    if $\Phi(n) > 0$
-      $forbiddenColors2[\Phi(n)] = u$
+    forbiddenColors[0] = u;
+    for $n\in N2(G_b,u)$
+      if $\Phi(n) > 0$
+        $forbiddenColors2[\Phi(n)] = u$
 
-  $c_1 = min(\{j>0: forbiddenColors1[j] \neq v\})$
-  $c_2 = min(\{j>0: forbiddenColors2[j] \neq u\})$
+    $c_1 = min(\{j>0: forbiddenColors1[j] \neq v\})$
+    $c_2 = min(\{j>0: forbiddenColors2[j] \neq u\})$
 
-  if $c_1 < c_2$
-    $\Phi(v) = c_1$
-  else
-    $\Phi(u) = c_2$
+    if $c_1 < c_2$
+      $\Phi(v) = c_1$
+    else
+      $\Phi(u) = c_2$
 
-  for $v\in V_c$ with $\Phi(v)>0$
-    $\Phi(v) = \Phi(v) + max(\{ \Phi(u):u\in V_r \})$
+    for $v\in V_c$ with $\Phi(v)>0$
+      $\Phi(v) = \Phi(v) + max(\{ \Phi(u):u\in V_r \})$
 
-  for $v\in V_r\cup V_c$ with $\Phi(v) = -1$
-    $\Phi(v) = 0$
+    for $v\in V_r\cup V_c$ with $\Phi(v) = -1$
+      $\Phi(v) = 0$
 \end{lstlisting}
 \end{figure}
 
