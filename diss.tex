@@ -888,7 +888,7 @@ We adapt the greedy algorithm in \secref{s.max.pot.req} and \secref{s.max.add.re
 and additionally required elements are increased.
 Later, 
 we search for a better heuristic for
-the special case of partial coloring restricted to diagonals in~\secref{s.part.color.diag}.
+the special case of coloring restricted to diagonals in~\secref{s.part.color.diag}.
 Later, we discuss the first ideas toward a new heuristics based on the exact coloring in small
 subgraphs in~\secref{s.exact}.
 Finally, we introduce our computational package \textit{PreCol} in~\secref{s.extend} that computes the 
@@ -934,7 +934,7 @@ from the Florida sparse matrix collection throughout this thesis.}
 \section{Maximizing potentially required elements}
 \label{s.max.pot.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In partial coloring, we compute the coloring focusing on
+In restricted coloring, we compute the coloring focusing on
 required nonzero elements. However, there are nonrequired nonzero elements
 which are also computed as a by-product of the computation of required elements.
 These are important elements for the determination of potentially required elements
@@ -1851,8 +1851,8 @@ The computation are carried out on the matrices \textit{nos3.mtx}
 and the matrix \textit{gyro\_m} from
 the Florida sparse matrix collections. The block size is
 chosen to be $50$ for the matrix \textit{gyro\_m} and $15$ for
-the matrix \textit{nos3}. Also, the coloring algorithm would be a one-sided
-partial coloring. In this table, the fill-reducing Metis ordering
+the matrix \textit{nos3}. Also, the coloring algorithm is an one-sided
+restricted coloring. In this table, the fill-reducing Metis ordering
 generates the minimum fill-in.
 Another observation is that the Metis and Min ordering are generating almost the same
 number of fill-ins for the small matrices.
@@ -2116,7 +2116,7 @@ The level parameter of the ILU preconditioning is $2$.
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Partial coloring restricted to diagonal elements}
+\section{Coloring restricted to diagonal elements}
 \label{s.part.color.diag}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 So far, we consider the partial Jacobian computation with an arbitrary
@@ -2180,8 +2180,8 @@ These numbers of colors can be different than the minimal number of colors.
 \end{theorem}
 This theorem is a generalization of Theorem 3.7 of \cite{Lulfesmann2012Fap}.
 Theorem 3.7 of \cite{Lulfesmann2012Fap} discusses only the mapping with minimal coloring
-and the partial coloring restricted to diagonal elements. We consider any coloring
-and the partial coloring restricted to a matching. This generalization gives us an idea
+and the coloring restricted to diagonal elements. We consider any coloring
+and the coloring restricted to a matching. This generalization gives us an idea
 to find new heuristics for coloring. The proof of Theorem~\ref{t.matching}
 is resulted from the proof from \cite{Lulfesmann2012Fap} considering two following points,
 \begin{itemize}
@@ -2194,18 +2194,18 @@ make the required edges disjoint from each other which is the definition of a ma
 
 Based on the $\sparsifysymbol$-column intersection graph defined in~\defref{d.part.cig},
 it is easy to see
-that the partial coloring restricted to diagonal is still an NP-complete problem.
+that the coloring restricted to diagonal is still an NP-complete problem.
 A suggestion for the proof is as follows.
 In general, we know that a graph coloring is an NP-complete problem
 (see \cite{np-complet-graph-coloring})).
 As \defref{d:cig} shows, a distance-2 coloring on the column-intersection graph
 is a classical graph coloring problem. So it is also NP-complete.
-We also define a similar graph model for the partial coloring problem in
+We also define a similar graph model for the coloring problem in
 \cite{2016:01}. In this transformation from the matrix and graph, we encode also 
 required elements. It means we do not have any special
 edges later in the graph.
 Since the construction of this graph model is done in
-the polynomial time, this partial coloring problem remains NP-complete too.
+the polynomial time, this restricted coloring problem remains NP-complete too.
 
 Therefore, we should still use some heuristics to compute these colorings.
 The examples in Table~\ref{table.starbic.d2.diag} from Florida sparse collection shows that the
@@ -3750,8 +3750,8 @@ Although there is much research, many dimensions of the problem can be improved.
 On the other hand, we considered only the ILU preconditioning. What if we replace ILU with the approximate inverse preconditioning (AINV)~\cite{ainv98} which produces no fill-in. There is a need to review the AINV algorithms. An algorithm for this technique takes a pattern for preconditioner $M$ as input and gradually updates this starting pattern and the nonzero values.
 So we can do first a sparsification as usual which leads to $R_p$ and take $R_i + R_p$ as starting pattern for $M$. Then, we would have two separate problems of coloring and AINV preconditioning.
 So, we color the graph given two input matrices $R_i$ and $M$.
-It is a different coloring problem than the usual partial coloring problem.
-However, this seems to be the same as partial coloring with a larger set of required elements.
+It is a different coloring problem than the usual restricted coloring problem.
+However, this seems to be the same as restricted coloring with a larger set of required elements.
 When applying AINV to an initial $M$, is there any effect on $M$? For
 instance, does the pattern of $M$ vary? How does it vary? Does the
 variation depend on the structure of the initial pattern only? Or
@@ -3762,7 +3762,7 @@ would then be similar to the fill-in when using ILU.) Need to look
 at AINV algorithms more closely.
 What if we transform program for function $f(x)$ not only to a program for $\frac{df}{dx}$ (traditional AD), but also to another program for matrix-vector product $Mx$ where $M$ is an AINV preconditioner for the Jacobian $\frac{df}{dx}$.
 
-Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph model as before and show it has advantages in the unidirectional coloring. A first improvement is to search for the similar approach in the bidirectional coloring and partial coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
+Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph model as before and show it has advantages in the unidirectional coloring. A first improvement is to search for the similar approach in the bidirectional coloring and restricted coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
