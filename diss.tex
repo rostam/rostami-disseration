@@ -89,8 +89,8 @@ keywords={with},
 \newcommand{\MinBidCom}{\textsc{Minimum Bidirectional Compression}}
 
 \newcommand{\MinRStaBic}{\textsc{Minimum Restricted Star Bicoloring}}
-\newcommand{\MinRUniCom}{\textsc{Minimum Restricted Unidirectional Compression}}
-\newcommand{\MinRBidCom}{\textsc{Minimum Restricted Bidirectional Compression}}
+\newcommand{\MinRUniCom}{\textsc{Minimum Partial Unidirectional Compression}}
+\newcommand{\MinRBidCom}{\textsc{Minimum Partial Bidirectional Compression}}
 
 \begin{document}
 \pagenumbering{roman}
@@ -128,7 +128,7 @@ can be modeled as graph coloring in graph language.
 Since a matrix-vector product (instead of the whole Jacobian)
 is needed in iterative solvers, automatic differentiation fits
 the best in the iterative solvers.
-On the other hand, the preconditioning techniques are used to improve the convergence of iterative solvers and need access to the nonzero elements. So, a sparsification applies on the Jacobian before computing the preconditioner. The elements produced from the sparsification are also considered as the required elements in the partial coloring.
+On the other hand, the preconditioning techniques are used to improve the convergence of iterative solvers and need access to the nonzero elements. So, a sparsification applies on the Jacobian before computing the preconditioner. The elements produced from the sparsification are also considered as the required elements in the restricted coloring.
 There is a procedure which selects a subset of the remaining nonrequired elements and adds to the sparsified matrix such that no fill-ins or increase of the number of colors happens.
 The current thesis first looks at different ways to optimize
 the processes of selecting elements.
@@ -192,13 +192,13 @@ of only a proper subset of the nonzero elements (so called required elements)
 rather than computing all nonzero elements.
 These problems are called partial Jacobian computation.
 Gebremedhin, Manne, and Pothen~\cite{Gebremedhin05whatcolor} first introduced
-the rules of the partial jacobian computation and its corresponding graph problems. 
+the rules of the partial Jacobian computation and its corresponding graph problems. 
 Several examples in the partial Jacobian computation are studies later in
 \cite{CalotoiuMaster} and \cite{LulfesmannMaster}. 
 
 Lülfesmann~\cite{Lulfesmann2012Fap} introduced for the first time in his dissertation
-the idea of combining of the partial coloring and the ILU preconditioning. 
-This idea is implemented using the greedy algorithm for the partial coloring. 
+the idea of combining of the partial Jacobian computation and the ILU preconditioning. 
+This idea is implemented using the greedy algorithm for the restricted coloring. 
 We analyze this idea further in this thesis by definining new heuristic algorithms
 to increase the survived nonzero elements.
 
@@ -324,16 +324,16 @@ the nonzero elements of large Jacobian matrices efficiently.
 \begin{problem}[\MinUniCom]
 \label{p.seed.uni} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with a known sparsity
 pattern. Find a binary seed matrix $V$ of dimension $n\times \col$
-whose number of columns of $V$ sums up
-to a minimal value such that all nonzero elements of $J$ also appear in
+whose number of columns is minimized
+such that all nonzero elements of $J$ also appear in
 the matrix-matrix product $JV$.
 \end{problem}
 
 \begin{problem}[\MinBidCom]
 \label{p.seed.bid} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
 pattern. Find a pair of binary seed matrices $V$ of dimension $n\times \col$ and $W$~of
-dimension $\row \times m$ whose number of columns of $V$ and the number of rows of $W$ sum up to a minimal value, $\col + \row$, such that all nonzero elements of $J$ also appear in
-the matrix-matrix products $JV$ and $WJ$.
+dimension $\row \times m$ in which the number of columns of $V$ and the number of rows of $W$ sum up to a minimal value, $\col + \row$, such that all nonzero elements of $J$ also appear in
+the pair of matrix-matrix products $JV$ and $WJ$.
 \end{problem}
 
 %==========================================================================================
@@ -487,20 +487,21 @@ complexity of Problem~\ref{p.coloring} including recent new results is given in~
 \subsection{Partial Jacobian computation}
 \label{s.part.jac}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Gebremedhin et al~\cite{Gebremedhin05whatcolor} introduced the concept of the partial Jacobian computation
-in which the assumption is that only a subset of Jacobian, so-called the required elements,
-should be determined.
-L{\"u}lfesmann~\cite{Lulfesmann2012Fap} has studied more considerably in this area and
+Gebremedhin et al.~\cite{Gebremedhin05whatcolor} introduced the concept of partial Jacobian computation
+in which only a subset of Jacobian, the so-called required elements,
+are to be determined.
+L{\"u}lfesmann~\cite{Lulfesmann2012Fap} studied this area in more details and
 introduced some heuristics for partial computation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Scientific computing problem}
 \label{ss.problem.part}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Suppose the required elements are shown by $R$, the definition of
-\emph{structurally orthogonality} is adapted for the partial coloring as follows,
+Let $R$ be the set representing required elements. 
+The definition of
+\emph{structurally orthogonality} is adapted for partial Jacobian computation as follows,
 \begin{definition}[Partially Structurally Orthogonal]\label{d.part.str.orth}
 Two columns $c_i$ and $c_j$ are partially structurally orthogonal with respect to $R$
-if and only if they do not have a nonzero element in the same row where at least
+if and only if they do not have a nonzero element in a same row where at least
 one of these nonzero elements is required.
 \end{definition}
 
@@ -509,7 +510,7 @@ compression restricted to the required elements
 can be formulated as follows.
 \begin{problem}[\MinRUniCom]
 \label{p.seed.runi} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
-pattern and $R$ be a proper subset of $J$. Find a seed matrix $V$ of dimension $n\times \col$
+pattern and $R$ be a subset of $J$. Find a seed matrix $V$ of dimension $n\times \col$
 whose number of columns of $V$ sums up
 to a minimal value, $\col$, such that all nonzero elements of $R$ also appear in
 the matrix-matrix product $JV$.
@@ -517,7 +518,7 @@ the matrix-matrix product $JV$.
 
 \begin{problem}[\MinRBidCom]
 \label{p.seed.rbid} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
-pattern and $R$ be a proper subset of $J$.
+pattern and $R$ be a subset of $J$.
 Find a pair of binary seed matrices $V$ of dimension $n\times \col$ and $W$~of
 dimension $\row \times m$ whose number of columns of $V$ and number of rows of $W$ sum up
 to a minimal value, $\col + \row$, such that all nonzero elements of $R$ also appear in
@@ -528,18 +529,18 @@ Now, we discuss an equivalent graph-theoretical formulation of this problem.
 
 \subsubsection{Combinatorial model}
 Based on \cite{Gebremedhin05whatcolor,Lulfesmann2012Fap}, the definitions
-of the full Jacobian coloring are adapted for the partial coloring as follows,
+of full Jacobian coloring are adapted for the restricted colorings as follows,
 \begin{definition}[Restricted distance-$2$ coloring]\label{d.coloring.d2}
 Given a bipartite graph $G=(V_c\cup V_r, E)$ and a subset of required edges
-$E_R\subset E$ , then a mapping $\Phi:V_c \to
+$E_R\subseteq E$, then a mapping $\Phi:V_c \to
 \{0,1,\dots ,p\}$ is a distance-$2$ coloring
 of $G$ restricted to $E_R$ if no column vertex gets a zero color and
-for every path $(c_k,r_i,c_j)$ with $c_k\in V_c$,
+for every path $(c_k,r_i,c_j)$ with $c_k, c_j\in V_c$, $r_i\in V_r$, and $(r_i,c_j)\in E_R$,
 $\Phi(c_k) \neq \Phi(c_j)$.
 \end{definition}
 \begin{definition}[Restricted star bicoloring]\label{d.coloring.bicol}
 Given a bipartite graph $G=(V_c\cup V_r, E)$ and a subset of required edges
-$E_R\subset E$ , then a mapping $\Phi:V_c \cup V_r \to
+$E_R\subseteq E$, then a mapping $\Phi:V_c \cup V_r \to
 \{0,1,\dots ,p\}$ is a star bicoloring of $G$ restricted to $E_R$
 if the following conditions are satisfied:
 \begin{enumerate}
@@ -553,115 +554,48 @@ $c_j, c_k\in V_c$,
 \begin{itemize}
 \item if $\Phi (r_i) = 0$, then for every path $(c_k,r_i,c_j)$, $\Phi (c_k)\neq \Phi (c_j)$
 \item if $\Phi (c_j) = 0$, then for every path $(r_i,c_j,r_l)$, $\Phi (r_i)\neq \Phi (r_l)$
-\item if $\Phi (r_i) = 0$ and $\Phi (c_j) = 0$, then for every path $(c_k,r_i,c_j,r_l)$,
+\item if $\Phi (r_i) \neq 0$ and $\Phi (c_j) \neq 0$, then for every path $(c_k,r_i,c_j,r_l)$,
 $\Phi (c_k)\neq \Phi (c_j)$ or $\Phi (r_i)\neq \Phi (r_l)$
 \end{itemize}
 \end{enumerate}
 \end{definition}
 
-The optimization problems would be to
-find the minimum restricted distance-$2$ coloring
-and the minimum restricted star bicoloring.
-\section{Block diagonal sparsification}
-\label{s.block.diag.sp}
-Here, we look at the sparsification of the coefficient matrix $J$. The
-sparsification of $J$ is represented by the symbol \sparsify{J}. The idea is to select a
-subset of all nonzero elements of $J$, described by~\sparsify{J}, and construct a
-preconditioner based on these selected nonzero elements~\cite{Cullum2006}. These nonzero
-elements selected by \sparsify{J} are called \emph{required} nonzero elements. Throughout
-this thesis we consider the special case of a sparsification in the form of $k\times k$
-blocks on the main diagonal. That is, the pattern of the required nonzero elements is
-given by the pattern of all nonzero entries within these $k\times k$ blocks on the
-diagonal. If the block size $k$ does not divide the matrix order $n$, we adapt the size
-of the last diagonal block to some smaller value such that the sum of all block sizes
-equals $n$. We formulate the new problem that represents the assembly of the
-semi-matrix-free approach with a relatively minimal cost as follows.
-%
-\begin{problem}[Block Seed]
-\label{p:block}
-%
-Let $J$ be a sparse $n \times n$ Jacobian matrix with known sparsity pattern and let
-\sparsify{J} denote its sparsification using $k \times k$ blocks on the diagonal of $J$.
-Find a binary $n \times p$ seed matrix~$S$ with a minimal number of columns, $p$, such
-that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J \cdot
-S$.
+Now, the optimization problems are formulated as follow.
+
+\begin{problem}[Minimum Restricted Distance-$2$ Coloring]
+\label{p.restricted.d2} Given the bipartite graph $G=(V_r\cup V_c, E)$
+associated with a sparse Jacobian
+matrix~$J$ and a set of required edges $E_R$,
+find a distance-$2$ coloring of $G$ restricted to $E_R$
+with a minimal number of non-neutral colors.
 \end{problem}
 
-We now focus on reformulating this combinatorial problem from
-scientific computing regarding a similar problem defined on a suitable graph model.
-Recall that the set of nonzero elements is divided into required and nonrequired
-elements. Two columns can be linearly combined without losing information on the
-required elements as long as one of the following conditions is satisfied:
-\begin{itemize}
-\item There is no row position in which both columns have a nonzero element, whether
-required or nonrequired.
-\item There is one or more row positions in which both columns have a nonzero element
-and both these nonzeros in the same row are nonrequired elements.
-\end{itemize}
-
-Thus, the case where two columns can be assigned to the same column group is encoded by
-the following definition.
-
-\begin{definition}[Structurally $\sparsifysymbol$-Orthogonal]
-A column $J(:,i)$ is structurally $\sparsifysymbol$-orthogonal to column $J(:,j)$ if and
-only if there is no row position $\ell$ in which $J(\ell,i)$ and $J(\ell,j)$ are nonzero
-elements and at least one of them belong to the set of required element \sparsify{J}.
-\end{definition}
-
-We now construct a modified column intersection graph in which the set of vertices is the
-same as in Def.~\ref{d:cig}, but whose set of edges is defined differently.
-%
-\begin{definition}[$\sparsifysymbol$-Column Intersection Graph]
-\label{d.part.cig}
-The $\sparsifysymbol$-column intersection graph $G_\sparsifysymbol =
-(V,E_\sparsifysymbol)$ associated with a pair of $n \times n$ Jacobians $J$ and
-\sparsify{J} consists of a set of vertices $V=\{v_1, v_2, \dots, v_n\}$ whose vertex
-$v_i$ represents the $i$th column $J(:,i)$. Furthermore, there is an edge $(v_i,v_j)$ in
-the set of edges $E_\sparsifysymbol$ if and only if the columns $J(:,i)$ and $J(:,j)$
-represented by $v_i$ and $v_j$ are not structurally $\sparsifysymbol$-orthogonal.
-\end{definition}
-
-So, the edge set $E_\sparsifysymbol$ is constructed in such a way that columns
-represented by two vertices $v_i$ and $v_j$ need to be assigned to different groups if
-and only if $(v_i, v_j) \in E_\sparsifysymbol$. This constructions shows that
-Problem~\ref{p:block} is equivalent to the following coloring problem.
-%
-\begin{problem}[Minimum Block Coloring]
-\label{p:minblockcol}
-%
-Find a coloring $\Phi$ of the $\sparsifysymbol$-column intersection graph
-$G_\sparsifysymbol$ with a minimal number of colors.
+\begin{problem}[Minimum Restricted Star Bicoloring]
+\label{p.restricted.star} Given the bipartite graph $G=(V_r\cup V_c, E)$
+associated with a sparse Jacobian
+matrix~$J$ and a set of required edges $E_R$,
+find a star bicoloring of $G$ restricted to $E_R$
+with a minimal number of non-neutral colors.
 \end{problem}
 
-A column of $J$ without any required nonzero element is represented by a vertex to which
-no edge is incident in~$G_\sparsifysymbol$. These isolated vertices do not need to be
-colored. So, in general, colors are assigned to a subset of the vertices in
-$G_\sparsifysymbol$.
 
-Finally, an alternative formulation can be derived by using a bipartite graph model in
-which there is a vertex set for the rows and another vertex set for the columns of the
-Jacobian. Using the more general bipartite graph model, Problem~\ref{p:minblockcol} could
-be reformulated as a minimum distance-2 coloring of a bipartite graph when restricted to
-the set of required edges. This is the partial coloring which we discuss
-in the previous section restricted to $\rho(J)$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Combining partial Jacobian computation and ILU preconditioning}
 \label{s.precond}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The computation of Jacobian is always one part of solving partial differential equations.
-In general, we are considering the solution to the following system of linear equations,
+Given a large sparse nonsingular $n\times n$ Jacobian matrix $J$,
+we are considering the solution to the following system of linear equations,
 $$
 J\vek{x} = \vek{b},
 $$
-in which $J$ is a large sparse nonsymmetric nonsingular Jacobian matrix. 
-An approximative iterative solver is an
-effective solution since it has a faster convergence and needs less memory. As we discussed,
-these solvers are matrix-free which makes AD as a suitable method of differentiation in this case.
+in which $x$ and $b$ are $n\times 1$ vectors. 
+Iterative solvers are considered to be among the effective solution techniques~\cite{ilu2003}.
+These solvers are matrix-free which makes AD as a suitable method of differentiation.
 
-Another way to speed up these iterators are
-the preconditioning techniques~\cite{precond1,precond2}.
+Iterative techniques are typically used with some set of
+the preconditioning techniques~\cite{precond1,ilu2003}.
 Rather than solving the previous system,
-we can consider solving the preconditioned system
+we can solve the preconditioned system
 \begin{equation}
 \label{e:precond}
 M^{-1} J \vek{x}= M^{-1}\vek{b},
@@ -705,29 +639,35 @@ These nonzero elements selected by \sparsify{J} are called initially
 An example would be the special case of a sparsification in the form of $k\times k$
 blocks on the main diagonal.
 
-We discussed the full and partial coloring algorithms regarding AD techniques.
-Now, the problem~\ref{p:minblockcol} can be solved for Jacobian
-restricted to the set of initially
-required nonzero elements $R_i$. The result of coloring would group
-columns and rows together. In this processes, the required elements would always
-be computed. However, the nonrequired elements would be divided into two sets of
+Now, we summerizes the approach from Lülfesmann~\cite{Lulfesmann2012Fap}.
+We discussed coloring algorithms regarding AD techniques.
+Now, the problem~\ref{p.restricted.d2} can be solved for Jacobian
+restricted to the set of \textit{initially} required nonzero elements $R_i$. 
+We call these elements \textit{initially} required nonzero elements since
+they are an inital set for the further process.
+The result of a coloring groups
+columns and rows together. In this processes, the required elements are always
+computed. However, the nonrequired elements are divided into two sets of
 elements: the elements which are computed and the ones which would be
-eliminated. We can think of these computed nonzero elements as the byproduct
-of the coloring. Since the number of colors does not change,
-an idea would be to add these extra byproducts also to $R_i$.
+eliminated. We can think of these computed nonzero elements as byproducts
+of the coloring and comuputing the matrix-matrix products $JV$ and $WJ$.
+Since the number of colors does not change,
+the idea is to add these extra byproducts also to $R_i$.
 However, it could generate new fill-ins in the preconditioning step.
-So, we call these new set of byproduct elements as the potentially
-required elements $R_p$ and computed as follows,
+So, we call these byproduct elements the \textit{potentially}
+required elements $R_p$ and compute them as follows,
 $$
 R_p \subset pat(A) - R_i \quad\text{so that}\quad |\Phi(R_i)| = |\Phi(R_i\cup R_p)|.
 $$
 
 As we have discussed, an ILU preconditioner is applied to $R_i$ which can
-produce a set of fill-in.
+produce a set of fill-ins.
 Different methods can be employed to compute the preconditioner.
-A pure matrix version of the ILU preconditioning can be found in~\cite{cscpaper}.
+The overall approach applied to a specific problem from aerodynamic is detailed
+in ~\cite{cscpaper}.
 
-Now, a maximum subset of potentially required elements
+Now, a subset $R_a$ of potentially required elements, 
+the so called \textit{additionally} required elements,
 is selected such that no new fill-ins are generated which is called
 additionally required elements $R_a$. These elements can be added to the
 initially required elements for further computation.
@@ -737,43 +677,52 @@ R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
 $$
 in which $SILU$ means the symbolic ILU factorization.
 
-Finally, the optimization problem is formulated as follows,
+???????????????? Move to Next Chapters ??????????????????????
+Finally, the optimization problems are formulated as follows,
+\begin{problem}[Maximum Potentially Required Elements]
+\label{p:max_pot}
+%
+Let $J$ be a sparse $m\times n$ Jacobian matrix with known sparsity patttern and
+$R_i$ is a set of required elements.
+Find a set of potentially required elements $R_p$ with maximal cardinality.
+\end{problem}
+
 \begin{problem}[Maximum Additionally Required Elements]
 \label{p:max_add}
 %
 Let $J$ be a sparse $m\times n$ Jacobian matrix with known sparsity patttern and
-$R_i$ is a set of required elements selected by $\rho(J)$.
-Find a maximal set of additionally required elements $R_a$.
+$R_i$ is a set of required elements.
+Find a set of additionally required elements $R_a$ with maximal cardinality.
 \end{problem}
-
 
 \subsection{Combinatorial model}
 \label{ss.comb.precond}
 The bipartite graph model presented in~\defref{d.bip.graph} is
 a suitable model to find new algorithms for the initially, potentially,
 and additionally required elements. 
-Since each edge in the bipartite graph model is related to a nonzero element in 
-the matrix, three subsets $E_i, E_p, E_a\subset E$
+Recall each edge in the bipartite graph model is related to a nonzero element in 
+the matrix.
+Then, given a bipartite matrix $G = (V,E)$,
+three subsets $E_i, E_p, E_a\subset E$
 are considered for the initially, potentially,
 and additionally required elements, respectively.
-Given the sparsification operator $\rho$ and the Jacobian matrix $J$,
+Given the $k\times k$ block sparsification and the Jacobian matrix $J$,
 here is a list of steps in the computation of additionally required elements
 and the corresponding algorithm on the bipartite graph model
 (details in~\cite{Lulfesmann2012Fap}),
 \begin{itemize}
-\item compute the initially required elements $R_i = \rho(J)$.
-\item setup the bipartite graph $G$ from the Jacobian matrix $J$ and the subset $E_i\subset E$ of $R_i$.
-\item compute the partial coloring of the bipartite graph $G$ restricted to $E_i$: $\Phi_{G}(E_i)$.
-\item find a subset of nonrequired edges $E_p\subset E - E_i$ such that $\Phi_{G}(E_i) = \Phi_{G}(E_i \cup E_p)$. The subset $E_p$ contains the potentially required edges.
-\item find a subset of potentially required edges $E_a\subset E_p$ such
+\item compute the initially required elements $R_i$.
+\item setup the bipartite graph $G$ from the Jacobian matrix $J$ and the subset $E_i\subset E$ representing $R_i$.
+\item compute the coloring $\Phi_{G}(E_i)$ of the bipartite graph $G$ restricted to $E_i$.
+\item find the set of potentially required elements $E_p\subset E - E_i$ such that $|\Phi_{G}(E_i)| = |\Phi_{G}(E_i \cup E_p)|$.
+\item find the set of additionally required elements $E_a\subset E_p$ such
 that $SILUR(R_i) \cup R_a = SILU(R_i \cup R_a)$. 
-The subset $E_a$ contains the additionally required edges.
 \end{itemize}
-\coderef{code.pot.d2} and \coderef{code.pot.sb} shows the algorithms to compute the
+\coderef{code.pot.d2} and \coderef{code.pot.sb} show the algorithms to compute the
 potentially required elements for the distance-$2$ coloring and star bicoloring, respectively.
 Given a bipartite graph $G_b$, the required edges $E_i$, and a distance-$2$ coloring $\Phi$,
 \coderef{code.pot.d2} computes a set of potentially required elements. This algorithm
-iterates over nonrequired edges ($E - E_i$) and checks if it can be added to the 
+iterates over nonrequired edges ($E - E_i$) and checks if such an edge can be added to the 
 potentially required elements. Similarly, \coderef{code.pot.sb} computes 
 the potentially required elements when the given coloring $\phi$ is star bicoloring.
 \begin{figure}
@@ -816,8 +765,8 @@ function pot_star_bicoloring($G_b$,$E_i$,$\phi$)
 \end{figure}
 
 To compute the additionally required elements, a formulation of ILU preconditioning
-in the language of graph is needed.
-Hysom and Pothen~\cite{precond-pothen} introduced first a graph model for the incomplete
+in the language of graphs is needed.
+Hysom and Pothen~\cite{precond-pothen} introduced a graph model for the incomplete
 LU factorization in which the matrix is the adjacency matrix of this graph.
 It should be considered that the graph would be directed if the matrix is not symmetric.
 A concept of \textit{fill path} is defined to characterize the fill-ins in preconditioning,
@@ -825,10 +774,9 @@ A concept of \textit{fill path} is defined to characterize the fill-ins in preco
 A fill path is a path $(v_i,...,v_k,...,v_j)$ with
 $k<min(i,j)$. It means the index of the all inner nodes in a given ordering of vertices
 should be smaller than indices of the vertices $v_i$ and $v_j$.
-Equivalently, a matrix element $(i,j)$ is a fill-in if there is a fill path between
-$v_i$ and $v_j$.
 \end{definition}
-
+It follows that a matrix element $(i,j)$ is a fill-in if and only if there is a fill path between
+$v_i$ and $v_j$.
 In addition to the concept of fill path, another concept of fill level $l$ is needed to
 formulate the level-based incomplete LU factorization~\cite{precond-pothen}.
 This parameter is used to filter the generated fill-ins.
@@ -857,18 +805,20 @@ function add($G_b$,$E_i$,$E_p$)
 \end{figure}
 Lülfesmann~\cite{Lulfesmann2012Fap} adapted a
 corresponding bipartite graph model for ILU preconditioning.
-The concept of fill path is also redefined for bipartite graph model
-in which a path is replaced by distance-$2$ paths.
+The concept of fill path is also redefined for the bipartite graph model
+in which a path is replaced by a distance-$2$ path.
 \begin{definition}[Fill path in bipartite graph]\label{d.fill.path.bipartite}
 A path $(r_i,c_k,r_k,c_l,r_l,...,c_j)$ in the bipartite graph model starting
-from a row vertex is an adapted fill path in bipartite graph model 
+from a row vertex is an fill path 
 if and only if all vertices between $r_i$ and $c_j$ have a lower index than $i$
-and $j$. Eqivalently, there is a fill-in $(i,j)$ in the matrix if there is a
-fill path between $r_i$ and $c_j$ in the corresponding bipartite graph.
+and $j$. 
 \end{definition}
+Again, it follows that 
+there is a fill-in $(i,j)$ in the matrix if and only if there is a
+fill path between $r_i$ and $c_j$ in the corresponding bipartite graph.
 
 Based on the bipartite graph models for coloring and the ILU preconditioning,
-two algorithms are also proposed to compute the additionally required
+two algorithms are proposed to compute the additionally required
 elements: conservative and sophisticated. 
 We consider the sophisticated algorithm shown in \coderef{code.add}
 to compute the additionally required elements

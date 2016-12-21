@@ -1,0 +1,82 @@
+\section{Block diagonal sparsification}
+\label{s.block.diag.sp}
+Here, we look at the sparsification of the coefficient matrix $J$. The
+sparsification of $J$ is represented by the symbol \sparsify{J}. The idea is to select a
+subset of all nonzero elements of $J$, described by~\sparsify{J}, and construct a
+preconditioner based on these selected nonzero elements~\cite{Cullum2006}. These nonzero
+elements selected by \sparsify{J} are called \emph{required} nonzero elements. Throughout
+this thesis we consider the special case of a sparsification in the form of $k\times k$
+blocks on the main diagonal. That is, the pattern of the required nonzero elements is
+given by the pattern of all nonzero entries within these $k\times k$ blocks on the
+diagonal. If the block size $k$ does not divide the matrix order $n$, we adapt the size
+of the last diagonal block to some smaller value such that the sum of all block sizes
+equals $n$. We formulate the new problem that represents the assembly of the
+semi-matrix-free approach with a relatively minimal cost as follows.
+%
+\begin{problem}[Block Seed]
+\label{p:block}
+%
+Let $J$ be a sparse $n \times n$ Jacobian matrix with known sparsity pattern and let
+\sparsify{J} denote its sparsification using $k \times k$ blocks on the diagonal of $J$.
+Find a binary $n \times p$ seed matrix~$S$ with a minimal number of columns, $p$, such
+that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J \cdot
+S$.
+\end{problem}
+
+We now focus on reformulating this combinatorial problem from
+scientific computing regarding a similar problem defined on a suitable graph model.
+Recall that the set of nonzero elements is divided into required and nonrequired
+elements. Two columns can be linearly combined without losing information on the
+required elements as long as one of the following conditions is satisfied:
+\begin{itemize}
+\item There is no row position in which both columns have a nonzero element, whether
+required or nonrequired.
+\item There is one or more row positions in which both columns have a nonzero element
+and both these nonzeros in the same row are nonrequired elements.
+\end{itemize}
+
+Thus, the case where two columns can be assigned to the same column group is encoded by
+the following definition.
+
+\begin{definition}[Structurally $\sparsifysymbol$-Orthogonal]
+A column $J(:,i)$ is structurally $\sparsifysymbol$-orthogonal to column $J(:,j)$ if and
+only if there is no row position $\ell$ in which $J(\ell,i)$ and $J(\ell,j)$ are nonzero
+elements and at least one of them belong to the set of required element \sparsify{J}.
+\end{definition}
+
+We now construct a modified column intersection graph in which the set of vertices is the
+same as in Def.~\ref{d:cig}, but whose set of edges is defined differently.
+%
+\begin{definition}[$\sparsifysymbol$-Column Intersection Graph]
+\label{d.part.cig}
+The $\sparsifysymbol$-column intersection graph $G_\sparsifysymbol =
+(V,E_\sparsifysymbol)$ associated with a pair of $n \times n$ Jacobians $J$ and
+\sparsify{J} consists of a set of vertices $V=\{v_1, v_2, \dots, v_n\}$ whose vertex
+$v_i$ represents the $i$th column $J(:,i)$. Furthermore, there is an edge $(v_i,v_j)$ in
+the set of edges $E_\sparsifysymbol$ if and only if the columns $J(:,i)$ and $J(:,j)$
+represented by $v_i$ and $v_j$ are not structurally $\sparsifysymbol$-orthogonal.
+\end{definition}
+
+So, the edge set $E_\sparsifysymbol$ is constructed in such a way that columns
+represented by two vertices $v_i$ and $v_j$ need to be assigned to different groups if
+and only if $(v_i, v_j) \in E_\sparsifysymbol$. This constructions shows that
+Problem~\ref{p:block} is equivalent to the following coloring problem.
+%
+\begin{problem}[Minimum Block Coloring]
+\label{p:minblockcol}
+%
+Find a coloring $\Phi$ of the $\sparsifysymbol$-column intersection graph
+$G_\sparsifysymbol$ with a minimal number of colors.
+\end{problem}
+
+A column of $J$ without any required nonzero element is represented by a vertex to which
+no edge is incident in~$G_\sparsifysymbol$. These isolated vertices do not need to be
+colored. So, in general, colors are assigned to a subset of the vertices in
+$G_\sparsifysymbol$.
+
+Finally, an alternative formulation can be derived by using a bipartite graph model in
+which there is a vertex set for the rows and another vertex set for the columns of the
+Jacobian. Using the more general bipartite graph model, Problem~\ref{p:minblockcol} could
+be reformulated as a minimum distance-2 coloring of a bipartite graph when restricted to
+the set of required edges. This is the partial coloring which we discuss
+in the previous section restricted to $\rho(J)$.
