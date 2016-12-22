@@ -24,6 +24,19 @@ filecolor=black,
 linkcolor=black,
 urlcolor=black
 }
+
+% tikz
+%\usepackage{tikz}
+%\usetikzlibrary{patterns,shapes,calc,matrix,plotmarks}
+%\RequirePackage{ifthen}
+% pgf
+%\usepackage{pgfplots}
+
+\hyphenation{
+	MATLAB
+}
+
+
 \usepackage[table]{xcolor}
 \newcommand{\mat}[1]{\ensuremath{#1}}
 \newcommand{\vek}[1]{{\ensuremath{\mathbf #1}}}
@@ -79,8 +92,6 @@ keywords={with},
 \newcommand{\row}{\ensuremath{r}}
 \newcommand{\field}[1]{\mathbb{#1}}
 \newcommand{\R}{\ensuremath{\field{R}}}
-\newcommand{\sparsifysymbol}{\ensuremath{\rho}}
-\newcommand{\sparsify}[1]{\ensuremath{\sparsifysymbol(#1)}}
 \newcommand{\todo}[1]{\textbf{#1}}
 \newcommand{\nnz}[1]{\ensuremath{\operatorname{nz}(#1)}}
 % Define the name of the two minimization problems
@@ -222,11 +233,9 @@ In this chapter, we briefly discuss known graph formulations and
 models needed in this thesis. In each section of this chapter,
 we provide some references which explains further these concepts in details.
 We look at the ideas to determine the nonzeros of sparse matrices in
-\secref{s.det.nonzero}. Then, the block diagonal sparsification
-and its corresponding combinatorial model is discussed~\secref{s.block.diag.sp}.
+\secref{s.det.nonzero}.
 We look at definitions of combining ILU preconditioning and 
-partial Jacobian computation. Finally, a corresponding bipartite graph model 
-is explained in \secref{s.precond}.
+partial Jacobian computation in \secref{s.precond}.
 
 %===================================================================================================
 \section{Determining nonzeros of sparse matrices}
@@ -580,7 +589,7 @@ with a minimal number of non-neutral colors.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Combining partial Jacobian computation and ILU preconditioning}
+\section{Combining partial Jacobian computation and ILU}
 \label{s.precond}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Given a large sparse nonsingular $n\times n$ Jacobian matrix $J$,
@@ -613,8 +622,8 @@ strategy on how to combine automatic differentiation with preconditioning. The r
 that standard preconditioning techniques typically need access to individual nonzero
 elements of the coefficient matrix whereas automatic differentiation gives efficient
 access to a different level of granularity, namely rows or columns.
-In \cite{Lulfesmann2012Fap}, a novel approach is explained.
-We discuss this method briefly here.
+%In \cite{Lulfesmann2012Fap}, a novel strategy is explained.
+%We discuss this method briefly here.
 
 Common approaches to constructing the preconditioner $M$ are based on accessing individual
 nonzero entries $J(i,j)$ of the Jacobian. For instance, diagonal scaling consists of the
@@ -629,27 +638,31 @@ nonzero entries of $J$ or segments of rows/columns of $J$. In general, accessing
 individual nonzero entry via automatic differentiation is as efficient as accessing a
 complete column or row. In practice, an access to some individual nonzero entry is
 therefore prohibitively expensive regarding computing time.
+%\begin{figure}%
+%\centering
+%\includegraphics[width=0.5\linewidth]{combine_ad_ilu2.png}
+%\caption{Determine the preconditioner~$M$ with access to all nonzero elements of Jacobian matrix~$A$. New approach: Determine the preconditioner~$\tilde M$ with access to a subset of $A$ using the sparsification operator~$\rho$. Based on Figure 4.1 from Lülfesmann~\cite{Lulfesmann2012Fap}.}%
+%\label{f:luelfesmann-sparsify}%
+%\end{figure}
 
-We discussed the sparsification operator~\sparsify{J} which selects a subset of the nonzeros of the Jacobian matrix $J$.
-It does not mean that the whole Jacobian is available, but
-only the nonzero pattern of the matrix should be known before.
-Now, the preconditioner is built based on these selected nonzero elements~\cite{Cullum2006}.
-These nonzero elements selected by \sparsify{J} are called initially
-\emph{required} nonzero elements and represented by $R_i$.
-An example would be the special case of a sparsification in the form of $k\times k$
-blocks on the main diagonal.
+Lülfesmann~\cite{Lulfesmann2012Fap} introduce new approach in which the required elements in matrix
+are in the form of $k\times k$ blocks on the main diagonal.
+Then, the preconditioner is built based on these selected nonzero required elements instead of
+the whole Jacobian matrix.
+Building a preconditioner based on a subset of the nonzero elements are explained in~\cite{Cullum2006}.
+We call these required elements \textit{initially} required elements 
+represented by $R_i$
+since they are an inital set for the further process.
+Now, the coloring problems~\ref{p.restricted.d2} 
+and~\ref{p.restricted.star} can be solved for Jacobian
+restricted to the set of initially required nonzero elements $R_i$. 
 
-Now, we summerizes the approach from Lülfesmann~\cite{Lulfesmann2012Fap}.
-We discussed coloring algorithms regarding AD techniques.
-Now, the problem~\ref{p.restricted.d2} can be solved for Jacobian
-restricted to the set of \textit{initially} required nonzero elements $R_i$. 
-We call these elements \textit{initially} required nonzero elements since
-they are an inital set for the further process.
-The result of a coloring groups
-columns and rows together. In this processes, the required elements are always
-computed. However, the nonrequired elements are divided into two sets of
+The result of a coloring algorithm groups columns and rows together.
+In this processes, the required elements are always computed.
+The remaing elements, the so-called nonrequired elements, 
+are divided into two sets of
 elements: the elements which are computed and the ones which would be
-eliminated. We can think of these computed nonzero elements as byproducts
+eliminated. We can think of these computed nonrequired nonzero elements as byproducts
 of the coloring and comuputing the matrix-matrix products $JV$ and $WJ$.
 Since the number of colors does not change,
 the idea is to add these extra byproducts also to $R_i$.
@@ -657,8 +670,9 @@ However, it could generate new fill-ins in the preconditioning step.
 So, we call these byproduct elements the \textit{potentially}
 required elements $R_p$ and compute them as follows,
 $$
-R_p \subset pat(A) - R_i \quad\text{so that}\quad |\Phi(R_i)| = |\Phi(R_i\cup R_p)|.
+R_p \subset pat(J) - R_i \quad\text{so that}\quad |\Phi(R_i)| = |\Phi(R_i\cup R_p)|,
 $$
+while $pat(J)$ represents the nonzero pattern of the Jacobian matrix $J$.
 
 As we have discussed, an ILU preconditioner is applied to $R_i$ which can
 produce a set of fill-ins.
@@ -706,7 +720,7 @@ Then, given a bipartite matrix $G = (V,E)$,
 three subsets $E_i, E_p, E_a\subset E$
 are considered for the initially, potentially,
 and additionally required elements, respectively.
-Given the $k\times k$ block sparsification and the Jacobian matrix $J$,
+Given the $k\times k$ block on diagonal as required elements $R_i$ and the Jacobian matrix $J$,
 here is a list of steps in the computation of additionally required elements
 and the corresponding algorithm on the bipartite graph model
 (details in~\cite{Lulfesmann2012Fap}),
@@ -2191,21 +2205,14 @@ the case in our theorem.
 make the required edges disjoint from each other which is the definition of a matching in graphs.
 \end{itemize}
 
-
-Based on the $\sparsifysymbol$-column intersection graph defined in~\defref{d.part.cig},
+Based on the column-intersection graph model presented in \cite{cscpaper},
 it is easy to see
 that the coloring restricted to diagonal is still an NP-complete problem.
-A suggestion for the proof is as follows.
-In general, we know that a graph coloring is an NP-complete problem
+In this paper, a classical graph coloring probelm on an undirected graph
+is formulated from the partial Jacobian computation.
+We know that a graph coloring is an NP-complete problem
 (see \cite{np-complet-graph-coloring})).
-As \defref{d:cig} shows, a distance-2 coloring on the column-intersection graph
-is a classical graph coloring problem. So it is also NP-complete.
-We also define a similar graph model for the coloring problem in
-\cite{2016:01}. In this transformation from the matrix and graph, we encode also 
-required elements. It means we do not have any special
-edges later in the graph.
-Since the construction of this graph model is done in
-the polynomial time, this restricted coloring problem remains NP-complete too.
+So the coloring restricted to the diagonal elements should be NP-complete too.
 
 Therefore, we should still use some heuristics to compute these colorings.
 The examples in Table~\ref{table.starbic.d2.diag} from Florida sparse collection shows that the
