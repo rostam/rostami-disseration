@@ -742,35 +742,35 @@ the potentially required elements when the given coloring $\phi$ is star bicolor
 \begin{figure}
 \begin{lstlisting}[caption=Find potentially required elements for
 distance-$2$ coloring,label=code.pot.d2,mathescape]
-function pot_d2_color($G_b$,$E_i$,$\phi$)
-  $R_p=\emptyset$
-  for $(r_i,c_j)\in E_i$ with $\Phi(c_j)\neq 0$
-    for $c_k\in N_1(r_i,c_j)$ with $j\neq k$ and $(r_i,c_k)\notin E_i$
+function pot_d2_coloring($G=(V_r\cup V_c,E)$,$E_i$,$\phi$)
+  $E_p=\emptyset$
+  for $(r_i,c_j)\in E-E_i$ with $\Phi(c_j)\neq 0$
+    for $c_k\in N_1(r_i,G)$ with $j\neq k$ and $(r_i,c_k)\notin E_i$
       if $\Phi(c_j) = \Phi(c_k)$
-        continue
+        continue with next edge $(r_i,c_j)\in E-E_i$
     $E_p = E_p \cup {(r_i,c_j)}$
   return $E_p$
 \end{lstlisting}
 \end{figure}
 \begin{figure}
 \begin{lstlisting}[caption=Find potentially required elements for star bicoloring,label=code.pot.sb,mathescape]
-function pot_star_bicoloring($G_b$,$E_i$,$\phi$)
+function pot_star_bicoloring($G=(V_r\cup V_c,E)$,$E_i$,$\phi$)
   $E_p = \emptyset$
-  for $(r_i,c_j)\in E-E_i$ with $\Phi(r_i)\notin 0$ or $\Phi(c_j)\notin 0$
-    if($\Phi(r_i) = 0$)
+  for $(r_i,c_j)\in E-E_i$ with $\Phi(r_i)\neq 0$ or $\Phi(c_j)\neq 0$
+    if $\Phi(r_i) = 0$
       for $c_k\in N_1(r_i,G)$ with $j\neq k$ and $(r_i,c_k)\notin E_i$
-        if($\Phi(c_j)==\Phi(c_k)$)
+        if $\Phi(c_j)==\Phi(c_k)$
           continue with the next edge $(r_i,c_j)\in E - E_i$
 
-    if($\Phi(c_j) = 0$)
+    if $\Phi(c_j) = 0$
       for $r_l\in N_1(c_j,G)$ with $j\neq l$ and $(r_l,c_j)\notin E_i$
-        if($\Phi(r_i)==\Phi(r_l)$)
+        if $\Phi(r_i)==\Phi(r_l)$
           continue with the next edge $(r_i,c_j)\in E - E_i$
 
-    if($\Phi(r_i) \neq 0$ and $\Phi(c_j) \neq 0$)
-      for $c_k\in N_1(r_i,G)$ with $i\notin k$
-        for $r_l\in N_1(c_j,G)$ with $j\notin l$
-          if($\Phi(c_j)==\Phi(c_k)$ and $\Phi(r_i)==\Phi(r_l)$)
+    if $\Phi(r_i) \neq 0$ and $\Phi(c_j) \neq 0$
+      for $c_k\in N_1(r_i,G)$ with $i\neq k$
+        for $r_l\in N_1(c_j,G)$ with $j\neq l$
+          if $\Phi(c_j)==\Phi(c_k)$ and $\Phi(r_i)==\Phi(r_l)$
             continue with the next edge $(r_i,c_j)\in E - E_i$
 
     $E_p = E_p \cup {(r_i,c_j)}$
@@ -806,11 +806,13 @@ function add($G_b$,$E_i$,$E_p$)
   do
     for $(r_i,c_j)\in E_p$
       if $i > j$
-        if $\exists c_l\in N_1(r_j,G[E_i \cup (E_f\cup E_a)])$ with $l>j$
-          continue with next edge $(r_i,c_j)\in E_p$
+        for $c_l\in N_1(r_j,G[E_i\cup (E_F\cup E_a)])$ with $l > j$
+          if $(r_i,c_j)\notin E_i\cup (E_F\cup E_a)
+            continue with next edge $(r_i,c_j)\in E_p$
       else if $i > j$
-        if $\exists r_k\in N_1(c_i,G[E_i \cup (E_f\cup E_a)])$ with $k>i$
-          continue with next edge $(r_i,c_j)\in E_p$
+        for $r_k\in N_1(c_i,G[E_i\cup (E_F\cup E_a)])$ with $k > i$
+          if $(r_k,c_j)\notin E_i\cup (E_F\cup E_a)
+            continue with next edge $(r_i,c_j)\in E_p$
       $E_a = E_a \cup {(r_i,c_j)}$
       $E_p = E_p - {(r_i,c_j)}$
   while $|E_a|$ is increased in the last iteration
