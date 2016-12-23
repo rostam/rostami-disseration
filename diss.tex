@@ -691,8 +691,7 @@ R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
 $$
 in which $SILU$ means the symbolic ILU factorization.
 
-???????????????? Move to Next Chapters ??????????????????????
-Finally, the optimization problems are formulated as follows,
+Now, we formulate two optimization problems in this thesis as follows,
 \begin{problem}[Maximum Potentially Required Elements]
 \label{p:max_pot}
 %
@@ -734,6 +733,8 @@ that $SILUR(R_i) \cup R_a = SILU(R_i \cup R_a)$.
 \end{itemize}
 \coderef{code.pot.d2} and \coderef{code.pot.sb} show the algorithms to compute the
 potentially required elements for the distance-$2$ coloring and star bicoloring, respectively.
+In these algorithms, $N_1$ and $N_2$ means the distance-$1$ neighbors (edges) and 
+distance-$2$ neighbors.
 Given a bipartite graph $G_b$, the required edges $E_i$, and a distance-$2$ coloring $\Phi$,
 \coderef{code.pot.d2} computes a set of potentially required elements. This algorithm
 iterates over nonrequired edges ($E - E_i$) and checks if such an edge can be added to the 
@@ -2634,7 +2635,7 @@ function [req,pot,add,F,num_col] = precol(coloring,
 end
 \end{lstlisting}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Interactive educational module}
+\chapter{Interactive educational modules}
 \label{explain}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We develop an extensible collection of educational modules (\mbox{EXPLAIN})
