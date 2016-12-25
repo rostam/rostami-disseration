@@ -3807,8 +3807,13 @@ What if we transform program for function $f(x)$ not only to a program for $\fra
 Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph model as before and show it has advantages in the unidirectional coloring. A first improvement is to search for the similar approach in the bidirectional coloring and restricted coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
+\chapter*{Appendix}
+\label{appendix}
+\setcounter{chapter}{1}
+\addcontentsline{toc}{chapter}{Appendix}
+\renewcommand\thechapter{\Alph{chapter}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Different orderings for coloring}
+\section{Different orderings for coloring}
 \label{app.ord}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Here are some orderings for coloring,
@@ -3823,7 +3828,7 @@ order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices 
 The computation of this ordering can have a higher complexity than the complexity of the greedy coloring ($\mathcal{O}(n+m)$) or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity. These various orderings should be considered in new heuristic coloring which we propose. to improve the results of coloring.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{The source code of the nested dissection ordering in \emph{EXPLAIN}}
+\section{The source code of the nested dissection ordering in \emph{EXPLAIN}}
 \label{app.source}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The nested dissection module has a lot of details compared to other modules of EXPLAIN.
