@@ -869,20 +869,21 @@ no new additionally required edges are found.
 \chapter{New coloring heuristics}
 \label{package}
 Finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589}.
-Hence, we search for different coloring heuristics with the polynomial complexity.
+Hence, various coloring heuristics are studied through years with the polynomial complexity.
 The greedy coloring is a widely used coloring which has a low computational complexity
-and computes a reasonable coloring~\cite{spaa14}.
-The partial greedy coloring algorithm for a bipartite graph restricted to 
+and computes a \textit{reasonable} coloring (see~\cite{spaa14}).
+The greedy coloring algorithm for a bipartite graph restricted to 
 the initially required edge set $E_i$ is given in \coderef{code.greedy}. 
 The idea is to iterate over all vertices incident
-to a required edge and give a color to these vertices which is different from
-the color of their distance-$2$ neighbors. In this algorithm, the function $N_2$
-finds all distance-$2$ neighbors. 
+to a required edge and assign colors to these vertices.
+Each vertex in this iteration gets a color different from their
+which are different from the color of its distance-$2$ neighbors. 
+In this algorithm, the function $N_2$ finds all distance-$2$ neighbors. 
 Suppose we want to find the color for the vertex $v$ in an iteration, 
 the array $forbiddenColors$ assigns the color of the distance-$2$ neighbors
 to $v$. After considering all neighbors, the smallest index $i$ of this array
 is the color of $v$ such that the value of $forbiddenColors$ is not $v$.
-The computational complexity of this algorithm is $\mathcal{O}(n + \Delta)$ in which $n$
+It follows that the computational complexity of this algorithm is $\mathcal{O}(n \Delta)$ in which $n$
 and $\Delta$ are the number of vertices and the maximum vertex degree, respectively.
 
 \begin{figure}
@@ -905,8 +906,7 @@ function d2_color($G=(V_r\cup V_c,E)$,$E_i\subset E$)
 \end{lstlisting}
 \end{figure}
 
-In this coloring, the assumption is that vertex,
-equivalently each column, is available and colored one at a time.
+In this coloring, the assumption is that each vertex is available and colored one at a time.
 Therefore, the vertex ordering plays an major role in the greedy algorithm.
 Hence, there are many publications on how to choose
 a suitable ordering heuristics for a serial or parallel version of
@@ -917,14 +917,14 @@ the largest-first ordering (LFO)~\cite{LFO}, the incidence-degree ordering (IDO)
 the saturation-degree ordering (SDO)~\cite{SDO}, and the smallest-last ordering (SLO)~\cite{ordering1}.
 A short description of these ordering are available in \appref{app.ord}.
 
-We adapt the greedy algorithm in \secref{s.max.pot.req} and \secref{s.max.add.req}
+We modify the greedy algorithm in \secref{s.max.pot.req} and \secref{s.max.add.req}
  such that the number of potentially required elements
 and additionally required elements are increased.
 Later, 
-we search for a better heuristic for
+we discuss a better heuristic for
 the special case of coloring restricted to diagonals in~\secref{s.part.color.diag}.
-Later, we discuss the first ideas toward a new heuristics based on the exact coloring in small
-subgraphs in~\secref{s.exact}.
+The first ideas toward a new heuristics based on the exact coloring in small
+subgraphs comes in~\secref{s.exact}.
 Finally, we introduce our computational package \textit{PreCol} in~\secref{s.extend} that computes the 
 unidirectional and bidirectional (partial-)coloring with different algorithms
 as well as the ILU preconditioning. 
@@ -968,7 +968,7 @@ from the Florida sparse matrix collection throughout this thesis.}
 \section{Maximizing potentially required elements}
 \label{s.max.pot.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In restricted coloring, we compute the coloring focusing on
+So far, the restricted coloring has a focus on
 required nonzero elements. However, there are nonrequired nonzero elements
 which are also computed as a by-product of the computation of required elements.
 These are important elements for the determination of potentially required elements
@@ -989,22 +989,23 @@ and additionally required elements. Look at the following example,
 \end{array}\right)
 \label{twocolorings}
 \end{equation}
-in which the symbol $r$ stands for the required element,
-the symbol \textit{$*$} stands for the other nonzero elements,
-and the number $0$ denotes the actual zero elements.
-If the first and second column are colored with the same color,
-you will get the nonzero at position $(3,1)$ as a by-product.
+in which the symbol $r$ stands for a required element,
+the symbol \textit{$*$} stands for other nonzero elements (the nonrequired elements),
+and the number $0$ denotes the zero elements.
+If the first and second columns are colored with the same color,
+we will get the nonzero at position $(3,1)$ as a by-product.
 However, there are certain degrees of freedom. In
-this example, you could also assign the same color to columns $1$ and
+this example, one could also assign the same color to columns $1$ and
 $3$ in which no nonzero element in the last row will be computed
-as a by-product. This leads to the question of maximizing
+as a by-product. This idea leads to
+the problem of maximizing
 the number of nonzero elements that are computed as a by-product.
 
 Let's look at the same story differently.
 The columns $2$ or $3$ could have the same color with the first column to compute the
 required elements. (Of course, $2$ and $3$ are not allowed to have the same color
 because the required elements would sum up.)
-However, the number of nonrequired elements which survive increase if
+However, the number of nonrequired elements which survive increases if
 we color the first and second column with the same color and the
 other one with the other color. Now, the question is: can we save
 more nonrequired elements in the process of coloring? Can we maximize a term like $\alpha C + \beta N$ where alpha and beta are
