@@ -188,9 +188,9 @@ reducing the computational complexity. The assumption here is that the sparsity 
 known beforehand formulated from the actual physical problem.
 Curtis, Powell, and Reid~\cite{Curtis1974117} were first to study the determination of 
 a sparse Jacobian matrix based on the sparsity exploitation.
-Coleman and Mor{\'e}~\cite{Coleman1983EoS} transformed this a sparse matrix problem
+Coleman and Mor{\'e}~\cite{Coleman1983EoS} transformed this sparse matrix problem
 into the problem of vertex coloring in the graph theory. The idea is to formulate
-the compression of the columns such that all the nonzeros are survived, so called
+the compression of the columns such that all the nonzeros are determined, so called
 a one-sided compression.
 Later, a two-sided compression is introduced and analysed in~\cite{Coleman1996SaE}
 and~\cite{hs:csj} which can result in a better computational complexity.
@@ -211,7 +211,7 @@ Lülfesmann~\cite{Lulfesmann2012Fap} introduced for the first time in his disser
 the idea of combining of the partial Jacobian computation and the ILU preconditioning. 
 This idea is implemented using the greedy algorithm for the restricted coloring. 
 We analyze this idea further in this thesis by definining new heuristic algorithms
-to increase the survived nonzero elements.
+to increase the nonzero elements which are determined.
 
 This dissertation is structured as follows.
 First, we go through basic definitions in \chapref{prel} needed in other chapters.
@@ -1005,26 +1005,25 @@ Let's look at the same story differently.
 The columns $2$ or $3$ could have the same color with the first column to compute the
 required elements. (Of course, $2$ and $3$ are not allowed to have the same color
 because the required elements would sum up.)
-However, the number of nonrequired elements which survive increases if
+However, the number of determined nonrequired elements increases if
 we color the first and second column with the same color and the
 other one with the other color. Now, the question is: can we save
 more nonrequired elements in the process of coloring? Can we maximize a term like $\alpha C + \beta N$ where alpha and beta are
 weighting coefficients, $C$ is the coloring number, and $N$ is the
-number of survived nonrequired elements?
-Here, we introduce a new heuristic which increases the number of survived nonrequired elements such that the number of colors remains almost the same.
+number of determined nonrequired elements?
+Here, we introduce a new heuristic 
+which increases the number of determined nonrequired elements 
+while the number of colors remains almost the same.
 
 \subsection{Distance-$2$ coloring}
 Our goal here is to increase the number of potentially required elements.
 A potential required element is selected from the nonrequired elements such that
 the number of colors does not increase.
-In general, we say a nonrequired element at the position of $(i,j)$
-can be \textit{survived} in a compression of two columns $j$ and $k$
-if there is no nonzero element in the position $(i,k)$.
-Given two columns $j$ and $k$
-we show the number of survived nonrequired elements in the compression of
-$j$ and $k$ as the function $Nreq(i,j)$.
-If the input parameters of this function are vertices,
-then it considers the corresponding row and column.
+Given two vertices $i$ and $j$,
+the function $Nreq(i,j)$ represents 
+the number of nonrequired elements in the compression of
+the corresponding columns $i$ and $j$ which are determined.
+We call these elements the determined nonrequired elements.
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
 considering the nonrequired elements.,label=code.new.d2.nreq,mathescape]
@@ -1049,24 +1048,33 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
 \end{lstlisting}
 \end{figure}
 We modify the greedy algorithm  presented in \coderef{code.greedy} as follows.
-Our approach in this new heuristic coloring algorithm is based on finding an independent set.
-In the simple graph model, a subset of the vertices $S\subset V$ is
-called an independent set~\cite{bondy2008graph} if no edge between any of these vertices exists,
-$$\forall u,v\in S: (u,v)\notin E.$$
-In the bipartite graph model, we need to change this definition as follow,
-$$\forall u,v\in S: u\notin N_2(v).$$
-For a given vertex $v$, we show an independent set containing the vertex $v$ by $I_v$.
+Our approach in this new heuristic coloring algorithm
+is based on finding independent sets.
+In simple graph model,
+a subset of the vertices $I\subset V$ is
+called an independent set~\cite{bondy2008graph} 
+if no edge between any of these vertices exists,
+$$\forall u,v\in I: (u,v)\notin E.$$
+In the bipartite graph model, we need to change the definition of independent set
+using the distance-$2$ neighbors as follow,
+$$\forall u,v\in I: u\notin N_2(v).$$
+Also, we represent an independent set containing the vertex $v$ by $I_v$.
 
-We compute $Nreq(u,v)$ for each element $u\in I_v$
-and color a vertex $w$ from the set $I_v$ with the maximum value of $Nreq(v,w)$
-beside coloring the vertex $v$ in each step and with the same color as $w$.
-\coderef{code.new.d2.nreq} represents this approach.
+\coderef{code.new.d2.nreq} shows this new heuristic.
+We iterate over all uncolored vertices.
+First, we color the vertex $v$ with a color different form
+its distance-$2$ neighbors like the greedy coloring.
+Additionally,
+we compute $Nreq(u,v)$ for each vertex $u\in I_v$
+and color a vertex $w\neq u \in I_v$ with the maximum value of $Nreq(w,v)$
+and with the same color as $v$.
 The time complexity of this new heuristic is estimated as follow.
-We need to go through all vertices
+We go through all vertices
 and find the maximum independent set containing each vertex.
-Then, we need to find all nonrequired elements which can be survived
+Then, we find all nonrequired elements which can be determined
 that results in the computational complexity of $\mathcal{O}(n^2)$.
-However, the computation takes shorter since we color two vertices in each step.
+However, the computation takes shorter than $\Theta(n^2)$ in practice 
+since we color two vertices in each step.
 
 Although we color a vertex $v$ and another vertex $u\in I_v$
 it does not mean that the coloring is valid.
@@ -1103,7 +1111,8 @@ Considering this problem, we need to check the consistency of coloring
 at the end of algorithm. Therefore, we define the function in \coderef{consistency} in which
 we check if the color of each vertex $v$ is different than its neighbors.
 If it is not the case, we color that neighbor with a new color which is not used so far.
-This means that \coderef{code.new.d2.nreq} should be rewritten as \coderef{code.new.d2.consistent},
+This means that \coderef{code.new.d2.nreq} should be rewritten 
+as \coderef{code.new.d2.consistent},
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
 considering the nonrequired elements and checking the consistency.,
@@ -1179,7 +1188,7 @@ The computation is carried out on the matrix \textit{ex33}. }
 The computation is carried out on the matrix \textit{ex33}. }
 \label{bls_cols_ex33_without_alpha}
 \end{figure}
-So far, we color a vertex with the maximum survived nonrequired elements.
+So far, we color a vertex with the maximum determined nonrequired elements.
 However, it can happen
 that we have more than one vertex with the maximum nonrequired elements in each step.
 Suppose we are looking at the vertex $v$ and two vertices $a$ and $b$ have maximum values of
@@ -1195,7 +1204,7 @@ any significant changes in the structure of the algorithm.
 \begin{lstlisting}[
 caption=A modification of the previous algorithm in which
 a particular element is selected from the set of columns with
-the maximum survived nonrequired elements.
+the maximum determined nonrequired elements.
 we select only an arbitrary element in the previous version.,
 label=code.new.impr1,mathescape]
 function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subset E$)
@@ -1418,9 +1427,9 @@ matrices.
 As same as the last section, we search for a modified version of star bicoloring
 which increases the number of potentially and additionally required elements without
 a high increase the number of colors. The idea from the new heuristic
-can be applied here. However, it can survive less additionally required
-elements since a survived nonrequired elements from the column compression
-it is not necessary a survived nonrequired elements form the row compression.
+can be applied here. However, it can results in less additionally required
+elements since a determined nonrequired elements from the column compression
+it is not necessary a determined nonrequired elements form the row compression.
 
 We consider the implementation of star bicoloring in \coderef{orig.star.bicoloring} based on
 the algorithm from Lülfesmann~\cite{Lulfesmann2012Fap}.
@@ -1428,7 +1437,7 @@ Here, the notation $G[S]$ means the graph induces on the edge set $S$.
 \begin{figure}
 \begin{lstlisting}[
 caption=A new heuristic for star bicoloring algorithm
-considering the survived nonrequired elements.,
+considering the determined nonrequired elements.,
 label=orig.star.bicoloring,mathescape]
 function star_bicolor_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
   for $v\in V_c$
@@ -2012,11 +2021,11 @@ Equivalently, we define the set of all fill paths ending to the vertex $c_j$
 passing the edge $t$ with the size of $k$ as
 $pl_k^t = \{ \{c_d,...,r_i,c_j\},..., \{c_e,...,r_i,c_j\}\}$.
 With these definitions, \coderef{code.new.d2.add.fp} is a coloring heuristic
-for distance-$2$ coloring which checks if a survived nonzero element can be an
+for distance-$2$ coloring which checks if a determined nonzero element can be an
 additionally required element.
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
-predicting if a survived nonrequired elements can be an additionally required element.,
+predicting if a determined nonrequired elements can be an additionally required element.,
 label=code.new.d2.add.fp,mathescape]
 function d2_color_fillpath($G=(V_r\cup V_c,E)$,$E_i\subset E$, $k$)
   for $v\in V_c$
