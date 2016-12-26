@@ -760,7 +760,7 @@ the potentially required elements when the given coloring $\phi$ is star bicolor
 \begin{figure}
 \begin{lstlisting}[caption=Find potentially required elements for
 distance-$2$ coloring,label=code.pot.d2,mathescape]
-function pot_d2_coloring($G=(V_r\cup V_c,E)$,$E_i$,$\phi$)
+function pot_d2_coloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\phi$)
   $E_p=\emptyset$
   for $(r_i,c_j)\in E-E_i$ with $\Phi(c_j)\neq 0$
     for $c_k\in N_1(r_i,G)$ with $j\neq k$ and $(r_i,c_k)\notin E_i$
@@ -772,7 +772,7 @@ function pot_d2_coloring($G=(V_r\cup V_c,E)$,$E_i$,$\phi$)
 \end{figure}
 \begin{figure}
 \begin{lstlisting}[caption=Find potentially required elements for star bicoloring,label=code.pot.sb,mathescape]
-function pot_star_bicoloring($G=(V_r\cup V_c,E)$,$E_i$,$\phi$)
+function pot_star_bicoloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\phi$)
   $E_p = \emptyset$
   for $(r_i,c_j)\in E-E_i$ with $\Phi(r_i)\neq 0$ or $\Phi(c_j)\neq 0$
     if $\Phi(r_i) = 0$
@@ -819,7 +819,7 @@ to be considered only up to the level $l$.
 \begin{figure}
 \begin{lstlisting}[caption=Find additionally required elements,
 label=code.add,mathescape]
-function add($G_b$,$E_i$,$E_p$)
+function add($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$E_p$)
   $E_a = \emptyset$
   do
     for $(r_i,c_j)\in E_p$
@@ -878,7 +878,8 @@ The idea is to iterate over all vertices incident
 to a required edge and assign colors to these vertices.
 Each vertex in this iteration gets a color different from their
 which are different from the color of its distance-$2$ neighbors. 
-In this algorithm, the function $N_2$ finds all distance-$2$ neighbors. 
+In this algorithm, the function $N_2$ finds all distance-$2$ neighbors
+restricted to the set of initially required edges $E_i$. 
 Suppose we want to find the color for the vertex $v$ in an iteration, 
 the array $forbiddenColors$ assigns the color of the distance-$2$ neighbors
 to $v$. After considering all neighbors, the smallest index $i$ of this array
@@ -889,18 +890,17 @@ and $\Delta$ are the number of vertices and the maximum vertex degree, respectiv
 \begin{figure}
 \begin{lstlisting}[caption=The greedy algorithm for
 the distance-$2$ coloring restricted to the edge set $E_i$
-for columns in which $N_2(v)$ shows
-the distance-$2$ neighbors of $v$.
+for columns in which $N_2(v)$ shows the distance-$2$ neighbors of $v$
+restricted to the set of initially required edges $E_i$.
 ,label=code.greedy,mathescape]
-function d2_color($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+function d2_color($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   for $v\in V_c$
     $\Phi(v)=-1$
     $forbiddenColors[v] = 0$
-  for $v\in V_c$
-    if $\exists n\in N_2(v): (v,n)\in E_i$
-      for $n\in N_2(v)$
-        if $\Phi(n) \neq 0$
-          $forbiddenColors[\Phi(n)] = v$
+  for $v\in V_c$ with $\exists n\in N_2(v): (v,n)\in E_i$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
   return $\Phi$
 \end{lstlisting}
@@ -920,8 +920,7 @@ A short description of these ordering are available in \appref{app.ord}.
 We modify the greedy algorithm in \secref{s.max.pot.req} and \secref{s.max.add.req}
  such that the number of potentially required elements
 and additionally required elements are increased.
-Later, 
-we discuss a better heuristic for
+Later, we discuss a better heuristic for
 the special case of coloring restricted to diagonals in~\secref{s.part.color.diag}.
 The first ideas toward a new heuristics based on the exact coloring in small
 subgraphs comes in~\secref{s.exact}.
@@ -1027,23 +1026,20 @@ We call these elements the determined nonrequired elements.
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
 considering the nonrequired elements.,label=code.new.d2.nreq,mathescape]
-function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   for $v\in V_c$
     $\Phi(v)=-1$
     $forbiddenColors[v] = 0$
+  for $v\in V_c$ with $\Phi(v)=0$ with $\exists n\in N_2(v): (v,n)\in E_i$ and $\Phi(v) = 0$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
 
-  for $v\in V_c$ with $\Phi(v)=0$
-    $forbiddenColors[0] = v$
-    if $\exists n\in N_2(v): (v,n)\in E_i$
-      for $n\in N_2(v)$
-        if $\Phi(n) \neq 0$
-          $forbiddenColors[\Phi(n)] = v$
-
-      $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-      $I_v=\{u\in V_c: u\notin N_2(v)\}$
-      $M = \{ (i,Nreq(i,v)): i\in I_v\}$
-      $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
-      $\Phi(maxs[0]) = \Phi(v)$
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $M = \{ (i,Nreq(i,v)): i\in I_v\}$
+    $maxs = \{ a\in keys(M): M[a] = max(values(M))\}$
+    $\Phi(maxs[0]) = \Phi(v)$
   return $\Phi$
 \end{lstlisting}
 \end{figure}
@@ -1098,11 +1094,15 @@ since the fourth and second columns can not be compressed.
 label=consistency,
 caption=A function checking the consistency of the coloring.
 ,mathescape]
-function consistent_coloring($G$)
-  for $v \in V_c$
-    for $n \in N_2(v)$
-      if($\Phi(n) == \Phi(v)$)
-        $\Phi(n) = $new_color
+function consistent_coloring($G=(V_r\cup V_c,E)$)
+  modified = false;
+  do
+    for $v \in V_c$
+      for $n \in N_2(v)$
+        if($\Phi(n) == \Phi(v)$)
+          $\Phi(n) = $ a color different from its distance-$2$ neighbors
+          modified = true
+  while modified
   return $\Phi$
 \end{lstlisting}
 \end{figure}
@@ -1110,34 +1110,26 @@ function consistent_coloring($G$)
 Considering this problem, we need to check the consistency of coloring
 at the end of algorithm. Therefore, we define the function in \coderef{consistency} in which
 we check if the color of each vertex $v$ is different than its neighbors.
+If not, the colors of that vertex change to some color different from its distance-$2$ neighbors.
+This algorithm repeats this process until no new such vertex is found.
 If it is not the case, we color that neighbor with a new color which is not used so far.
-This means that \coderef{code.new.d2.nreq} should be rewritten 
-as \coderef{code.new.d2.consistent},
-\begin{figure}
-\begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
-considering the nonrequired elements and checking the consistency.,
-label=code.new.d2.consistent,mathescape]
-function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
-  for $v\in V_c$
-    $\Phi(v)=-1$
-    $forbiddenColors[v] = 0$
+Finally, we call this function after each call of our new coloring heuristics.
 
-  for $v\in V_c$ with $\Phi(v)=0$
-    $forbiddenColors[0] = v$
-    if $\exists n\in N_2(v): (v,n)\in E_i$
-      for $n\in N_2(v)$
-        if $\Phi(n) \neq 0$
-          $forbiddenColors[\Phi(n)] = v$
-
-      $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-      $I_v=\{u\in V_c: u\notin N_2(v)\}$
-      $M = \{ (i,Nreq(i,v)): i\in I_v\}$
-      $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
-      $\Phi(maxs[0]) = \Phi(v)$
-  consistent_coloring(G)
-  return $\Phi$
-\end{lstlisting}
-\end{figure}
+Table~\ref{mats.pot.add.gr.vs.nreq} presents the number of potentially
+and additionally required elements computed
+by the greedy algorithm and our new heuristic. The size of diagonal blocks
+and the ILU level parameter are fixed to $10$ and $2$, respectively.
+In this matrices, the number of potentially required elements increases
+by our new heuristic coloring.
+It is obvious that the number of additionally required elements increase too.
+\figref{bls_adds_ex33_without_alpha} shows the number of additionally required elements
+computed by this new approach, compared with the greedy algorithm. Clearly,
+the new approach computes more additionally required elements as than the greedy approach.
+This is an impressive result since the number of colors remains almost the same
+as it can be seen in~\figref{bls_cols_ex33_without_alpha}.
+Both computations is carried out on the matrix \textit{ex33}. The block size changes
+from $1$ to $70$. The number of colors in~\figref{bls_cols_ex33_without_alpha} for the greedy coloring
+is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and \textit{IDO}.
 
 \begin{table}
 \centering
@@ -1157,21 +1149,6 @@ The block size is $10$ and the ILU level parameter is $2$.}
 \label{mats.pot.add.gr.vs.nreq}
 \end{table}
 
-Table~\ref{mats.pot.add.gr.vs.nreq} presents the number of potentially
-and additionally required elements computed
-by the greedy algorithm and our new heuristic. The size of diagonal blocks
-and the ILU level parameter are fixed to $10$ and $2$, respectively.
-In this matrices, the number of potentially required elements increases
-by our new heuristic coloring.
-It is obvious that the number of additionally required elements increase too.
-\figref{bls_adds_ex33_without_alpha} shows the number of additionally required elements
-computed by this new approach, compared with the greedy algorithm. Clearly,
-the new approach computes more additionally required elements as than the greedy approach.
-This is an impressive result since the number of colors remains almost the same
-as it can be seen in~\figref{bls_cols_ex33_without_alpha}.
-Both computations is carried out on the matrix \textit{ex33}. The block size changes
-from $1$ to $70$. The number of colors in~\figref{bls_cols_ex33_without_alpha} for the greedy coloring
-is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and \textit{IDO}.
 
 \begin{figure}
 \centering
@@ -1207,25 +1184,23 @@ a particular element is selected from the set of columns with
 the maximum determined nonrequired elements.
 we select only an arbitrary element in the previous version.,
 label=code.new.impr1,mathescape]
-function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   for $v\in V_c$
     $\Phi(v)=-1$
     $forbiddenColors[v] = 0$
 
-  for $v\in V_c$ with $\Phi(v)=0$
-    $forbiddenColors[0] = v$
-    if $\exists n\in N_2(v): (v,n)\in E_i$
-      for $n\in N_2(v)$
-        if $\Phi(n) \neq 0$
-          $forbiddenColors[\Phi(n)] = v$
+  for $v\in V_c$ with $\exists n\in N_2(v): (v,n)\in E_i$ and $\Phi(v)=0$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
 
-      $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-      $I_v=\{u\in V_c: u\notin N_2(v)\}$
-      $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
-      $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
-      $M_2 = \{ (i,req(i)): i\in maxs \}$
-      $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
-      $\Phi(mins[0]) = \Phi(v)$
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
+    $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
+    $M_2 = \{ (i,req(i)): i\in maxs \}$
+    $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
+    $\Phi(mins[0]) = \Phi(v)$
   consistent_coloring(G)
   return $\Phi$
 \end{lstlisting}
@@ -1291,27 +1266,25 @@ The new star bicoloring algorithm is as \coderef{code.new.impr2}.
 caption=New coloring heuristic with a controller to balance
 the number of colors and the number of additionally required elements.,
 label=code.new.impr2,mathescape]
-function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subset E$,$\alpha$)
+function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
   for $v\in V_c$
     $\Phi(v)=-1$
     $forbiddenColors[v] = 0$
 
-  for $v\in V_c$ with $\Phi(v)=0$
-    $forbiddenColors[0] = v$
-    if $\exists n\in N_2(v): (v,n)\in E_i$
-      for $n\in N_2(v)$
-        if $\Phi(n) \neq 0$
-          $forbiddenColors[\Phi(n)] = v$
+  for $v\in V_c$ with $\exists n\in N_2(v): (v,n)\in E_i$ and $\Phi(v)=0$
+    for $n\in N_2(v)$
+      if $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
 
-      $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-      $I_v=\{u\in V_c: u\notin N_2(v)\}$
-      $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
-      $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
-      $M_2 = \{ (i,req(i)): i\in maxs \}$
-      $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
-      $\Phi(mins[0]) = \Phi(v)$
-      for $i\in\{0,1,...,\alpha\}$
-          $\Phi(mins[i]) = \Phi(v)$
+    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
+    $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
+    $M_2 = \{ (i,req(i)): i\in maxs \}$
+    $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
+    $\Phi(mins[0]) = \Phi(v)$
+    for $i\in\{0,1,...,\alpha\}$
+        $\Phi(mins[i]) = \Phi(v)$
   consistent_coloring(G)
   return $\Phi$
 \end{lstlisting}
@@ -1439,7 +1412,7 @@ Here, the notation $G[S]$ means the graph induces on the edge set $S$.
 caption=A new heuristic for star bicoloring algorithm
 considering the determined nonrequired elements.,
 label=orig.star.bicoloring,mathescape]
-function star_bicolor_nreq($G=(V_r\cup V_c,E)$,$E_i\subset E$)
+function star_bicolor_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   for $v\in V_c$
     $\Phi(v)=-1$
     $forbiddenColors[v] = 0$
@@ -1554,13 +1527,13 @@ greedily and then corrects the false coloring which can happen.
 \begin{figure}
 \begin{lstlisting}[caption=A OpenMP parallelized version of greedy algorithm
 adapted for the bipartite graph.,label=omp.greedy.bip,mathescape]
-function d2_color_omp($G$,$V$)
+function d2_color_omp($G=(V_r\cup V_c,E)$)
   #progrma omp parallel for
-  for $v\in V$
+  for $v\in V_c$
     $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
   #pragma omp barrier
-  $U_0 = V$
+  $U_0 = V_c$
   $i = 1$
   while $U_{i-1}\neq \emptyset$
     $L=\emptyset$
