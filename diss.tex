@@ -752,7 +752,7 @@ that $SILUR(R_i) \cup R_a = SILU(R_i \cup R_a)$.
 potentially required elements for the distance-$2$ coloring and star bicoloring, respectively.
 In these algorithms, $N_1$ and $N_2$ means the distance-$1$ neighbors (edges) and 
 distance-$2$ neighbors.
-Given a bipartite graph $G_b$, the required edges $E_i$, and a distance-$2$ coloring $\Phi$,
+Given a bipartite graph $G$, the required edges $E_i$, and a distance-$2$ coloring $\Phi$,
 \coderef{code.pot.d2} computes a set of potentially required elements. This algorithm
 iterates over nonrequired edges ($E - E_i$) and checks if such an edge can be added to the 
 potentially required elements. Similarly, \coderef{code.pot.sb} computes 
@@ -1554,7 +1554,7 @@ version of \coderef{omp.greedy.bip}.
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic in the bipartite graph model
 parallelized by OpenMP,label=code.new.bip.omp,mathescape]
-function d2_color_nreq($G_b$,$\alpha$)
+function d2_color_nreq($G=(V_r\cup V_c,E)$,$\alpha$)
   #progrma omp parallel for
   for $v\in V_c$ with $\Phi(v)=0$
     $forbiddenColors[0] = v$
@@ -2289,12 +2289,12 @@ function star_diag($G=(V_r\cup V_c)$, $E_R$)
     $forbiddenColors1[0] = v$
     $forbiddenColors2[0] = u$
 
-    for $n\in N2(G_b,v)$
+    for $n\in N2(G,v)$
       if $\Phi(n) > 0$
         $forbiddenColors1[\Phi(n)] = v$
 
     forbiddenColors[0] = u;
-    for $n\in N2(G_b,u)$
+    for $n\in N2(G,u)$
       if $\Phi(n) > 0$
         $forbiddenColors2[\Phi(n)] = u$
 
@@ -2484,7 +2484,7 @@ Two main ingredients coloring and orderings can be implemented now only by deriv
 For example, a new coloring and ordering can be added as easy as the following code.
 \begin{lstlisting}
 class New_Ordering : public Ordering {
-  bool order(const Graph &G_b, vector<unsigned int> &ord, bool restricted) {...}
+  bool order(const Graph &G, vector<unsigned int> &ord, bool restricted) {...}
 };
 
 class New_Coloring : public ColAlg {
