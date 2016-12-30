@@ -750,7 +750,7 @@ that $SILUR(R_i) \cup R_a = SILU(R_i \cup R_a)$.
 \end{itemize}
 \coderef{code.pot.d2} and \coderef{code.pot.sb} show the algorithms to compute the
 potentially required elements for the distance-$2$ coloring and star bicoloring, respectively.
-In these algorithms, $N_1$ and $N_2$ means the distance-$1$ neighbors (edges) and 
+In these algorithms, $N_1$ means the distance-$1$ neighbors (edges) and 
 distance-$2$ neighbors.
 Given a bipartite graph $G$, the required edges $E_i$, and a distance-$2$ coloring $\Phi$,
 \coderef{code.pot.d2} computes a set of potentially required elements. This algorithm
@@ -876,12 +876,15 @@ and computes a \textit{reasonable} coloring (see~\cite{spaa14}).
 The greedy coloring algorithm for a bipartite graph restricted to 
 the initially required edge set $E_i$ is given in \coderef{code.greedy}
 which is adapted from Lülfesmann~\cite{Lulfesmann2012Fap}. 
+In this algorithm, the function $N_2(v,E_i)$ finds all distance-$2$ neighbors
+of $v$ restricted to the set of initially required edges $E_i$. 
+More clearly, the function $N_2(v,E_i)$ computes 
+all vertices on the paths of size $2$ from the vertex $v$
+such that at least one edge of each path is in the set $E_i$.
 The idea is to iterate over all vertices incident
 to a required edge and assign colors to these vertices.
 Each vertex in this iteration gets a color different from their
 distance-$2$ neighbors. 
-In this algorithm, the function $N_2$ finds all distance-$2$ neighbors
-restricted to the set of initially required edges $E_i$. 
 Suppose we want to find the color for the vertex $v$ in an iteration, 
 the array $forbiddenColors$ assigns the color of the distance-$2$ neighbors
 to $v$. After considering all neighbors, the smallest index $i$ of this array
@@ -892,8 +895,7 @@ and $\Delta$ are the number of vertices and the maximum vertex degree, respectiv
 \begin{figure}
 \begin{lstlisting}[caption=The greedy algorithm for
 the distance-$2$ coloring restricted to the edge set $E_i$
-for columns in which $N_2(v)$ shows the distance-$2$ neighbors of $v$
-restricted to the set of initially required edges $E_i$.
+for columns.
 ,label=code.greedy,mathescape]
 function d2_color($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   for $v\in V_c$
@@ -970,11 +972,14 @@ from the Florida sparse matrix collection throughout this thesis.}
 \section{Maximizing potentially required elements}
 \label{s.max.pot.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-So far, the restricted coloring has a focus on
-required nonzero elements. However, there are nonrequired nonzero elements
+Here, our focus is to solve Problem~\ref{p:max_pot}.
+As we have discussed, there are nonrequired nonzero elements
 which are also computed as a by-product of the computation of required elements.
 These are important elements for the determination of potentially required elements
-and additionally required elements. Look at the following example,
+and additionally required elements. 
+We examine that a modified coloring can increase the number of nonrequired elements
+which are determined.
+Look at the following example,
 \newcolumntype{r}{>{\columncolor{red!60}}c}
 \newcolumntype{b}{>{\columncolor{blue!60}}c}
 \begin{equation}
@@ -1033,13 +1038,13 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   for $v\in V_c$
     $\Phi(v)=-1$
     $forbiddenColors[v] = 0$
-  for $v\in V_c$ with $\Phi(v)=0$ with $\exists n\in N_2(v): (v,n)\in E_i$ and $\Phi(v) = 0$
-    for $n\in N_2(v)$
+  for $v\in V_c$ with $\Phi(v)=0$ with $\exists n\in N_2(v,E_i): (v,n)\in E_i$ and $\Phi(v) = 0$
+    for $n\in N_2(v,E_i)$
       if $\Phi(n) \neq 0$
         $forbiddenColors[\Phi(n)] = v$
 
     $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $I_v=\{u\in V_c: u\notin N_2(v,E_i)\}$
     $M = \{ (i,Nreq(i,v)): i\in I_v\}$
     $maxs = \{ a\in keys(M): M[a] = max(values(M))\}$
     $\Phi(maxs[0]) = \Phi(v)$
@@ -1056,7 +1061,7 @@ if no edge between any of these vertices exists,
 $$\forall u,v\in I: (u,v)\notin E.$$
 In the bipartite graph model, we need to change the definition of independent set
 using the distance-$2$ neighbors as follow,
-$$\forall u,v\in I: u\notin N_2(v).$$
+$$\forall u,v\in I: u\notin N_2(v,E_i).$$
 Also, we represent an independent set containing the vertex $v$ by $I_v$.
 
 \coderef{code.new.d2.nreq} shows this new heuristic.
@@ -1101,7 +1106,7 @@ function consistent_coloring($G=(V_r\cup V_c,E)$)
   modified = false;
   do
     for $v \in V_c$
-      for $n \in N_2(v)$
+      for $n \in N_2(v,E_i)$
         if($\Phi(n) == \Phi(v)$)
           $\Phi(n) = $ a color different from its distance-$2$ neighbors
           modified = true
@@ -1192,13 +1197,13 @@ function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
     $\Phi(v)=-1$
     $forbiddenColors[v] = 0$
 
-  for $v\in V_c$ with $\exists n\in N_2(v): (v,n)\in E_i$ and $\Phi(v)=0$
-    for $n\in N_2(v)$
+  for $v\in V_c$ with $\exists n\in N_2(v,E_i): (v,n)\in E_i$ and $\Phi(v)=0$
+    for $n\in N_2(v,E_i)$
       if $\Phi(n) \neq 0$
         $forbiddenColors[\Phi(n)] = v$
 
     $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $I_v=\{u\in V_c: u\notin N_2(v,E_i)\}$
     $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
     $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
     $M_2 = \{ (i,req(i)): i\in maxs \}$
@@ -1274,13 +1279,13 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
     $\Phi(v)=-1$
     $forbiddenColors[v] = 0$
 
-  for $v\in V_c$ with $\exists n\in N_2(v): (v,n)\in E_i$ and $\Phi(v)=0$
-    for $n\in N_2(v)$
+  for $v\in V_c$ with $\exists n\in N_2(v,E_i): (v,n)\in E_i$ and $\Phi(v)=0$
+    for $n\in N_2(v,E_i)$
       if $\Phi(n) \neq 0$
         $forbiddenColors[\Phi(n)] = v$
 
     $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-    $I_v=\{u\in V_c: u\notin N_2(v)\}$
+    $I_v=\{u\in V_c: u\notin N_2(v,E_i)\}$
     $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
     $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
     $M_2 = \{ (i,req(i)): i\in maxs \}$
@@ -1542,7 +1547,7 @@ function d2_color_omp($G=(V_r\cup V_c,E)$)
     $L=\emptyset$
     #pragma omp parallel for
     for $v\in U_{i-1}$
-      if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v)$
+      if $\exists u\in N_2(v,E_i), u>v: \Phi(u) = \Phi(v)$
         $forbiddenColors[\Phi(n)] = v$
         $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
     #pragma omp barrier
@@ -1561,17 +1566,17 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$\alpha$)
   #progrma omp parallel for
   for $v\in V_c$ with $\Phi(v)=0$
     $forbiddenColors[0] = v$
-    if $\exists n\in N_2(v): (v,n)\in E_i$
-      for $n\in N_2(v)$
+    if $\exists n\in N_2(v,E_i): (v,n)\in E_i$
+      for $n\in N_2(v,E_i)$
         if $\Phi(n) \neq 0$
           $forbiddenColors[\Phi(n)] = v$
 
   $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
-  $I_v=\{u\in V_c: u\notin N_2(v)\}$
-  $nreq_v = \{n\in N_2(v):(n,v)\notin E_i\}$
+  $I_v=\{u\in V_c: u\notin N_2(v,E_i)\}$
+  $nreq_v = \{n\in N_2(v,E_i):(n,v)\notin E_i\}$
   for $i \in I_v$
-    $nreq_i = \{n\in N_2(i):(n,i)\notin E_i\}$
-    $req_i = \{n\in N_2(i):(n,i)\in E_i\}$
+    $nreq_i = \{n\in N_2(i,E_i):(n,i)\notin E_i\}$
+    $req_i = \{n\in N_2(i,E_i):(n,i)\in E_i\}$
     $mapVtoNreq = mapVtoNreq \cup (i , count (nreq_i - nreq_v))$
     $mapVtoreq = map \cup (i , count (req_i))$
     $maxs = \{ a\in keys(map): map[a] = max(values(mapVtoNreq))\}$
@@ -1588,7 +1593,7 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$\alpha$)
     $L=\emptyset$
     #pragma omp parallel for
     for $v\in U_{i-1}$
-      if $\exists u\in N_2(v), u>v: \Phi(u) = \Phi(v)$
+      if $\exists u\in N_2(v,E_i), u>v: \Phi(u) = \Phi(v)$
         $forbiddenColors[\Phi(n)] = v$
         $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v$
 
@@ -1668,14 +1673,14 @@ additionally required elements since those elements are outside the blocks.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In \secref{s.max.pot.req}, our focus was to increase the potentially required elements
 which probably increases also the number of the additionally required elements.
-Here, we check directly into the process of coloring
-if a potential required element can be an additionally required elements.
+Here, we work more on Problem~\ref{p:max_add}.
+First, we do some experiments on the effects of orderings in computation of additionally
+required elements in~\secref{ss.comb.precond} . 
+Then, we check directly the process of coloring
+if a potential required element can be an additionally required elements later.
 For this purpose, we use the bipartite graph model for ILU preconditioning
 as well as the fill path theorem introduced
-in~\secref{ss.comb.precond} to be consistent with the bipartite graph model for coloring.
-
-In \coderef{code.new.impr1}, we compute the required nonzero elements
-The idea is to check if the current nonzero required elements
+to be consistent with the bipartite graph model for coloring.
 
 \subsection{Experiments on effects of orderings}
 \label{s.ilu}
@@ -2010,13 +2015,13 @@ function d2_color_fillpath($G=(V_r\cup V_c,E)$,$E_i\subset E$, $k$)
 
   for $v\in V_c$ with $\Phi(v)=0$
     $forbiddenColors[0] = v$
-    if $\exists n\in N_2(v): (v,n)\in E_i$
-      for $n\in N_2(v)$
+    if $\exists n\in N_2(v,E_i): (v,n)\in E_i$
+      for $n\in N_2(v,E_i)$
         if $\Phi(n) \neq 0$
           $forbiddenColors[\Phi(n)] = v$
 
       $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
-      $I_v=\{u\in V_c: u\notin N_2(v)\}$
+      $I_v=\{u\in V_c: u\notin N_2(v,E_i)\}$
       $M = \{ (i,Nreq(i,v)): i\in I_v\}$
       $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
       for $t\in \{(v,u): u\in maxs\}$
