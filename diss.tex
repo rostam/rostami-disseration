@@ -627,8 +627,8 @@ B_1 & B_2 & \cdots & B_p& C
 \end{bmatrix} .
 $$
 This approach, the so-called nested dissection ordering, is first 
-introduced George~\cite{nested_diss1} and 
-analysed further in~~\cite{nested_diss2} and ~\cite{nested_diss3}.
+introduced George~\cite{nested_diss1}. An extensive discussion 
+can be found in \cite{ilu_ordering4}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Scientific computing problem}
@@ -687,9 +687,9 @@ However, it could generate new fill-ins in the preconditioning step.
 So, we call these byproduct elements the \textit{potentially}
 required elements $R_p$ and compute them as follows,
 $$
-R_p \subset pat(J) - R_i \quad\text{so that}\quad |\Phi(R_i)| = |\Phi(R_i\cup R_p)|,
+R_p \subset \operatorname{pat}(J) - R_i \quad\text{so that}\quad |\Phi(R_i)| = |\Phi(R_i\cup R_p)|,
 $$
-while $pat(J)$ represents the nonzero pattern of the Jacobian matrix $J$.
+while $\operatorname{pat}(J)$ represents the nonzero pattern of the Jacobian matrix $J$.
 
 As we have discussed, an ILU preconditioner is applied to $R_i$ which can
 produce a set of fill-ins.
@@ -825,11 +825,11 @@ function add($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$E_p$)
     for $(r_i,c_j)\in E_p$
       if $i > j$
         for $c_l\in N_1(r_j,G[E_i\cup (E_F\cup E_a)])$ with $l > j$
-          if $(r_i,c_j)\notin E_i\cup (E_F\cup E_a)
+          if $(r_i,c_j)\notin E_i\cup (E_F\cup E_a)$
             continue with next edge $(r_i,c_j)\in E_p$
       else if $i > j$
         for $r_k\in N_1(c_i,G[E_i\cup (E_F\cup E_a)])$ with $k > i$
-          if $(r_k,c_j)\notin E_i\cup (E_F\cup E_a)
+          if $(r_k,c_j)\notin E_i\cup (E_F\cup E_a)$
             continue with next edge $(r_i,c_j)\in E_p$
       $E_a = E_a \cup {(r_i,c_j)}$
       $E_p = E_p - {(r_i,c_j)}$
@@ -868,16 +868,18 @@ no new additionally required edges are found.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{New coloring heuristics}
 \label{package}
-Finding an exact coloring is a known NP-complete problem~\cite{SPINRAD198589}.
-Hence, various coloring heuristics are studied through years with the polynomial complexity.
+Karp~\cite{karp:1972} proves that the graph coloring problem is an NP-complete problem
+for general graphs.
+Hence, various coloring heuristics are studied throughout years with the polynomial complexity.
 The greedy coloring is a widely used coloring which has a low computational complexity
 and computes a \textit{reasonable} coloring (see~\cite{spaa14}).
 The greedy coloring algorithm for a bipartite graph restricted to 
-the initially required edge set $E_i$ is given in \coderef{code.greedy}. 
+the initially required edge set $E_i$ is given in \coderef{code.greedy}
+which is adapted from Lülfesmann~\cite{Lulfesmann2012Fap}. 
 The idea is to iterate over all vertices incident
 to a required edge and assign colors to these vertices.
 Each vertex in this iteration gets a color different from their
-which are different from the color of its distance-$2$ neighbors. 
+distance-$2$ neighbors. 
 In this algorithm, the function $N_2$ finds all distance-$2$ neighbors
 restricted to the set of initially required edges $E_i$. 
 Suppose we want to find the color for the vertex $v$ in an iteration, 
@@ -897,8 +899,8 @@ function d2_color($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   for $v\in V_c$
     $\Phi(v)=-1$
     $forbiddenColors[v] = 0$
-  for $v\in V_c$ with $\exists n\in N_2(v): (v,n)\in E_i$
-    for $n\in N_2(v)$
+  for $v\in V_c$ with $\exists n\in N_2(v,E_i): (v,n)\in E_i$
+    for $n\in N_2(v,E_i)$
       if $\Phi(n) \neq 0$
         $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
@@ -911,21 +913,22 @@ Therefore, the vertex ordering plays an major role in the greedy algorithm.
 Hence, there are many publications on how to choose
 a suitable ordering heuristics for a serial or parallel version of
 coloring~\cite{ordering1,ordering2,ordering3}.
-Various orderings are inquired for coloring heuristics
+Various orderings are studied for coloring heuristics
 throughout years. Here are some orderings for coloring which are applied before doing the coloring:
 the largest-first ordering (LFO)~\cite{LFO}, the incidence-degree ordering (IDO)~\cite{IDO},
 the saturation-degree ordering (SDO)~\cite{SDO}, and the smallest-last ordering (SLO)~\cite{ordering1}.
-A short description of these ordering are available in \appref{app.ord}.
+A short description of these ordering is available in \appref{app.ord}.
 
 We modify the greedy algorithm in \secref{s.max.pot.req} and \secref{s.max.add.req}
  such that the number of potentially required elements
 and additionally required elements are increased.
 Later, we discuss a better heuristic for
 the special case of coloring restricted to diagonals in~\secref{s.part.color.diag}.
-The first ideas toward a new heuristics based on the exact coloring in small
-subgraphs comes in~\secref{s.exact}.
-Finally, we introduce our computational package \textit{PreCol} in~\secref{s.extend} that computes the 
-unidirectional and bidirectional (partial-)coloring with different algorithms
+We sketch the first ideas toward a new heuristics based on the exact coloring in small
+subgraphs in~\secref{s.exact}.
+Finally, we introduce our computational package \textit{PreCol} 
+in~\secref{s.extend} that computes the 
+unidirectional and bidirectional restricted coloring with different algorithms
 as well as the ILU preconditioning. 
 
 Throughout this chapter, we did experiments on some matrices from the Florida sparse
@@ -2318,8 +2321,6 @@ function star_diag($G=(V_r\cup V_c)$, $E_R$)
 \section{A new heuristic based on exact coloring of small subgraphs}
 \label{s.exact}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Karp~\cite{karp:1972} proves that the graph coloring problem is an NP-complete problem
-for general graphs.
 As discussed in \cite{Fomin2013}, a prominent approach used by various graph coloring
 algorithms is based on finding independent sets. A subset of the vertices $S\subset V$ is
 called an independent set if there is no edge between any of these vertices, i.e.,
