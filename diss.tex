@@ -817,6 +817,7 @@ This parameter is used to filter the generated fill-ins.
 This parameter is the length of the fill path.
 In the level-based incomplete LU factorization, the generated fill-ins are allowed
 to be considered only up to the level $l$.
+We fix this level parameter to $2$ throughout this thesis.
 
 \begin{figure}
 \begin{lstlisting}[caption=Find additionally required elements,
@@ -1107,24 +1108,22 @@ since the fourth and second columns can not be compressed.
 \begin{figure}
 \begin{lstlisting}[
 label=consistency,
-caption=A function checking the consistency of the coloring.
+caption=A function validates the coloring.
 ,mathescape]
-function consistent_coloring($G=(V_r\cup V_c,E)$)
+function validate_coloring($G=(V_r\cup V_c,E)$)
   modified = false;
   do
-    for $v \in V_c$
-      for $n \in N_2(v,E_i)$
-        if($\Phi(n) == \Phi(v)$)
-          $\Phi(n) = $ a color different from its distance-$2$ neighbors
-          modified = true
+    for $v \in V_c$ and $n \in N_2(v,E_i)$
+      if $\Phi(n) == \Phi(v)$
+        $\Phi(n) = $ a color different from its distance-$2$ neighbors
+        modified = true
   while modified
   return $\Phi$
 \end{lstlisting}
 \end{figure}
-
-Considering this problem, we need to check the consistency of coloring
-at the end of algorithm. Therefore, we define the function in \coderef{consistency} in which
-we check if the color of each vertex $v$ is different than its neighbors.
+Considering this problem, we validate the coloring at the end of algorithm
+by the function given in \coderef{consistency}.
+In this function, we check if the color of each vertex $v$ is different than its neighbors.
 If not, the colors of that vertex change to some color different from its distance-$2$ neighbors.
 This algorithm repeats this process until no new such vertex is found.
 If it is not the case, we color that neighbor with a new color which is not used so far.
@@ -1132,19 +1131,29 @@ Finally, we call this function after each call of our new coloring heuristics.
 
 Table~\ref{mats.pot.add.gr.vs.nreq} presents the number of potentially
 and additionally required elements computed
-by the greedy algorithm and our new heuristic. The size of diagonal blocks
-and the ILU level parameter are fixed to $10$ and $2$, respectively.
-In this matrices, the number of potentially required elements increases
-by our new heuristic coloring.
-It is obvious that the number of additionally required elements increase too.
+by \coderef{code.greedy} and \coderef{code.new.d2.nreq}
+and for different orderings for coloring.
+Table~\ref{mats.pot.add.gr.vs.nreq} (Top), (Middle), and (Bottom) are
+the results for the natural ordering, the LFO ordering, and the SLO ordering, respectively.
+The size of diagonal blocks is fixed to $10$.
+In these tables, the numbers of both potentially required elements and additionally required elements 
+are increased in the new proposed \coderef{code.new.d2.nreq} regardless of the ordering.
+An observation is that although the number of potentially required elemetns decreases 
+in the computation of the matrix $pesa.mtx$ with the ordering LFO,
+the number of additionally required elements increases. However, 
+the results of computation for \textit{ex7.mtx} is better by the previous algorithm 
+for all orderings.
+
+Now, we compare the results by changing the block size.
 \figref{bls_adds_ex33_without_alpha} shows the number of additionally required elements
 computed by this new approach, compared with the greedy algorithm. Clearly,
 the new approach computes more additionally required elements as than the greedy approach.
 This is an impressive result since the number of colors remains almost the same
 as it can be seen in~\figref{bls_cols_ex33_without_alpha}.
 Both computations is carried out on the matrix \textit{ex33}. The block size changes
-from $1$ to $70$. The number of colors in~\figref{bls_cols_ex33_without_alpha} for the greedy coloring
-is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and \textit{IDO}.
+from $1$ to $70$.
+%The number of colors in~\figref{bls_cols_ex33_without_alpha} for the greedy coloring
+%is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and \textit{IDO}.
 
 \begin{table}
 \centering
@@ -1152,22 +1161,53 @@ is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and
 \hline
 Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
 {} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
-\textit{steam1} & $64$ & $786$ & $64$ & $630$ \\\hline
-\textit{steam2} & $240$ & $1880$ & $240$ & $1400$ \\\hline
-\textit{nos3} & $1638$ & $6572$ & $1106$ & $4136$ \\\hline
-\textit{ex33} & $7408$ & $8710$ & $4920$ & $5470$\\\hline
-\textit{crystm01} & $17822$ & $47556$& $10338$ & $28318$\\\hline
+\textit{steam1.mtx} & $64$ & $786$ & $64$ & $630$ \\\hline
+\textit{steam2.mtx} & $240$ & $1880$ & $240$ & $1400$ \\\hline
+\textit{nos3.mtx} & $1638$ & $6756$ & $1106$ & $4296$ \\\hline
+\textit{crystm01.mtx} & $17822$ & $47556$ & $10388$ & $28318$ \\\hline
+\textit{ex7.mtx} & $38554$ & $34954$ & $29174$ & $25054$ \\\hline
+\textit{ex33.mtx} & $7408$ & $8934$ & $4920$ & $5572$ \\\hline
+\textit{coater1.mtx} & $11722$ & $11558$ & $7684$ & $7448$ \\\hline
+\textit{pesa.mtx} & $36972$ & $41154$ & $31010$ & $33094$ \\\hline
+\end{tabular}
+\vspace*{1cm}\newline
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+{} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
+\textit{steam1.mtx} & $64$ & $1048$ & $64$ & $666$ \\\hline
+\textit{steam2.mtx} & $240$ & $2624$ & $240$ & $1248$ \\\hline
+\textit{nos3.mtx} & $1880$ & $6882$ & $1246$ & $4442$ \\\hline
+\textit{crystm01.mtx} & $20326$ & $36634$ & $12256$ & $21194$ \\\hline
+\textit{ex7.mtx} & $37080$ & $33426$ & $28904$ & $24060$ \\\hline
+\textit{ex33.mtx} & $10574$ & $10564$ & $7170$ & $6888$ \\\hline
+\textit{coater1.mtx} & $11312$ & $11512$ & $7410$ & $7536$ \\\hline
+\textit{pesa.mtx} & $42490$ & $41676$ & $31790$ & $31884$ \\\hline
+\end{tabular}
+\vspace*{1cm}\newline
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+{} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
+\textit{steam1.mtx} & $64$ & $1294$ & $64$ & $754$ \\\hline
+\textit{steam2.mtx} & $240$ & $3192$ & $240$ & $1912$ \\\hline
+\textit{nos3.mtx} & $1682$ & $6772$ & $1132$ & $4382$ \\\hline
+\textit{crystm01.mtx} & $24478$ & $45166$ & $14252$ & $26782$ \\\hline
+\textit{ex7.mtx} & $36486$ & $34448$ & $27044$ & $24164$ \\\hline
+\textit{ex33.mtx} & $8024$ & $10754$ & $5186$ & $7138$ \\\hline
+\textit{coater1.mtx} & $10476$ & $11702$ & $7004$ & $7878$ \\\hline
+\textit{pesa.mtx} & $39606$ & $44624$ & $29034$ & $34044$ \\\hline
 \end{tabular}
 \caption{The comparison between the number of potentially and additionally required
-elements computed by the greedy algorithm and the new heuristic.
-The block size is $10$ and the ILU level parameter is $2$.}
+elements computed with \coderef{code.new.d2.nreq} and \coderef{code.greedy}.
+The block size is fixed to $10$. The orderings for coloring are (Top) the natural ordering,
+(Middle) LFO, and (Bottom) SLO.}
 \label{mats.pot.add.gr.vs.nreq}
 \end{table}
 
-
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth]{bls_adds_ex33_without_alpha}
+\includegraphics[width=0.75\linewidth]{ex33_alg31_alg32_bls_nat_pot}
 \caption{The number of colors in the new heuristic coloring compared with the greedy algorithm.
 The computation is carried out on the matrix \textit{ex33}. }
 \label{bls_adds_ex33_without_alpha}
@@ -1175,11 +1215,53 @@ The computation is carried out on the matrix \textit{ex33}. }
 
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth]{bls_cols_ex33_without_alpha}
+\includegraphics[width=0.6\linewidth]{ex33_alg31_alg32_bls_nat_add}
 \caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
 The computation is carried out on the matrix \textit{ex33}. }
 \label{bls_cols_ex33_without_alpha}
 \end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.6\linewidth]{ex33_alg31_alg32_bls_nat_cols}
+\caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
+The computation is carried out on the matrix \textit{ex33}. }
+\label{bls_cols_ex33_without_alpha}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_lfo_pot}
+\caption{The number of colors in the new heuristic coloring compared with the greedy algorithm.
+The computation is carried out on the matrix \textit{ex33}. }
+\label{bls_adds_ex33_without_alpha}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_lfo_add}
+\caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
+The computation is carried out on the matrix \textit{ex33}. }
+\label{bls_cols_ex33_without_alpha}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_slo_add}
+\caption{The number of colors in the new heuristic coloring compared with the greedy algorithm.
+The computation is carried out on the matrix \textit{ex33}. }
+\label{bls_adds_ex33_without_alpha}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_slo_cols}
+\caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
+The computation is carried out on the matrix \textit{ex33}. }
+\label{bls_cols_ex33_without_alpha}
+\end{figure}
+
 So far, we color a vertex with the maximum determined nonrequired elements.
 However, it can happen
 that we have more than one vertex with the maximum nonrequired elements in each step.
