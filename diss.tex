@@ -947,27 +947,28 @@ together with their information.
 \centering
 \begin{tabular}{|c|c|c|c|}
 \hline
-Name & Size & Nonzeros & Structure\\\hline
-\textit{steam1} & $240\times 240$ & $3762$ & unsymmetric \\\hline
-\textit{steam2} & $600\times 600$ & $13760$ & unsymmetric \\\hline
-\textit{685\_bus} & $685\times 685$ & $1967$ & symmetric \\\hline
-\textit{nos3} & $960\times 960$ & $8402$ & symmetric \\\hline
-\textit{ex7} & $1633\times 1633$ & $54543$ & unsymmetric \\\hline
-\textit{ex33} & $1733\times 1733$ & $11961$ & symmetric\\\hline
-\textit{orani678} & $2529\times 2529$ & $90158$ & unsymmetric \\\hline
-\textit{cavity16} & $4562\times 4562$ & $138187$ & unsymmetric \\\hline
-\textit{crystm01} &$4875\times 4875$ & $55107$& symmetric\\\hline
-\textit{rajat01} & $6833\times 6833$ & $43250$ & unsymmetric\\\hline
-\textit{gyro\_m} & $17361\times 17361$ & $178896$ & symmetric\\\hline
-\textit{ford2} & $100196\times 100196$ & $544688$ & symmetric \\\hline
-\textit{cage3} & $5\times 5$ & $19$ & unsymmetric\\\hline
-\textit{cage4} & $9\times 9$ & $49$ & unsymmetric\\\hline
-\textit{cage5} & $37\times 37$ & $233$ & unsymmetric\\\hline
-\textit{cage7} & $340\times 340$  & $3084$ & unsymmetric\\\hline
-\textit{cage8} & $1015\times 1015$  & $11003$ & unsymmetric\\\hline
-\textit{cage9} & $3534\times 3534$  & $41594$ & unsymmetric\\\hline
-\textit{cage10} & $11379\times 11379$ & $150645$& unsymmetric\\\hline
-\textit{cage12} & $130228\times 130228$ &  $2032536$ & unsymmetric\\\hline
+Matrix & Size & Nonzeros & Symmetric\\\hline
+\textit{steam1.mtx} & $240\times 240$ & $2248$ & false\\\hline
+\textit{steam2.mtx} & $600\times 600$ & $5660$ & false\\\hline
+\textit{685\_bus.mtx} & $685\times 685$ & $3249$ & true\\\hline
+\textit{nos3.mtx} & $960\times 960$ & $15844$ & true\\\hline
+\textit{ex7.mtx} & $1633\times 1633$ & $46626$ & false\\\hline
+\textit{ex33.mtx} & $1733\times 1733$ & $22189$ & true\\\hline
+\textit{orani678.mtx} & $2529\times 2529$ & $90158$ & false\\\hline
+\textit{cavity16.mtx} & $4562\times 4562$ & $137887$ & false\\\hline
+\textit{crystm01.mtx} & $4875\times 4875$ & $105339$ & true\\\hline
+\textit{rajat01.mtx} & $6833\times 6833$ & $43250$ & false\\\hline
+\textit{gyro\_m.mtx} & $17361\times 17361$ & $340431$ & true\\\hline
+\textit{ford2.mtx} & $100196\times 100196$ & $544688$ & true\\\hline
+\textit{cage3.mtx} & $5\times 5$ & $19$ & false\\\hline
+\textit{cage4.mtx} & $9\times 9$ & $49$ & false\\\hline
+\textit{cage5.mtx} & $37\times 37$ & $233$ & false\\\hline
+\textit{cage6.mtx} & $93\times 93$ & $785$ & false\\\hline
+\textit{cage7.mtx} & $340\times 340$ & $3084$ & false\\\hline
+\textit{cage8.mtx} & $1015\times 1015$ & $11003$ & false\\\hline
+\textit{cage9.mtx} & $3534\times 3534$ & $41594$ & false\\\hline
+\textit{cage10.mtx} & $11397\times 11397$ & $150645$ & false\\\hline
+\textit{cage12.mtx} & $130228\times 130228$ & $2032536$ & false\\\hline
 \end{tabular}
 \caption{The experiments are done these matrices
 from the Florida sparse matrix collection throughout this thesis.}
@@ -1150,7 +1151,7 @@ is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
-{} & Greedy & New & Greedy & New\\\hline
+{} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
 \textit{steam1} & $64$ & $786$ & $64$ & $630$ \\\hline
 \textit{steam2} & $240$ & $1880$ & $240$ & $1400$ \\\hline
 \textit{nos3} & $1638$ & $6572$ & $1106$ & $4136$ \\\hline
