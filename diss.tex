@@ -1207,43 +1207,18 @@ The block size is fixed to $10$. The orderings for coloring are (Top) the natura
 
 \begin{figure}
 \centering
-\includegraphics[width=0.75\linewidth]{ex33_alg31_alg32_bls_nat_pot}
-\caption{The number of colors in the new heuristic coloring compared with the greedy algorithm.
-The computation is carried out on the matrix \textit{ex33}. }
-\label{bls_adds_ex33_without_alpha}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.6\linewidth]{ex33_alg31_alg32_bls_nat_add}
+\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_nat_add}
 \caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
 The computation is carried out on the matrix \textit{ex33}. }
-\label{bls_cols_ex33_without_alpha}
+\label{ex33_alg31_alg32_bls_nat_add}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.6\linewidth]{ex33_alg31_alg32_bls_nat_cols}
+\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_nat_cols}
 \caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
 The computation is carried out on the matrix \textit{ex33}. }
-\label{bls_cols_ex33_without_alpha}
-\end{figure}
-
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_lfo_pot}
-\caption{The number of colors in the new heuristic coloring compared with the greedy algorithm.
-The computation is carried out on the matrix \textit{ex33}. }
-\label{bls_adds_ex33_without_alpha}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_lfo_add}
-\caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
-The computation is carried out on the matrix \textit{ex33}. }
-\label{bls_cols_ex33_without_alpha}
+\label{ex33_alg31_alg32_bls_nat_cols}
 \end{figure}
 
 \begin{figure}
@@ -1251,7 +1226,7 @@ The computation is carried out on the matrix \textit{ex33}. }
 \includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_slo_add}
 \caption{The number of colors in the new heuristic coloring compared with the greedy algorithm.
 The computation is carried out on the matrix \textit{ex33}. }
-\label{bls_adds_ex33_without_alpha}
+\label{ex33_alg31_alg32_bls_slo_add}
 \end{figure}
 
 \begin{figure}
@@ -1259,7 +1234,7 @@ The computation is carried out on the matrix \textit{ex33}. }
 \includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_slo_cols}
 \caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
 The computation is carried out on the matrix \textit{ex33}. }
-\label{bls_cols_ex33_without_alpha}
+\label{ex33_alg31_alg32_bls_slo_cols}
 \end{figure}
 
 So far, we color a vertex with the maximum determined nonrequired elements.
@@ -1282,23 +1257,19 @@ the maximum determined nonrequired elements.
 we select only an arbitrary element in the previous version.,
 label=code.new.impr1,mathescape]
 function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
-  for $v\in V_c$
-    $\Phi(v)=-1$
-    $forbiddenColors[v] = 0$
-
+  $\Phi\leftarrow [0\ldots 0]$
+  $forbiddenColors\leftarrow [0\ldots 0]$
   for $v\in V_c$ with $\exists n\in N_2(v,E_i): (v,n)\in E_i$ and $\Phi(v)=0$
-    for $n\in N_2(v,E_i)$
-      if $\Phi(n) \neq 0$
-        $forbiddenColors[\Phi(n)] = v$
+    for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
+      $forbiddenColors[\Phi(n)] = v$
 
-    $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
+    $\Phi(v) = \min \{ a>0:forbiddenColor[a]\neq v\}$
     $I_v=\{u\in V_c: u\notin N_2(v,E_i)\}$
     $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
-    $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
-    $M_2 = \{ (i,req(i)): i\in maxs \}$
-    $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
+    $maxs = \argmax M_1$
+    $M_2 = \{ (i,req(i)): i\in maxs\}$
+    $mins =\argmin M_2$
     $\Phi(mins[0]) = \Phi(v)$
-  consistent_coloring(G)
   return $\Phi$
 \end{lstlisting}
 \end{figure}
@@ -1364,25 +1335,20 @@ caption=New coloring heuristic with a controller to balance
 the number of colors and the number of additionally required elements.,
 label=code.new.impr2,mathescape]
 function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
-  for $v\in V_c$
-    $\Phi(v)=-1$
-    $forbiddenColors[v] = 0$
-
+  $\Phi\leftarrow [0\ldots 0]$
+  $forbiddenColors\leftarrow [0\ldots 0]$
   for $v\in V_c$ with $\exists n\in N_2(v,E_i): (v,n)\in E_i$ and $\Phi(v)=0$
-    for $n\in N_2(v,E_i)$
-      if $\Phi(n) \neq 0$
-        $forbiddenColors[\Phi(n)] = v$
+    for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
+      $forbiddenColors[\Phi(n)] = v$
 
     $\Phi(v) = min \{ a>0:forbiddenColor[a]\neq v\}$
     $I_v=\{u\in V_c: u\notin N_2(v,E_i)\}$
     $M_1 = \{ (i,Nreq(i,v)): i\in I_v\}$
-    $maxs = \{ a\in keys(M_1): M_1[a] = max(values(M_1))\}$
-    $M_2 = \{ (i,req(i)): i\in maxs \}$
-    $mins =\{ a\in keys(M_2): M_2[a] = min(values(M_2))\}$
-    $\Phi(mins[0]) = \Phi(v)$
+    $maxs = \argmax M_1$
+    $M_2 = \{ (i,req(i)): i\in maxs\}$
+    $mins =\argmin M_2$
     for $i\in\{0,1,...,\alpha\}$
         $\Phi(mins[i]) = \Phi(v)$
-  consistent_coloring(G)
   return $\Phi$
 \end{lstlisting}
 \end{figure}
@@ -3903,7 +3869,57 @@ $V$. The saturation degree of the vertex $v$ is the number of different colored 
 order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices $v_1,v_2,...,v_i$ for all $i$.
 \end{itemize}
 The computation of this ordering can have a higher complexity than the complexity of the greedy coloring ($\mathcal{O}(n+m)$) or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity. These various orderings should be considered in new heuristic coloring which we propose. to improve the results of coloring.
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Comparing the computation of Algorithm 3.1 and Algorithm 3.2}
+\label{app.compare.alg31.alg32}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Here, we illustrates the figures for the comparsion of Algortihm 3.1 and Algorithm 3.2.
+Each figure contains three computations of the potentially required elements in the top figure,
+the additionally required elements in the middle figure, and the number of colors in the bottom figure.
+\figref{ex33_alg31_alg32_bls_nat}, \figref{ex33_alg31_alg32_bls_lfo},
+and \figref{ex33_alg31_alg32_bls_slo} are for the computation for the natural ordering,
+the LFO ordering, and the SLO ordering, respectively.
+Also, \figref{crystm01_alg31_alg32_bls_nat} shows this comparison for the matrix \textit{crystm01}
+with the natural ordering.
+\begin{figure}
+\centering{
+\includegraphics[width=0.75\linewidth]{ex33_alg31_alg32_bls_nat_pot}
+\includegraphics[width=0.75\linewidth]{ex33_alg31_alg32_bls_nat_add}
+\includegraphics[width=0.75\linewidth]{ex33_alg31_alg32_bls_nat_cols}
+}
+\caption{The computation carried  out the matrix \textit{ex33} and for the natural ordering.}
+\label{ex33_alg31_alg32_bls_nat}
+\end{figure}
 
+\begin{figure}
+\centering
+\includegraphics[width=0.75\linewidth]{ex33_alg31_alg32_bls_lfo_pot}
+\includegraphics[width=0.75\linewidth]{ex33_alg31_alg32_bls_lfo_add}
+\includegraphics[width=0.75\linewidth]{ex33_alg31_alg32_bls_lfo_cols}
+\caption{The computation carried  out the matrix \textit{ex33} and for the natural ordering.}
+\label{ex33_alg31_alg32_bls_lfo}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\linewidth]{ex33_alg31_alg32_bls_slo_pot}
+\includegraphics[width=0.75\linewidth]{ex33_alg31_alg32_bls_slo_add}
+\includegraphics[width=0.75\linewidth]{ex33_alg31_alg32_bls_slo_cols}
+\caption{The computation carried  out the matrix \textit{ex33} and for the natural ordering.}
+\label{ex33_alg31_alg32_bls_slo}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\linewidth]{crystm01_alg31_alg32_bls_nat_pot}
+\includegraphics[width=0.75\linewidth]{crystm01_alg31_alg32_bls_nat_add}
+\includegraphics[width=0.75\linewidth]{crystm01_alg31_alg32_bls_nat_cols}
+\caption{The computation carried  out the matrix \textit{crystm01} and for the natural ordering.}
+\label{crystm01_alg31_alg32_bls_nat}
+\end{figure}
+
+\clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The source code of the nested dissection ordering in \emph{EXPLAIN}}
 \label{app.source}
