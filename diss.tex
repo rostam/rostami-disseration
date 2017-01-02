@@ -1147,17 +1147,6 @@ the number of additionally required elements increases. However,
 the results of computation for \textit{ex7.mtx} is better by the previous algorithm 
 for all orderings.
 
-Now, we compare the results by changing the block size.
-\figref{bls_adds_ex33_without_alpha} shows the number of additionally required elements
-computed by this new approach, compared with the greedy algorithm. Clearly,
-the new approach computes more additionally required elements as than the greedy approach.
-This is an impressive result since the number of colors remains almost the same
-as it can be seen in~\figref{bls_cols_ex33_without_alpha}.
-Both computations is carried out on the matrix \textit{ex33}. The block size changes
-from $1$ to $70$.
-%The number of colors in~\figref{bls_cols_ex33_without_alpha} for the greedy coloring
-%is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and \textit{IDO}.
-
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|c|c|}
@@ -1208,26 +1197,34 @@ The block size is fixed to $10$. The orderings for coloring are (Top) the natura
 \label{mats.pot.add.gr.vs.nreq}
 \end{table}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_nat_add}
-\caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
-The computation is carried out on the matrix \textit{ex33}. }
-\label{ex33_alg31_alg32_bls_nat_add}
-\end{figure}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_nat_cols}
-\caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
-The computation is carried out on the matrix \textit{ex33}. }
-\label{ex33_alg31_alg32_bls_nat_cols}
-\end{figure}
+Now, we compare the results by changing the block size varying from $1$ to $70$.
+We comptue \coderef{code.greedy} and \coderef{code.new.d2.nreq} for the matrices \textit{ex33}
+and \textit{crystm01} with the three different orderings: the natural ordering, the LFO ordering,
+and the SLO ordering. Additionally, we compute the number of colors in each case too.
+All figures are illustrated in \appref{app.compare.alg31.alg32}.
+An observation is that the behavior of the figures of the potentially required elements and
+the additionally required elements is the same. Hence, we consider only the additionally
+required elements now.
+The number of additionally required elements comptued by \coderef{code.new.d2.nreq} with the ordering SLO
+is overall more than \coderef{code.greedy} (see \figref{ex33_alg31_alg32_bls_slo_add}).
+The number of colos remains almost the same in the same order for the both colorings 
+(see \figref{ex33_alg31_alg32_bls_slo_cols}). 
+In the other orderings, this happens only in the middle block sizes, like from 25 to 60.
+For example, \figref{ex33_alg31_alg32_bls_nat_add} shows the number of additionally required elements
+compared when the natural ordering is considered.
+However, the number of colors in this ordering is even more similar in both algorithms
+(see \figref{ex33_alg31_alg32_bls_nat_cols}).
+%The number of colors in~\figref{bls_cols_ex33_without_alpha} for the greedy coloring
+%is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and \textit{IDO}.
 
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_slo_add}
-\caption{The number of colors in the new heuristic coloring compared with the greedy algorithm.
+\caption{
+The number of additionally required elements computed by
+\coderef{code.new.d2.nreq} with the SLO ordering
+compared with \coderef{code.greedy}.
 The computation is carried out on the matrix \textit{ex33}. }
 \label{ex33_alg31_alg32_bls_slo_add}
 \end{figure}
@@ -1235,23 +1232,30 @@ The computation is carried out on the matrix \textit{ex33}. }
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_slo_cols}
-\caption{The number of additionally required elements in the new heuristic coloring compared with the greedy algorithm.
-The computation is carried out on the matrix \textit{ex33}. }
+\caption{The number of computed by \coderef{code.new.d2.nreq} with the SLO ordering
+compared with \coderef{code.greedy}. }
 \label{ex33_alg31_alg32_bls_slo_cols}
 \end{figure}
 
-So far, we color a vertex with the maximum determined nonrequired elements.
-However, it can happen
-that we have more than one vertex with the maximum nonrequired elements in each step.
-Suppose we are looking at the vertex $v$ and two vertices $a$ and $b$ have maximum values of
-$\nreq_v (a) = \nreq_v (b)$.
-It is not always the best decision
-to color both vertices $a$ and $b$ in one step with the same color
-because the value of $\nreq_a(b)$ can be slight and gives us less number
-of potentially required elements (it can decrease the number of colors too).
-So, a careful selection between computed set of vertices with the maximum number of
-nonrequired elements increases the potentially required elements without
-any significant changes in the structure of the algorithm.
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_nat_add}
+\caption{The number of additionally required elements computed by 
+\coderef{code.new.d2.nreq} with the natural ordering
+compared with \coderef{code.greedy}.
+The computation is carried out on the matrix \textit{ex33}. }
+\label{ex33_alg31_alg32_bls_nat_add}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_nat_cols}
+\caption{The number of computed by \coderef{code.new.d2.nreq} with the natural ordering
+compared with \coderef{code.greedy}. 
+The computation is carried out on the matrix \textit{ex33}. }
+\label{ex33_alg31_alg32_bls_nat_cols}
+\end{figure}
+
 \begin{figure}
 \begin{lstlisting}[
 caption=A modification of the previous algorithm in which
@@ -1275,61 +1279,42 @@ function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \end{lstlisting}
 \end{figure}
 
-In \secref{s.max.add.req}, we will select those nonrequired elements which have more possibility
-to be among the additionally required elements using the fill path theorem.
-However, a first idea would be to select a vertex with the minimum number of required elements
-among the computed set of vertices with the maximum number of nonrequired elements.
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg32_alg34_bls_lfo_add}
+\caption{The number of additionally
+required elements are increased comparing
+\coderef{code.new.d2.nreq} and \coderef{code.new.impr1} when the ordering for the coloring
+is the LFO ordering}
+\label{ex33_alg32_alg34_bls_lfo_add}
+\end{figure}
+
+Now, we modify \coderef{code.new.d2.nreq} further to select a vertex with the minimum number of 
+required elements among the computed set of vertices with the maximum number of determined nonrequired elements.
 This idea facilitates gathering of more nonrequired elements in the same column since
-it remains more free places for the other elements.
+more free places for the other elements remains.
+Let the function $\req: V_c\rightarrow N$ compute the number of required edges adjacent to each vertex.
+A new algorithm is proposed in \coderef{code.new.impr1} apply this idea. 
+The only new step of the algorithm is to compute the operator $\argmin$ for the 
+function $\req$ which has the complexity as the $\argmax$ in the worst case.
+It means the time complexity is still as before.
+\figref{ex33_alg32_alg34_bls_lfo_add} shows how the number of additionally
+required elements are increased comparing
+\coderef{code.new.d2.nreq} and \coderef{code.new.impr1} when the ordering for the coloring
+is the LFO ordering.
 
-Let the function $\req(i)$ computes the number of required elements in the column $i$ or the
-number of required edges which are neighbors of the vertex $i$,
-we modify the previous algorithm as in \coderef{code.new.impr1} to
-apply this idea. The set $M_1$ and $M_2\subset M_1$ contain the set of columns with the maximum
-number of nonrequired elements and its subset with the minimal value of required elements.
-The time complexity is still the same as \coderef{code.new.d2.nreq}
-since only an additional part of sorting is computed.
-\figref{bls_add_ex33_compare_max} shows how the number of additionally
-required elements are increased comparing the new modified version with the previous strategy.
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{bls_add_ex33_compare_max}
-\caption{the number of additionally required elements are compared between the new heuristics
-and the modified version.}
-\label{bls_add_ex33_compare_max}
-\end{figure}
-
-Our algorithm is to color the columns such that the number of colors
-remain almost the same while the number of additionally required elements are increased.
-What if one can have some control over colors too.
-A good heuristic for coloring is to color independent sets in each step.
-For example, \figref{bls_cols_indset_ex33_} shows a comparison between a greedy algorithm and
-an algorithm which colors the independent set first. As you can see the independent set algorithm
-produces less number of colors. However, it does not perform well in the case of additionally
-required elements as in \figref{bls_adds_indset_ex33_}.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{bls_cols_indset_ex33_}
-\caption{The comparison of an algorithm which color the independent sets first and
-the greedy algorithm with respect to the number of colors.}
-\label{bls_cols_indset_ex33_}
-\end{figure}
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{bls_adds_indset_ex33_}
-\caption{The comparison of an algorithm which color the independent sets first and
-the greedy algorithm with respect to the number of additionally required elements.}
-\label{bls_adds_indset_ex33_}
-\end{figure}
-
-It is a logical result since we saw that selecting two columns with the maximum number of nonrequired
-elements does not give us always bigger number of additionally required elements.
-So, we propose to choose the only column with the maximum number of nonrequired elements and
-choose $\alpha$ other columns with the minimum number of nonrequired elements. In this case,
-we can decrease the number of colors by increasing the value $\alpha$ while the number of
-additionally required elements drops only a little bit.
-The new star bicoloring algorithm is as \coderef{code.new.impr2}.
+\subsubsection{Balancing the number of colors}
+Here, we modify \coderef{code.new.d2.nreq} and \coderef{code.new.impr1} again 
+to have a control over the balance between number of 
+colors and the number of additionally required elements.
+It means we define a balance variable $\alpha \in N$ such that increasing this variable would decrease
+the number of colors and decreasing this variable increase the number of additionally required elements.
+The idea is to add more vertices with the minimum number of required elements
+(and the maximum number of determined nonrequired elements)
+comparing to the previous implementation of\coderef{code.new.impr1}.
+\coderef{code.new.impr2} presents the new algorithm in which 
+a loop from $0$ to the variable $\alpha$ is added.
+%If the variable $\alpha=0$, we would have the same algorithm as \coderef{code.new.impr1}.
 \begin{figure}
 \begin{lstlisting}[
 caption=New coloring heuristic with a controller to balance
@@ -1350,6 +1335,58 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
   return $\Phi$
 \end{lstlisting}
 \end{figure}
+
+\figref{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
+shows the comparison between the number of colors computed by 
+the four presented algorithms: \coderef{code.greedy},  \coderef{code.new.d2.nreq},
+\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
+All these algorithms are computed with the LFO ordering.
+We selected this ordering for this computation 
+since this ordering gives the best results.
+The variable $\alpha$ for \coderef{code.new.impr2} is equal to $10$.
+The block size varies also from $1$ to $80$.
+It is clear from this figure that \coderef{code.new.impr2} generates the 
+smallest number of colors particularly in the middle block sizes.
+However, it does not perform well in the case of additionally
+required elements as illustrated in \figref{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}.
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
+\caption{
+The comparison of the number of colors in \coderef{code.greedy},  \coderef{code.new.d2.nreq},
+\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.}
+\label{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
+\caption{
+The comparison of the number of additionally required elements in \coderef{code.greedy},  \coderef{code.new.d2.nreq},
+\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.}
+\label{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
+\end{figure}
+
+So far, we color a vertex with the maximum determined nonrequired elements.
+However, it can happen
+that we have more than one vertex with the maximum nonrequired elements in each step.
+Suppose we are looking at the vertex $v$ and two vertices $a$ and $b$ have maximum values of
+$\nreq_v (a) = \nreq_v (b)$.
+It is not always the best decision
+to color both vertices $a$ and $b$ in one step with the same color
+because the value of $\nreq_a(b)$ can be slight and gives us less number
+of potentially required elements (it can decrease the number of colors too).
+So, a careful selection between computed set of vertices with the maximum number of
+nonrequired elements increases the potentially required elements without
+any significant changes in the structure of the algorithm.
+
+It is a logical result since we saw that selecting two columns with the maximum number of nonrequired
+elements does not give us always bigger number of additionally required elements.
+So, we propose to choose the only column with the maximum number of nonrequired elements and
+choose $\alpha$ other columns with the minimum number of nonrequired elements. In this case,
+we can decrease the number of colors by increasing the value $\alpha$ while the number of
+additionally required elements drops only a little bit.
+The new star bicoloring algorithm is as \coderef{code.new.impr2}.
 
 So if we choose $\alpha=0$, we would have the same algorithm as before.
 As in~\figref{new.col.add.alpha.zero}, the number of additionally required elements
@@ -3920,7 +3957,7 @@ with the natural ordering.
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The source code of the nested dissection ordering in \emph{EXPLAIN}}
-\label{app.source}
+\label{app.source}-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The nested dissection module has a lot of details compared to other modules of EXPLAIN.
 Here is a complete source code of the nested dissection module.
