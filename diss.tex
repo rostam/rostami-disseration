@@ -1346,9 +1346,66 @@ since this ordering gives the best results.
 The variable $\alpha$ for \coderef{code.new.impr2} is equal to $10$.
 The block size varies also from $1$ to $80$.
 It is clear from this figure that \coderef{code.new.impr2} generates the 
-smallest number of colors particularly in the middle block sizes.
+smallest number of colors particularly in the middle block sizes when $\alpha=10$.
 However, it does not perform well in the case of additionally
 required elements as illustrated in \figref{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}.
+Now
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Matrix & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
+{} & \multicolumn{3}{c|}{$|R_{a}|$} & \multicolumn{3}{c|}{$|\Phi|$}\\\hline
+{}     & $\alpha=0$ & $\alpha=6$ & $\alpha=10$ & $\alpha=0$& $\alpha=6$&$\alpha=10$ \\\hline
+\textit{steam1.mtx} & $566$ & $440$ & $370$ & $10$ & $9$ & $8$ \\\hline
+\textit{steam2.mtx} & $1512$ & $944$ & $1032$ & $13$ & $10$ & $9$ \\\hline
+\textit{nos3.mtx} & $3416$ & $2778$ & $2348$ & $20$ & $18$ & $17$ \\\hline
+\textit{ex7.mtx} & $23958$ & $22656$ & $21180$ & $55$ & $49$ & $46$ \\\hline
+\textit{ex33.mtx} & $5992$ & $5616$ & $5262$ & $19$ & $18$ & $18$ \\\hline
+\textit{crystm01.mtx} & $28348$ & $28466$ & $28516$ & $22$ & $24$ & $24$ \\\hline
+\textit{coater1.mtx} & $7896$ & $7562$ & $7538$ & $30$ & $26$ & $25$ \\\hline
+
+\end{tabular}
+\vspace*{1cm}\newline
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Matrix & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
+{} & \multicolumn{3}{c|}{$|R_{a}|$} & \multicolumn{3}{c|}{$|\Phi|$}\\\hline
+{} & $\alpha=0$ & $\alpha=6$ & $\alpha=10$ & $\alpha=0$& $\alpha=6$&$\alpha=10$ \\\hline
+\textit{steam1.mtx} & $518$ & $456$ & $330$ & $12$ & $10$ & $10$ \\\hline
+\textit{steam2.mtx} & $1280$ & $660$ & $564$ & $17$ & $13$ & $11$ \\\hline
+\textit{nos3.mtx} & $3646$ & $2360$ & $2190$ & $20$ & $19$ & $19$ \\\hline
+\textit{ex7.mtx} & $22532$ & $21444$ & $21576$ & $49$ & $48$ & $47$ \\\hline
+\textit{ex33.mtx} & $5968$ & $5222$ & $4934$ & $16$ & $17$ & $16$ \\\hline
+\textit{crystm01.mtx} & $21168$ & $21918$ & $21210$ & $18$ & $18$ & $18$ \\\hline
+\textit{coater1.mtx} & $7210$ & $7168$ & $6998$ & $23$ & $23$ & $23$ \\\hline
+\end{tabular}
+\vspace*{1cm}\newline
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Matrix & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
+{} & \multicolumn{3}{c|}{$|R_{a}|$} & \multicolumn{3}{c|}{$|\Phi|$}\\\hline
+{} & $\alpha=0$ & $\alpha=6$ & $\alpha=10$ & $\alpha=0$& $\alpha=6$&$\alpha=10$ \\\hline
+\textit{steam1.mtx} & $748$ & $476$ & $390$ & $14$ & $13$ & $13$ \\\hline
+\textit{steam2.mtx} & $1816$ & $1024$ & $980$ & $17$ & $12$ & $11$ \\\hline
+\textit{nos3.mtx} & $3998$ & $2620$ & $1978$ & $20$ & $18$ & $17$ \\\hline
+\textit{ex7.mtx} & $23598$ & $22362$ & $22098$ & $52$ & $50$ & $49$ \\\hline
+\textit{ex33.mtx} & $6174$ & $5752$ & $4902$ & $19$ & $18$ & $17$ \\\hline
+\textit{crystm01.mtx} & $27432$ & $26478$ & $27782$ & $22$ & $22$ & $22$ \\\hline
+\textit{coater1.mtx} & $7668$ & $7624$ & $7570$ & $25$ & $26$ & $24$ \\\hline
+\end{tabular}
+\caption{
+The comparison of the additionally required elements and the number of colors 
+in the computation of \coderef{code.new.impr2} with the different value of $\alpha$.
+The orderings for coloring are (Top) the natural ordering,
+(Middle) LFO, and (Bottom) SLO.}
+\label{different.alpha}
+\end{table}
+
+
+
+
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
@@ -1367,120 +1424,18 @@ The comparison of the number of additionally required elements in \coderef{code.
 \label{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
 \end{figure}
 
-So far, we color a vertex with the maximum determined nonrequired elements.
-However, it can happen
-that we have more than one vertex with the maximum nonrequired elements in each step.
-Suppose we are looking at the vertex $v$ and two vertices $a$ and $b$ have maximum values of
-$\nreq_v (a) = \nreq_v (b)$.
-It is not always the best decision
-to color both vertices $a$ and $b$ in one step with the same color
-because the value of $\nreq_a(b)$ can be slight and gives us less number
-of potentially required elements (it can decrease the number of colors too).
-So, a careful selection between computed set of vertices with the maximum number of
-nonrequired elements increases the potentially required elements without
-any significant changes in the structure of the algorithm.
-
-It is a logical result since we saw that selecting two columns with the maximum number of nonrequired
-elements does not give us always bigger number of additionally required elements.
-So, we propose to choose the only column with the maximum number of nonrequired elements and
-choose $\alpha$ other columns with the minimum number of nonrequired elements. In this case,
-we can decrease the number of colors by increasing the value $\alpha$ while the number of
-additionally required elements drops only a little bit.
-The new star bicoloring algorithm is as \coderef{code.new.impr2}.
-
-So if we choose $\alpha=0$, we would have the same algorithm as before.
-As in~\figref{new.col.add.alpha.zero}, the number of additionally required elements
-increases. The number of colors is almost in the same order as in~\figref{new.col.col.alpha.zero}.
-It can be compared to the computation on the same configuration but with different $\alpha=6$.
-The number of colors increases as in~\figref{new.col.col.alpha.six} while
-the number of additionally required elements would not decrease a lot as in~\figref{new.col.col.alpha.six}.
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{bls_add_alpha_0}
-\caption{The number of additionally required elements computed by the new heuristics compared with the
-greedy algorithm. The computation carried out on the matrix \textit{ex33} and value of $\alpha$ is
-set to $0$.}
-\label{new.col.add.alpha.zero}
-\end{figure}
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{bls_col_alpha_0}
-\caption{The number of colors computed by the new heuristics compared with the
-greedy algorithm. The computation carried out on the matrix \textit{ex33} and value of $\alpha$ is
-set to $0$.}
-\label{new.col.col.alpha.zero}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{bls_add_alpha_6}
-\caption{The number of additionally required elements computed by the new heuristics compared with the
-greedy algorithm. The computation carried out on the matrix \textit{ex33} and value of $\alpha$ is
-set to $6$.}
-\label{new.col.add.alpha.six}
-\end{figure}
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{bls_col_alpha_6}
-\caption{The number of colors computed by the new heuristics compared with the
-greedy algorithm. The computation carried out on the matrix \textit{ex33} and value of $\alpha$ is
-set to $6$.}
-\label{new.col.col.alpha.six}
-\end{figure}
-
-Here, we compute the new heuristic on the other matrix \textit{nos3}
-and the results for $\alpha=10$ are shown in~\figref{new.col.add.alpha.ten.nos3}
-and~\figref{new.col.col.alpha.ten.nos3}
-and for $\alpha=1$ are shown in~\figref{new.col.add.alpha.one.nos3} and
-in~\figref{new.col.col.alpha.one.nos3}.
-The new computations show almost the same results. However,
-the only difference is that all the results change dramatically
-after the size of block $40$. In general, an observation can be
-summarized that the results are better than for the smaller size of blocks
-specially when the matrix is small.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{bls_add_alpha_10_nos3}
-\caption{The number of additionally required elements computed
-by the new heuristics compared with the greedy algorithm.
-The computation carried out on the matrix \textit{nos3}
-and value of $\alpha$ is set to $10$.}
-\label{new.col.add.alpha.ten.nos3}
-\end{figure}
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{bls_col_alpha_10_nos3}
-\caption{The number of additionally required elements computed
-by the new heuristics compared with the
-greedy algorithm. The computation carried out on
-the matrix \textit{nos3} and value of $\alpha$ is
-set to $10$.}
-\label{new.col.col.alpha.ten.nos3}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{bls_add_alpha_1_nos3}
-\caption{The number of additionally required elements computed
-by the new heuristics compared with the
-greedy algorithm. The computation carried out on the matrix
-\textit{nos3} and value of $\alpha$ is
-set to $1$.}
-\label{new.col.add.alpha.one.nos3}
-\end{figure}
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{bls_col_alpha_1_nos3}
-\caption{The number of additionally required elements computed
-by the new heuristics compared with the greedy algorithm.
-The computation carried out on the matrix \textit{nos3}
-and value of $\alpha$ is set to $1$.}
-\label{new.col.col.alpha.one.nos3}
-\end{figure}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
 \subsection{Restricted star bicoloring}
 \label{s.heuristic.starbicoloring}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+As same as the last section, we search for a modified version of star bicoloring
+which increases the number of potentially and additionally required elements without
+a high increase the number of colors. The idea from the new heuristic
+can be applied here. However, it can results in less additionally required
+elements since a determined nonrequired elements from the column compression
+it is not necessary a determined nonrequired elements form the row compression.
+
 The classical approach toward star bicoloring is first introduced in
 \cite{Gebremedhin05whatcolor} as star bicoloring scheme.
 This algorithm is implemented and evaluated in
@@ -1495,13 +1450,6 @@ and total ordering star bicoloring which performs better than
 star bicoloring scheme in some matrices and not much worse in some other
 matrices.
 
-As same as the last section, we search for a modified version of star bicoloring
-which increases the number of potentially and additionally required elements without
-a high increase the number of colors. The idea from the new heuristic
-can be applied here. However, it can results in less additionally required
-elements since a determined nonrequired elements from the column compression
-it is not necessary a determined nonrequired elements form the row compression.
-
 We consider the implementation of star bicoloring in \coderef{orig.star.bicoloring} based on
 the algorithm from Lülfesmann~\cite{Lulfesmann2012Fap}.
 Here, the notation $G[S]$ means the graph induces on the edge set $S$.
@@ -1510,34 +1458,34 @@ Here, the notation $G[S]$ means the graph induces on the edge set $S$.
 caption=A new heuristic for star bicoloring algorithm
 considering the determined nonrequired elements.,
 label=orig.star.bicoloring,mathescape]
-function star_bicolor_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
-  for $v\in V_c$
-    $\Phi(v)=-1$
-    $forbiddenColors[v] = 0$
-
-  $v = -1$
-  $E_R^{'} = E_R$
-  while $E_R^{'}$ is not empty
-    if($\Delta(V_r,G[E_R^{'}]) > \rho \Delta(V_c,G[E_R^{'}])$ then
-      v = $v_r\in V_r$ with maximum degree in $G[E_R^{-1}]$
+function star_bicolor_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$)
+  $\Phi\leftarrow [-1\ldots -1]$
+  $forbiddenColors\leftarrow [0\ldots 0]$
+  $E_i^{'} = E_i$
+  $v = 0$
+  while $E_i^{'}\neq\emptyset$
+    if($\Delta(V_r,G[E_i^{'}]) > \rho \Delta(V_c,G[E_i^{'}])$ then
+      $v$ = $v_r\in V_r$ with maximum degree in $G[E_i^{-1}]$
     else
-      v = $v_c\in V_c$ with maximum degree in $G[E_R^{-1}]$
-    $E_R^{'} = E_R^{'} - {(v,w)\in E_R^{'}:w\in N_1(v,G[E_R^{'}])}$
-    for all $w\in N_1(v,G)$
+      $v$ = $v_c\in V_c$ with maximum degree in $G[E_i^{-1}]$
+    $E_i^{'} = E_i^{'} - {(v,w)\in E_i^{'}:w\in N_1(v,G[E_i^{'}])}$
+    for $w\in N_1(v,G)$
       if $\Phi(w) \leq 0$
-    for all $x\in N_1(w,G)$ with $\Phi(w) > 0$
-      if $(v,w) \in E_R$ or $(w,x) \in E_R$
-       $forbiddenColors[\Phi (x)]=v$
+        for $x\in N_1(w,G)$ with $\Phi(w) > 0$
+          if $(v,w) \in E_i$ or $(w,x) \in E_i$
+            $forbiddenColors[\Phi (x)]=v$
       else
-        for all $x\in N_1(w,G[E_R])$ with $\Phi(w) > 0$
-        for all $y\in N_1(x,G)$ with $\Phi(y) > 0$ and $y\neq w$
+        for $x\in N_1(w,G[E_i])$ with $\Phi(x) > 0$
+        for $y\in N_1(x,G)$ with $\Phi(y) > 0$ and $y\neq w$
           if $\Phi(w) = \Phi(y)$
             $forbiddenColors[\Phi (x)] = v$
-            $\Phi(v) = min(\{j>0: forbiddenColors[j] \neq v\})$
-            for all $v_c\in V_c$ with $\Phi(v_c) > 0$
-              $\Phi (v_c) = \Phi (v_c) + max(\{\Phi (v_r): v_r \in V_r\})$
-            for all $v\in V_r\cup V_c$ with $\Phi(v)\neq -1$
-              $\Phi (v) = 0$
+            
+
+    $\Phi(v) = min(\{j>0: forbiddenColors[j] \neq v\})$
+  for $v_c\in V_c$ with $\Phi(v_c) > 0$
+    $\Phi (v_c) = \Phi (v_c) + max(\{\Phi (v_r): v_r \in V_r\})$
+  for $v\in V_r\cup V_c$ with $\Phi(v)\neq -1$
+    $\Phi (v) = 0$
 
   return $\Phi$
 \end{lstlisting}
@@ -1585,6 +1533,7 @@ with a maximum degree and maximum nonrequired elements instead of
 an arbitrary vertex. After the first step, this processes can be
 repeated or we can process the vertices with
 minimum number of nonrequired elements.
+
 
 \begin{figure}
 \includegraphics[width=\linewidth]{bls_adds_crystm01_old_star_vs_new}
