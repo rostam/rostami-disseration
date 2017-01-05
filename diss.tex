@@ -1424,6 +1424,25 @@ The comparison of the number of additionally required elements in \coderef{code.
 \label{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
 \end{figure}
 
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg35_alpha_0_2_6_10_bls_lfo_cols}
+\caption{
+The comparison of the number of colors in \coderef{code.new.impr2}
+with $\alpha\in{0,2,6,10}$.}
+\label{ex33_alg35_alpha_0_2_6_10_bls_lfo_cols}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg35_alpha_0_2_6_10_bls_lfo_adds}
+\caption{
+The comparison of the number of additionally required elements in \coderef{code.new.impr2}
+with $\alpha\in{0,2,6,10}$.}
+\label{ex33_alg35_alpha_0_2_6_10_bls_lfo_adds}
+\end{figure}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \subsection{Restricted star bicoloring}
@@ -2519,9 +2538,7 @@ compared with the number of colors in the greedy coloring.}
 \section{The computational package: PreCol 1.0}
 \label{s.extend}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-We develop a piece of software to compute the different algorithm that we propose here.
+We develop a piece of software to implement our proposed heuristics.
 Specially, the software is designed employing concepts from the object-oriented programming
 such that it can be extended later with any new coloring heuristic as well as any preconditioning algorithm.
 The developers can implement new extensions without going into details of core implementation.
