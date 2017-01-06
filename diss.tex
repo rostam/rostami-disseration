@@ -230,6 +230,9 @@ In this chapter, we introduce a new software
 containing new heuristic algorithm.
 \chapref{explain} discuss an interactive educational module
 which is designed to teach algorithms from the combinatorial scientific computing in the classroom.
+We summerize our previous publications
+\cite{2013:05,2014:01,2014:02,2014:09,2015:3} in this chapter and discuss also 
+some new features.
 Finally, the conclusion and future work come in \chapref{conc}.
 
 \chapter{Known graph models from scientific computing}
@@ -2704,7 +2707,8 @@ We develop an extensible collection of educational modules (\mbox{EXPLAIN})
 to teach combinatorial scientific computing in classroom.
 There is an increasing need for such educational tools since the connection
 between the problems from scientific computing and the corresponding combinatorial
-problem is tricky for the students.
+problem is tricky for the students. This chapter summerizes our previous publications
+\cite{2013:05,2014:01,2014:02,2014:09,2015:3} and also provides some new features.
 
 Since graphs are ubiquitous in computer science, mathematics, and a variety of other scientific
 disciplines there are plenty of software tools for teaching graph-theoretical topics and graph
@@ -3298,123 +3302,33 @@ The curve of the orange color is also the size of vertex separator.}
 \end{figure}
 
 \subsection{Parallel matrix-vector product}
+In our paper~\cite{2015:3}, we present a module of the parallel matrix-vector
+product to illustrate the connection between the following scientific computing and combinatoral problems.
+\begin{problem}[Scientific Computing Problem]
+\label{p.par.mat.vec} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with a known sparsity
+Given a large sparse matrix $A$ with a symmetirc nonzero pattern and a dense
+vector $X$. Suppose we want to compute the sparse matrix-vector product
+$y \leftarrow Ax$ on a computer with distributed memory. Find a non-redundant
+distribution of the nonzer elements of $A$ in a row-wise fashion and a
+consistent distribution of $x$ and $y$ such that the communication between
+processes is minimized while the number of arithmetic operations is balanced
+between the processors.
+\end{problem}
+\begin{problem}[Combinatorial Problem]
+\label{p.par.mat.vec.graph} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with a known sparsity
+Given an undirected connected graph, find a partition of the vertices into
+nonempty disjoint subsets such that the number of edges with incident vertices
+in different partitions is minimzed while the number of vertices of the subsets
+is balanced.
+\end{problem}
 
-In \cite{2015:3}, we extended EXPLAIN with a new module for
-the parallel sparse matrix-vector multiplication.
-So if we show the problem as follows,
-$$
-\vek{y} = \mat{A}\cdot \vek{x}
-$$
-or by elements as follows,
-\begin{equation}
-\label{e.yax}
-\vek{y} \leftarrow \mat{A} \vek{x}
-\end{equation}
-where the $N$-dimensional vector $\vek{y}$ is the result of applying \mat{A} to some
-given $N$-dimensional vector $\vek{x}$. Then, the $i$th entry of~$\vek{y}$ is given by
-\begin{equation}
-\label{e.mvp}
-y_i = \sum_{j \text{ with } a_{ij} \neq 0} a_{ij} \cdot x_j ,
-\quad
-i = 1, 2, \dots, N,
-\end{equation}
-The question here is if data representing \mat{A}, \vek{x} and
-\vek{y} are distributed to multiple processes, to what extent does this data distribution
-have an effect on the computation $\vek{y} \leftarrow \mat{A} \vek{x}$? What are the
-advantages and disadvantages of a given data distribution? What are the criteria for
-evaluating the quality of a data distribution? How should data be distributed to the
-processes ideally?
-
-
-To discuss such questions with undergraduates who are new to parallel computing we
-suggest to consider the following simple data distribution. The nonzero elements
-of~\mat{A} are distributed to processes by rows. More precisely, all nonzeros of a row
-are distributed to the same process. The vectors \vek{x} and \vek{y} are distributed
-consistently. That is, if a process stores the nonzeros of row $i$ of~\mat{A} then it
-also stores the vector entries~$x_i$ and~$y_i$. Given a fixed number of processes $p$, a
-data distribution may be formally expressed by a mapping called \emph{partition}
-$$
-P: I \rightarrow \{1, 2, \dots, p\}
-$$
-that decomposes the set of indices $I := \{1, 2, \dots, N\}$ into~$p$ subsets $I_1$,
-$I_2$, \dots, $I_p$ such that
-$$
-I = I_1 \cup I_2 \cup \dots \cup I_p
-$$
-with $I_i \cap I_j = \emptyset$ for~$i \neq j$. That is, if $P(i)=k$ then the nonzeros of
-row~$i$ as well as~$x_i$ and~$y_i$ are stored on process $k$.
-
-Since the nonzero $a_{ij}$ is stored on process~$P(i)$ and the vector entry~$x_j$ is
-stored on process~$P(j)$, one can sort the terms of \eqref{e.mvp} according to
-those terms where both operands of the product $a_{ij} \cdot x_j$ are stored on the same
-process and those where these operands are stored on different processes:
-\begin{equation}
-\label{e.pmvp}
-y_i =
-\sum_{ \substack{j \text{ with } a_{ij} \neq 0\\ P(i)=P(j)}} a_{ij} \cdot x_j
-+ \sum_{ \substack{j \text{ with } a_{ij} \neq 0\\ P(i)\neq P(j)}} a_{ij} \cdot x_j ,
-\quad i = 1, 2, \dots, N.
-\end{equation}
-For the sake of simplicity, we assume that the product $a_{ij} \cdot x_j$ is computed by
-the process~$P(i)$ that stores the result $y_i$ to which this product contributes.
-By~\eqref{e.pmvp}, the data distribution $P$ has an effect on the amount of data that
-needs to be communicated between processes. It also determines which processes
-communicate with each other. Since, on today's computing systems, communication needs
-significantly more time than computation, it is important to find a data distribution
-using a goal-oriented approach. A data distribution is desirable that balances the
-computational load evenly among the processes while, at the same time, minimizes the
-communication among the processes.
-
-The problem of finding a data distribution is also interesting from another perspective
-of undergraduate teaching. It offers the opportunity to demonstrate that a theoretical
-model can serve as a successful abstraction of a practical problem. More precisely, a
-formal approach using concepts from graph theory is capable of tackling the data
-distribution problem systematically.
-
-To this end, we now assume that the nonzero pattern of the asymmetric matrix \mat{A} is
-symmetric. Then, the matrix can be represented by an undirected graph $G=(V,E)$. The set
-of nodes $V = \{ 1, 2, \dots, N\}$ is used to associate a node to every row (or
-corresponding column) of \mat{A}. The set of edges
-\begin{displaymath}
-E = \{ (i,j) \mid i, j \in V \text{ and } a_{ij} \neq 0 \text{ for } i > j \}
-\end{displaymath}
-describes the nonzero entries. Here, the condition $i>j$ indicates that the edge~$(i,j)$
-is identical to the edge~$(j,i)$ and that there is no self-loop in $G$. The data
-distribution to $p$ processes is then represented by the partition
-$$
-P: V \rightarrow \{1, 2, \dots, p\}
-$$
+Let $P: V \rightarrow \{1, 2, \dots, p\}$ is the vertex partition to $p$ processes which
 that decomposes the set of nodes $V$ of the graph into~$p$ subsets $V_1$, $V_2$, \dots,
 $V_p$ such that
 $$
 V = V_1 \cup V_2 \cup \dots \cup V_p
 $$
 with $V_i \cap V_j = \emptyset$ for~$i \neq j$.
-
-
-Then, \eqref{e.mvp} is reformulated in terms of graph terminology by
-\begin{displaymath}
-y_i = a_{ii} \cdot x_i +
-\sum_{ \substack{(i,j)\in E \\ P(i)=P(j)}} a_{ij} \cdot x_j
-+ \sum_{ \substack{(i,j)\in E \\ P(i)\neq P(j)}} a_{ij} \cdot x_j .
-\end{displaymath}
-Here, the first two terms of the right-hand side can be computed on process~$P(i)$
-without communication to any other process. The condition~$P(i)\neq P(j)$ in the last
-term shows that the computation of $a_{ij} \cdot x_j$ requires communication between
-process~$P(i)$ which stores~$a_{ij}$ and process~$P(j)$ which stores $x_j$. Minimizing
-interprocess communication then roughly corresponds to minimizing the number of edges
-connecting nodes in different subsets~$V_i$ of the partition $P$. This number of edges is
-called the \emph{cut size} and is formally defined by
-\begin{equation}\label{e.cut}
-\operatorname{cutsize}(P) = \bigl| \{ (i,j) \in E \mid P(i)\neq P(j) \} \bigr|.
-\end{equation}
-In this graph model, the cut size does not exactly correspond to the number of words
-communicated between all processes in the computation of $\vek{y} \leftarrow \mat{A}
-\vek{x}$ for a given partition $P$. However, it gives a reasonable approximation to this
-amount of communicated data called the \emph{communication volume}; see the corresponding
-discussion in~\cite{hk:mod}. The communication volume is exactly described by the cut
-size if the underlying model is changed from an undirected graph to a
-hypergraph~\cite{ca:hyp,cua:hyp,ua:rev}.
 
 Assuming that the number of nonzeros is roughly the same for each row of~\mat{A}, the
 computation is evenly balanced among the $p$ processes if the partition $P$ is
@@ -3425,6 +3339,25 @@ $\varepsilon$-balanced defined as
 for some given $\varepsilon > 0$. The graph partitioning problem consists of minimizing
 the cut size of an $\varepsilon$-balanced partition. It is a hard combinatorial
 problem~\cite{gj:com}.
+
+
+The parameter $\varepsilon$ introduced in~\eqref{e.bal} is used to quantify the degree of
+imbalance allowed in a data distribution. If $\varepsilon = 0$ all processes are assigned
+exactly $|V|/p$ rows of \mat{A}, meaning that no imbalance is allowed at all. When
+increasing $\varepsilon$ the load balancing condition~\eqref{e.bal} is relaxed. The
+larger $\varepsilon$ is chosen, the larger is the allowed imbalance. Thus, in some way,
+$\varepsilon$ quantifies the deviation from a perfect load balance. An equivalent form
+of~\eqref{e.bal} is given by
+\begin{equation}\label{e.bound}
+\frac{p}{|V|} \max_{1 \leq i \leq p} |V_i| - 1 \leq \varepsilon ,
+\end{equation}
+which can be interpreted as follows. Suppose that you are not looking for an
+$\varepsilon$-balanced partition $P$ for a given $\varepsilon$, but rather turn this
+procedure around and ask: ``Given a partition $P$, how large need $\varepsilon$ at least
+be so that this partition is $\varepsilon$-balanced?'' Then the left-hand side of the
+inequality~\eqref{e.bound} which we call \emph{deviation bound} gives an answer to that
+question. The extreme cases for the deviation bound are given by 0 if the distribution is
+perfectly balanced and $p-1$ if there is one process that gets all the data. 
 
 
 To illustrate the connection between computing a sparse matrix-vector multiplication in
@@ -3545,25 +3478,7 @@ measure of the communication volume. In that score diagram, the student can atte
 \label{f.score}
 \end{figure}
 %------------------------------------------------------------------------------------------
-
-The parameter $\varepsilon$ introduced in~\eqref{e.bal} is used to quantify the degree of
-imbalance allowed in a data distribution. If $\varepsilon = 0$ all processes are assigned
-exactly $|V|/p$ rows of \mat{A}, meaning that no imbalance is allowed at all. When
-increasing $\varepsilon$ the load balancing condition~\eqref{e.bal} is relaxed. The
-larger $\varepsilon$ is chosen, the larger is the allowed imbalance. Thus, in some way,
-$\varepsilon$ quantifies the deviation from a perfect load balance. An equivalent form
-of~\eqref{e.bal} is given by
-\begin{equation}\label{e.bound}
-\frac{p}{|V|} \max_{1 \leq i \leq p} |V_i| - 1 \leq \varepsilon ,
-\end{equation}
-which can be interpreted as follows. Suppose that you are not looking for an
-$\varepsilon$-balanced partition $P$ for a given $\varepsilon$, but rather turn this
-procedure around and ask: ``Given a partition $P$, how large need $\varepsilon$ at least
-be so that this partition is $\varepsilon$-balanced?'' Then the left-hand side of the
-inequality~\eqref{e.bound} which we call \emph{deviation bound} gives an answer to that
-question. The extreme cases for the deviation bound are given by 0 if the distribution is
-perfectly balanced and $p-1$ if there is one process that gets all the data. The score
-diagram shows the value of the deviation bound for each round. A low deviation bound
+The score diagram shows the value of the deviation bound for each round. A low deviation bound
 indicates a partition that balances the computational load evenly, whereas a large
 deviation bound represents a significant imbalance of the load. The score diagram helps the
 student to evaluate the quality of a single data distribution and to compare it with
