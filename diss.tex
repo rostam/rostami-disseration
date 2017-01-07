@@ -1561,7 +1561,7 @@ minimum number of nonrequired elements.
 \includegraphics[width=\linewidth]{bls_adds_crystm01_old_star_vs_new}
 \caption{The number of additionally required elements computed with
 the new star bicoloring compared with the older implementation.
-The asymmetric matrix \textit{$crystm01$} is used here.}
+The nonsymmetric matrix \textit{$crystm01$} is used here.}
 \label{bls_adds_crystm01_old_star_vs_new}
 \end{figure}
 
@@ -1569,7 +1569,7 @@ The asymmetric matrix \textit{$crystm01$} is used here.}
 \includegraphics[width=\linewidth]{bls_cols_crystm01_old_star_vs_new}
 \caption{The number of additionally required elements computed with
 the new star bicoloring compared with the older implementation.
-The asymmetric matrix \textit{$crystm01$} is used here.}
+The nonsymmetric matrix \textit{$crystm01$} is used here.}
 \label{bls_cols_crystm01_old_star_vs_new}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1794,7 +1794,7 @@ Here, we investigate the preconditioning based on the incomplete LU factorizatio
 Between different models of ILU, we consider the level-based ILU factorization here.
 We use a graph model for ILU instead of the current matrix model to have a unified
 work on graphs in the implemented library. This graph model is based on the proposed
-model in ~\cite{precond-pothen}. If the given matrix is asymmetric,
+model in ~\cite{precond-pothen}. If the given matrix is nonsymmetric,
 we put a vertex for each row. We also connect the vertex $i$ to the
 vertex $j$ with a directed edge if the corresponding element $(i,j)$ in matrix
 in nonzero. If the matrix is symmetric, these edges are undirected. This means
@@ -2728,13 +2728,13 @@ existing tools with a focus on scientific computing do not involve any aspects f
 Examples include the interactive Java applets devoted to the textbook by Heath~\cite{MH96SCAIS} and
 the NCM software to be used in conjunction with the textbook by Moler~\cite{mol:num}.
 
-During this chapter, we look first at the concept and design of the software in
+During this chapter, we first look at the concept and design of the software in
 \secref{s.concept}. Then, we apply the gamification ideas on the software in
 \secref{s.game} to involve the students more into the usage of \mbox{EXPLAIN}.
 After looking at the available modules in \secref{s.av.modules}, we look at
 implementation details in \secref{s.impl.explain}.
-\mbox{EXPLAIN} has two releases 1.0 and 2.0 so far which we will explain in more
-details in \secref{s.impl.explain}. Some of the modules
+\mbox{EXPLAIN} has two releases 1.0 and 2.0 which we will explain in more
+detail in \secref{s.impl.explain}. Some of the modules
 are only available in the new release. Both releases
 are available now since they were developed on different technologies and have
 pros and cons. However, the release 2.0 is an improved version and is developed
@@ -2744,11 +2744,12 @@ regularly.
 \label{s.concept}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Throughout the design stage of \mbox{EXPLAIN}, our focus is on the following goals.
-\mbox{EXPLAIN} is a self-study tool and the connection between the scientific computing
-and combinatorial problems is explained by teacher in classroom.
+\mbox{EXPLAIN} is not a self-study tool.
+Rather, the connection between the scientific computing
+and combinatorial problems is explained by a teacher in classroom.
 The students can follow the algorithm on the graph by either
 clicking on the vertices or edges.
-So, neither the matrix nor its nonzeros are not clickable.
+So, neither the matrix nor its nonzero elements are not clickable.
 Clicking vertices or edges results in modifications in both graph and matrix.
 The available modifications on graph and matrix can be one or more actions
 from the following list,
@@ -2757,18 +2758,18 @@ from the following list,
 \item Removing, adding, or coloring an edge
 \item Changing the positions of vertices
 \item Permuting matrix columns or rows or both.
-\item Coloring any cell, column, or row of matrix
+\item Coloring any element, column, or row of matrix
 \end{itemize}
 
 The input to the program is a sparse matrix in the format of the matrix market~\cite{matrix-market}.
-We build the corresponding graph from the the matrix.
+We build the corresponding graph from the matrix.
 The type of graph can be different based on the module and the algorithm.
 A list of possible graph types is as follows,
 \begin{itemize}
 \item Simple graph: an undirected graph without self-loops considering 
-the given symmetric matrix as an adjacency matrix of graph.
+the given symmetric matrix as an adjacency matrix of the graph.
 \item Directed graph: a directed graph without self-loops considering
-the given asymmetric matrix as an adjacency matrix of graph.
+the given nonsymmetric matrix as an adjacency matrix of the graph.
 \item Column-intersection graph: the graph model explained in \defref{d:cig}.
 \item Bipartite graph: the bipartite graph model explained in \defref{d.bip.graph}.
 \end{itemize}
@@ -2781,7 +2782,7 @@ The graph is drawn on the circular layout first. Other layouts can be selected l
 in the control panel. The matrix is visualized also at the right side and
 its nonzero elements are shown by the notation $\times$.
 \figref{explain-design} (Right) shows an actual example of the implemented view of
-\mbox{EXPLAIN}.
+the nested dissection module.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}
@@ -2796,18 +2797,18 @@ its nonzero elements are shown by the notation $\times$.
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-We define a set of predefined list of colors which can be selected by
+We define a set of predefined colors which can be selected by
 the corresponding numbers, for example
 $\{1=\text{green}, 2=\text{turquoise}, 3=\text{orange}, 4=\text{violet},
 5=\text{red}, 6=\text{yellow}, ...\}$.
-There colors are selected such that they look perceptually distinct.
-However, a user can define any new color by \textbf{rgb} function.
+These colors are selected such that they look perceptually distinct.
+However, a user can define any new color by a function that sepcifies an \textbf{rgb} value.
 Another aspect of the design is to use the same colors in graph and matrix view
 as well as in the feedback diagram.
 This consistent use of colors in the graph
-view, the matrix view, and in the score diagram makes it easier for the student to understand
+view, the matrix view, and in the feedback diagram makes it easier for the student to understand
 the algorithm. We will see examples of this aspect in the different modules
-which we explain in \ref{s.av.modules}.
+which we explain in \secref{s.av.modules}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2829,13 +2830,13 @@ A publication addressing this aspect of gamification is given in
 algorithms. A collaborative game is described in \cite{shl:bsc} that aims at improving the teaching
 quality of a course on mathematical logic.
 
-The Gamification of \mbox{EXPLAIN} is based on finding a solution to a combinatorial scientific problem.
+The gamification of \mbox{EXPLAIN} is based on finding a solution to a combinatorial scientific problem.
 We interpret each solution to a problem instance as a \textit{round}.
-The score diagram reporting the results of previous
-rounds also provides another feedback. The idea of gamification is used to solve a combinatorial
+The feedback diagram reports the results of previous rounds.
+The idea of gamification is used to solve a combinatorial
 minimization problem. For example, the gamification in the nested dissection ordering 
 consists of minimizing the size of the vertex separator while, at the same
-time, balancing the size of the remaining components.
+time, balancing the sizes of the remaining components.
 
 
 \section{Available modules}
@@ -2872,11 +2873,10 @@ Suppose a vertex is selected in the first step.
 This vertex is then colored using the first color of the predefined list. 
 Continuing the process of vertex selection, 
 different colors are chosen and an ordered list of vertices is created 
-which is already indicated in \figref{fig1} marked by ''Ordering of colored vertices.'' 
-In this figure, the list is empty but it will become non-empty in following figures. 
+which is indicated in the subfigures of \figref{algorihtm} marked by ''Ordering of colored vertices.'' 
 Each button of this list is clickable, causing \mbox{EXPLAIN} to return to that step of the algorithm. 
 The process continues until all vertices are colored. 
-The button labeled by the minus sign will go back to the first step keeping the whole process history.
+The button labeled by the minus sign will go back to the first step.
 
 
 \begin{figure}
@@ -2903,7 +2903,7 @@ The button labeled by the minus sign will go back to the first step keeping the 
 \caption{Display of various situations after interactively choosing vertices.}
 \label{algorihtm}
 \end{figure}
-\figurename~\ref{fig2} shows a representation of nonzero pattern of the possible following matrix
+\figref{fig2} shows a representation of a nonzero pattern of the possible following matrix
 \begin{equation}
 \label{e:matrixJ}
 J =
@@ -2916,17 +2916,18 @@ J =
 0 & 0 & 0 & 0 & 0 & 15
 \end{bmatrix},
 \end{equation}
-and the related graph in which the student has already selected the two vertices $v_2$ and $v_6$. \figref{fig3} represents the final step which shows that four colors are needed when the vertices are selected in the order $(v_2, v_6, v_3, v_5, v_1, v_4)$ displayed in the vertex list. The group of columns with the same color is compressed to a single column in the seed matrix as follows,
+and the related column-intersection graph in which the student has already selected the two vertices $v_2$ and $v_6$. Both vertices are colored with the same since they are not connected by an edge. \figref{fig3} represents the final step which shows that four colors are needed when the vertices are selected in the order $(v_2, v_6, v_3, v_5, v_1, v_4)$ displayed in the vertex list. The group of columns with the same color is compressed to a single column in the seed matrix as follows,
 \begin{equation}
 \label{e:matrixS}
 J \cdot S =
 J \cdot
 \begin{bmatrix}
-0 & 0 & 1 & 0 \\
-0 & 1 & 0 & 0 \\
-0 & 0 & 0 & 1 \\
-0 & 0 & 1 & 0 \\
-1 & 0 & 0 & 0
+ 0  & 0 & 1 & 0 \\
+ 1  & 0 & 0 & 0 \\
+ 0  & 1 & 0 & 0 \\
+ 0  & 0 & 0 & 1 \\
+ 0  & 0 & 1 & 0 \\
+ 1  & 0 & 0 & 0
 \end{bmatrix}
 =
 \begin{bmatrix}
@@ -2940,7 +2941,7 @@ J \cdot
 \end{equation}
 Furthermore, the coloring of \figurename~\ref{fig3} is the one corresponding to that compressed Jacobian~\eqref{e:matrixS}.
 
-Since we want to provide the possibility to return to some step of the algorithm, a history of the selection process is kept in the ordered vertex list. Now, suppose the student selects to return to the step $1$ where the vertex $v_2$ was selected, then the program returns to that step of the algorithm. The resulting state is depicted in \figurename~\ref{fig4}. Notice that the program keeps the whole history and the student can click on any other vertex in the history.
+Since we want to provide the possibility to return to some step of the algorithm, a history of the selection process is kept in the ordered vertex list. Now, suppose the student selects to return to the step $1$ where the vertex $v_2$ was selected, then the program returns to that step of the algorithm. The resulting state is depicted in \figref{fig4}. Notice that the program keeps the whole history and the student can click on any other buttons in the history list.
 
 On the other hand, the student can select a completely new selection order from the current step which can generate a smaller or larger number of colors. Employing the different ordering $(v_2,v_1,v_3,v_4,v_5,v_6)$ shown in \figurename~\ref{fig5} leads to a reduction of one color compared to the first ordering given in \figurename~\ref{fig3}. In fact, this is the minimum number of colors needed to color this graph. The corresponding seed matrix is given by
 $$
@@ -3005,7 +3006,8 @@ and $c_1$. A star bicoloring (b) of that example after trying to solve
 \end{figure}
 %------------------------------------------------------------------------------------------------
 
-Using any web browser, the student can interactively solve \MinStaBic\ by clicking on
+Using any web browser, the student can interactively solve Problem~\ref{p.coloring}, \MinStaBic,
+by clicking on
 vertices of the bipartite graph. The selection of a vertex by a click refers to choosing
 this vertex to be colored next. This coloring is visualized simultaneously in the graph
 as well as in the matrix where the neutral color is the color white. By clicking on a row
@@ -3044,9 +3046,8 @@ as an example. Here and in the following, we zoom into the graph and matrix view
 layout. The student interactively selects a sequence of row and column vertices to solve
 \MinStaBic. Figure \ref{f.arrow-shaped2} (a) shows the situation after the student
 selected the vertices $r_2$ and $c_1$.
-
 The interactive selection then goes back and forth until a correct star bicoloring is
-found. In EXPLAIN, the process of computing a solution of \MinStaBic\ is called a round.
+found. Recall, the process of computing a solution of \MinStaBic\ is called a round.
 The current round number is displayed at the top of the web page; see
 Fig.~\ref{f.explain}~(a). When a coloring is found at round number $x$, the page shows
 the message ``Round $x$ is completed!''
@@ -3063,10 +3064,7 @@ After completing a round, the student can solve the same problem instance once m
 this case, the round number will be incremented, the colors will be removed, and another
 round is started using the initial situation depicted in Fig.~\ref{f.explain}~(a). The
 history of the number of non-neutral colors used in previous rounds is displayed below
-the matrix in a score diagram as shown in Fig~\ref{f.explain}~(b). The idea behind this
-score diagram is to use elements of game design to motivate and increase the student's
-activity in the learning process. This way, the student can see the success
-in reducing the number of non-neutral colors.
+the matrix in a score diagram as shown in Fig~\ref{f.explain}~(b).
 
 The subtle issues in understanding the connection between bidirectional compression and
 star bicoloring are more lucid when considering more irregularly-structured nonzero
@@ -3075,20 +3073,22 @@ Fig.~\ref{f.arrow-shaped4}~(b). Here, it is more difficult to find out that this
 bicoloring with $4$ colors is indeed an exact solution to \MinStaBic.
 
 %\subsection{Partial Jacobian computation}
-We extend the previous module of matrix compression to support
+We extend this module to support
 the partial Jacobian computation. Here, the student should
 first select the required elements which are edges in Bipartite graphs.
-So, when the student clicks on the edges, the colors of those edges 
-as well as the color of the nonzero elements will be changed to red.
+So, when the student clicks on an edge, the color of this edge
+as well as the color of the corresponding nonzero element will be changed to red.
 These selected edges and nonzero elements are added to the required elements
 as shown in Figure~\ref{partial_coloring_bad_coloring}.
 
-As soon as the student starts to click the edges, the required elements
-are become fixed, i.e., no new required elements can be added.
-The other processes of coloring are completely like the previous module.
-Figure~\ref{partial_coloring_good_coloring} (a) shows a selection in which the graph coloring
-needs at least four colors since the user did not select any row vertex.
-A better coloring is possible as shown in Figure~\ref{partial_coloring_good_coloring} (b)
+As soon as the student starts to click the vertices, the required elements
+become fixed, i.e., no new required element can be added.
+The process of coloring is completely like the previous module.
+Figure~\ref{partial_coloring_good_coloring} (a) shows a selection in which 
+the student selects only column vertices. The result is a star bicoloring
+restricted to red edges with $4$ colors.
+A coloring with a smaller number of colors 
+is shown in Figure~\ref{partial_coloring_good_coloring} (b)
 in which a row vertex is selected first.
 
 \begin{figure}
@@ -3102,8 +3102,8 @@ in which a row vertex is selected first.
 \includegraphics[width=0.26\textwidth]{arrow_shaped_partial_coloring_init_matrix}}
 \caption{
 (a) The initial view of the module when no required edges are selected.
-(b) The user selects first the required edges. The selected edge and the corresponding
-nonzero of the matrix become the red color.}
+(b) The user selects first the required edges. These required edges and the corresponding
+nonzero elemetnts get the red color.}
 \label{partial_coloring_bad_coloring}
 \end{figure}
 
@@ -3118,29 +3118,36 @@ nonzero of the matrix become the red color.}
 \includegraphics[width=0.26\textwidth]{arrow_shaped_partial_coloring_init_matrix_good_coloring}}
 \caption{
 (a) A graph coloring with four colors in which only column vertices are selected.
-(b) A better graph coloring with three vertices in which the user colors 
-a row vertex first.}
+(b) A graph coloring with three colors in which the user colors a row vertex first.}
 \label{partial_coloring_good_coloring}
 \end{figure}
 
 \subsection{Nested dissection ordering}
-Given a sparse symmetric matrix $A$, the nested dissection method finds a
-symmetric permutation $P^T A P$ of $A$
-such that the permutated matrix gets the following form,
-$$
+In our paper~\cite{2014:02}, we present the nested dissection module to
+illustrate the connection between the following scientific computing and combinatoral problems,
+\begin{problem}[Nested Dissection Ordering]
+\label{p.nest.dissect}
+Given a sparse symmetric positive
+definite matrix $A$, find a symmetric permutation $P^T A P$ of~$A$ in the form of 
+\begin{equation}
+\label{e.A}
 A^{\prime} =
 \begin{bmatrix}
-A_1 & 0   & \cdots & 0 & B_1^T \\
-0   & A_2 & \cdots & 0  & B_2^T \\
-\vdots& \vdots & \ddots & 0 & \vdots \\
-0   &   0 & \cdots & A_p & B_p^T \\
-B_1 & B_2 & \cdots & B_p& C
-\end{bmatrix},
-$$
-in which the size of the block matrices $A_1,...,A_p$ are balanced,
-and the size of block $C$ is minimum.
-This approach reduces the computational work in different application areas.
-An example can be found in \cite{2014:02}.
+A_1 & 0   & B_1^T \\[0.2em]
+0   & A_2 & B_2^T \\[0.2em]
+B_1 & B_2 & C
+\end{bmatrix} ,
+\end{equation}
+such that the size of the block~$C$ is minimized while the sizes of the blocks $A_1$ and $A_2$ are
+balanced.
+
+\end{problem}
+\begin{problem}[Small Vertex Separator]
+\label{p.small.ver.sep} Given the graph $G$ associated with a sparse
+matrix $A$, find a disjoint decomposition of the vertices $V = V_1 \cup V_2 \cup S$ with a vertex
+separator $S$ such that the size of the vertex separator, $|S|$, is minimized while the sizes of
+the two remaining components, $|V_1|$ and $|V_2|$, are balanced.
+\end{problem}
 
 The graph model of this problem has the simple graph layout considering the matrix
 as the adjacency matrix of a graph.
@@ -3153,17 +3160,14 @@ the matrix and bringing together
 the corresponding columns of $V_1$ and $V_2$ by a permutation,
 then a nested dissection would be visualized on the matrix.
 
-We extended \mbox{EXPLAIN} with
-a new module that considers the nested dissection ordering
-of a given matrix and the equivalent graph problem, i.e.,
-finding a vertex separator (see~\cite{2014:02} for the bisection).
-In this module, a round consists of finding a vertex separator.
-We look first at a bisection, i.e., $p=2$.
+In this module representing a bisection, a round consists of finding a vertex separator.
 Figure~\ref{initial_10} shows the initial layout of an example
-and the selection of the vertex $10$ for the set of vertex separator. The module moves the
-corresponding column to the selected vertex to the end of the matrix
+and the selection of the vertex $v_10$ for the set of vertex separator. 
+The module moves the
+column corresponding to the selected vertex to the end of the matrix
 and both the vertex and its corresponding column get the orange color.
-Additionally, the adjacent edges of the vertex are removed for a better visualization.
+Additionally, the adjacent edges of the vertex are removed for a better visualization
+(compare \figref{initial_10} (a) and \figref{initial_10} (b)).
 
 \begin{figure}
 \centering
@@ -3182,15 +3186,15 @@ decomposed into two disconnected components.}
 \label{initial_10}
 \end{figure}
 
-Figure~\ref{selected_4_10_8_10} shows two scenario of selection with
-the worst and best case of selection. The left selection~\figref{selected_4_10_8_10}(a)
-in which the vertex
-$4$ is selected after the initial selection of $10$, we have an unbalanced result.
-However, the right selection~\figref{selected_4_10_8_10}(b) results in a balanced result
-by only selecting $8$ instead of $4$.
-When a vertex separator is found, the software colors the two disconnected components of graph
-as well as the distinct block on diagonals after permutation
-with blue and red.
+Figure~\ref{selected_4_10_8_10} shows two scenarios.
+We have an unbalanced result in~\figref{selected_4_10_8_10}(a)
+in which the vertex $v_4$ is selected after the initial selection of $v_10$.
+However, \figref{selected_4_10_8_10}(b) results in a balanced result
+by only selecting $v_8$ instead of $v_4$.
+When a vertex separator is found, 
+the software performs the permutation 
+and colors the two disconnected components of graph
+as well as the distinct block on diagonals with blue and red.
 
 \begin{figure}
 \centering
@@ -3210,13 +3214,12 @@ The selection is not adequate as the sizes of blocks are not balanced.
 \label{selected_4_10_8_10}
 \end{figure}
 
-A resulting score diagram from different rounds looks
+The feedback diagram from different rounds looks
 like \figref{diagram}. Here, the blue and red curves should have
 values close to each other since this indicates the balancing condition.
 The orange curve should be as small as possible
 because it represents the minimization of the separator size.
-In this figure, the separator size is indeed minimal and the
-balance condition is satisfied in the last round.
+In in the last round of this figure, we see a balanced result with minimal separator size.
 \begin{figure}
 \centering
 \includegraphics[width=0.47\textwidth]{diagram}
@@ -3225,35 +3228,34 @@ balance condition is satisfied in the last round.
 \end{figure}
 
 Based on the new features of \mbox{EXPLAIN 2.0}, we update the previous
-bisection to a nested dissection algorithm.
+bisection to a recursive bisection algorithm.
 It contains the bisection itself. So, the student selects the vertex separator
 as before until the graph becomes disconnected.
-In this new version, the vertex separator is shown on the bottom
-of the graph. Also the two remaining parts of graph are shown separately
-in two different circles at right and left.
-In Figure~\ref{bad_bisection}, the result of selection is visualized which
-is inefficient since the parts of graphs are not balanced.
-Figure~\ref{good_bisection} also shows the results of an efficient selection.
+In this new version, the vertex separator is shown in orange on the bottom
+of the graph. Also the two remaining components of the graph are shown separately
+in two different colored circles at the top of this figure.
+In Figure~\ref{bad_bisection}, the result of a selection is visualized which
+is not balanced.
+Figure~\ref{good_bisection} also shows the results of a balanced selection.
 
 \begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{bad_bisection}
-\caption{A selection results in an inefficient bisection of graph.}
+\caption{A selection results in an unbalanced bisection of graph.}
 \label{bad_bisection}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{good_bisection}
-\caption{A selection results in an efficient bisection of graph.}
+\caption{A selection results in a balanced bisection of graph.}
 \label{good_bisection}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{bad_disection}
-\caption{A complete nested dissection up to the order 2 which has an
-inefficient result.}
+\caption{A complete nested dissection with an unbalanced result.}
 \label{bad_disection}
 \end{figure}
 
@@ -3261,36 +3263,38 @@ inefficient result.}
 \begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{good_disection}
-\caption{A complete nested dissection up to the order 2 which has an
-efficient result.}
+\caption{A complete nested dissection with a balanced result.}
 \label{good_disection}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{good_disection2}
-\caption{A complete nested dissection up to the order 2 which has an
-even more efficient result.}
+\caption{A complete nested dissection with an even more balanced result.}
 \label{good_disection2}
 \end{figure}
 
 Now, in contrast to the previous version, the student can click further
-on the vertices of each part. This selection would trigger a recursive
-bisection of the matrix as well. Again, this selection goes forward until
-both parts of the graphs become disconnected. The vertex separators
-would be moved to the bottom of the graph parts as well as the graph parts
-would be shown separately. Figure~\ref{bad_disection} and Figure~\ref{good_disection} illustrated two inefficient and efficient results of nested dissection,
+on the vertices of each component. This selection would trigger a recursive
+bisection of two components of matrix as well. Again, this selection goes forward until
+both graph components become disconnected. The vertex separators
+are moved to the bottom of the graph components as well as the graph components
+are shown separately.
+Figure~\ref{bad_disection} and Figure~\ref{good_disection} 
+illustrate two unbalanced and balanced results of nested dissection,
 respectively. Figure~\ref{good_disection2} shows how the results can
-get even better by a proper order of selection.
+get even more balanced.
 
-The corresponding diagram of the history of rounds is improved such that
-both the size of vertex separator as well as the size of four graph parts
-can be visualized. Figure~\ref{barchart} shows a possible selection history.
+The corresponding feedback diagram is modified such that
+both the size of vertex separator as well as the size of four graph components
+can be visualized. In this diagram, the separator size shows the sum of all
+the vertex separators of all recursion levels.
+Figure~\ref{barchart} shows a possible selection history.
 The line chart shows the size history of the vertex separator
 and four bar chart grouped together shows the size history of the graph parts.
 The colors are also the same colors used in the graph and matrix visualizations.
-Since the goal here is to minimize the size of vertex separator as well as balancing the
-size of subgraphs, we achieved the optimum results in the fourth round of selection.
+The goal here is to minimize the size of vertex separator as well as balancing the
+size of subgraphs. We achieved a balanced results in the fourth round of selection.
 \begin{figure}
 \centering
 \includegraphics[width=0.6\textwidth]{chart2}
@@ -3301,7 +3305,10 @@ The curve of the orange color is also the size of vertex separator.}
 \label{barchart}
 \end{figure}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
 \subsection{Parallel matrix-vector product}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In our paper~\cite{2015:3}, we present a module of the parallel matrix-vector
 product to illustrate the connection between the following scientific computing and combinatoral problems.
 \begin{problem}[Scientific Computing Problem]
@@ -3337,8 +3344,8 @@ $\varepsilon$-balanced defined as
 \max_{1 \leq i \leq p} |V_i| \leq (1 + \varepsilon) \frac{|V|}{p} ,
 \end{equation}
 for some given $\varepsilon > 0$. The graph partitioning problem consists of minimizing
-the cut size of an $\varepsilon$-balanced partition. It is a hard combinatorial
-problem~\cite{gj:com}.
+the number of edges with incident vertices in different partitions (the so-called cut size) 
+of an $\varepsilon$-balanced partition. It is a hard combinatorial problem~\cite{gj:com}.
 
 
 The parameter $\varepsilon$ introduced in~\eqref{e.bal} is used to quantify the degree of
@@ -3356,20 +3363,14 @@ $\varepsilon$-balanced partition $P$ for a given $\varepsilon$, but rather turn 
 procedure around and ask: ``Given a partition $P$, how large need $\varepsilon$ at least
 be so that this partition is $\varepsilon$-balanced?'' Then the left-hand side of the
 inequality~\eqref{e.bound} which we call \emph{deviation bound} gives an answer to that
-question. The extreme cases for the deviation bound are given by 0 if the distribution is
+question. The extreme cases for the deviation bound are given by $0$ if the distribution is
 perfectly balanced and $p-1$ if there is one process that gets all the data. 
 
-
-To illustrate the connection between computing a sparse matrix-vector multiplication in
-parallel and partitioning an undirected graph, we propose a novel educational module.
-This module is part of a growing set of educational modules called EXPLoring Algorithms
-INteractively (EXPLAIN). This collection of web-based modules is designed to assist in
-the effectiveness of teachers in the classroom and we plan to make it publicly available
-shortly. Figure~\ref{f.explain.matvec} shows the overall layout of this interactive
+Figure~\ref{f.explain.matvec} shows the overall layout of this interactive
 module for sparse matrix-vector multiplication. The top of this figure visualizes---side by side---the representation of the problem regarding the graph~$G$ as well as in terms
 of the matrix~\mat{A} and the vector \vek{x}. Below on the left, there is a panel of
 colors representing different processes and another panel displaying the order of
-selecting vertices of the graph. Next, on the right, there is a score diagram recording
+selecting vertices of the graph. Next, on the right, there is a feedback diagram recording
 values characterizing communication and load balancing. At the bottom part, there are
 input controls used to select a matrix from a predefined set of matrices, to upload a
 small matrix, and to choose the layout of the graph vertices.
@@ -3399,20 +3400,19 @@ all vertices are interactively colored and, thus, the data distribution $P$ is f
 determined.
 
 Figure~\ref{f.beginning} illustrates the situation after the student distributed
-vertices~1, 2 and 3 to the blue process and the vertices~7, 8 and 10 to the green
+vertices~$\{ v_1, v_2, v_3 \}$ to the blue process
+and the vertices~$\{ v_7, v_8, v_{10}\}$ to the green
 process. By interactively assigning a vertex to a process, not only the vertex is colored
 by the color representing this process, but also the row in the matrix as well as the
 corresponding vector entry of \vek{x} are simultaneously colored with the same color.
 This way, the data distribution is visualized in the graph and the matrix
 simultaneously which emphasizes the connection between the matrix representation and the
-graph representation of that problem. The panel labeled ``Order of selection'' records
-the order of the vertices that are interactively chosen. By inspection of that panel
+graph representation of that problem. By inspection of that panel
 in~\figref{f.explain}, we find out that the status depicted in \figref{f.beginning} is an
 intermediate step of the interactive session that led to the data distribution
 in~\figref{f.explain}. Any box labeled with the number of the chosen vertex in that panel
 is also clickable allowing the student to return to any intermediate state and start a
 rearrangement of the data distribution from that state.
-
 
 %------------------------------------------------------------------------------------------
 % Interactive Selection of Vertices
@@ -3424,8 +3424,7 @@ rearrangement of the data distribution from that state.
 \end{figure}
 %------------------------------------------------------------------------------------------
 
-In EXPLAIN, the term ``round'' refers to the process of solving a single instance of a
-given problem. In this module, the problem consists of distributing all data needed to
+In this module, the problem consists of distributing all data needed to
 compute the matrix-vector product to the processes. Equivalently, the distribution of all
 vertices of the corresponding graph to the processes is a round. Suppose that round~2 is
 completed in \figref{f.explain}. Then, the student can explore the data distribution in
@@ -3434,19 +3433,7 @@ that the student chooses the red process, then this action will modify the appea
 the vector \vek{x} in the matrix representation to the state given
 in~\figref{f.communication}. Here, all vector entries that need to be communicated to the
 red process are now also colored red. The background color still represents the process
-that stores that vector entry. It illustrates, for instance, that the vector entry
-$x_1$ is communicated from the blue process to the red process when computing $\mat{A}
-\vek{x}$ using this particular data distribution. The matrix representation visualizes
-the reason for this communication. There is at least one row that is colored red and that
-has a nonzero element in column~1. In this example row~4 and row~5 satisfy this
-condition. Thus, $x_1$ is needed to compute $y_4$ and $y_5$. Again, EXPLAIN visually
-illustrates the connection between the linear algebra representation and the graph
-representation. In the graph representation, all vector entries that need to be
-communicated to the red process correspond to those non-red vertices connected
-to a red vertex. In this example, this condition is satisfied for vertices 1, 3, 6, 7, 8,
-10 which corresponds to the vector entries $x_1$, $x_3$, $x_6$, $x_7$, $x_8$, $x_{10}$ in
-the matrix representation that are drawn in red.
-
+that stores that vector entry. 
 
 %------------------------------------------------------------------------------------------
 % Communication structure
@@ -3460,14 +3447,14 @@ the matrix representation that are drawn in red.
 
 After completion of a round, it is also instructive to focus on the quality of the data
 distribution $P$. Recall that the graph partitioning problem aims at minimizing the cut
-size of~$P$ while balancing the computational load evenly among the processes. To assess
-these two quantities, the module introduces the score diagram. An example of a score
-diagram is depicted in~\figref{f.score}. For each round, this diagram shows the cut size
-defined by~\eqref{e.cut} using the label ``communication volume.'' As mentioned in the
+size of~$P$ while balancing the computational load evenly among the processes. 
+\figref{f.score} shows the feedback diagram. For each round, this diagram shows the cut size
+using the label ``communication volume.'' As mentioned in the
 previous section, the cut size in this undirected graph model is not an exact
 representation of the communication volume. However, it often captures the nature of the
 communication volume quite well. Therefore, this graph model uses the cut size as a
-measure of the communication volume. In that score diagram, the student can attempt to minimize the communication volume over some rounds.
+measure of the communication volume. 
+In that feedback diagram, the student can attempt to minimize the communication volume over some rounds.
 
 %------------------------------------------------------------------------------------------
 % Score diagram
@@ -3493,11 +3480,18 @@ together with a small deviation bound.
 \section{Algorithm editor and animator}
 \label{s.alg.edit}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-As we discussed, the ordering is one of the main elements of heuristics algorithm
-in both preconditioning and coloring. The process of selection that we have
-considered in modules of \mbox{EXPLAIN} are the illustration of this importance.
-It is not always doable for students to find a good selection order especially for
-big matrices.
+The process of selecting vertices corresponds to some ordering.
+The modules of \mbox{EXPLAIN} aim at showing the importance of this ordering.
+\mbox{EXPLAIN 2.0} has a new feature to examine different orderings
+and see the results of algorithm visually. In this feature, different
+orderings are available which can be chosen. 
+Figure~\ref{f.custom_module} illustrates graph and matrix
+and the corresponding source code of the algorithm. This source code
+is written in a simple scripting language specially designed for \mbox{EXPLAIN}.
+This source code can also be edited temporarily. Later, the student can
+decide to start the selection by a mouse or to run an animation 
+by an chosen predefined ordering.
+
 %------------------------------------------------------------------------------------------
 % Custom Module
 \begin{figure}
@@ -3509,18 +3503,7 @@ The user specifies the order and this code is executed based on that order.}
 \label{f.custom_module}
 \end{figure}
 %------------------------------------------------------------------------------------------
-
-\mbox{EXPLAIN 2.0} has a new feature to examine different orders
-and see the results of algorithm visually. In this feature, different
-preorderings are available which can be selected. A custom order is
-also possible. Figure~\ref{f.custom_module} illustrates graph and matrix
-and the corresponding source code of the module. This source code
-is written in a simple scripting language specially designed for \mbox{EXPLAIN}.
-This source code can also be edited temporarily. Later, the student can
-decide to start the selection by mouse or an automatic visualization
-of the algorithm in which the order is defined by the variable "order".
-
-If the student selects the visualization based on the given ordering,
+If the student selects the visualization based on the predefined ordering,
 an animation goes through the vertices and execute each line of the algorithm
 one by one to visualize the algorithm during the time.
 The user can stop the algorithm and select the speed of execution.
