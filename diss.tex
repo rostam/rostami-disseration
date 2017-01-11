@@ -40,8 +40,6 @@ urlcolor=black
 \DeclareMathOperator*{\argmax}{arg\,max}
 
 \usepackage[table]{xcolor}
-\newcommand{\mat}[1]{\ensuremath{#1}}
-\newcommand{\vek}[1]{{\ensuremath{\mathbf #1}}}
 \newcommand{\figref}[1]{Figure~\protect\ref{#1}}
 \newcommand{\secref}[1]{Section~\protect\ref{#1}}
 \newcommand{\chapref}[1]{Chapter~\protect\ref{#1}}
@@ -603,7 +601,7 @@ with a minimal number of non-neutral colors.
 Given a large sparse nonsingular $n\times n$ Jacobian matrix $J$,
 we are considering the solution to the following system of linear equations,
 $$
-J\vek{x} = \vek{b},
+J x = b,
 $$
 in which $x$ and $b$ are $n\times 1$ vectors. 
 Iterative solvers are considered to be among the effective solution techniques~\cite{ilu2003}.
@@ -615,7 +613,7 @@ Rather than solving the previous system,
 we can solve the preconditioned system
 \begin{equation}
 \label{e:precond}
-M^{-1} J \vek{x}= M^{-1}\vek{b},
+M^{-1} J x= M^{-1} b,
 \end{equation}
 where the $n \times n$ matrix $M$ serves as a preconditioner that approximates
 the coefficient matrix,
@@ -3309,35 +3307,38 @@ The curve of the orange color is also the size of vertex separator.}
 \clearpage
 \subsection{Parallel matrix-vector product}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In our paper~\cite{2015:3}, we present a module of the parallel matrix-vector
+In our paper~\cite{2015:3}, we present a module for a parallel matrix-vector
 product to illustrate the connection between the following scientific computing and combinatoral problems.
 \begin{problem}[Scientific Computing Problem]
-\label{p.par.mat.vec} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with a known sparsity
+\label{p.par.mat.vec}
 Given a large sparse matrix $A$ with a symmetirc nonzero pattern and a dense
-vector $X$. Suppose we want to compute the sparse matrix-vector product
+vector $x$. Suppose we want to compute the sparse matrix-vector product
 $y \leftarrow Ax$ on a computer with distributed memory. Find a non-redundant
-distribution of the nonzer elements of $A$ in a row-wise fashion and a
+data distribution of the nonzero elements of $A$ in a row-wise fashion and a
 consistent distribution of $x$ and $y$ such that the communication between
 processes is minimized while the number of arithmetic operations is balanced
 between the processors.
 \end{problem}
 \begin{problem}[Combinatorial Problem]
-\label{p.par.mat.vec.graph} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with a known sparsity
-Given an undirected connected graph, find a partition of the vertices into
+\label{p.par.mat.vec.graph}
+Given an undirected connected graph $G$, find a partition of the vertices $V$ into
 nonempty disjoint subsets such that the number of edges with incident vertices
-in different partitions is minimzed while the number of vertices of the subsets
+in different partitions is minimized while the number of vertices of the subsets
 is balanced.
 \end{problem}
-
-Let $P: V \rightarrow \{1, 2, \dots, p\}$ is the vertex partition to $p$ processes which
+These two products are connected by letting a row $i$ of $A$ be represented by a vertex $v_i$
+in $G$ and the nonzero elements in the positions $(i,j)$ and $(j,i)$ correspond to
+an edge between vertices $v_i$ and $v_j$.
+Let $P: V \rightarrow \{1, 2, \dots, p\}$ be the vertex partition to $p$ processes
 that decomposes the set of nodes $V$ of the graph into~$p$ subsets $V_1$, $V_2$, \dots,
 $V_p$ such that
 $$
 V = V_1 \cup V_2 \cup \dots \cup V_p
 $$
-with $V_i \cap V_j = \emptyset$ for~$i \neq j$.
+with $V_i \cap V_j = \emptyset$ for~$i \neq j$. This decomposition of $V$ represents 
+the distribution of the rows of $A$ to $p$ processes.
 
-Assuming that the number of nonzeros is roughly the same for each row of~\mat{A}, the
+Assuming that the number of nonzeros is roughly the same for each row of $A$, the
 computation is evenly balanced among the $p$ processes if the partition $P$ is
 $\varepsilon$-balanced defined as
 \begin{equation}\label{e.bal}
@@ -3350,7 +3351,7 @@ of an $\varepsilon$-balanced partition. It is a hard combinatorial problem~\cite
 
 The parameter $\varepsilon$ introduced in~\eqref{e.bal} is used to quantify the degree of
 imbalance allowed in a data distribution. If $\varepsilon = 0$ all processes are assigned
-exactly $|V|/p$ rows of \mat{A}, meaning that no imbalance is allowed at all. When
+exactly $|V|/p$ rows of $A$, meaning that no imbalance is allowed at all. When
 increasing $\varepsilon$ the load balancing condition~\eqref{e.bal} is relaxed. The
 larger $\varepsilon$ is chosen, the larger is the allowed imbalance. Thus, in some way,
 $\varepsilon$ quantifies the deviation from a perfect load balance. An equivalent form
@@ -3367,14 +3368,13 @@ question. The extreme cases for the deviation bound are given by $0$ if the dist
 perfectly balanced and $p-1$ if there is one process that gets all the data. 
 
 Figure~\ref{f.explain.matvec} shows the overall layout of this interactive
-module for sparse matrix-vector multiplication. The top of this figure visualizes---side by side---the representation of the problem regarding the graph~$G$ as well as in terms
-of the matrix~\mat{A} and the vector \vek{x}. Below on the left, there is a panel of
+module for sparse matrix-vector multiplication.
+The top of this figure visualizes 
+the representation of the problem regarding the graph~$G$ as well as in terms
+of the matrix $A$ and the vector $x$. Below on the left, there is a panel of
 colors representing different processes and another panel displaying the order of
 selecting vertices of the graph. Next, on the right, there is a feedback diagram recording
-values characterizing communication and load balancing. At the bottom part, there are
-input controls used to select a matrix from a predefined set of matrices, to upload a
-small matrix, and to choose the layout of the graph vertices.
-
+values characterizing communication and load balancing.
 
 %------------------------------------------------------------------------------------------
 % Overall Layout of Module
@@ -3386,7 +3386,7 @@ small matrix, and to choose the layout of the graph vertices.
 \end{figure}
 %------------------------------------------------------------------------------------------
 
-The first figure gives an overall impression of the status of the module after a data
+This figure gives an overall impression of the status of the module after a data
 distribution is completed. Here, $p=4$ processes represented by the colors blue, green,
 red, and yellow get data by interactive actions taken by the student.
 Figure~\ref{f.beginning} now shows the status of the module in a phase that is more
@@ -3394,8 +3394,8 @@ related to the beginning of that interactive procedure. For a given matrix, the 
 can distribute the data to the processes by first clicking on a color and then clicking
 on an arbitrary number of vertices. That is, the distribution of vertices to a single
 process is determined by first clicking on a color $j$ and then clicking on a particular
-number of vertices, say $i_1, i_2, \dots, i_s$ such that $P(i_1) = P(i_2) = \dots =
-P(i_s) = j$. Then, by clicking on the next color, this procedure can be repeated until
+number of vertices such that these vertices are distributed to the process $j$.
+Then, by clicking on the next color, this procedure can be repeated until
 all vertices are interactively colored and, thus, the data distribution $P$ is finally
 determined.
 
@@ -3404,13 +3404,13 @@ vertices~$\{ v_1, v_2, v_3 \}$ to the blue process
 and the vertices~$\{ v_7, v_8, v_{10}\}$ to the green
 process. By interactively assigning a vertex to a process, not only the vertex is colored
 by the color representing this process, but also the row in the matrix as well as the
-corresponding vector entry of \vek{x} are simultaneously colored with the same color.
+corresponding vector entry of $x$ are simultaneously colored with the same color.
 This way, the data distribution is visualized in the graph and the matrix
 simultaneously which emphasizes the connection between the matrix representation and the
 graph representation of that problem. By inspection of that panel
-in~\figref{f.explain}, we find out that the status depicted in \figref{f.beginning} is an
+in~\figref{f.explain.matvec}, we find out that the status depicted in \figref{f.beginning} is an
 intermediate step of the interactive session that led to the data distribution
-in~\figref{f.explain}. Any box labeled with the number of the chosen vertex in that panel
+in~\figref{f.explain.matvec}. Any box labeled with the number of the chosen vertex in that panel
 is also clickable allowing the student to return to any intermediate state and start a
 rearrangement of the data distribution from that state.
 
@@ -3427,12 +3427,13 @@ rearrangement of the data distribution from that state.
 In this module, the problem consists of distributing all data needed to
 compute the matrix-vector product to the processes. Equivalently, the distribution of all
 vertices of the corresponding graph to the processes is a round. Suppose that round~2 is
-completed in \figref{f.explain}. Then, the student can explore the data distribution in
+completed in \figref{f.explain.matvec}. Then, the student can explore the data distribution in
 more detail by clicking on a color in the panel labeled ``Color of processes.'' Suppose
 that the student chooses the red process, then this action will modify the appearance of
-the vector \vek{x} in the matrix representation to the state given
+the vector $x$ in the matrix representation to the state given
 in~\figref{f.communication}. Here, all vector entries that need to be communicated to the
-red process are now also colored red. The background color still represents the process
+red process are now also colored red. 
+The background color in the vector still represents the process
 that stores that vector entry. 
 
 %------------------------------------------------------------------------------------------
@@ -3449,11 +3450,7 @@ After completion of a round, it is also instructive to focus on the quality of t
 distribution $P$. Recall that the graph partitioning problem aims at minimizing the cut
 size of~$P$ while balancing the computational load evenly among the processes. 
 \figref{f.score} shows the feedback diagram. For each round, this diagram shows the cut size
-using the label ``communication volume.'' As mentioned in the
-previous section, the cut size in this undirected graph model is not an exact
-representation of the communication volume. However, it often captures the nature of the
-communication volume quite well. Therefore, this graph model uses the cut size as a
-measure of the communication volume. 
+using the label ``communication volume.''
 In that feedback diagram, the student can attempt to minimize the communication volume over some rounds.
 
 %------------------------------------------------------------------------------------------
@@ -3465,7 +3462,8 @@ In that feedback diagram, the student can attempt to minimize the communication 
 \label{f.score}
 \end{figure}
 %------------------------------------------------------------------------------------------
-The score diagram shows the value of the deviation bound for each round. A low deviation bound
+The feedback diagram shows the value of the deviation bound for each round.
+A low deviation bound
 indicates a partition that balances the computational load evenly, whereas a large
 deviation bound represents a significant imbalance of the load. The score diagram helps the
 student to evaluate the quality of a single data distribution and to compare it with
@@ -3477,21 +3475,49 @@ this educational module, a ``high score'' would consist of a low communication v
 together with a small deviation bound.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Algorithm editor and animator}
+\section{New Features in EXPLAIN 2.0}
 \label{s.alg.edit}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The process of selecting vertices corresponds to some ordering.
-The modules of \mbox{EXPLAIN} aim at showing the importance of this ordering.
-\mbox{EXPLAIN 2.0} has a new feature to examine different orderings
-and see the results of algorithm visually. In this feature, different
-orderings are available which can be chosen. 
-Figure~\ref{f.custom_module} illustrates graph and matrix
-and the corresponding source code of the algorithm. This source code
-is written in a simple scripting language specially designed for \mbox{EXPLAIN}.
-This source code can also be edited temporarily. Later, the student can
-decide to start the selection by a mouse or to run an animation 
-by an chosen predefined ordering.
+EXPLAIN 2.0 came with various features which are
+discussed in the following paragraphs. 
+The new major feature is an algorithm editor.
+In EXPLAIN 2.0, the student can see and edit the source code of an algorithm
+beside the visualization of the graph and matrix.
+There is a new button in the control button named as \textit{Edit Algorithm!}.
+Clicking this button shows an editor with the source code of the corresponding module.
+This souce code is written in a simple scripting language.
+Figure~\ref{f.custom_module} illustrates the column compression module.
+As it can be seen, an editor with the corresponding source code of 
+the column compression module is shown in the right part of the figure.
+Additionally, the student can see an animation of this algorithm
+by first selecting and ordering and then clicking the button 
+named as \textit{animate}.
+An animation goes through the vertices and executes each line of the algorithm
+one by one to visualize the algorithm during the time.
+The student can stop the algorithm and select the speed of execution.
 
+Figure~\ref{f.bottom_new_explain} shows the control panel of EXPLAIN 2.0 for the 
+nested dissection module in the left figure and the column compression
+module in the right figure. 
+Comparing to EXPLAIN 1.0, we have here three new buttons for the three functionalities:
+going to next round, doing a postprocessing, and editing an algorithm.
+The first button named as \textit{Go to next round} goes to the next round even if 
+the current round is not completed. The second button is for a postprocessing
+step. A postprocessing is an action which can be done when a round is completed.
+It can be different for each module.
+For example, Figure~\ref{f.bottom_new_explain} (Left) has the postprocessing named
+as \textit{Show edges}. This shows the edges between the vertex separators
+and the subgraphs which we remove during the selection.
+Another example is Figure~\ref{f.bottom_new_explain} (Right) which does not have
+any postprocessing. So, the button is disabled.
+The third button is to show and hide the algorithm editor.
+The label of the button is first \textit{Edit Algorithm!}
+and changed to \textit{Finish Editing!} after clicking.
+
+Another minor change is the reference to a publication which explains the 
+module. Figure~\ref{f.bottom_new_explain} (Left) and (Right) shows the two publications
+\cite{2013:05} and \cite{2014:02} for the nested dissection and the column compression module
+and the link to the publishers.
 %------------------------------------------------------------------------------------------
 % Custom Module
 \begin{figure}
@@ -3503,18 +3529,48 @@ The user specifies the order and this code is executed based on that order.}
 \label{f.custom_module}
 \end{figure}
 %------------------------------------------------------------------------------------------
-If the student selects the visualization based on the predefined ordering,
-an animation goes through the vertices and execute each line of the algorithm
-one by one to visualize the algorithm during the time.
-The user can stop the algorithm and select the speed of execution.
 
+%------------------------------------------------------------------------------------------
+% Custom Module
+\begin{figure}
+\centering
+\includegraphics[width=0.45\textwidth]{bottom_new_explain1}
+\hfill
+\includegraphics[width=0.45\textwidth]{bottom_new_explain}
+\caption{The control panel of EXPLAIN 2.0 is visualized.
+It has three new buttons for going to the next round,
+doing a postprocessing step, and editing the algorithm.
+Additionally, it has a new reference link to a publication
+for this module.
+(Left) The control panel is visualized for the nested dissection module.
+Here, the postprocessing step is to show the missing edges which we remove
+during the selection processes. 
+(Right) The control panel is visualized for the column compression module. 
+In this module, we do not have any postprocessing step. Hence, the button is disabled.}
+\label{f.bottom_new_explain}
+\end{figure}
+%------------------------------------------------------------------------------------------
 \section{Implementation Details}
 \label{s.impl.explain}
+Lülfesmann~\cite{Lulfesmann2010} first introduced an standalone EXPLAIN needed a client with administrator privileges to install Python libraries as well as the software itself.
+Here, we introduce two new releases of EXPLAIN.
 \subsection{EXPLAIN 1.0}
 \label{s.impl.explain1}
-The previous version of the software \cite{Lulfesmann2010} needed a client with administrator privileges to install Python libraries as well as the software itself. In the new implementation, the software is moved to the online platform which means the student needs just a web browser to work with the software. In this section, we shortly describe the underlying algorithm as well as how the implementation is.
+This section is a summary of the implementation details 
+of EXPLAIN 1.0 in our publication~\cite{2013:05}.
+In EXPLAIN 1.0, the software is moved to the online platform which means the student needs just a web browser to work with the software.
+EXPLAIN 1.0 combines several Python packages. More precisely, the graph data structure is handled by \textit{NetworkX} \cite{networkx2008}. It provides different operations like creation and deletion of vertices and edges. It also allows the programmer to access characteristic graph information such as the neighbor vertices and the number of vertices. Using this library together with \textit{matplotlib} \cite{matplotlib2007} covers the different aspects of visualization. This library produces different layouts of graphs as well as the properties of vertices and edges. The matrix manipulation and visualization are handled by \textit{Scipy}~\cite{scipy2001}, specifically the construction and the visual layout of sparse matrices.
 
-The basic algorithm of coloring and keeping the history is shown in the pseudo-codes given in \figurename~\ref{f:alg}. The first procedure represents what happens when a student clicks on a vertex. The second one shows how the history of matrix and graph images are loaded when the student clicks on one of the history buttons.
+The conversion from the standalone to the online version needs the Python library \textit{Mod\_python}~\cite{modpython2013}. It comes from the \textit{Apache} project including the Python interpreter in the given Apache web server. Using this library helps to keep the previous program structure as much as possible.
+
+The library \textit{Mod\_python} assists to implement folder management, user interaction, cookie handling, and the web interface. Specifically, the \textit{Mod\_python} modules like \textit{Apache}, \textit{util}, and \textit{PSession} are used to migrate the previous version of \mbox{EXPLAIN} to a web version. As already mentioned, the Python interpreter is embedded into the web server by the \textit{Mod\_python} module.
+
+In the standalone version, an event was handled by a local Python function but, in the new version, there are two sides: server and client. The web browser at client side shows HTML websites with embedded Javascript source code while the server side is a Python server. Since the buttons are HTML buttons and the events are Javascript functions, a Javascript function submits a form to the server containing the execution request and parameters to the related Python function. Then, the called Python function writes the dynamically generated result as an HTML string to the Apache request. The server sends back the HTML string and the client shows the string as a web
+page.
+
+As an example, 
+the basic algorithm of coloring in the column compression module and 
+keeping the history is shown in the pseudo-codes given in \figurename~\ref{f:alg}. The first procedure represents what happens when a student clicks on a vertex. The second one shows how the history of matrix and graph images are loaded when the student clicks on one of the history buttons.
 
 The first procedure, \textsc{VertexClicked}, takes the selected vertex $v$ as an input parameter. To color this vertex $v$, it finds the first color from the list $ColorList$ that is different from the colors of the neighbors of $v$. The coloring of the graph is then changed, shown, and saved as an image. 
 Also, the vertex $v$ is added to the ordered list, $Hist$, of selected vertices for the history.
@@ -3574,18 +3630,11 @@ The second procedure, \textsc{HistClicked}, takes the selected history $h$. This
 \label{f:alg}
 \end{figure}
 
-\mbox{EXPLAIN} combines several Python packages to implement these algorithms. More precisely, the graph data structure is handled by \textit{NetworkX} \cite{networkx2008}. It provides different operations like creation and deletion of vertices and edges. It also allows the programmer to access characteristic graph information such as the neighbor vertices and the number of vertices. Using this library together with \textit{matplotlib} \cite{matplotlib2007} covers the different aspects of visualization. This library produces different layouts of graphs as well as the properties of vertices and edges. The matrix manipulation and visualization are handled by \textit{Scipy}~\cite{scipy2001}, specifically the construction and the visual layout of sparse matrices.
-
-The conversion from the standalone to the online version needs the Python library \textit{Mod\_python}~\cite{modpython2013}. It comes from the \textit{Apache} project including the Python interpreter in the given Apache web server. Using this library helps to keep the previous program structure as much as possible.
-
-The library \textit{Mod\_python} assists to implement folder management, user interaction, cookie handling, and the web interface. Specifically, the \textit{Mod\_python} modules like \textit{Apache}, \textit{util}, and \textit{PSession} are used to migrate the previous version of \mbox{EXPLAIN} to a web version. As already mentioned, the Python interpreter is embedded into the web server by the \textit{Mod\_python} module.
-
-In the standalone version, an event was handled by a local Python function but, in the new version, there are two sides: server and client. The web browser at client side shows HTML websites with embedded Javascript source code while the server side is a Python server. Since the buttons are HTML buttons and the events are Javascript functions, a Javascript function submit a form the server containing the execution request and parameters to the related Python function. Then, the called Python function writes the dynamically generated result as an HTML string to the Apache request. The server sends back the HTML string and the client shows the string as a web page.
 
 \subsection{EXPLAIN 2.0}
 \label{s.impl.explain2}
-As we discussed, we changed the code such that it becomes more efficient and easier to extend.
-In the previous version, the module was mainly based on the python libraries:
+In EXPLAIN 2.0, we changed the code such that it becomes more efficient and easier to extend.
+In the previous version, the module was mainly based on the Python libraries:
 \textit{NetworkX} \cite{networkx2008} for the graph data structure,
 \textit{matplotlib} \cite{matplotlib2007} for the visualization aspects,
 \textit{Scipy}~\cite{scipy2001} for the sparse matrix computation, and
@@ -3594,90 +3643,91 @@ In the previous version, the module was mainly based on the python libraries:
 There were two problems with the previous implementation. First, the final visualization
 of graph and matrix was always an image.
 So, the time for saving and loading the image was always a problem.
-Second, since the final result was HTML/JS code and the computation part was in python,
+Second, since the final result was HTML/JS code and the computation part was in Python,
 an overhead of the server management for \textit{Mod\_python} is always added to the system.
 
-In the new implementation, we replaced all python parts with the Javascript code.
-We decided for the Javascript library D3 (Data-Driven Documents)
+In the new implementation, we replace all Python parts with the Javascript code.
+We chose the Javascript library D3 (Data-Driven Documents)
 because of its power of control and visualization.
-We selected the data structure of adjacency list for graph.
-We used the object structure of the Javascript which helps us to have another
-properties also in the graph. Figure~\ref{f.graph-ds} shown an illustration
-of the data structure. There is an array representing the vertices.
-Each cell of array points to another array \textit{edges} which contains
-the id numbers of the vertices which are neighbors of that cell.
-Here, we showed that the data structure contains other properties like colors.
-It can be extended dynamically to include any other features which may be necessary later. For example, two other properties \textit{distance} and \textit{parent} are added
+We apply the data structure of adjacency list for graph
+combined with the object structure of the Javascript. 
+Figure~\ref{f.graph-ds} shows an illustration
+of this graph data structure. There is an array representing the vertices.
+Each cell of array this points to another array \textit{edges} which contains
+the identity of the vertices which are neighbors of that vertex.
+Here, we show that the data structure contains other properties like colors.
+Using the object structure of Javascript,
+it can be extended dynamically to include any other properties which may be necessary later. For example, two properties \textit{distance} and \textit{parent} are added
 in the implementation of Breadth-First Search (BFS).
 
 %-----------------------------------------------------------------------------------------------
 \begin{figure}
 \centering
 \includegraphics[width=0.38\textwidth]{graph}
-\caption{}
+\caption{The graph data structure which is implemented in EXPLAIN 2.0.}
 \label{f.graph-ds}
 \end{figure}
 %-----------------------------------------------------------------------------------------------
-
-Another important aspect of our design is the suitable connection of the
+We consider a model-view-control (MVC) design pattern~\cite{osmani2012learning} for our implementation.
+An important aspect of our design is the suitable connection of the
 model and view. A practical approach enables the direct change in view while keeps the
-separation of the view and model. So, we decided to have unique ids for
+separation of the view and model. 
+So, we have unique ids for
 edges and vertices. The unique ids for vertices are the concatenation of the
 string “ver” and the actual id of the vertex. Similarly, the unique ids for edges are
 defined as the concatenation of the four strings “edge”, the source vertex, “-“,
 and the target vertex. The same idea applies to the matrix view. Each cell of the matrix
 is accessible through a unique id combining the strings “cell”, the row index,
-"-", and the column index. Each nonzero at matrix also gets the unique id same as before
-while inserting the string “nnz” instead of the string “cell”.
+"-", and the column index. 
+Each nonzero of the matrix also gets the unique id that is built in a similar way
+as the cell id, but replacing the string "cell" by the string "nnz".
 
 The previous discussion of the view access enables us to select the
 specific element and change its behavior and properties. For example, the following
-code would change the color of the vertex with the id~\textit{i} and the color
-of a matrix cell,
+code changes the color of the vertex with the id~\textit{i} to the red color 
+and the color of a matrix cell to the blue color,
 \begin{lstlisting}
 d3.select("#ver"+i).set_color(red);
 d3.select("#cell"+i+"-"+j).set_color(blue);
 \end{lstlisting}
 
-There are two important aspects of implementation: the real connection 
-of an edge to its source and target vertices as well as 
-the order of painting components.
-If we read the locations of the source and target from the painted vertex component
-we would prevent to repaint the view several times.
-The correct order of painting components is important to to prevent 
-edges over vertices or cell of matrices over the nonzeros.
-We draw the components in order by using the grouping concepts of D3.
+Another aspect of the implementation is the order of drawing edges and
+vertices. Since we do not want to draw the edges on the top of the vertices,
+the edges should be drawn first. On the other hand, we draw an edge
+only by getting its vertices positions. This direct connection helps to avoid
+the several update of view.
+To solve this problem, 
+we draw the edges and vertices in order by using the grouping concepts of D3.
 
 After the first design of the software, we then considered the actual interface
 for the developer. Since we do not need all the functionality which the
 programming language provides, we design a new script language which
 has particular functions for working with matrix and graph.
-
-Table~\ref{command-table} shows a list of functions which are available
-now in EXPLAIN 2.0.
+Table~\ref{command-table} shows some of these functions.
 \begin{table}
 \begin{tabular}{ | c | c |}
 \hline
-neighbors($l_v$) & returns the neighbors of the vertex $l_v$ \\ \hline
+neighbors($l_v$) & returns the neighbors of the list $l_v$ of vertices \\ \hline
 color\_vertex($v$,$c$) & colors the vertex $v$ with the color $c$ \\\hline
 color\_column($i$,$c$) & colors the column $i$ with the color $c$ \\\hline
 color\_row($j$,$c$) & colors the row $j$ with the color $c$ \\\hline
 min($l$) and max($l$) & finds minimum and maximum of the list of integers $l$ \\\hline
-diff($A$,$B$) & finds difference of two given sets $A$ and $B$ \\\hline
-get\_colors($l_v$) & return a list of colors of vertices $l_v$ \\\hline
+diff($A$,$B$) & finds $A - B$ \\\hline
+get\_colors($l_v$) & return a list of colors of the list $l_v$ of vertices\\\hline
 \end{tabular}
 \caption{The list of functions available in the new scripting language.}
 \label{command-table}
 \end{table}
 
 Having such scripting language empowers us to have a dynamic script editor
-together with EXPLAIN which makes the creation of new module very efficient and fast.
+together with EXPLAIN which makes the creation of new modules efficient and fast.
 The developer of a new module needs only to write the action command of the vertex
 click and the global variables which he/she needs.
 There are some predefined variables for required data.
-As an example, the variable \textit{current} represents the current vertex.
+As an example, the variable \textit{current} and \textit{colors}
+represents the current vertex and the list of predefined colors, respectively.
 The following code shows the code for the column compression
-module as an instance. The code is very shorter than the implementation in EXPLAIN 1.0.
+module as an example.
 \begin{lstlisting}
 var ns = neighbors(current);
 var col_ns = get_colors(ns);
@@ -3687,17 +3737,17 @@ color_vertex(current,new_col);
 \end{lstlisting}
 Each module in EXPLAIN 2.0 consists of four functions with particular
 name conventions. For example, the following list represents these functions
-for the column compression module. Here, the ending of the function names are 
-made from the first characters of the name of the module.
+for the column compression module. 
+Here, all functions except the one which computes one step of algorithm
+have the ending made up from the first characters of the name of the module.
 \begin{itemize}
 \item column\_compression: The function which computes one step of the algorithm.
 \item reference\_cc: This function defines two strings: a bibliography for a reference (\textit{reference\_text}) and the actual reference url (\textit{reference\_url}).
 \item global\_cc: This function contains any global variable. Particularly, the user should define some required variables which we discuss in the following paragraph.
-\item post\_processing\_cc: This is an action to a post processing button. As the name suggests, it is computed
-when a round is completed. For example, the edges between the vertex separators and the subgraphs are removed during the algorithm for a better view. The post processing step shows these missing edges.
+\item post\_processing\_cc: This is an action to a post processing button. As we discussed, the postprocessing shows the missing edges in the nested dissection module.
 \end{itemize}
 
-A sample source code from EXPLAIN computes the column compression algorithm is as follows.
+A sample source code showing the previous functions for the column compression algorithm is as follows.
 \begin{lstlisting}
 var reference_cc = function () {
     reference_text= "H. M. Buecker, M. A. Rostami, M. Luelfesmann : " +
@@ -3760,8 +3810,15 @@ Additionally in \secref{package}, we discussed a new heuristic for the coloring 
 as well as the first ideas toward a new heuristic based on the exact coloring in the small subgraphs.
 We should do more evaluations and computations for these heuristics later.
 
-Finally, in \secref{explain}, we develop an interactive educational module 
+Finally, in \secref{explain}, we developed an interactive educational module 
 for teaching the concepts of combinatorial scientific computing. 
+In this chaper, we discussed our previous publications
+\cite{2013:05,2014:01,2014:02,2014:09,2015:3} and also the new features which 
+we have not published yet. There is still a lot of space 
+for the new ideas in this software. Beside developing new modules,
+we need to improve the usability and extensibility of the software.
+Also, we need an extensive evaluation of the software to find
+the new ways of further developments.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
