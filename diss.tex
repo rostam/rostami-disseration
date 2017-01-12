@@ -1385,7 +1385,7 @@ It is not always the case in the other orderings. However, in this table,
 the coloring with $\alpha=6$ can be a suitable choice in most of the case
 since the number of additionally required elements are relatively high
 while the number of colors decreases mainly.
-More figures can be found \label{app.compare.alg35.alphas} compares these values
+More figures can be found \ref{app.compare.alg35.alphas} compares these values
 based on the varying block sizes.
 
 \begin{table}
@@ -1543,28 +1543,87 @@ for the matrix \textit{orani678}.}
 As we said, the first part of algorithms chooses the next vertex
 which should be processed from the maximum degree vertices
 in a graph induces on the required edges.
-We change this part of algorithm to process a specific algorithm
-with a maximum degree and maximum nonrequired elements instead of
-an arbitrary vertex. After the first step, this processes can be
-repeated or we can process the vertices with
-minimum number of nonrequired elements.
+Now, we define a new algorithm by chaging the part of selecting
+next vertex of \coderef{orig.star.bicoloring} which selects a vertex with
+the maximum determined nonrequired elements (and the minimum number of required elements.)
+Table~\ref{mats.pot.add.gr.vs.nreq.star} shows
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+{} & \coderef{orig.star.bicoloring} & Our new algorithm & \coderef{orig.star.bicoloring} & Our new algorithm\\\hline
+\textit{steam1.mtx} & $64$ & $590$ & $64$ & $454$ \\\hline
+\textit{steam2.mtx} & $240$ & $2352$ & $240$ & $1648$ \\\hline
+\textit{nos3.mtx} & $4590$ & $4614$ & $2986$ & $3050$ \\\hline
+\textit{ex7.mtx} & $35690$ & $36486$ & $28028$ & $28796$ \\\hline
+\textit{ex33.mtx} & $9282$ & $11180$ & $6220$ & $7510$ \\\hline
+\textit{crystm01.mtx} & $19262$ & $22716$ & $11472$ & $13978$ \\\hline
+\textit{coater1.mtx} & $14402$ & $14442$ & $8296$ & $8262$ \\\hline
+\textit{pesa.mtx} & $40572$ & $41460$ & $32728$ & $33956$ \\\hline
+\end{tabular}
+\vspace*{1cm}\newline
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+{} & \coderef{orig.star.bicoloring} & Our new algorithm & \coderef{orig.star.bicoloring} & Our new algorithm\\\hline
+\textit{steam1.mtx} & $64$ & $802$ & $64$ & $466$ \\\hline
+\textit{steam2.mtx} & $240$ & $2352$ & $240$ & $944$ \\\hline
+\textit{nos3.mtx} & $4824$ & $5166$ & $3152$ & $3444$ \\\hline
+\textit{ex7.mtx} & $36794$ & $37012$ & $28670$ & $28942$ \\\hline
+\textit{ex33.mtx} & $11070$ & $11426$ & $7380$ & $7708$ \\\hline
+\textit{crystm01.mtx} & $21420$ & $22714$ & $13012$ & $13992$ \\\hline
+\textit{coater1.mtx} & $14422$ & $14496$ & $8204$ & $8350$ \\\hline
+\textit{pesa.mtx} & $42758$ & $42904$ & $32272$ & $34266$ \\\hline
+\end{tabular}
+\vspace*{1cm}\newline
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+{} & \coderef{orig.star.bicoloring} & Our new algorithm & \coderef{orig.star.bicoloring} & Our new algorithm\\\hline
+\textit{steam1.mtx} & $64$ & $824$ & $64$ & $616$ \\\hline
+\textit{steam2.mtx} & $240$ & $2320$ & $240$ & $1616$ \\\hline
+\textit{nos3.mtx} & $4314$ & $4760$ & $2784$ & $3102$ \\\hline
+\textit{ex7.mtx} & $35690$ & $36450$ & $27814$ & $28568$ \\\hline
+\textit{ex33.mtx} & $9728$ & $10978$ & $6468$ & $7296$ \\\hline
+\textit{crystm01.mtx} & $24222$ & $27226$ & $14562$ & $16590$ \\\hline
+\textit{coater1.mtx} & $14532$ & $14634$ & $8194$ & $8412$ \\\hline
+\textit{pesa.mtx} & $41128$ & $42112$ & $31114$ & $33744$ \\\hline
+\end{tabular}
+\caption{The comparison between the number of potentially and additionally required
+elements computed with \coderef{orig.star.bicoloring} and our new algorithm.
+The block size is fixed to $10$. The orderings for coloring are (Top) the natural ordering,
+(Middle) LFO, and (Bottom) SLO.}
+\label{mats.pot.add.gr.vs.nreq.star}
+\end{table}
 
 
 \begin{figure}
-\includegraphics[width=\linewidth]{bls_adds_crystm01_old_star_vs_new}
+\includegraphics[width=\linewidth]{crystm01_alg36_bls_nat_adds}
 \caption{The number of additionally required elements computed with
-the new star bicoloring compared with the older implementation.
-The nonsymmetric matrix \textit{$crystm01$} is used here.}
-\label{bls_adds_crystm01_old_star_vs_new}
+the new star bicoloring compared with \coderef{orig.star.bicoloring}.
+The nonsymmetric matrix \textit{$crystm01$} with the natural ordering is used here.}
+\label{crystm01_alg36_bls_nat_adds}
 \end{figure}
 
-\begin{figure}
-\includegraphics[width=\linewidth]{bls_cols_crystm01_old_star_vs_new}
-\caption{The number of additionally required elements computed with
-the new star bicoloring compared with the older implementation.
-The nonsymmetric matrix \textit{$crystm01$} is used here.}
-\label{bls_cols_crystm01_old_star_vs_new}
-\end{figure}
+
+
+%\begin{figure}
+%\includegraphics[width=\linewidth]{bls_adds_crystm01_old_star_vs_new}
+%\caption{The number of additionally required elements computed with
+%the new star bicoloring compared with the older implementation.
+%The nonsymmetric matrix \textit{$crystm01$} is used here.}
+%\label{bls_adds_crystm01_old_star_vs_new}
+%\end{figure}
+
+%\begin{figure}
+%\includegraphics[width=\linewidth]{bls_cols_crystm01_old_star_vs_new}
+%\caption{The number of additionally required elements computed with
+%the new star bicoloring compared with the older implementation.
+%The nonsymmetric matrix \textit{$crystm01$} is used here.}
+%\label{bls_cols_crystm01_old_star_vs_new}
+%\end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Parallelization}
 \label{s.parallel}
@@ -3911,6 +3970,34 @@ The comparison of the number of additionally required elements in \coderef{code.
 with $\alpha\in{0,2,6,10}$.}
 \label{ex33_alg35_alpha_0_2_6_10_bls_lfo_adds}
 \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Comparing the computation of Algorithm 3.5 ($\alpha=0$) with  our new star bicoloring algorirthm}
+\label{app.compare.alg35.alphas.star}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+{} & \coderef{orig.star.bicoloring} & Our new algorithm & \coderef{orig.star.bicoloring} & Our new algorithm\\\hline
+\textit{steam1.mtx} & $786$ & $590$ & $630$ & $454$ \\\hline
+\textit{steam2.mtx} & $1880$ & $2352$ & $1400$ & $1648$ \\\hline
+\textit{nos3.mtx} & $6756$ & $4614$ & $4296$ & $3050$ \\\hline
+\textit{ex7.mtx} & $34954$ & $36486$ & $25054$ & $28796$ \\\hline
+\textit{ex33.mtx} & $8934$ & $11180$ & $5572$ & $7510$ \\\hline
+\textit{crystm01.mtx} & $47556$ & $22716$ & $28318$ & $13978$ \\\hline
+\textit{coater1.mtx} & $11558$ & $14442$ & $7448$ & $8262$ \\\hline
+\textit{pesa.mtx} & $41154$ & $41460$ & $33094$ & $33956$ \\\hline
+\end{tabular}
+\vspace*{1cm}\newline
+\caption{The comparison between the number of potentially and additionally required
+elements computed with \coderef{orig.star.bicoloring} and our new algorithm.
+The block size is fixed to $10$. The orderings for coloring are (Top) the natural ordering,
+(Middle) LFO, and (Bottom) SLO.}
+\label{mats.pot.add.gr.vs.nreq.star.bls}
+\end{table}
+
 
 
 \end{document}
