@@ -1013,7 +1013,7 @@ which are determined.
 Here, the symbol $r$ stands for a required element,
 the symbol \textit{$*$} stands for other nonzero elements (the nonrequired elements),
 and the number $0$ denotes a zero element.
-If the first and second columns are colored with the same color as given in the left matrix,
+If the first and second columns get the same color as given in the left matrix,
 we will get the nonzero at position $(3,1)$ as a by-product.
 However, there are certain degrees of freedom. In
 this example, one could also assign the same color to columns $1$ and
@@ -1021,13 +1021,7 @@ $3$ as illustrated in the right matrix
 in which no nonzero element in the last row will be computed
 as a by-product. This idea leads to the problem of maximizing
 the number of nonrequired nonzero elements that are computed as a by-product.
-Now, the question is: can we save
-more nonrequired elements in the process of coloring?
-Can we maximize a term like $\alpha C + \beta N$ where $\alpha$ and $\beta$ are
-weighting coefficients, $C$ is the number of colors, and $N$ is the
-number of determined nonrequired elements?
-Here, we introduce a new heuristic 
-which increases the number of determined nonrequired elements 
+Here, we introduce a new heuristic which increases the number of determined nonrequired elements 
 while the number of colors remains almost the same.
 
 \subsection{Restricted distance-$2$ coloring}
@@ -1050,7 +1044,6 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
       $forbiddenColors[\Phi(n)] = v$
 
     $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
-    $I_v=\{u\in V_c: u\notin N_2(v,E_i)\}$
     $maxs = \argmax_{x\in I_v} \nreq_v (x)$
     $\Phi(maxs[0]) = \Phi(v)$
   return $\Phi$
@@ -1270,7 +1263,6 @@ function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
       $forbiddenColors[\Phi(n)] = v$
 
     $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
-    $I_v=\{u\in V_c: u\notin N_2(v,E_i)\}$
     $maxs = \argmax_{x\in I_v} \nreq_v$
     $mins = \argmin_{x\in maxs} \req$
     $\Phi(mins[0]) = \Phi(v)$
@@ -1683,20 +1675,11 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$\alpha$)
         if $\Phi(n) \neq 0$
           $forbiddenColors[\Phi(n)] = v$
 
-  $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v$
-  $I_v=\{u\in V_c: u\notin N_2(v,E_i)\}$
-  $nreq_v = \{n\in N_2(v,E_i):(n,v)\notin E_i\}$
-  for $i \in I_v$
-    $nreq_i = \{n\in N_2(i,E_i):(n,i)\notin E_i\}$
-    $req_i = \{n\in N_2(i,E_i):(n,i)\in E_i\}$
-    $mapVtoNreq = mapVtoNreq \cup (i , count (nreq_i - nreq_v))$
-    $mapVtoreq = map \cup (i , count (req_i))$
-    $maxs = \{ a\in keys(map): map[a] = max(values(mapVtoNreq))\}$
-    $mins = \{ a\in keys(map): map[a] = min(values(mapVtoNreq))\}$
-    $minReq = \{ a\in maxs: mapVtoreq[a] = min(values(mapVtoreq))\}$
-    $\Phi(minReq) = \Phi(v)$
-  for $i\in\{0,1,...,\alpha\}$
-    $\Phi(mins[i]) = \Phi(v)$
+    $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
+    $maxs = \argmax_{x\in I_v} \nreq_v$
+    $mins = \argmin_{x\in maxs} \req$
+    for $i\in\{0,1,...,\alpha\}$
+      $\Phi(mins[i]) = \Phi(v)$
 
   #pragma omp barrier
   $U_0 = V$
@@ -2132,13 +2115,11 @@ function d2_color_fillpath($G=(V_r\cup V_c,E)$,$E_i\subset E$, $k$)
         if $\Phi(n) \neq 0$
           $forbiddenColors[\Phi(n)] = v$
 
-      $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
-      $I_v=\{u\in V_c: u\notin N_2(v,E_i)\}$
-      $M = \{ (i,Nreq(i,v)): i\in I_v\}$
-      $maxs = \{ a\in keys(map): map[a] = max(values(M))\}$
-      for $t\in \{(v,u): u\in maxs\}$
-        if $pr_k^t = \emptyset$ and $pl_k^t = \emptyset$
-          $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
+    $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
+    $maxs = \argmax_{x\in I_v} \nreq_v$
+    for $t\in \{(v,u): u\in maxs\}$
+      if $pr_k^t = \emptyset$ and $pl_k^t = \emptyset$
+        $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
   consistent_coloring(G)
   return $\Phi$
 \end{lstlisting}
