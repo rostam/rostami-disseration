@@ -875,35 +875,36 @@ no new additionally required edges are found.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{New coloring heuristics}
 \label{package}
-Karp~\cite{karp:1972} proves that the graph coloring problem is an NP-complete problem
-for general graphs.
+Karp~\cite{karp:1972} proves that the graph coloring problem is NP-complete for general graphs.
 Hence, various coloring heuristics are studied throughout the years with a polynomial complexity.
 The greedy coloring is a widely used heuristic which has a low computational complexity
 and computes a \textit{reasonable} coloring (see~\cite{spaa14}).
 The greedy coloring algorithm for the restricted distance-$2$ coloring
 is given in \coderef{code.greedy} which is adapted from Lülfesmann~\cite{Lulfesmann2012Fap}.
-The computed coloring $\Phi:V_c\to{1,2,...,p}$ on the vertex set $V_c={1,2,...,n}$
+The computed coloring $\Phi:V_c\to\{1,2,...,p\}$ on the vertex set $V_c=\{1,2,...,n\}$
 is restricted to the initially required edges $E_i$.
 All arrays in all algorithms, like $forbiddenColors$, 
-implemented in this thesis starts with the index $0$.
-The array $forbiddenColors[c]=v$ means the vertex $v$ can not be colored
-by the color $c$. Since we do not consider color $0$ in the restricted
-distance-$2$ coloring, the element $forbiddenColors[0]$ is ignored.
+implemented in this thesis start with the index $0$.
+The assignment $forbiddenColors[c]=v$ means the vertex $v$ can not be colored
+by the color $c$. Since this algorithm does not consider the color $0$,
+the element $forbiddenColors[0]$ is ignored.
 
 In this algorithm, the function $N_2(v,E_i)$ finds all distance-$2$ neighbors
 of $v$ restricted to the set of initially required edges $E_i$. 
 More clearly, the function $N_2(v,E_i)$ computes 
-all vertices on the paths of length $2$ from the vertex $v$
-such that at least one edge of each path is in the set $E_i$. 
-The idea is to iterate over all vertices incident
-to a required edge and to assign colors to these vertices.
-Each vertex in this iteration gets a color different from their
-distance-$2$ neighbors. 
-After considering all neighbors, the smallest index $i$ of the array $forbiddenColors$
-is the color of $v$ such that the value of $forbiddenColors$ is not $v$.
+all vertices on all paths of length $2$ from the vertex $v$
+such that at least one edge of such a path is in the set $E_i$,
+$$
+N_2(v,E_i)=\{ z\in V: \text{ there is a path } (v,w,z) \text{ with } (v,w)\in E_i
+\text{ or } (w,z)\in E_i \text{ or both.}\} 
+$$
+To color a vertex $v$ we iterate over all distance-$2$ neighbors in $N_2(v,E_i)$ which are
+already colored. Remember that these assigned colors can not be used to color the vertex $v$.
+After collecting all these forbidden colors, we assign $v$ color with a smallest index different from 
+these forbidden colors.
 It follows that the computational complexity of this algorithm is $\mathcal{O}(n \Delta^2)$ in which $n$
 and $\Delta$ are the number of vertices and the maximum vertex degree, respectively.
-Since our matrices are sparse, $\Delta$ and $\Delta^2$
+Recall from the last chapter, the matrices are sparse. Therefore, $n$ is large and $\Delta$ and $\Delta^2$
 are relatively small.
 
 \begin{figure}
@@ -913,7 +914,7 @@ for columns.,label=code.greedy,mathescape]
 function d2_color($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   $\Phi\leftarrow [0\ldots 0]$
   $forbiddenColors\leftarrow [0\ldots 0]$
-  for $v\in V_c$ with $\exists n\in N_2(v,E_i): (v,n)\in E_i$
+  for $v\in V_c$ with $N_2(v,E_i)\neq\emptyset$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
         $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
@@ -921,7 +922,7 @@ function d2_color($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \end{lstlisting}
 \end{figure}
 
-In this coloring, the assumption is that each vertex is available and colored one at a time.
+In this algorithm, vertices are colored one at a time.
 Therefore, the vertex ordering plays a major role in the greedy algorithm.
 Hence, there are many publications on how to choose
 a suitable ordering heuristics for a serial or parallel version of
@@ -932,11 +933,12 @@ the largest-first ordering (LFO)~\cite{LFO}, the incidence-degree ordering (IDO)
 the saturation-degree ordering (SDO)~\cite{SDO}, and the smallest-last ordering (SLO)~\cite{ordering1}.
 A short description of these orderings is available in \appref{app.ord}.
 
+This chapter is structured as follows.
 We modify the greedy algorithm in \secref{s.max.pot.req} and \secref{s.max.add.req}
  such that the number of potentially required elements
 and additionally required elements are increased.
 Later, we discuss a better heuristic for
-the special case of coloring restricted to diagonals in~\secref{s.part.color.diag}.
+the special case of coloring restricted to a diagonal in~\secref{s.part.color.diag}.
 We sketch the first ideas toward a new heuristic based on the exact coloring in small
 subgraphs in~\secref{s.exact}.
 Finally, we introduce our computational package \textit{PreCol} 
@@ -944,10 +946,8 @@ in~\secref{s.extend} that computes the
 unidirectional and bidirectional restricted colorings with different algorithms
 as well as the ILU preconditioning. 
 
-Throughout this chapter, we did experiments on some matrices from the Florida sparse
-matrix collection~\cite{florida.matrices}. Table~\ref{florida.mats} shows these matrices
-together with their information.
-
+Throughout this chapter, the numerical experiments are carried out using 
+the matrices in Table~\ref{florida.mats} from the Florida sparse matrix collection~\cite{florida.matrices}.
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|c|}
@@ -975,13 +975,14 @@ Matrix & Size & Nonzeros & Symmetric\\\hline
 \textit{cage10.mtx} & $11397\times 11397$ & $150645$ & false\\\hline
 \textit{cage12.mtx} & $130228\times 130228$ & $2032536$ & false\\\hline
 \end{tabular}
-\caption{The experiments are done these matrices
-from the Florida sparse matrix collection throughout this thesis.}
+\caption{
+Throughout this chapter, the numerical experiments are carried out using 
+these matrices from the Florida sparse matrix collection.}
 \label{florida.mats}
 \end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Maximizing potentially required elements}
+\section{Maximizing the set of potentially required elements}
 \label{s.max.pot.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Here, our focus is to solve Problem~\ref{p:max_pot}.
@@ -1034,10 +1035,9 @@ Our goal here is to increase the number of potentially required elements.
 A potential required element is selected from the nonrequired elements such that
 the number of colors does not increase.
 Given a bipartite graph $G=(V_c\cup V_r,E)$ and a vertex $v\in V_c$, 
-we define a function $\nreq_v:S\subseteq V_c\rightarrow N$.
-The function $\nreq_v(w)$ computes
-the number of nonrequired elements in the compression of
-the corresponding columns $v$ and $w$ which are determined.
+we define a function $\nreq_v:S\subseteq V_c\rightarrow \mathbb{N}$.
+The function $\nreq_v(w)$ computes the number of determined nonrequired elements in the compression of
+the corresponding columns $v$ and $w$.
 We call these elements the determined nonrequired elements.
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
@@ -1045,44 +1045,42 @@ considering the nonrequired elements.,label=code.new.d2.nreq,mathescape]
 function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   $\Phi\leftarrow [0\ldots 0]$
   $forbiddenColors\leftarrow [0\ldots 0]$
-  for $v\in V_c$ with $\exists n\in N_2(v,E_i): (v,n)\in E_i$ and $\Phi(v)=0$
+  for $v\in V_c$ with $N_2(v,E_i)\neq\emptyset$ and $\Phi(v)=0$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
       $forbiddenColors[\Phi(n)] = v$
 
     $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
     $I_v=\{u\in V_c: u\notin N_2(v,E_i)\}$
-    $maxs = \argmax_{x\in I_v} \nreq_v$
+    $maxs = \argmax_{x\in I_v} \nreq_v (x)$
     $\Phi(maxs[0]) = \Phi(v)$
   return $\Phi$
 \end{lstlisting}
 \end{figure}
 We modify the greedy algorithm  presented in \coderef{code.greedy} as follows.
-Our approach in this new heuristic coloring algorithm
-is based on finding independent sets.
-In a general graph $G=(V,E)$, a subset of the vertices $I\subset V$ is
+Our approach in this new coloring algorithm is based on finding independent sets.
+In a general graph $G=(V,E)$, a subset of the vertices $I\subseteq V$ is
 called an independent set~\cite{bondy2008graph} 
-if there is no edge between these vertices,
+if there is no edge between any of its vertices,
 $$\forall u,v\in I: (u,v)\notin E.$$
 In the bipartite graph model in \defref{d.bip.graph} with a set of initially required elements $E_i$,
-we need to change the definition of independent set using the distance-$2$ neighbors as follow,
+we need to change the definition of an independent set using the distance-$2$ neighbors as follows,
 $$\forall u,v\in I: u\notin N_2(v,E_i).$$
 Also, we represent an independent set containing the vertex $v$ by $I_v$.
 For this new heuristic, we define two operators $\operatorname{keys}$ 
-and $\operatorname{values}$ which returns the set of keys
-and values of $M$, respectively.
-Given a function $f:A\rightarrow B$ and a subset $C\subseteq A$
+and $\operatorname{values}$.
+Given a function $f:A\rightarrow B$ and a subset $S\subseteq A$
 the operators $\argmax$ and $\argmin$ are defined as,
 \begin{equation*}
 \begin{split}
 \argmax_{x\in S} f(x) &= \{ x | \forall y\in S: f(y) \leq f(x)\}, \\
-\argmin_{x\in S} f(x) &= \{ x | \forall y\in S: f(y) \geq f(x)\}
+\argmin_{x\in S} f(x) &= \{ x | \forall y\in S: f(y) \geq f(x)\}.
 \end{split}
 \end{equation*}
 
 \coderef{code.new.d2.nreq} shows this new heuristic.
 In this algorithm, we iterate over all uncolored vertices.
 First, we color the vertex $v$ with a color different form
-its distance-$2$ neighbors like the previous greedy coloring.
+its distance-$2$ neighbors restricted to $E_i$ like the previous greedy coloring.
 Additionally, we compute $\nreq_v(u)$ for each vertex $u\in I_v$
 and color a vertex $w\neq u \in I_v$ having the maximum value of $\nreq_v(w)$
 and with the same color as $v$.
@@ -1267,7 +1265,7 @@ label=code.new.impr1,mathescape]
 function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   $\Phi\leftarrow [0\ldots 0]$
   $forbiddenColors\leftarrow [0\ldots 0]$
-  for $v\in V_c$ with $\exists n\in N_2(v,E_i): (v,n)\in E_i$ and $\Phi(v)=0$
+  for $v\in V_c$ with $N_2(v,E_i)\neq\emptyset$ and $\Phi(v)=0$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
       $forbiddenColors[\Phi(n)] = v$
 
@@ -1324,7 +1322,7 @@ label=code.new.impr2,mathescape]
 function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
   $\Phi\leftarrow [0\ldots 0]$
   $forbiddenColors\leftarrow [0\ldots 0]$
-  for $v\in V_c$ with $\exists n\in N_2(v,E_i): (v,n)\in E_i$ and $\Phi(v)=0$
+  for $v\in V_c$ with $N_2(v,E_i)\neq\emptyset$ and $\Phi(v)=0$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
       $forbiddenColors[\Phi(n)] = v$
 
@@ -1782,7 +1780,7 @@ additionally required elements since those elements are outside the blocks.
 %\cite{mpi_greedy_coloring}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Maximizing additionally required elements}
+\section{Maximizing the set of additionally required elements}
 \label{s.max.add.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In \secref{s.max.pot.req}, our focus was to increase the potentially required elements
