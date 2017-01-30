@@ -228,7 +228,7 @@ In this chapter, we introduce a new software
 containing new heuristic algorithm.
 \chapref{explain} discuss an interactive educational module
 which is designed to teach algorithms from the combinatorial scientific computing in the classroom.
-We summerize our previous publications
+We summarize our previous publications
 \cite{2013:05,2014:01,2014:02,2014:09,2015:3} in this chapter and discuss also 
 some new features.
 Finally, the conclusion and future work come in \chapref{conc}.
@@ -1046,8 +1046,8 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 
     Determine an indepentent set $I_v$ containing $v$
     if $I_v-\{v\}\neq\emptyset$
-    $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
-    $\Phi(maxs[0]) = \Phi(v)$
+      $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
+      $\Phi(maxs[0]) = \Phi(v)$
   return $\Phi$
 \end{lstlisting}
 \end{figure}
@@ -1265,11 +1265,13 @@ function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   for $v\in V_c$ with $N_2(v,E_i)\neq\emptyset$ and $\Phi(v)=0$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
       $forbiddenColors[\Phi(n)] = v$
-
     $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
-    $maxs = \argmax_{x\in I_v} \nreq_v$
-    $mins = \argmin_{x\in maxs} \req$
-    $\Phi(mins[0]) = \Phi(v)$
+
+    Determine an indepentent set $I_v$ containing $v$
+    if $I_v-\{v\}\neq\emptyset$
+      $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
+      $mins = \argmin_{x\in maxs} \req (x)$
+      $\Phi(mins[0]) = \Phi(v)$
   return $\Phi$
 \end{lstlisting}
 \end{figure}
@@ -1320,11 +1322,14 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
   for $v\in V_c$ with $N_2(v,E_i)\neq\emptyset$ and $\Phi(v)=0$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
       $forbiddenColors[\Phi(n)] = v$
-
     $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
-    $maxs = \argmax_{x\in I_v} \nreq_v$
-    $mins = \argmin_{x\in maxs} \req$
-    for $i\in\{0,1,...,\alpha\}$
+
+    Determine an indepentent set $I_v$ containing $v$
+    if $I_v-\{v\}\neq\emptyset$
+      $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
+      $mins = \argmin_{x\in maxs} \req(x)$
+      $\Phi(mins[0]) = \Phi(v)$ 
+      for $i\in\{0,1,...,\alpha - 1\}$
         $\Phi(mins[i]) = \Phi(v)$
   return $\Phi$
 \end{lstlisting}
@@ -1362,7 +1367,7 @@ The comparison of the number of additionally required elements in \coderef{code.
 \label{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
 \end{figure}
 
-Table~\ref{different.alpha} compares the number of additionalyl required elements and 
+Table~\ref{different.alpha} compares the number of additionally required elements and 
 the number of colors using \coderef{code.new.impr2} with different $\alpha$.
 Three tables at the top, middle, and the bottom of Table~\ref{different.alpha}
 are for the natural ordering, the LFO ordering, and the SLO ordering, respectively.
@@ -1536,7 +1541,7 @@ for the matrix \textit{orani678}.}
 As we said, the first part of algorithms chooses the next vertex
 which should be processed from the maximum degree vertices
 in a graph induces on the required edges.
-Now, we define a new algorithm by chaging the part of selecting
+Now, we define a new algorithm by changing the part of selecting
 next vertex of \coderef{orig.star.bicoloring} which selects a vertex with
 the maximum determined nonrequired elements (and the minimum number of required elements.)
 Table~\ref{mats.pot.add.gr.vs.nreq.star} shows
@@ -2837,7 +2842,7 @@ the corresponding numbers, for example
 $\{1=\text{green}, 2=\text{turquoise}, 3=\text{orange}, 4=\text{violet},
 5=\text{red}, 6=\text{yellow}, ...\}$.
 These colors are selected such that they look perceptually distinct.
-However, a user can define any new color by a function that sepcifies an \textbf{rgb} value.
+However, a user can define any new color by a function that specifies an \textbf{rgb} value.
 Another aspect of the design is to use the same colors in graph and matrix view
 as well as in the feedback diagram.
 This consistent use of colors in the graph
@@ -3138,7 +3143,7 @@ in which a row vertex is selected first.
 \caption{
 (a) The initial view of the module when no required edges are selected.
 (b) The user selects first the required edges. These required edges and the corresponding
-nonzero elemetnts get the red color.}
+nonzero elements get the red color.}
 \label{partial_coloring_bad_coloring}
 \end{figure}
 
@@ -3159,7 +3164,7 @@ nonzero elemetnts get the red color.}
 
 \subsection{Nested dissection ordering}
 In our paper~\cite{2014:02}, we present the nested dissection module to
-illustrate the connection between the following scientific computing and combinatoral problems,
+illustrate the connection between the following scientific computing and combinatorial problems,
 \begin{problem}[Nested Dissection Ordering]
 \label{p.nest.dissect}
 Given a sparse symmetric positive
@@ -3345,10 +3350,10 @@ The curve of the orange color is also the size of vertex separator.}
 \subsection{Parallel matrix-vector product}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In our paper~\cite{2015:3}, we present a module for a parallel matrix-vector
-product to illustrate the connection between the following scientific computing and combinatoral problems.
+product to illustrate the connection between the following scientific computing and combinatorial problems.
 \begin{problem}[Scientific Computing Problem]
 \label{p.par.mat.vec}
-Given a large sparse matrix $A$ with a symmetirc nonzero pattern and a dense
+Given a large sparse matrix $A$ with a symmetric nonzero pattern and a dense
 vector $x$. Suppose we want to compute the sparse matrix-vector product
 $y \leftarrow Ax$ on a computer with distributed memory. Find a non-redundant
 data distribution of the nonzero elements of $A$ in a row-wise fashion and a
@@ -3522,7 +3527,7 @@ In EXPLAIN 2.0, the student can see and edit the source code of an algorithm
 beside the visualization of the graph and matrix.
 There is a new button in the control button named as \textit{Edit Algorithm!}.
 Clicking this button shows an editor with the source code of the corresponding module.
-This souce code is written in a simple scripting language.
+This source code is written in a simple scripting language.
 Figure~\ref{f.custom_module} illustrates the column compression module.
 As it can be seen, an editor with the corresponding source code of 
 the column compression module is shown in the right part of the figure.
@@ -3849,7 +3854,7 @@ We should do more evaluations and computations for these heuristics later.
 
 Finally, in \secref{explain}, we developed an interactive educational module 
 for teaching the concepts of combinatorial scientific computing. 
-In this chaper, we discussed our previous publications
+In this chapter, we discussed our previous publications
 \cite{2013:05,2014:01,2014:02,2014:09,2015:3} and also the new features which 
 we have not published yet. There is still a lot of space 
 for the new ideas in this software. Beside developing new modules,
