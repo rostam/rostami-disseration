@@ -1051,6 +1051,9 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   return $\Phi$
 \end{lstlisting}
 \end{figure}
+Here, we focus on the unidirectional compression for columns represented by $V_c$.
+However, an analogous discussion holds for the unidirectional compression for rows.
+
 We modify the greedy algorithm  presented in \coderef{code.greedy} as follows.
 Our approach in this new coloring algorithm is based on finding independent sets.
 In a general graph $G=(V,E)$, a subset of the vertices $I\subseteq V$ is
@@ -1227,7 +1230,7 @@ The computation is carried out on the matrix \textit{ex33}. }
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_slo_cols}
-\caption{The number of computed by \coderef{code.new.d2.nreq} with the SLO ordering
+\caption{The number of colors computed by \coderef{code.new.d2.nreq} with the SLO ordering
 compared with \coderef{code.greedy}. 
 The computation is carried out on the matrix \textit{ex33}.}
 \label{ex33_alg31_alg32_bls_slo_cols}
@@ -1246,7 +1249,7 @@ The computation is carried out on the matrix \textit{ex33}. }
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_nat_cols}
-\caption{The number of computed by \coderef{code.new.d2.nreq} with the natural ordering
+\caption{The number of colors computed by \coderef{code.new.d2.nreq} with the natural ordering
 compared with \coderef{code.greedy}. 
 The computation is carried out on the matrix \textit{ex33}. }
 \label{ex33_alg31_alg32_bls_nat_cols}
@@ -1254,10 +1257,8 @@ The computation is carried out on the matrix \textit{ex33}. }
 
 \begin{figure}
 \begin{lstlisting}[
-caption=A modification of the previous algorithm in which
-a particular element is selected from the set of columns with
-the maximum determined nonrequired elements.
-we select only an arbitrary element in the previous version.,
+caption=A modification of \coderef{code.new.d2.nreq} in which
+a particular element is selected in lines 10 and 11.,
 label=code.new.impr1,mathescape]
 function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   $\Phi\leftarrow [0\ldots 0]$
@@ -1281,30 +1282,36 @@ function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \includegraphics[width=0.9\linewidth]{ex33_alg32_alg34_bls_lfo_add}
 \caption{The number of additionally
 required elements are increased comparing \coderef{code.new.d2.nreq}
-and \coderef{code.new.impr1} when the ordering for the coloring is the LFO ordering.}
+and \coderef{code.new.impr1} when the ordering for the coloring is the LFO ordering.
+The computation is carried out on the matrix \textit{ex33}. }
 \label{ex33_alg32_alg34_bls_lfo_add}
 \end{figure}
 
 Now, we modify \coderef{code.new.d2.nreq} further to select a vertex with the minimum number of 
 required elements among the computed set of vertices with the maximum number of determined nonrequired elements.
 This idea facilitates gathering of more nonrequired elements in the same column since
-more free places for the other elements remains.
-Let the function $\req: V_c\rightarrow N$ compute the number of required edges adjacent to each vertex.
-A new algorithm is proposed in \coderef{code.new.impr1} apply this idea. 
-The only new step of the algorithm is to compute the operator $\argmin$ for the 
-function $\req$ which has the complexity as the $\argmax$ in the worst case.
+more zero elements remain. These elements might offer more options for increasing the number of determined
+nonrequired elements.
+Let the function $\req: V_c\rightarrow \mathbb{N}$ compute the number of required edges adjacent to a vertex.
+A new algorithm is proposed in \coderef{code.new.impr1} which applies this idea. 
+The only new difference of this algorithm to \coderef{code.new.d2.nreq} 
+is to compute the operator $\argmin$ for the 
+function $\req$. This computation has the same complexity as the computation of $\argmax$.
 It means the time complexity is still as before.
 \figref{ex33_alg32_alg34_bls_lfo_add} shows how the number of additionally
 required elements are increased comparing
 \coderef{code.new.d2.nreq} and \coderef{code.new.impr1} when the ordering for the coloring
 is the LFO ordering.
+The same behavior can be observed in the computation of other matrices with
+different ordering in Appendix~\ref{}.
+
 
 \subsubsection{Balancing the number of colors}
 Here, we modify \coderef{code.new.d2.nreq} and \coderef{code.new.impr1} again 
 to have a control over the balance between number of 
 colors and the number of additionally required elements.
-It means we define a balance variable $\alpha \in N$ such that increasing this variable would decrease
-the number of colors and decreasing this variable increase the number of additionally required elements.
+It means we define a balance variable $\alpha \in \mathbb{N}$ such that increasing this variable 
+would decrease both the number of colors and additionally required elements and vice versa.
 \coderef{code.new.impr2} presents the new algorithm.
 The idea is to add more vertices with the minimum number of required elements
 (and the maximum number of determined nonrequired elements)
@@ -1354,7 +1361,8 @@ it does not perform well in the case of additionally required elements.
 \includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
 \caption{
 The comparison of the number of colors in \coderef{code.greedy},  \coderef{code.new.d2.nreq},
-\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.}
+\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
+The computation is carried out on the matrix \textit{ex33}.}
 \label{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
 \end{figure}
 
@@ -1363,7 +1371,8 @@ The comparison of the number of colors in \coderef{code.greedy},  \coderef{code.
 \includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
 \caption{
 The comparison of the number of additionally required elements in \coderef{code.greedy},  \coderef{code.new.d2.nreq},
-\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.}
+\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
+The computation is carried out on the matrix \textit{ex33}.}
 \label{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
 \end{figure}
 
