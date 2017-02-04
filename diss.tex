@@ -1684,7 +1684,7 @@ greedily with a parallel loop and then corrects the false coloring which can hap
 \begin{lstlisting}[caption=A OpenMP parallelized version of greedy algorithm
 adapted for the bipartite graph.,label=omp.greedy.bip,mathescape]
 function d2_color_omp($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
-  #progrma omp parallel for
+  #pragma omp parallel for
   for $v\in V_c$
     $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
@@ -1706,7 +1706,7 @@ function d2_color_omp($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \begin{lstlisting}[caption=New coloring heuristic in the bipartite graph model
 parallelized by OpenMP,label=code.new.bip.omp,mathescape]
 function d2_color_nreq_omp($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
-  #progrma omp parallel for
+  #pragma omp parallel for
   for $v\in V_c$ with $\Phi(v)=0$
     $forbiddenColors[0] = v$
     if $\exists n\in N_2(v,E_i): (v,n)\in E_i$
