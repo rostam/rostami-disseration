@@ -1149,7 +1149,7 @@ are larger in the computation for \textit{ex7.mtx} and for all orderings.
 \centering
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+Matrix (NAT) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
 {} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
 \textit{steam1.mtx} & $64$ & $786$ & $64$ & $630$ \\\hline
 \textit{steam2.mtx} & $240$ & $1880$ & $240$ & $1400$ \\\hline
@@ -1163,7 +1163,7 @@ Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hli
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+Matrix (LFO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
 {} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
 \textit{steam1.mtx} & $64$ & $1048$ & $64$ & $666$ \\\hline
 \textit{steam2.mtx} & $240$ & $2624$ & $240$ & $1248$ \\\hline
@@ -1177,7 +1177,7 @@ Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hli
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+Matrix (SLO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
 {} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
 \textit{steam1.mtx} & $64$ & $1294$ & $64$ & $754$ \\\hline
 \textit{steam2.mtx} & $240$ & $3192$ & $240$ & $1912$ \\\hline
@@ -1312,14 +1312,15 @@ and the number of additioanlly required elements.
 
 \subsubsection{Balancing the number of colors}
 Here, we modify \coderef{code.new.d2.nreq} and \coderef{code.new.impr1} again 
-to have a control over the balance between number of 
+to have a control over the balance between the number of 
 colors and the number of additionally required elements.
 It means we define a balance variable $\alpha \in \mathbb{N}$ such that increasing this variable 
 would decrease both the number of colors and additionally required elements and vice versa.
 \coderef{code.new.impr2} presents the new algorithm.
-The idea is to add more vertices with the minimum number of required elements
-(and the maximum number of determined nonrequired elements)
-comparing to~\coderef{code.new.impr1}.
+Rather than adding a single vertex as in \coderef{code.new.impr1},
+the idea is to add more vertices representing columns
+with the minimum number of required elements
+and the maximum number of determined nonrequired elements.
 This is implemented by coloring all elements of $mins$ with indices from $0$ to $\alpha-1$ .
 %If the variable $\alpha=0$, we would have the same algorithm as \coderef{code.new.impr1}.
 \begin{figure}
@@ -1338,9 +1339,8 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
     Determine an indepentent set $I_v$ containing $v$
     if $I_v-\{v\}\neq\emptyset$
       $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
-      $mins = \argmin_{x\in maxs} \req(x)$
-      $\Phi(mins[0]) = \Phi(v)$ 
-      for $i\in\{0,1,...,\alpha - 1\}$
+      $mins = \argmin_{x\in maxs} \req(x)$ 
+      for $i\in\{0,1,...,\min (\alpha - 1, size(mins))\}$
         $\Phi(mins[i]) = \Phi(v)$
   return $\Phi$
 \end{lstlisting}
@@ -1348,7 +1348,7 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
 
 \figref{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
 shows the comparison between the number of colors computed by 
-the four presented algorithms: \coderef{code.greedy},  \coderef{code.new.d2.nreq},
+the three presented algorithms: \coderef{code.new.d2.nreq},
 \coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
 All these algorithms are computed with the LFO ordering.
 We selected this ordering for this computation 
@@ -1364,7 +1364,7 @@ it does not perform well in the case of additionally required elements.
 \centering
 \includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
 \caption{
-The comparison of the number of colors in \coderef{code.greedy},  \coderef{code.new.d2.nreq},
+The comparison of the number of colors in \coderef{code.new.d2.nreq},
 \coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
 The computation is carried out on the matrix \textit{ex33} and with the LFO ordering.}
 \label{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
@@ -1374,7 +1374,7 @@ The computation is carried out on the matrix \textit{ex33} and with the LFO orde
 \centering
 \includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
 \caption{
-The comparison of the number of additionally required elements in \coderef{code.greedy},  \coderef{code.new.d2.nreq},
+The comparison of the number of additionally required elements in \coderef{code.new.d2.nreq},
 \coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
 The computation is carried out on the matrix \textit{ex33} and with the LFO ordering.}
 \label{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
@@ -1384,26 +1384,27 @@ Table~\ref{different.alpha} compares the number of additionally required element
 the number of colors using \coderef{code.new.impr2} with different $\alpha$.
 Three tables at the top, middle, and the bottom of Table~\ref{different.alpha}
 are for the natural ordering, the LFO ordering, and the SLO ordering, respectively.
-Regardless of the ordering and except of the matrix \textit{crystm01.mtx} in the natural ordering,
-the number of colors does not increase when $\alpha$ grows.
-Indeed, the number of colors reduces in the most of the cases. In some cases like 
+Regardless of the ordering and except for certain cases,
+the number of colors tends to decrease when $\alpha$ grows.
+Indeed, the number of colors is reduced in the most of the cases. In some cases like 
 the matrix \textit{steam2.mtx} with the LFO ordering, we need $6$ fewer colors comparing 
 the coloring with $\alpha=0$ and $\alpha=10$.
-On the other hand, except the matrix \textit{crystm01.mtx}, 
+
+On the other hand, except for certain cases, 
 the number of additionally required elements decreases 
-when $\alpha$ increases in the coloring with the SLO ordering.
-It is not always the case in the other orderings. However, in this table,
-the coloring with $\alpha=6$ can be a suitable choice in most of the case
-since the number of additionally required elements are relatively high
-while the number of colors decreases mainly.
-More figures can be found \appref{app.compare.alg35.alphas} compares these values
+when $\alpha$ increases in the coloring.
+However, in this table,
+the coloring with $\alpha=6$ can be a suitable choice in most of the cases
+since the number of additionally required elements is relatively high
+while the number of colors is mainly small.
+More figures can be found in \appref{app.compare.alg35.alphas} comparing these values
 based on the varying block sizes.
 
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-Matrix & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
+Matrix (NAT) & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
 {} & \multicolumn{3}{c|}{$|R_{a}|$} & \multicolumn{3}{c|}{$|\Phi|$}\\\hline
 {}     & $\alpha=0$ & $\alpha=6$ & $\alpha=10$ & $\alpha=0$& $\alpha=6$&$\alpha=10$ \\\hline
 \textit{steam1.mtx} & $566$ & $440$ & $370$ & $10$ & $9$ & $8$ \\\hline
@@ -1417,7 +1418,7 @@ Matrix & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-Matrix & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
+Matrix (LFO) & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
 {} & \multicolumn{3}{c|}{$|R_{a}|$} & \multicolumn{3}{c|}{$|\Phi|$}\\\hline
 {} & $\alpha=0$ & $\alpha=6$ & $\alpha=10$ & $\alpha=0$& $\alpha=6$&$\alpha=10$ \\\hline
 \textit{steam1.mtx} & $518$ & $456$ & $330$ & $12$ & $10$ & $10$ \\\hline
@@ -1431,7 +1432,7 @@ Matrix & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-Matrix & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
+Matrix (SLO) & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
 {} & \multicolumn{3}{c|}{$|R_{a}|$} & \multicolumn{3}{c|}{$|\Phi|$}\\\hline
 {} & $\alpha=0$ & $\alpha=6$ & $\alpha=10$ & $\alpha=0$& $\alpha=6$&$\alpha=10$ \\\hline
 \textit{steam1.mtx} & $748$ & $476$ & $390$ & $14$ & $13$ & $13$ \\\hline
@@ -1455,45 +1456,51 @@ The orderings for coloring are (Top) the natural ordering,
 \subsection{Restricted star bicoloring}
 \label{s.heuristic.starbicoloring}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-As same as the last section, we search for a modified version of star bicoloring
+Here, we search for a modified version of star bicoloring
 which increases the number of potentially and additionally required elements without
-a high increase the number of colors. The idea from the new heuristic
-can be applied here. However, it can results in less additionally required
+a high increase the number of colors.
+We can apply the ideas from \coderef{code.new.impr1} and \coderef{code.new.impr2}.
+However, it can results in less additionally required
 elements since a determined nonrequired elements from the column compression
 it is not necessary a determined nonrequired elements form the row compression.
 
 The classical approach toward star bicoloring is first introduced in
 \cite{Gebremedhin05whatcolor} as star bicoloring scheme.
-This algorithm is implemented and evaluated in
-Lülfesmann~\cite{LulfesmannMaster}. This algorithm performs convincing
-since the steps of the algorithms is near to the definition of the coloring.
+Lülfesmann~\cite{LulfesmannMaster} is implemented and evaluated this algorithm.
+This algorithm performs convincing since the steps of the algorithms is near to the definition of the coloring.
 Complete direct solver bicoloring and Row/Column Fill Bicoloring~\cite{Hossain95computinga}
 are the other algorithms which are introduced for bicoloring.
 As Calotoiu~\cite{CalotoiuMaster} discusses theses algorithms do not perform
 better than the classic star bicoloring scheme.
-Calotoiu~\cite{CalotoiuMaster} introduces the integrated star bicoloring
+Also, Calotoiu~\cite{CalotoiuMaster} introduces the integrated star bicoloring
 and total ordering star bicoloring which performs better than
-star bicoloring scheme in some matrices and not much worse in some other
-matrices.
+star bicoloring scheme in some matrices and not much worse in some other matrices.
 
 We consider the implementation of star bicoloring in \coderef{orig.star.bicoloring} based on
 the algorithm from Lülfesmann~\cite{Lulfesmann2012Fap}.
 Here, the notation $G[S]$ means the graph induces on the edge set $S$.
+Also, the notation $\Delta(V,G)$ represents the maximum degree of the vertices from $V$ and in the graph $G$.
+This algorithm in lines $7$ to $10$ selects first which vertex should be processed in the next step.
+Should it be from the column vertices or the row vertices?
+This selection is based on the value of $\rho$ and the maximum degree of vertices in each step.
+After this selection, the conditions of the star bicoloring is analyzed in the next lines of algorithm.
+The lines $25$ and $26$ are just postprocessing steps which make the colors distinct for the column and
+row vertices. Finally, we color the uncolored vertices with the color $0$ in lines $27$ and $28$.
 \begin{figure}
 \begin{lstlisting}[
 caption=The heuristic from Lülfesmann~\cite{Lulfesmann2012Fap} for star bicoloring.,
 label=orig.star.bicoloring,mathescape]
-function star_bicolor_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$)
+function star_bicoloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$)
   $\Phi\leftarrow [-1\ldots -1]$
   $forbiddenColors\leftarrow [0\ldots 0]$
   $E_i^{'} = E_i$
   $v = 0$
   while $E_i^{'}\neq\emptyset$
     if($\Delta(V_r,G[E_i^{'}]) > \rho \Delta(V_c,G[E_i^{'}])$ then
-      $v$ = $v_r\in V_r$ with maximum degree in $G[E_i^{-1}]$
+      $v$ = $v_r\in V_r$ with maximum degree in $G[E_i^{'}]$
     else
-      $v$ = $v_c\in V_c$ with maximum degree in $G[E_i^{-1}]$
-    $E_i^{'} = E_i^{'} - {(v,w)\in E_i^{'}:w\in N_1(v,G[E_i^{'}])}$
+      $v$ = $v_c\in V_c$ with maximum degree in $G[E_i^{'}]$
+    $E_i^{'} = E_i^{'} - \{(v,w)\in E_i^{'}:w\in N_1(v,G[E_i^{'}])\}$
     for $w\in N_1(v,G)$
       if $\Phi(w) \leq 0$
         for $x\in N_1(w,G)$ with $\Phi(w) > 0$
@@ -1505,28 +1512,45 @@ function star_bicolor_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$)
           if $\Phi(w) = \Phi(y)$
             $forbiddenColors[\Phi (x)] = v$
             
-
     $\Phi(v) = min(\{j>0: forbiddenColors[j] \neq v\})$
+
   for $v_c\in V_c$ with $\Phi(v_c) > 0$
     $\Phi (v_c) = \Phi (v_c) + max(\{\Phi (v_r): v_r \in V_r\})$
-  for $v\in V_r\cup V_c$ with $\Phi(v)\neq -1$
+
+  for $v\in V_r\cup V_c$ with $\Phi(v)= -1$
     $\Phi (v) = 0$
 
   return $\Phi$
 \end{lstlisting}
+
+\begin{lstlisting}[
+caption= Our new heuristic for star bicoloring considering the determined nonrequired elements.,
+label=new.star.bicoloring,mathescape]
+function star_bicoloring_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$)
+  $...$
+  while $E_i^{'}\neq\emptyset$
+    if($\Delta(V_r,G[E_i^{'}]) > \rho \Delta(V_c,G[E_i^{'}])$ then
+      $v$ = $v_r\in V_r$ with maximum degree in $G[E_i^{'}]$
+    else
+      $v$ = $v_c\in V_c$ with maximum degree in $G[E_i^{'}]$
+    $E_i^{'} = E_i^{'} - \{(v,w)\in E_i^{'}:w\in N_1(v,G[E_i^{'}])\}$
+  $...$
+  return $\Phi$
+\end{lstlisting}
+
+
 \end{figure}
-This algorithm processes a vertex either from column vertices
-or row vertices with a maximum degree in each step.
-We first did some computations to find the influence of $\rho$ on the
-number of additionally required elements. The value of $\rho$ is a weightening factor which
+
+Before introducing our new heuristic, 
+we first do computations to find the influence of $\rho$ on the
+number of additionally required elements.
+The value of $\rho$ is a weightening factor which
 is a balance between columns or row vertices. A higher value of $\rho$
 makes the compression mostly in the column vertices and vice versa.
 There are some discussion on how to choose the value of $\rho$ in
 \cite{Gebremedhin05whatcolor}. Also,
-Lülfesmann~\cite{Lulfesmann2012Fap,LulfesmannMaster} did some computation for some
-specific $\rho$.
-However, the goal in the previous literature
-is to minimize the number of colors.
+Lülfesmann~\cite{Lulfesmann2012Fap,LulfesmannMaster} did some computation for some specific $\rho$.
+However, the goal in the previous literature is to minimize the number of colors.
 As the \figref{rho_value_685_bus} and \figref{rho_value_orani678},
 the value of $\rho$ has a direct influence on
 the number of additionally required elements.
@@ -1539,34 +1563,35 @@ in a change of $10000$ in the number of additionally required elements.
 \begin{figure}
 \includegraphics[width=0.9\linewidth]{rho_value_685_bus}
 \caption{The influence of $\rho$ is computed on the additionally required elements
-for the matrix \textit{685\_bus}.}
+for the matrix \textit{685\_bus} with the LFO ordering.}
 \label{rho_value_685_bus}
 \end{figure}
 
 \begin{figure}
 \includegraphics[width=0.9\linewidth]{rho_value_orani678}
 \caption{The influence of $\rho$ is computed on the additionally required elements
-for the matrix \textit{orani678}.}
+for the matrix \textit{orani678} with the LFO ordering.}
 \label{rho_value_orani678}
 \end{figure}
 
-As we said, the first part of algorithms chooses the next vertex
-which should be processed from the maximum degree vertices
-in a graph induces on the required edges.
-Now, we define a new algorithm by changing the part of selecting
-next vertex of \coderef{orig.star.bicoloring} which selects a vertex with
-the maximum determined nonrequired elements (and the minimum number of required elements.)
+Now, we introduce our new heuristic  which is a modification of \coderef{orig.star.bicoloring}.
+As we said, the lines $7$ to $10$ in \coderef{orig.star.bicoloring} chooses the next vertex
+which should be processed from the maximum degree vertices in a graph induces on the required edges.
+\coderef{new.star.bicoloring} shows our new heuristic. Here, the parts which are the same as 
+\coderef{orig.star.bicoloring} are shown by $...$.
+In this algorithm, we add an extra step to this part which selects
+the next vertex with the maximum determined nonrequired elements
+and the minimum number of required elements.
 Table~\ref{mats.pot.add.gr.vs.nreq.star} shows the numbers of potentially and additionally required elements
 computed with \coderef{orig.star.bicoloring} and our new algorithm. 
-We have an overall increase in
-both potentially and additionally required elements.
+We have an overall increase in both potentially and additionally required elements.
 
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
-{} & \coderef{orig.star.bicoloring} & Our new algorithm & \coderef{orig.star.bicoloring} & Our new algorithm\\\hline
+Matrix (NAT) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+{} & \coderef{orig.star.bicoloring} & \coderef{new.star.bicoloring} & \coderef{orig.star.bicoloring} & \coderef{new.star.bicoloring}\\\hline
 \textit{steam1.mtx} & $64$ & $590$ & $64$ & $454$ \\\hline
 \textit{steam2.mtx} & $240$ & $2352$ & $240$ & $1648$ \\\hline
 \textit{nos3.mtx} & $4590$ & $4614$ & $2986$ & $3050$ \\\hline
@@ -1579,8 +1604,8 @@ Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hli
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
-{} & \coderef{orig.star.bicoloring} & Our new algorithm & \coderef{orig.star.bicoloring} & Our new algorithm\\\hline
+Matrix (LFO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+{} & \coderef{orig.star.bicoloring} & \coderef{new.star.bicoloring} & \coderef{orig.star.bicoloring} & \coderef{new.star.bicoloring}\\\hline
 \textit{steam1.mtx} & $64$ & $802$ & $64$ & $466$ \\\hline
 \textit{steam2.mtx} & $240$ & $2352$ & $240$ & $944$ \\\hline
 \textit{nos3.mtx} & $4824$ & $5166$ & $3152$ & $3444$ \\\hline
@@ -1593,8 +1618,8 @@ Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hli
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
-{} & \coderef{orig.star.bicoloring} & Our new algorithm & \coderef{orig.star.bicoloring} & Our new algorithm\\\hline
+Matrix (SLO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+{} & \coderef{orig.star.bicoloring} & \coderef{new.star.bicoloring} & \coderef{orig.star.bicoloring} & \coderef{new.star.bicoloring}\\\hline
 \textit{steam1.mtx} & $64$ & $824$ & $64$ & $616$ \\\hline
 \textit{steam2.mtx} & $240$ & $2320$ & $240$ & $1616$ \\\hline
 \textit{nos3.mtx} & $4314$ & $4760$ & $2784$ & $3102$ \\\hline
@@ -1605,7 +1630,7 @@ Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hli
 \textit{pesa.mtx} & $41128$ & $42112$ & $31114$ & $33744$ \\\hline
 \end{tabular}
 \caption{The comparison between the number of potentially and additionally required
-elements computed with \coderef{orig.star.bicoloring} and our new algorithm.
+elements computed with \coderef{orig.star.bicoloring} and \coderef{new.star.bicoloring}.
 The block size is fixed to $10$. The orderings for coloring are (Top) the natural ordering,
 (Middle) LFO, and (Bottom) SLO.}
 \label{mats.pot.add.gr.vs.nreq.star}
@@ -1615,7 +1640,7 @@ The block size is fixed to $10$. The orderings for coloring are (Top) the natura
 \begin{figure}
 \includegraphics[width=\linewidth]{crystm01_alg36_bls_nat_adds}
 \caption{The number of additionally required elements computed with
-the new star bicoloring compared with \coderef{orig.star.bicoloring}.
+\coderef{new.star.bicoloring} compared with \coderef{orig.star.bicoloring}.
 The nonsymmetric matrix \textit{$crystm01$} with the natural ordering is used here.}
 \label{crystm01_alg36_bls_nat_adds}
 \end{figure}
@@ -2063,7 +2088,7 @@ to compute the same coloring.
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
-Name & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
+Matrix & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
 \textit{cage3} & $3$ & $4$\\\hline
 \textit{cage4} & $3$ & $4$ \\\hline
 \textit{cage5} & $5$ & $7$\\\hline
@@ -2076,7 +2101,7 @@ Name & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
 \hfill
 \begin{tabular}{|c|c|c|}
 \hline
-Name & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
+Matrix & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
 \textit{ex7} & $18$ & $22$ \\\hline
 \textit{nos3} & $10$ & $10$ \\\hline
 \textit{steam1} & $6$ & $6$ \\\hline
@@ -3663,7 +3688,7 @@ with the natural ordering.
 \centering
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-Name & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
+Matrix (NAT) & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
 {} & Alg.\ref{code.new.d2.nreq}& Alg.\ref{code.new.impr1} & Alg.\ref{code.new.d2.nreq} & Alg.\ref{code.new.impr1}& Alg.\ref{code.new.d2.nreq} & Alg.\ref{code.new.impr1}\\\hline
 \textit{steam1.mtx} & $630$ & $64$ & $786$ & $64$ & $10$ & $7$\\\hline
 \textit{steam2.mtx} & $1400$ & $240$ & $1880$ & $240$ & $17$ & $9$\\\hline
@@ -3677,7 +3702,7 @@ Name & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|$} & \mu
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-Name & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
+Matrix (LFO) & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
 {} & Alg.\ref{code.new.d2.nreq}& Alg.\ref{code.new.impr1} & Alg.\ref{code.new.d2.nreq} & Alg.\ref{code.new.impr1}& Alg.\ref{code.new.d2.nreq} & Alg.\ref{code.new.impr1}\\\hline
 \textit{steam1.mtx} & $666$ & $64$ & $1048$ & $64$ & $12$ & $7$\\\hline
 \textit{steam2.mtx} & $1248$ & $240$ & $2624$ & $240$ & $17$ & $9$\\\hline
@@ -3691,7 +3716,7 @@ Name & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|$} & \mu
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-Name & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
+Matrix (SLO) & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
 {} & Alg.\ref{code.new.d2.nreq}& Alg.\ref{code.new.impr1} & Alg.\ref{code.new.d2.nreq} & Alg.\ref{code.new.impr1}& Alg.\ref{code.new.d2.nreq} & Alg.\ref{code.new.impr1}\\\hline
 \textit{steam1.mtx} & $754$ & $64$ & $1294$ & $64$ & $14$ & $7$\\\hline
 \textit{steam2.mtx} & $1912$ & $240$ & $3192$ & $240$ & $17$ & $9$\\\hline
@@ -3745,7 +3770,7 @@ with $\alpha\in{0,2,6,10}$ and the LFO ordering. }
 \centering
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+Matrix (LFO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
 {} & \coderef{orig.star.bicoloring} & Our new algorithm & \coderef{orig.star.bicoloring} & Our new algorithm\\\hline
 \textit{steam1.mtx} & $786$ & $590$ & $630$ & $454$ \\\hline
 \textit{steam2.mtx} & $1880$ & $2352$ & $1400$ & $1648$ \\\hline
@@ -3759,13 +3784,7 @@ Name & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hli
 \vspace*{1cm}\newline
 \caption{The comparison between the number of potentially and additionally required
 elements computed with \coderef{orig.star.bicoloring} and our new algorithm.
-The block size is fixed to $10$. The orderings for coloring are (Top) the natural ordering,
-(Middle) LFO, and (Bottom) SLO.}
+The block size and the ordering are fixed to $10$ and LFO, respectively.}
 \label{mats.pot.add.gr.vs.nreq.star.bls}
 \end{table}
-
-
-
 \end{document}
-
-
