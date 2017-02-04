@@ -1667,23 +1667,21 @@ The nonsymmetric matrix \textit{$crystm01$} with the natural ordering is used he
 \subsection{Parallelization}
 \label{s.parallel}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-As we saw in \secref{s.precond}, different steps are followed
-to compute the additionally required elements. Here, we look at each of
-these steps and examine how they can be efficiently parallelized by OpenMP.
-
-First, we look at the coloring algorithm.
-There are much literature for a parallelized coloring algorithm.
-For example,
-{\c{C}}ataly{\"{u}}rek~\cite{cataly2012} introduced an OpenMP parallelized
-algorithm which computes the same number of colors as the serial version.
-However, there are two points in each step of the algorithm in which two threads
+For a faster computation, we parallelize the proposed heuristics by OpenMP here.
+There are much literature to parallelize coloring algorithms.
+For example, {\c{C}}ataly{\"{u}}rek~\cite{cataly2012} introduced an OpenMP parallelized
+greedy coloring which computes the same number of colors as the serial version.
+However, there are two points in each iteration of the algorithm in which the threads
 need to be synchronized.
-However, we focus on another algorithm from Rokos et al~\cite{Rokos2015}
+Here, our focus is on another algorithm from Rokos et al~\cite{Rokos2015}
 which presents an algorithm in which only a point of synchronization is
-needed. The number of colors also remains near to the number of colors
-in the serial version. A bipartite version of the algorithm can be easily
-adapted as in \coderef{omp.greedy.bip}. This algorithm first colors the vertices
-greedily and then corrects the false coloring which can happen.
+needed.
+In this algorithm, the number of colors changes but it remains near 
+to the number of colors in the serial version.
+We adapt this parallelization to \coderef{code.greedy} and \coderef{code.new.impr2}
+for the bipartite graph model as presented in \coderef{omp.greedy.bip} and \coderef{code.new.bip.omp}.
+These algorithms first colors the vertices
+greedily with a parallel loop and then corrects the false coloring which can happen.
 \begin{figure}
 \begin{lstlisting}[caption=A OpenMP parallelized version of greedy algorithm
 adapted for the bipartite graph.,label=omp.greedy.bip,mathescape]
@@ -1706,15 +1704,10 @@ function d2_color_omp($G=(V_r\cup V_c,E)$)
     $U_i = L$
     $i = i+1$
 \end{lstlisting}
-\end{figure}
-We apply this idea of parallelization to our new coloring heuristics.
-It means we compute the coloring like before by a parallelized loop.
-Then, we correct the coloring. \coderef{code.new.bip.omp} shows the parallelized
-version of \coderef{omp.greedy.bip}.
-\begin{figure}
+
 \begin{lstlisting}[caption=New coloring heuristic in the bipartite graph model
 parallelized by OpenMP,label=code.new.bip.omp,mathescape]
-function d2_color_nreq($G=(V_r\cup V_c,E)$,$\alpha$)
+function d2_color_nreq_omp($G=(V_r\cup V_c,E)$,$\alpha$)
   #progrma omp parallel for
   for $v\in V_c$ with $\Phi(v)=0$
     $forbiddenColors[0] = v$
@@ -1722,12 +1715,14 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$\alpha$)
       for $n\in N_2(v,E_i)$
         if $\Phi(n) \neq 0$
           $forbiddenColors[\Phi(n)] = v$
-
     $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
-    $maxs = \argmax_{x\in I_v} \nreq_v$
-    $mins = \argmin_{x\in maxs} \req$
-    for $i\in\{0,1,...,\alpha\}$
-      $\Phi(mins[i]) = \Phi(v)$
+
+    Determine an indepentent set $I_v$ containing $v$
+    if $I_v-\{v\}\neq\emptyset$
+      $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
+      $mins = \argmin_{x\in maxs} \req(x)$ 
+      for $i\in\{0,1,...,\min (\alpha - 1, size(mins))\}$
+        $\Phi(mins[i]) = \Phi(v)$
 
   #pragma omp barrier
   $U_0 = V$
@@ -1738,7 +1733,7 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$\alpha$)
     for $v\in U_{i-1}$
       if $\exists u\in N_2(v,E_i), u>v: \Phi(u) = \Phi(v)$
         $forbiddenColors[\Phi(n)] = v$
-        $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v$
+        $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
 
     #pragma omp barrier
     $U_i = L$
@@ -1748,8 +1743,8 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$\alpha$)
 
 We color the bipartite graph interpreted from the matrix \textit{Cavity16}
 from the sparse matrix collection of the University of Florida.
-The timing are all from the computation carried on an Intel Core i5 with 8 Gb RAM.
-Table~\ref{omp.res} shows the results of this computation.
+The timing results are all from the computation carried on an Intel Core i5 with 8 Gb RAM.
+Table~\ref{omp.res} shows the results of these computations.
 Here, we change the number of threads from $1$ to $10$ shown in the first column.
 The second column shows the computation time in milliseconds. The third column
 is also the number of colors which changes based on the number of colors.
@@ -1809,8 +1804,8 @@ works on each block. We do not go into details since it is already discussed in 
 additionally required elements since those elements are outside the blocks.
 
 %\cite{mpi_greedy_coloring}
-\clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
 \section{Maximizing the set of additionally required elements}
 \label{s.max.add.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1896,7 +1891,7 @@ Name & \textit{d2\_color}& \textit{d2\_color\_nreq} & \textit{d2\_color\_fillpat
 \end{tabular}
 \caption{The comparison between the number of additionally required
 elements computed by different algorithms.
-The block size is $10$ and the ILU level parameter is $2$.}
+The block size is $10$.}
 \label{mats.add.gr.vs.nreq.vs.fillpath}
 \end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
