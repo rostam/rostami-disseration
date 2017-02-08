@@ -1528,11 +1528,21 @@ caption= Our new heuristic for star bicoloring considering the determined nonreq
 label=new.star.bicoloring,mathescape]
 function star_bicoloring_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$)
   $...$
+  $NonReq=false$
   while $E_i^{'}\neq\emptyset$
-    if($\Delta(V_r,G[E_i^{'}]) > \rho \Delta(V_c,G[E_i^{'}])$ then
-      $v$ = $v_r\in V_r$ with maximum degree in $G[E_i^{'}]$
+    if NonReq = false
+      if $\Delta(V_r,G[E_i^{'}]) > \rho \Delta(V_c,G[E_i^{'}]$ then
+        $v$ = $v_r\in V_r$ with maximum degree in $G[E_i^{'}]$
+      else
+        $v$ = $v_c\in V_c$ with maximum degree in $G[E_i^{'}]$
+      $NonReq=true$
     else
-      $v$ = $v_c\in V_c$ with maximum degree in $G[E_i^{'}]$
+      Determine an indepentent set $I_v$ containing $v$
+      if $I_v-\{v\}\neq\emptyset$
+        $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
+        $mins = \argmin_{x\in maxs} \req(x)$ 
+        $v=mins[0]$
+      $NonReq=false$
     $E_i^{'} = E_i^{'} - \{(v,w)\in E_i^{'}:w\in N_1(v,G[E_i^{'}])\}$
   $...$
   return $\Phi$
@@ -1580,6 +1590,13 @@ which should be processed from the maximum degree vertices in a graph induces on
 In this algorithm, we add an extra step to this part which selects
 the next vertex with the maximum determined nonrequired elements
 and the minimum number of required elements.
+The variable $NonReq$ switch between two modes. The first mode $NonReq=false$ selects the vertex 
+based on the variable $\rho$ like \coderef{orig.star.bicoloring}. 
+The second mode $NonReq=true$ selects
+the next vertex with the maximum determined nonrequired elements
+and the minimum number of required elements.
+The other parts of algorithm is completely like \coderef{orig.star.bicoloring}.
+
 Table~\ref{mats.pot.add.gr.vs.nreq.star} shows the numbers of potentially and additionally required elements
 computed with \coderef{orig.star.bicoloring} and our new algorithm. 
 We have an overall increase in both potentially and additionally required elements.
@@ -1807,24 +1824,9 @@ additionally required elements since those elements are outside the blocks.
 \section{Maximizing the set of additionally required elements}
 \label{s.max.add.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In \secref{s.max.pot.req}, our focus was to increase the potentially required elements
-which probably increases also the number of the additionally required elements.
-Here, we work more on Problem~\ref{p:max_add}.
-%First, we do some experiments on the effects of orderings in computation of additionally
-%required elements in~\secref{ss.comb.precond} . 
-%Then, 
-More clearly, we check directly the process of coloring
-if a potential required element can be an additionally required elements later.
-For this purpose, we use the bipartite graph model for ILU preconditioning
-as well as the fill path theorem introduced
-to be consistent with the bipartite graph model for coloring.
-
-
-%\subsection{Consdiering the positions of required elements}
-%\subsection{Predicting additionally required elements}
-We consider algorithms to increase the potentially required elements in
-~\secref{s.max.pot.req} which increases the number of additionally required elements
-presumably. Here, we suggest a heuristic to predict if a nonrequired element would be an
+In \secref{s.max.pot.req}, we consider algorithms to increase the potentially required elements
+which increases the number of additionally required elements presumably.
+Here, we suggest a heuristic to predict if a nonrequired element would be an
 additionally required element. 
 For this purpose, we use the bipartite graph model for ILU preconditioning
 presented in \secref{ss.comb.precond} and the its adapted concept of fill path in 
@@ -1846,7 +1848,7 @@ passing the edge $t$ with the size of $k$ as
 $pl_k^t = \{ \{c_d,...,r_i,c_j\},..., \{c_e,...,r_i,c_j\}\}$.
 With these definitions, \coderef{code.new.d2.add.fp} is a coloring heuristic
 for distance-$2$ coloring which checks if a determined nonzero element can be an
-additionally required element.
+additionally required element. 
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
 predicting if a determined nonrequired elements can be an additionally required element.,
@@ -2021,6 +2023,7 @@ where exactly one of both incident vertices of each required edge is colored non
 to the valid star bicoloring $\Phi_{sb}^{'}$ where all row vertices are colored by zero.
 This star bicoloring is also a distance-$2$ coloring.
 \end{enumerate}
+An example of this transformation can be seen in \figref{proof1}. 
 
 Looking at the proof, this theorem can be generalized by considering any
 coloring instead of the optimal coloring.
