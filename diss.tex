@@ -1458,11 +1458,10 @@ The orderings for coloring are (Top) the natural ordering,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Here, we search for a modified version of star bicoloring
 which increases the number of potentially and additionally required elements without
-a high increase the number of colors.
+a high increase in the number of colors.
 We can apply the ideas from \coderef{code.new.impr1} and \coderef{code.new.impr2}.
-However, it can results in less additionally required
-elements since a determined nonrequired elements from the column compression
-it is not necessary a determined nonrequired elements form the row compression.
+However, we should not expect to have a high increase of the number of additionally required elements
+equal to the sum of the increases in the column compression and row compression.
 
 The classical approach toward star bicoloring is first introduced in
 \cite{Gebremedhin05whatcolor} as star bicoloring scheme.
@@ -1894,6 +1893,56 @@ Name & \coderef{code.greedy}& \coderef{code.new.impr1} & \coderef{code.new.d2.ad
 \caption{The comparison between the number of additionally required
 elements computed by different algorithms. The block size is fixed to $10$.}
 \label{mats.add.gr.vs.nreq.vs.fillpath}
+\end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Matrix (NAT) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+{} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
+\textit{steam1.mtx} & $64$ & $786$ & $64$ & $630$ \\\hline
+\textit{steam2.mtx} & $240$ & $1880$ & $240$ & $1400$ \\\hline
+\textit{nos3.mtx} & $1638$ & $6756$ & $1106$ & $4296$ \\\hline
+\textit{crystm01.mtx} & $17822$ & $47556$ & $10388$ & $28318$ \\\hline
+\textit{ex7.mtx} & $38554$ & $34954$ & $29174$ & $25054$ \\\hline
+\textit{ex33.mtx} & $7408$ & $8934$ & $4920$ & $5572$ \\\hline
+\textit{coater1.mtx} & $11722$ & $11558$ & $7684$ & $7448$ \\\hline
+\textit{pesa.mtx} & $36972$ & $41154$ & $31010$ & $33094$ \\\hline
+\end{tabular}
+\vspace*{1cm}\newline
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Matrix (LFO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+{} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
+\textit{steam1.mtx} & $64$ & $1048$ & $64$ & $666$ \\\hline
+\textit{steam2.mtx} & $240$ & $2624$ & $240$ & $1248$ \\\hline
+\textit{nos3.mtx} & $1880$ & $6882$ & $1246$ & $4442$ \\\hline
+\textit{crystm01.mtx} & $20326$ & $36634$ & $12256$ & $21194$ \\\hline
+\textit{ex7.mtx} & $37080$ & $33426$ & $28904$ & $24060$ \\\hline
+\textit{ex33.mtx} & $10574$ & $10564$ & $7170$ & $6888$ \\\hline
+\textit{coater1.mtx} & $11312$ & $11512$ & $7410$ & $7536$ \\\hline
+\textit{pesa.mtx} & $42490$ & $41676$ & $31790$ & $31884$ \\\hline
+\end{tabular}
+\vspace*{1cm}\newline
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Matrix (SLO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+{} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
+\textit{steam1.mtx} & $64$ & $1294$ & $64$ & $754$ \\\hline
+\textit{steam2.mtx} & $240$ & $3192$ & $240$ & $1912$ \\\hline
+\textit{nos3.mtx} & $1682$ & $6772$ & $1132$ & $4382$ \\\hline
+\textit{crystm01.mtx} & $24478$ & $45166$ & $14252$ & $26782$ \\\hline
+\textit{ex7.mtx} & $36486$ & $34448$ & $27044$ & $24164$ \\\hline
+\textit{ex33.mtx} & $8024$ & $10754$ & $5186$ & $7138$ \\\hline
+\textit{coater1.mtx} & $10476$ & $11702$ & $7004$ & $7878$ \\\hline
+\textit{pesa.mtx} & $39606$ & $44624$ & $29034$ & $34044$ \\\hline
+\end{tabular}
+\caption{The comparison between the number of potentially and additionally required
+elements computed with \coderef{code.new.d2.nreq} and \coderef{code.greedy}.
+The block size is fixed to $10$. The orderings for coloring are (Top) the natural ordering,
+(Middle) LFO, and (Bottom) SLO.}
+\label{mats.pot.add.gr.vs.nreq}
 \end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Application in geoscience}
