@@ -1281,7 +1281,7 @@ function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \centering
 \includegraphics[width=0.9\linewidth]{ex33_alg32_alg34_bls_lfo_add}
 \caption{The number of additionally
-required elements are increased comparing \coderef{code.new.d2.nreq}
+required elements is increased comparing \coderef{code.new.d2.nreq}
 and \coderef{code.new.impr1} when the ordering for the coloring is the LFO ordering.
 The computation is carried out on the matrix \textit{ex33}. }
 \label{ex33_alg32_alg34_bls_lfo_add}
@@ -1299,7 +1299,7 @@ is to compute the operator $\argmin$ for the
 function $\req$. This computation has the same complexity as the computation of $\argmax$.
 It means the time complexity is still as before.
 \figref{ex33_alg32_alg34_bls_lfo_add} shows how the number of additionally
-required elements are increased comparing
+required elements is increased comparing
 \coderef{code.new.d2.nreq} and \coderef{code.new.impr1} when the ordering for the coloring
 is the LFO ordering. However, this is not the same for all matrices. 
 \appref{app.compare.alg32.alg34} shows the results for different matrices
@@ -1463,46 +1463,43 @@ We can apply the ideas from \coderef{code.new.impr1} and \coderef{code.new.impr2
 However, we should not expect to have a high increase of the number of additionally required elements
 equal to the sum of the increases in the column compression and row compression.
 
-The classical approach toward star bicoloring is first introduced in
-\cite{Gebremedhin05whatcolor} as star bicoloring scheme.
-Lülfesmann~\cite{LulfesmannMaster} is implemented and evaluated this algorithm.
-This algorithm performs convincing since the steps of the algorithms is near to the definition of the coloring.
-Complete direct solver bicoloring and Row/Column Fill Bicoloring~\cite{Hossain95computinga}
-are the other algorithms which are introduced for bicoloring.
-As Calotoiu~\cite{CalotoiuMaster} discusses theses algorithms do not perform
-better than the classic star bicoloring scheme.
-Also, Calotoiu~\cite{CalotoiuMaster} introduces the integrated star bicoloring
-and total ordering star bicoloring which performs better than
-star bicoloring scheme in some matrices and not much worse in some other matrices.
+In \cite{Gebremedhin05whatcolor}, there is an algorithm called \textit{star bicoloring scheme}.
+Lülfesmann~\cite{LulfesmannMaster} implemented and evaluated this algorithm.
+This algorithm closely follows the definition of the star bicoloring.
+Complete direct cover bicoloring~\cite{Hossain95computinga}
+is another algorithm which are introduced for bicoloring.
+Acoording to Calotoiu~\cite{CalotoiuMaster}, this algorithm does not perform
+better than the star bicoloring scheme.
+Also, Calotoiu~\cite{CalotoiuMaster} introduces two other algorithms the integrated star bicoloring
+and total ordering star bicoloring which perform better than
+star bicoloring scheme for certain matrices and not much worse for other matrices.
 
 We consider the implementation of star bicoloring in \coderef{orig.star.bicoloring} based on
 the algorithm from Lülfesmann~\cite{Lulfesmann2012Fap}.
-Here, the notation $G[S]$ means the graph induces on the edge set $S$.
-Also, the notation $\Delta(V,G)$ represents the maximum degree of the vertices from $V$ and in the graph $G$.
-This algorithm in lines $7$ to $10$ selects first which vertex should be processed in the next step.
+Here, the notation $G[S]$ means a graph $G$ induced by the edge set $S$.
+Also, the notation $\Delta(V,G)$ represents the maximum degree of the vertices from $V$ and in the graph $G$. 
+In this algorithm, the function \textit{next\_vertex} selects first which vertex should be processed in the next step.
 Should it be from the column vertices or the row vertices?
-This selection is based on the value of $\rho$ and the maximum degree of vertices in each step.
-After this selection, the conditions of the star bicoloring is analyzed in the next lines of algorithm.
-The lines $25$ and $26$ are just postprocessing steps which make the colors distinct for the column and
-row vertices. Finally, we color the uncolored vertices with the color $0$ in lines $27$ and $28$.
+This selection is based on the value of a weightening factor $\rho$ (to be explained below)
+and the maximum degree of vertices in each step.
+After this selection, the conditions of the star bicoloring are analyzed in the next lines of this algorithm.
+The lines $22$ and $23$ are just postprocessing steps which make the colors distinct for the column and
+row vertices. Finally, we color the uncolored vertices with the color $0$ in lines $25$ and $26$.
 \begin{figure}
 \begin{lstlisting}[
 caption=The heuristic from Lülfesmann~\cite{Lulfesmann2012Fap} for star bicoloring.,
 label=orig.star.bicoloring,mathescape]
-function star_bicoloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$)
+function star_bicoloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$,next_vertex)
   $\Phi\leftarrow [-1\ldots -1]$
   $forbiddenColors\leftarrow [0\ldots 0]$
   $E_i^{'} = E_i$
   $v = 0$
   while $E_i^{'}\neq\emptyset$
-    if($\Delta(V_r,G[E_i^{'}]) > \rho \Delta(V_c,G[E_i^{'}])$ then
-      $v$ = $v_r\in V_r$ with maximum degree in $G[E_i^{'}]$
-    else
-      $v$ = $v_c\in V_c$ with maximum degree in $G[E_i^{'}]$
+    next_vertex($G$,$E_i^{'}$,$\rho$)
     $E_i^{'} = E_i^{'} - \{(v,w)\in E_i^{'}:w\in N_1(v,G[E_i^{'}])\}$
     for $w\in N_1(v,G)$
       if $\Phi(w) \leq 0$
-        for $x\in N_1(w,G)$ with $\Phi(w) > 0$
+        for $x\in N_1(w,G)$ with $\Phi(x) > 0$
           if $(v,w) \in E_i$ or $(w,x) \in E_i$
             $forbiddenColors[\Phi (x)]=v$
       else
@@ -1511,40 +1508,42 @@ function star_bicoloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$)
           if $\Phi(w) = \Phi(y)$
             $forbiddenColors[\Phi (x)] = v$
             
-    $\Phi(v) = min(\{j>0: forbiddenColors[j] \neq v\})$
+    $\Phi(v) = \min(\{j>0: forbiddenColors[j] \neq v\})$
 
   for $v_c\in V_c$ with $\Phi(v_c) > 0$
-    $\Phi (v_c) = \Phi (v_c) + max(\{\Phi (v_r): v_r \in V_r\})$
+    $\Phi (v_c) = \Phi (v_c) + \max(\{\Phi (v_r): v_r \in V_r\})$
 
   for $v\in V_r\cup V_c$ with $\Phi(v)= -1$
     $\Phi (v) = 0$
 
   return $\Phi$
+
+function next_vertex($G=(V_r\cup V_c,E)$,$E_i^{'}$,$\rho$)
+  if($\Delta(V_r,G[E_i^{'}]) > \rho \Delta(V_c,G[E_i^{'}])$ then
+    $v$ = $v_r\in V_r$ with maximum degree in $G[E_i^{'}]$
+  else
+    $v$ = $v_c\in V_c$ with maximum degree in $G[E_i^{'}]$
+  return $v$
 \end{lstlisting}
 
 \begin{lstlisting}[
 caption= Our new heuristic for star bicoloring considering the determined nonrequired elements.,
 label=new.star.bicoloring,mathescape]
 function star_bicoloring_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$)
-  $...$
-  $NonReq=false$
-  while $E_i^{'}\neq\emptyset$
-    if NonReq = false
-      if $\Delta(V_r,G[E_i^{'}]) > \rho \Delta(V_c,G[E_i^{'}]$ then
-        $v$ = $v_r\in V_r$ with maximum degree in $G[E_i^{'}]$
-      else
-        $v$ = $v_c\in V_c$ with maximum degree in $G[E_i^{'}]$
-      $NonReq=true$
-    else
-      Determine an indepentent set $I_v$ containing $v$
-      if $I_v-\{v\}\neq\emptyset$
-        $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
-        $mins = \argmin_{x\in maxs} \req(x)$ 
-        $v=mins[0]$
-      $NonReq=false$
-    $E_i^{'} = E_i^{'} - \{(v,w)\in E_i^{'}:w\in N_1(v,G[E_i^{'}])\}$
-  $...$
-  return $\Phi$
+  star_bicoloring($G$,$E_i$,$\rho$,next_vertex_req)
+
+function next_vertex_nreq($G=(V_r\cup V_c,E)$,$E_i^{'}$,$\rho$)
+  $v$ = next_vertex($G$,$E_i^{'}$,$\rho$)
+  if NonReq = false
+    NonReq = true
+  else
+    Determine an indepentent set $I_v$ containing $v$
+    if $I_v-\{v\}\neq\emptyset$
+      $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
+      $mins = \argmin_{x\in maxs} \req(x)$ 
+      $v=mins[0]$
+    NonReq = false
+  return $v$
 \end{lstlisting}
 \end{figure}
 
@@ -1553,19 +1552,20 @@ we first do computations to find the influence of $\rho$ on the
 number of additionally required elements.
 The value of $\rho$ is a weightening factor which
 is a balance between columns or row vertices. A higher value of $\rho$
-makes the compression mostly in the column vertices and vice versa.
+makes the compression mostly in the column vertices and
+a smaller value of $\rho$ makes the compression mostly in rows.
 There are some discussion on how to choose the value of $\rho$ in
 \cite{Gebremedhin05whatcolor}. Also,
 Lülfesmann~\cite{Lulfesmann2012Fap,LulfesmannMaster} did some computation for some specific $\rho$.
 However, the goal in the previous literature is to minimize the number of colors.
-As the \figref{rho_value_685_bus} and \figref{rho_value_orani678},
+As the \figref{rho_value_685_bus} and \figref{rho_value_orani678} shows,
 the value of $\rho$ has a direct influence on
 the number of additionally required elements.
 The interesting observation is that a tiny change
 on the value of $\rho$ can dramatically change the
 results. For example, changing the value of $\rho$ from
 $0.3$ to $0.4$ in \figref{rho_value_orani678} would result
-in a change of $10000$ in the number of additionally required elements.
+in a change of $10$ percent in the number of additionally required elements.
 
 \begin{figure}
 \includegraphics[width=0.9\linewidth]{rho_value_685_bus}
@@ -1581,23 +1581,20 @@ for the matrix \textit{orani678} with the LFO ordering.}
 \label{rho_value_orani678}
 \end{figure}
 
-Now, we introduce our new heuristic  which is a modification of \coderef{orig.star.bicoloring}.
-As we said, the lines $7$ to $10$ in \coderef{orig.star.bicoloring} chooses the next vertex
-which should be processed from the maximum degree vertices in a graph induces on the required edges.
-\coderef{new.star.bicoloring} shows our new heuristic. Here, the parts which are the same as 
-\coderef{orig.star.bicoloring} are shown by $...$.
-In this algorithm, we add an extra step to this part which selects
-the next vertex with the maximum determined nonrequired elements
-and the minimum number of required elements.
-The variable $NonReq$ switch between two modes. The first mode $NonReq=false$ selects the vertex 
+Now, we introduce our new heuristic  which is a modification of the function \textit{next\_vertex} 
+of \coderef{orig.star.bicoloring}. The other parts of \coderef{orig.star.bicoloring} remain the same as
+in our new heuristic.
+\coderef{new.star.bicoloring} shows the new function \textit{next\_vertex\_req} which should be called
+instead of \textit{next\_vertex} to get the next vertex in each step.
+The variable $NonReq$ switches between two modes in the new function \textit{next\_vertex\_req}.
+The first mode $NonReq=false$ selects the vertex 
 based on the variable $\rho$ like \coderef{orig.star.bicoloring}. 
 The second mode $NonReq=true$ selects
-the next vertex with the maximum determined nonrequired elements
+the next vertex with the maximum number of determined nonrequired elements
 and the minimum number of required elements.
-The other parts of algorithm is completely like \coderef{orig.star.bicoloring}.
 
 Table~\ref{mats.pot.add.gr.vs.nreq.star} shows the numbers of potentially and additionally required elements
-computed with \coderef{orig.star.bicoloring} and our new algorithm. 
+computed with \coderef{orig.star.bicoloring} and \coderef{new.star.bicoloring}. 
 We have an overall increase in both potentially and additionally required elements.
 
 \begin{table}
@@ -1696,64 +1693,6 @@ We adapt this parallelization to \coderef{code.greedy} and \coderef{code.new.imp
 for the bipartite graph model as presented in \coderef{omp.greedy.bip} and \coderef{code.new.bip.omp}.
 These algorithms first colors the vertices
 greedily with a parallel loop and then corrects the false coloring which can happen.
-\begin{figure}
-\begin{lstlisting}[caption=A OpenMP parallelized version of greedy algorithm
-adapted for the bipartite graph.,label=omp.greedy.bip,mathescape]
-function d2_color_omp($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
-  #pragma omp parallel for
-  for $v\in V_c$
-    $forbiddenColors[\Phi(n)] = v$
-    $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
-  #pragma omp barrier
-  $U_0 = V_c$
-  $i = 1$
-  while $U_{i-1}\neq \emptyset$
-    $L=\emptyset$
-    #pragma omp parallel for
-    for $v\in U_{i-1}$
-      if $\exists u\in N_2(v,E_i), u>v: \Phi(u) = \Phi(v)$
-        $forbiddenColors[\Phi(n)] = v$
-        $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
-    #pragma omp barrier
-    $U_i = L$
-    $i = i+1$
-\end{lstlisting}
-
-\begin{lstlisting}[caption=New coloring heuristic in the bipartite graph model
-parallelized by OpenMP,label=code.new.bip.omp,mathescape]
-function d2_color_nreq_omp($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
-  #pragma omp parallel for
-  for $v\in V_c$ with $\Phi(v)=0$
-    $forbiddenColors[0] = v$
-    if $\exists n\in N_2(v,E_i): (v,n)\in E_i$
-      for $n\in N_2(v,E_i)$
-        if $\Phi(n) \neq 0$
-          $forbiddenColors[\Phi(n)] = v$
-    $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
-
-    Determine an indepentent set $I_v$ containing $v$
-    if $I_v-\{v\}\neq\emptyset$
-      $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
-      $mins = \argmin_{x\in maxs} \req(x)$ 
-      for $i\in\{0,1,...,\min (\alpha - 1, size(mins))\}$
-        $\Phi(mins[i]) = \Phi(v)$
-
-  #pragma omp barrier
-  $U_0 = V$
-  $i = 1$
-  while $U_{i-1}\neq \emptyset$
-    $L=\emptyset$
-    #pragma omp parallel for
-    for $v\in U_{i-1}$
-      if $\exists u\in N_2(v,E_i), u>v: \Phi(u) = \Phi(v)$
-        $forbiddenColors[\Phi(n)] = v$
-        $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
-
-    #pragma omp barrier
-    $U_i = L$
-    $i = i+1$
-\end{lstlisting}
-\end{figure}
 
 We color the bipartite graph interpreted from the matrix \textit{Cavity16}
 from the sparse matrix collection of the University of Florida.
@@ -1764,8 +1703,6 @@ The second column shows the computation time in milliseconds. The third column
 is also the number of colors which changes based on the number of colors.
 Table~\ref{omp.res}(Left) shows the results of computation of \coderef{omp.greedy.bip}
 and Table~\ref{omp.res}(Right) for \coderef{code.new.bip.omp}.
-Also \figref{speedups} (Left) and \figref{speedups} (Right) visualize the speedup
-based on the number of threads.
 \begin{figure}
 \begin{tabular}{|c|c|c|}
 \hline
@@ -1800,22 +1737,6 @@ Threads & Time & Colors \\\hline
 (Right) The results of computation of new heuristics parallelized by OpenMP}
 \label{omp.res}
 \end{figure}
-
-\begin{figure}
-\includegraphics[width=0.44\linewidth]{ths_spd.jpg}\hfill
-\includegraphics[width=0.47\linewidth]{ths_spd2.jpg}
-\caption{
-(Left) Speedup for the computation of greedy coloring in bipartite graph model parallelized by OpenMP.
-(Right)Speedup for the computation of new coloring heuristic in bipartite graph model parallelized by OpenMP.
-}
-\label{speedups}
-\end{figure}
-
-This idea can be applied to the new heuristic for star bicoloring which is a potential future work.
-Apart from the parallelization of coloring, the block diagonal sparsification makes a suitable
-matrix for parallelization. It is well known the fill-ins are generated only in the nonzero blocks in such matrices. This observation gives a direct idea of parallelization in which each process
-works on each block. We do not go into details since it is already discussed in previous literature like~\cite{parblockilu}. However, it does not mean that the same idea can be applied in computation of
-additionally required elements since those elements are outside the blocks.
 
 %\cite{mpi_greedy_coloring}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
