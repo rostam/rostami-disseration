@@ -1738,9 +1738,9 @@ Here, we apply our new heuristics to the carbon sequestration example from geosc
 The geophysics group of RWTH Aachen simulates the injection of CO\textsubscript{2}
 in a reservoir by a two-phase flow model in porous media. These two phases are a wetting
 and non-wetting phase like water and gas. A 2D two-phase flow can be formulated as
-a system of coupled non-linear partial differential equations in which the boundary conditions
+a system of coupled nonlinear partial differential equations in which the boundary conditions
 are Dirichlet and Neumann. Integrating the time with the implicit Euler method
-based on~\cite{Lulfesmann2012Fap}, the following system of non-linear equations are resulted,
+based on~\cite{Lulfesmann2012Fap} results in the following system of nonlinear equations,
 $$F(u)=0 \, \text{ with } \, u = \binom{p_w}{S_n} \in \R^{2MN} \, \text{ and } \, F = \binom{F_1}{F_2} \in \R^{2MN},$$
 where the variable $p_w \in \R^{MN}$ is the pressure for the wetting phase and $S_n \in \R^{MN}$ is the non-wetting saturation. The Newton's method solves this system of equations.
 Hence, the $2MN \times 2MN$ Jacobian matrix $A$ is determined with a transformed version of the original function $F$ (The AD tool \mbox{ADiMat}~\cite{Bischof2005AML} transforms $F$),
@@ -1754,7 +1754,7 @@ A =
 $$
 
 This Jacobian matrix is divided into four quadrants: the derivative $\partial F_1 / \partial p_w$ in the top left quadrant, $\partial F_1 / \partial S_n$ in the top right, $\partial F_2 / \partial p_w$ in the bottom left, and $\partial F_2 / \partial S_n$ in the bottom right. The sparsity patterns of the $462 \times 462$ Jacobian matrix $A$
-with $3,236$ nonzeros arised from a specific discretization is depicted in \figref{f:geophysik_J_matrices}.
+with $3,236$ nonzeros arising from a specific discretization is depicted in \figref{f:geophysik_J_matrices}.
 The four quadrants are indicated by crossed black lines. The Jacobian matrix~$A$ is based on the five-point stencil in the north west, south east, and south west quadrant. In the north east, the two-point stencil~$\{(m,n), (m,n-1)\}$ with the center~$(m,n)$ is used.
 $$
 A =
@@ -1781,15 +1781,13 @@ instead of the whole Jacobian matrix.
 We compare the convergence histories of the BICGSTAB solver 
 on the four different methods of preconditioning:
 without preconditioning,
-with preconditioning with $S=R_i$,
-with preconditioning with $S=R_i + R_a$ in which 
+preconditioning with $S=R_i$,
+preconditioning with $S=R_i + R_a$ in which 
 the set $R_a$ is computed based on the greedy coloring,
-and with preconditioning with $S=R_i + R_a$ in which 
+and preconditioning with $S=R_i + R_a$ in which 
 the set $R_a$ is computed based on \coderef{code.new.impr2}.
 
-We do this comparison for different block sizes.
-The results of the computation of the block size
-$10$ and $20$ in
+We do this comparison for two block sizes $10$ and $20$ in
 Figure~\ref{f.convergence_greedy_new2} (Top) and
 Figure~\ref{f.convergence_greedy_new2} (Bottom), respectively.
 In both block $10$ and $20$, the preconditioning computed based
@@ -1805,10 +1803,10 @@ better convergence.
 The history of the residual norms is visualized based on the 
 the number of matrix-vector products comparing four different methods:
 without preconditioning (red color), 
-with preconditioning with $S=R_i$ (blue color),
-with preconditioning with $S=R_i + R_a$ in which 
+preconditioning with $S=R_i$ (blue color),
+preconditioning with $S=R_i + R_a$ in which 
 the set $R_a$ is computed based on the greedy coloring (black color),
-and with preconditioning with $S=R_i + R_a$ in which 
+and preconditioning with $S=R_i + R_a$ in which 
 the set $R_a$ is computed based on \coderef{code.new.impr2} (green color).
 The level parameter of the ILU preconditioning is $2$.
 (Top) The block size is $10$. 
@@ -1902,8 +1900,10 @@ elements computed by different algorithms. The block size is fixed to $10$.}
 \label{s.part.color.diag}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 So far, we considered the partial Jacobian computation with an arbitrary
-set of required elements. However, a better heuristics is proposed if the
+set of required elements. However, a better heuristics can be proposed if the
 pattern of the required elements is prior known.
+Here, we look at a certain example in which the sparsity pattern is restricted to diagonal elements.
+
 Lülfesmann~\cite{Lulfesmann2012Fap} shows that the minimum number of colors of
 the partial star bicoloring restricted to diagonals $\chi_{sb}$ is equal to
 the minimal number of colors of the partial distance-$2$ coloring restricted
@@ -1945,7 +1945,7 @@ On the other hand, the set of diagonal elements in the theorem
 can be replaced by any set of required elements
 in which each column and row contain only one required nonzero elements.
 This property is nothing than a matching~\cite{bondy2008graph} in a graph language.
-Given a graph and the vertex and edge set $G=(V,E)$, a matching $M\subset E$ contains
+Given a graph and the vertex and edge set $G=(V,E)$, a matching $M\subseteq E$ contains
 a list of edges which do not have any vertex in common.
 A maximum matching is a matching with a maximum possible number of edges.
 Then, a diagonal for example in our bipartite graph is a maximum matching.
@@ -1954,7 +1954,7 @@ Now, we can formulate a new theorem on the comparison of one directional and
 bidirectional coloring as follows,
 \begin{theorem}
 \label{t.matching}
-Given the bipartite graph $G=(V_r\cup V_c,E)$ and a matching $M\subset E$ representing
+Given the bipartite graph $G=(V_r\cup V_c,E)$ and a matching $M\subseteq E$ representing
 the required elements, any valid partial star bicoloring $Q_{sp}$ restricted to $M$
 with the number of colors $\chi_{sp}$
 can be transformed to a valid distance-$2$ coloring restricted to $M$
@@ -1981,8 +1981,7 @@ In this paper, a classical graph coloring problem on an undirected graph
 is formulated from the partial Jacobian computation.
 We know that a graph coloring is an NP-complete problem
 (see \cite{np-complet-graph-coloring})).
-So the coloring restricted to the diagonal elements should be NP-complete too.
-
+So the coloring restricted to the diagonal elements is an NP-complete problem too.
 Therefore, we should still use some heuristics to compute these colorings.
 The examples in Table~\ref{table.starbic.d2.diag} from Florida sparse collection shows that the
 inequality in Theorem~\ref{t.matching} can happen. The second column of this table
@@ -2064,8 +2063,8 @@ function star_diag($G=(V_r\cup V_c)$, $E_R$)
       if $\Phi(n) > 0$
         $forbiddenColors2[\Phi(n)] = u$
 
-    $c_1 = min(\{j>0: forbiddenColors1[j] \neq v\})$
-    $c_2 = min(\{j>0: forbiddenColors2[j] \neq u\})$
+    $c_1 = \min(\{j>0: forbiddenColors1[j] \neq v\})$
+    $c_2 = \min(\{j>0: forbiddenColors2[j] \neq u\})$
 
     if $c_1 < c_2$
       $\Phi(v) = c_1$
@@ -2073,7 +2072,7 @@ function star_diag($G=(V_r\cup V_c)$, $E_R$)
       $\Phi(u) = c_2$
 
     for $v\in V_c$ with $\Phi(v)>0$
-      $\Phi(v) = \Phi(v) + max(\{ \Phi(u):u\in V_r \})$
+      $\Phi(v) = \Phi(v) + \max(\{ \Phi(u):u\in V_r \})$
 
     for $v\in V_r\cup V_c$ with $\Phi(v) = -1$
       $\Phi(v) = 0$
