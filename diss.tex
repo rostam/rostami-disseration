@@ -1728,6 +1728,96 @@ The nonsymmetric matrix \textit{$crystm01$} with the natural ordering is used he
 %\end{figure}
 
 %\cite{mpi_greedy_coloring}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\section{Application in geoscience}
+\label{s.application}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Here, we apply our new heuristics to the carbon sequestration example from geoscience.
+The geophysics group of RWTH Aachen simulates the injection of CO\textsubscript{2}
+in a reservoir by a two-phase flow model in porous media. These two phases are a wetting
+and non-wetting phase like water and gas. A 2D two-phase flow can be formulated as
+a system of coupled non-linear partial differential equations in which the boundary conditions
+are Dirichlet and Neumann. Integrating the time with the implicit Euler method
+based on~\cite{Lulfesmann2012Fap}, the following system of non-linear equations are resulted,
+$$F(u)=0 \, \text{ with } \, u = \binom{p_w}{S_n} \in \R^{2MN} \, \text{ and } \, F = \binom{F_1}{F_2} \in \R^{2MN},$$
+where the variable $p_w \in \R^{MN}$ is the pressure for the wetting phase and $S_n \in \R^{MN}$ is the non-wetting saturation. The Newton's method solves this system of equations.
+Hence, the $2MN \times 2MN$ Jacobian matrix $A$ is determined with a transformed version of the original function $F$ (The AD tool \mbox{ADiMat}~\cite{Bischof2005AML} transforms $F$),
+$$
+A =
+\left({\begin{array}{l|l}
+	\displaystyle \frac{\partial F_1}{\partial p_w} & \displaystyle \frac{\partial F_1}{\partial S_n} \\[1em]
+	\hline
+	\displaystyle \frac{\partial F_2}{\partial p_w} \rule[-7.5pt]{0pt}{30pt} & \displaystyle \frac{\partial F_2}{\partial S_n} \\
+ \end{array}} \right).
+$$
+
+This Jacobian matrix is divided into four quadrants: the derivative $\partial F_1 / \partial p_w$ in the top left quadrant, $\partial F_1 / \partial S_n$ in the top right, $\partial F_2 / \partial p_w$ in the bottom left, and $\partial F_2 / \partial S_n$ in the bottom right. The sparsity patterns of the $462 \times 462$ Jacobian matrix $A$
+with $3,236$ nonzeros arised from a specific discretization is depicted in \figref{f:geophysik_J_matrices}.
+The four quadrants are indicated by crossed black lines. The Jacobian matrix~$A$ is based on the five-point stencil in the north west, south east, and south west quadrant. In the north east, the two-point stencil~$\{(m,n), (m,n-1)\}$ with the center~$(m,n)$ is used.
+$$
+A =
+\left({\begin{array}{l|l}
+	\text{five-point stencil} & \text{two-point stencil} \\[0.25em]
+	\hline
+	\text{five-point stencil} \rule[-7.5pt]{0pt}{21pt} & \text{five-point stencil} \\
+ \end{array}} \right)
+\quad.
+$$
+
+\begin{figure}%
+	\footnotesize
+	\centering
+         \includegraphics[width=0.6\linewidth]{co2_jac}
+\caption{Sparsity pattern of Jacobian matrix~$A$.}%
+\label{f:geophysik_J_matrices}
+\end{figure}
+
+We solved a system of linear equations with the
+coefficient matrix $A$ with the BICGSTAB iterative solver.
+We compute the ILU preconditioning on a set of selected elements $S$
+instead of the whole Jacobian matrix. 
+We compare the convergence histories of the BICGSTAB solver 
+on the four different methods of preconditioning:
+without preconditioning,
+with preconditioning with $S=R_i$,
+with preconditioning with $S=R_i + R_a$ in which 
+the set $R_a$ is computed based on the greedy coloring,
+and with preconditioning with $S=R_i + R_a$ in which 
+the set $R_a$ is computed based on \coderef{code.new.impr2}.
+
+We do this comparison for different block sizes.
+The results of the computation of the block size
+$10$ and $20$ in
+Figure~\ref{f.convergence_greedy_new2} (Top) and
+Figure~\ref{f.convergence_greedy_new2} (Bottom), respectively.
+In both block $10$ and $20$, the preconditioning computed based
+on the new coloring converges in the fewer number of matrix-vector products.
+However, it does not mean that a bigger block size results always in the 
+better convergence.
+\begin{figure}
+\centering
+%\includegraphics[width=0.8\linewidth]{jac_convergence_greedy_new_bl2.jpg}
+\includegraphics[width=\linewidth]{jac_convergence_greedy_new.jpg}
+\includegraphics[width=\linewidth]{jac_convergence_greedy_new_bl20.jpg}
+\caption{
+The history of the residual norms is visualized based on the 
+the number of matrix-vector products comparing four different methods:
+without preconditioning (red color), 
+with preconditioning with $S=R_i$ (blue color),
+with preconditioning with $S=R_i + R_a$ in which 
+the set $R_a$ is computed based on the greedy coloring (black color),
+and with preconditioning with $S=R_i + R_a$ in which 
+the set $R_a$ is computed based on \coderef{code.new.impr2} (green color).
+The level parameter of the ILU preconditioning is $2$.
+(Top) The block size is $10$. 
+(Bottom) The block size is $20$.
+}
+\label{f.convergence_greedy_new2}
+\end{figure}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Maximizing the set of additionally required elements}
@@ -1739,7 +1829,8 @@ Here, we suggest a heuristic to predict if a nonrequired element would be an
 additionally required element. 
 For this purpose, we use the bipartite graph model for ILU preconditioning
 presented in \secref{ss.comb.precond} and the its adapted concept of fill path in 
-\defref{d.fill.path.bipartite}. Given a nonrequired element (an edge of bipartite graph),
+\defref{d.fill.path.bipartite}. Given a nonrequired element
+(a nonrequired edge of bipartite graph),
 the idea is to check if the addition of this edge would generate any new fill-in.
 If the fill level of SILU is $l$, we list all fill paths of length $l$ passing this nonrequired edge
 in the set $L$. Each fill path in the set $L$ which all its edges except the given nonrequired edge
@@ -1748,7 +1839,7 @@ nonrequired edge in this case.
 
 As we discussed, for a fixed ordering of vertices,
 a fill path from the vertex $v_i$ to $v_j$ is a path $v_i,...,v_k,...,v_j$
-in which all intermediate vertices has smaller indices than $i$ and $k$.
+in which all intermediate vertices has smaller indices than $i$ and $j$.
 Given a nonrequired edge $t=(r_i,c_j)$, we define the set of all fill paths starting
 from $c_i$ passing the edge $t$ with the size of $k$ as
 $pr_k^t = \{\{ r_i,c_j,...,c_a\},...,\{ r_i,c_j,...,c_b\}\}$.
@@ -1805,99 +1896,12 @@ elements computed by different algorithms. The block size is fixed to $10$.}
 \label{mats.add.gr.vs.nreq.vs.fillpath}
 \end{table}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Application in geoscience}
-\label{s.application}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Here, we apply our new heuristics to the carbon sequestration example from geoscience.
-The geophysics group of RWTH Aachen simulates the injection of CO\textsubscript{2}
-in a reservoir by a two-phase flow model in porous media. These two phases are a wetting
-and non-wetting phase like water and gas. A 2D two-phase flow can be formulated as
-a system of coupled non-linear partial differential equations in which the boundary conditions
-are Dirichlet and Neumann. Integrating the time with the implicit Euler method
-based on~\cite{Lulfesmann2012Fap}, the following system of non-linear equations are resulted,
-$$F(u)=0 \, \text{ with } \, u = \binom{p_w}{S_n} \in \R^{2MN} \, \text{ and } \, F = \binom{F_1}{F_2} \in \R^{2MN},$$
-where the variable $p_w \in \R^{MN}$ is the pressure for the wetting phase and $S_n \in \R^{MN}$ is the non-wetting saturation. The Newton's method solves this system of equations.
-Hence, the $2MN \times 2MN$ Jacobian matrix $A$ is determined with a transformed version of the original function $F$ (The AD tool \mbox{ADiMat}~\cite{Bischof2005AML} transforms $F$),
-$$
-A =
-\left({\begin{array}{l|l}
-	\displaystyle \frac{\partial F_1}{\partial p_w} & \displaystyle \frac{\partial F_1}{\partial S_n} \\[1em]
-	\hline
-	\displaystyle \frac{\partial F_2}{\partial p_w} \rule[-7.5pt]{0pt}{30pt} & \displaystyle \frac{\partial F_2}{\partial S_n} \\
- \end{array}} \right).
-$$
-
-This Jacobian matrix is divided into four quadrants: the derivative $\partial F_1 / \partial p_w$ in the top left quadrant, $\partial F_1 / \partial S_n$ in the top right, $\partial F_2 / \partial p_w$ in the bottom left, and $\partial F_2 / \partial S_n$ in the bottom right. The sparsity patterns of the $462 \times 462$ Jacobian matrix $A$
-with $3,236$ nonzeros arised from a specific discretization is depicted in \figref{f:geophysik_J_matrices}.
-The four quadrants are indicated by crossed black lines. The Jacobian matrix~$A$ is based on the five-point stencil in the north west, south east, and south west quadrant. In the north east, the two-point stencil~$\{(m,n), (m,n-1)\}$ with the center~$(m,n)$ is used.
-$$
-A =
-\left({\begin{array}{l|l}
-	\text{five-point stencil} & \text{two-point stencil} \\[0.25em]
-	\hline
-	\text{five-point stencil} \rule[-7.5pt]{0pt}{21pt} & \text{five-point stencil} \\
- \end{array}} \right)
-\quad.
-$$
-
-\begin{figure}%
-	\footnotesize
-	\centering
-         \includegraphics[width=0.6\linewidth]{co2_jac}
-\caption{Sparsity pattern of Jacobian matrix~$A$.}%
-\label{f:geophysik_J_matrices}
-\end{figure}
-
-We solved a system of linear equations with the
-coefficient matrix $A$ with the BICGSTAB iterative solver.
-We compute the ILU preconditioning on a set of selected elements $S$
-instead of the whole Jacobian matrix. 
-We compare the convergence histories of the BICGSTAB solver 
-on the four different methods of preconditioning:
-without preconditioning,
-with preconditioning with $S=R_i$,
-with preconditioning with $S=R_i + R_a$ in which 
-the set $R_a$ is computed based on the greedy coloring,
-and with preconditioning with $S=R_i + R_a$ in which 
-the set $R_a$ is computed based on the new coloring.
-
-We do this comparison for different block sizes.
-The results of the computation of the block size
-$10$ and $20$ in
-Figure~\ref{f.convergence_greedy_new2} (Top) and
-Figure~\ref{f.convergence_greedy_new2} (Bottom), respectively.
-In both block $10$ and $20$, the preconditioning computed based
-on the new coloring converges in the fewer number of matrix-vector products.
-However, it does not mean that the bigger block results always in the 
-better convergence.
-\begin{figure}
-\centering
-%\includegraphics[width=0.8\linewidth]{jac_convergence_greedy_new_bl2.jpg}
-\includegraphics[width=\linewidth]{jac_convergence_greedy_new.jpg}
-\includegraphics[width=\linewidth]{jac_convergence_greedy_new_bl20.jpg}
-\caption{
-The history of the residual norms is visualized based on the 
-the number of matrix-vector products comparing four different methods:
-without preconditioning (red color), 
-with preconditioning with $S=R_i$ (blue color),
-with preconditioning with $S=R_i + R_a$ in which 
-the set $R_a$ is computed based on the greedy coloring (black color),
-and with preconditioning with $S=R_i + R_a$ in which 
-the set $R_a$ is computed based on the new coloring (green color).
-The level parameter of the ILU preconditioning is $2$.
-(Top) The block size is $10$. 
-(Bottom) The block size is $20$.
-}
-\label{f.convergence_greedy_new2}
-\end{figure}
-
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Coloring restricted to diagonal elements}
 \label{s.part.color.diag}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-So far, we consider the partial Jacobian computation with an arbitrary
+So far, we considered the partial Jacobian computation with an arbitrary
 set of required elements. However, a better heuristics is proposed if the
 pattern of the required elements is prior known.
 Lülfesmann~\cite{Lulfesmann2012Fap} shows that the minimum number of colors of
