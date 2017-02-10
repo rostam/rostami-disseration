@@ -3480,34 +3480,18 @@ var post_processing_cc = function () {
 
 \chapter{Conclusion and future Work}
 \label{conc}
-This work is to develop the new ideas in combinatorial scientific mixing AD and preconditioning which we explained in \secref{s.precond}.
-In \secref{package}, we introduce new heuristics to increase the number of potentially required elements and the number of additionally required
-elements while the number of colors remains almost the same.
-Although there is much research, many dimensions of the problem can be improved. Most of the works toward mixing AD and preconditioning looks at solutions for a general matrix. However, the study of Hessian matrix and its connection to fill-in of Cholesky factorization might offer more degree of freedom in coloring.
-
-On the other hand, we considered only the ILU preconditioning. What if we replace ILU with the approximate inverse preconditioning (AINV)~\cite{ainv98} which produces no fill-in. There is a need to review the AINV algorithms. An algorithm for this technique takes a pattern for preconditioner $M$ as input and gradually updates this starting pattern and the nonzero values.
-So we can do first a sparsification as usual which leads to $R_p$ and take $R_i + R_p$ as starting pattern for $M$. Then, we would have two separate problems of coloring and AINV preconditioning.
-So, we color the graph given two input matrices $R_i$ and $M$.
-It is a different coloring problem than the usual restricted coloring problem.
-However, this seems to be the same as restricted coloring with a larger set of required elements.
-When applying AINV to an initial $M$, is there any effect on $M$? For
-instance, does the pattern of $M$ vary? How does it vary? Does the
-variation depend on the structure of the initial pattern only? Or
-does the pattern change based on the values of $M$ that are available
-at runtime? Perhaps, one can estimate/approximate the pattern of $M$
-conservatively without taking the values of $M$ into account. (This
-would then be similar to the fill-in when using ILU.) Need to look
-at AINV algorithms more closely.
-What if we transform program for function $f(x)$ not only to a program for $\frac{df}{dx}$ (traditional AD),
-but also to another program for matrix-vector product $Mx$ where $M$ is an AINV preconditioner for the Jacobian $\frac{df}{dx}$.
-
-Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph model as before and show it has advantages in the unidirectional coloring. A first improvement is to search for the similar approach in the bidirectional coloring and restricted coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
-
-Additionally in \secref{package}, we discussed a new heuristic for the coloring restricted to the diagonal elements
+This dissertation is to develop the new ideas in combinatorial scientific computing mixing AD and preconditioning which we explained in \secref{s.precond}.
+In Chapter~\ref{package}, we introduce new coloring heuristics
+to increase the number of potentially and additionally required elements
+while the number of colors remains almost the same.
+Additionally, in the same chapter,
+we discussed a new heuristic for the coloring restricted to the diagonal elements
 as well as the first ideas toward a new heuristic based on the exact coloring in the small subgraphs.
 We should do more evaluations and computations for these heuristics later.
+We implemented all these heuristics in our software \textit{PreCol} which 
+is explained in \secref{s.extend}.
 
-Finally, in \secref{explain}, we developed an interactive educational module 
+Inn \secref{explain}, we develop an interactive educational module 
 for teaching the concepts of combinatorial scientific computing. 
 In this chapter, we discussed our previous publications
 \cite{2013:05,2014:01,2014:02,2014:09,2015:3} and also the new features which 
@@ -3516,6 +3500,13 @@ for the new ideas in this software. Beside developing new modules,
 we need to improve the usability and extensibility of the software.
 Also, we need an extensive evaluation of the software to find
 the new ways of further developments.
+
+Although we proposed different heuristics, many dimensions of the problem can be improved. 
+We considered only the ILU preconditioning. A future work is to replace ILU
+with other preconditioning techniques.
+For example, the approximate inverse preconditioning (AINV)~\cite{ainv98} is a 
+suitable candidate which produces no fill-in.
+Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph model as before and show it has advantages in the unidirectional coloring. A first improvement is to search for the similar approach in the bidirectional coloring and restricted coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
