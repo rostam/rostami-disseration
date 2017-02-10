@@ -1450,6 +1450,59 @@ The orderings for coloring are (Top) the natural ordering,
 \label{different.alpha}
 \end{table}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\subsubsection{Parallelization}
+\label{s.parallel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+For a faster computation, we parallelize the proposed heuristics by OpenMP.
+There is much literature to parallelize coloring algorithms.
+For example, {\c{C}}ataly{\"{u}}rek~\cite{cataly2012} introduced an OpenMP parallelized
+greedy coloring which computes the same number of colors as the serial version.
+However, there are two points in each iteration of the algorithm in which the threads
+need to be synchronized.
+Here, our focus is on another algorithm from Rokos et al~\cite{Rokos2015}
+which presents an algorithm in which only a single point of synchronization is needed.
+In this algorithm, the number of colors changes with the number of parallel threads
+but it remains near to the number of colors in the serial version.
+We adapt this parallelization to \coderef{code.greedy} and \coderef{code.new.impr2} for the bipartite graph model.
+These algorithms first colors the vertices
+greedily with a parallel loop and then corrects the false coloring which can happen.
+
+We color the bipartite graph associated with the matrix \textit{Cavity16}
+from the sparse matrix collection of the University of Florida.
+The timing results are all from the computation carried on an Intel Core i5 with 8 Gb RAM with hyperthreading.
+This means the number of available parallel threads is $4$ doubled by hyperthreading.
+Table~\ref{omp.res} shows the results of these computations.
+Here, we change the number of threads from $1$ to $5$ shown in the first column.
+The second column shows the computation time in milliseconds. The third column
+is also the number of colors which changes based on the number of threads.
+\begin{figure}
+\begin{tabular}{|c|c|c|}
+\hline
+Threads & Time & Colors \\\hline
+1 & 42.8745 & 47 \\\hline
+2 & 33.9665 & 47 \\\hline
+3 & 25.2741 & 48 \\\hline
+4 & 20.6863 & 48 \\\hline
+5 & 21.4943 & 47 \\\hline
+\end{tabular}\hfill
+\begin{tabular}{|c|c|c|}
+\hline
+Threads & Time & Colors \\\hline
+1 & 96.795 & 48 \\\hline
+2 & 75.744 & 47 \\\hline
+3 & 55.605 & 49 \\\hline
+4 & 49.335 & 49 \\\hline
+5 & 49.360 & 47 \\\hline
+\end{tabular}
+\caption{
+(Left) The results of computation of OpenMP-parallelized \coderef{code.greedy}.
+(Right) The results of computation of OpenMP-parallelized \coderef{code.new.impr2}.
+}
+\label{omp.res}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
@@ -1673,70 +1726,6 @@ The nonsymmetric matrix \textit{$crystm01$} with the natural ordering is used he
 %The nonsymmetric matrix \textit{$crystm01$} is used here.}
 %\label{bls_cols_crystm01_old_star_vs_new}
 %\end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\clearpage
-\subsection{Parallelization}
-\label{s.parallel}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-For a faster computation, we parallelize the proposed heuristics by OpenMP here.
-There are much literature to parallelize coloring algorithms.
-For example, {\c{C}}ataly{\"{u}}rek~\cite{cataly2012} introduced an OpenMP parallelized
-greedy coloring which computes the same number of colors as the serial version.
-However, there are two points in each iteration of the algorithm in which the threads
-need to be synchronized.
-Here, our focus is on another algorithm from Rokos et al~\cite{Rokos2015}
-which presents an algorithm in which only a point of synchronization is
-needed.
-In this algorithm, the number of colors changes but it remains near 
-to the number of colors in the serial version.
-We adapt this parallelization to \coderef{code.greedy} and \coderef{code.new.impr2}
-for the bipartite graph model as presented in \coderef{omp.greedy.bip} and \coderef{code.new.bip.omp}.
-These algorithms first colors the vertices
-greedily with a parallel loop and then corrects the false coloring which can happen.
-
-We color the bipartite graph interpreted from the matrix \textit{Cavity16}
-from the sparse matrix collection of the University of Florida.
-The timing results are all from the computation carried on an Intel Core i5 with 8 Gb RAM.
-Table~\ref{omp.res} shows the results of these computations.
-Here, we change the number of threads from $1$ to $10$ shown in the first column.
-The second column shows the computation time in milliseconds. The third column
-is also the number of colors which changes based on the number of colors.
-Table~\ref{omp.res}(Left) shows the results of computation of \coderef{omp.greedy.bip}
-and Table~\ref{omp.res}(Right) for \coderef{code.new.bip.omp}.
-\begin{figure}
-\begin{tabular}{|c|c|c|}
-\hline
-Threads & Time & Colors \\\hline
-1 & 42.8745 & 47 \\\hline
-2 & 33.9665 & 47 \\\hline
-3 & 25.2741 & 48 \\\hline
-4 & 20.6863 & 48 \\\hline
-5 & 21.4943 & 47 \\\hline
-6 & 20.1796 & 50 \\\hline
-7 & 17.9640 & 49 \\\hline
-8 & 16.1068 & 52 \\\hline
-9 & 15.4174 & 47 \\\hline
-10 & 16.1545 & 47 \\\hline
-\end{tabular}\hfill
-\begin{tabular}{|c|c|c|}
-\hline
-Threads & Time & Colors \\\hline
-1 & 96.795 & 48 \\\hline
-2 & 75.744 & 47 \\\hline
-3 & 55.605 & 49 \\\hline
-4 & 49.335 & 49 \\\hline
-5 & 49.360 & 47 \\\hline
-6 & 49.365 & 51 \\\hline
-7 & 45.342 & 47 \\\hline
-8 & 43.254 & 51 \\\hline
-9 & 40.742 & 48 \\\hline
-10 & 39.416 & 47 \\\hline
-\end{tabular}
-\caption{
-(Left) The results of computation of greedy coloring parallelized by OpenMP.
-(Right) The results of computation of new heuristics parallelized by OpenMP}
-\label{omp.res}
-\end{figure}
 
 %\cite{mpi_greedy_coloring}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1816,55 +1805,6 @@ elements computed by different algorithms. The block size is fixed to $10$.}
 \label{mats.add.gr.vs.nreq.vs.fillpath}
 \end{table}
 
-\begin{table}
-\centering
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-Matrix (NAT) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
-{} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
-\textit{steam1.mtx} & $64$ & $786$ & $64$ & $630$ \\\hline
-\textit{steam2.mtx} & $240$ & $1880$ & $240$ & $1400$ \\\hline
-\textit{nos3.mtx} & $1638$ & $6756$ & $1106$ & $4296$ \\\hline
-\textit{crystm01.mtx} & $17822$ & $47556$ & $10388$ & $28318$ \\\hline
-\textit{ex7.mtx} & $38554$ & $34954$ & $29174$ & $25054$ \\\hline
-\textit{ex33.mtx} & $7408$ & $8934$ & $4920$ & $5572$ \\\hline
-\textit{coater1.mtx} & $11722$ & $11558$ & $7684$ & $7448$ \\\hline
-\textit{pesa.mtx} & $36972$ & $41154$ & $31010$ & $33094$ \\\hline
-\end{tabular}
-\vspace*{1cm}\newline
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-Matrix (LFO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
-{} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
-\textit{steam1.mtx} & $64$ & $1048$ & $64$ & $666$ \\\hline
-\textit{steam2.mtx} & $240$ & $2624$ & $240$ & $1248$ \\\hline
-\textit{nos3.mtx} & $1880$ & $6882$ & $1246$ & $4442$ \\\hline
-\textit{crystm01.mtx} & $20326$ & $36634$ & $12256$ & $21194$ \\\hline
-\textit{ex7.mtx} & $37080$ & $33426$ & $28904$ & $24060$ \\\hline
-\textit{ex33.mtx} & $10574$ & $10564$ & $7170$ & $6888$ \\\hline
-\textit{coater1.mtx} & $11312$ & $11512$ & $7410$ & $7536$ \\\hline
-\textit{pesa.mtx} & $42490$ & $41676$ & $31790$ & $31884$ \\\hline
-\end{tabular}
-\vspace*{1cm}\newline
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-Matrix (SLO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
-{} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
-\textit{steam1.mtx} & $64$ & $1294$ & $64$ & $754$ \\\hline
-\textit{steam2.mtx} & $240$ & $3192$ & $240$ & $1912$ \\\hline
-\textit{nos3.mtx} & $1682$ & $6772$ & $1132$ & $4382$ \\\hline
-\textit{crystm01.mtx} & $24478$ & $45166$ & $14252$ & $26782$ \\\hline
-\textit{ex7.mtx} & $36486$ & $34448$ & $27044$ & $24164$ \\\hline
-\textit{ex33.mtx} & $8024$ & $10754$ & $5186$ & $7138$ \\\hline
-\textit{coater1.mtx} & $10476$ & $11702$ & $7004$ & $7878$ \\\hline
-\textit{pesa.mtx} & $39606$ & $44624$ & $29034$ & $34044$ \\\hline
-\end{tabular}
-\caption{The comparison between the number of potentially and additionally required
-elements computed with \coderef{code.new.d2.nreq} and \coderef{code.greedy}.
-The block size is fixed to $10$. The orderings for coloring are (Top) the natural ordering,
-(Middle) LFO, and (Bottom) SLO.}
-\label{mats.pot.add.gr.vs.nreq}
-\end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Application in geoscience}
 \label{s.application}
