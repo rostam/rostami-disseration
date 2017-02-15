@@ -1148,7 +1148,7 @@ are larger in the computation for \textit{ex7.mtx} and for all orderings.
 \centering
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Matrix (NAT) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+Matrix (NAT) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hline
 {} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
 \textit{steam1.mtx} & $64$ & $786$ & $64$ & $630$ \\\hline
 \textit{steam2.mtx} & $240$ & $1880$ & $240$ & $1400$ \\\hline
@@ -1162,7 +1162,7 @@ Matrix (NAT) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Matrix (LFO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+Matrix (LFO) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hline
 {} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
 \textit{steam1.mtx} & $64$ & $1048$ & $64$ & $666$ \\\hline
 \textit{steam2.mtx} & $240$ & $2624$ & $240$ & $1248$ \\\hline
@@ -1176,7 +1176,7 @@ Matrix (LFO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Matrix (SLO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+Matrix (SLO) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hline
 {} & \coderef{code.greedy} & \coderef{code.new.d2.nreq} & \coderef{code.greedy} & \coderef{code.new.d2.nreq}\\\hline
 \textit{steam1.mtx} & $64$ & $1294$ & $64$ & $754$ \\\hline
 \textit{steam2.mtx} & $240$ & $3192$ & $240$ & $1912$ \\\hline
@@ -1653,7 +1653,7 @@ We have an overall increase in both potentially and additionally required elemen
 \centering
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Matrix (NAT) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+Matrix (NAT) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hline
 {} & \coderef{orig.star.bicoloring} & \coderef{new.star.bicoloring} & \coderef{orig.star.bicoloring} & \coderef{new.star.bicoloring}\\\hline
 \textit{steam1.mtx} & $64$ & $590$ & $64$ & $454$ \\\hline
 \textit{steam2.mtx} & $240$ & $2352$ & $240$ & $1648$ \\\hline
@@ -1667,7 +1667,7 @@ Matrix (NAT) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Matrix (LFO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+Matrix (LFO) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hline
 {} & \coderef{orig.star.bicoloring} & \coderef{new.star.bicoloring} & \coderef{orig.star.bicoloring} & \coderef{new.star.bicoloring}\\\hline
 \textit{steam1.mtx} & $64$ & $802$ & $64$ & $466$ \\\hline
 \textit{steam2.mtx} & $240$ & $2352$ & $240$ & $944$ \\\hline
@@ -1681,7 +1681,7 @@ Matrix (LFO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Matrix (SLO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+Matrix (SLO) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hline
 {} & \coderef{orig.star.bicoloring} & \coderef{new.star.bicoloring} & \coderef{orig.star.bicoloring} & \coderef{new.star.bicoloring}\\\hline
 \textit{steam1.mtx} & $64$ & $824$ & $64$ & $616$ \\\hline
 \textit{steam2.mtx} & $240$ & $2320$ & $240$ & $1616$ \\\hline
@@ -1812,16 +1812,16 @@ elements computed by different algorithms. The block size is fixed to $10$.}
 \section{Application in geoscience}
 \label{s.application}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Here, we apply our new heuristics to the carbon sequestration example from geoscience.
+Here, we apply our new heuristics to a carbon sequestration example from geoscience.
 The geophysics group of RWTH Aachen simulates the injection of CO\textsubscript{2}
 in a reservoir by a two-phase flow model in porous media. These two phases are a wetting
 and non-wetting phase like water and gas. A 2D two-phase flow can be formulated as
 a system of coupled nonlinear partial differential equations in which the boundary conditions
 are Dirichlet and Neumann. Integrating the time with the implicit Euler method
-based on~\cite{Lulfesmann2012Fap} results in the following system of nonlinear equations,
+based on~\cite{Busing2014UEJ,Lulfesmann2012Fap} results in the following system of nonlinear equations,
 $$F(u)=0 \, \text{ with } \, u = \binom{p_w}{S_n} \in \R^{2MN} \, \text{ and } \, F = \binom{F_1}{F_2} \in \R^{2MN},$$
 where the variable $p_w \in \R^{MN}$ is the pressure for the wetting phase and $S_n \in \R^{MN}$ is the non-wetting saturation. The Newton's method solves this system of equations.
-Hence, the $2MN \times 2MN$ Jacobian matrix $A$ is determined with a transformed version of the original function $F$ (The AD tool \mbox{ADiMat}~\cite{Bischof2005AML} transforms $F$),
+Hence, the $2MN \times 2MN$ Jacobian matrix 
 $$
 A =
 \left({\begin{array}{l|l}
@@ -1830,10 +1830,16 @@ A =
 	\displaystyle \frac{\partial F_2}{\partial p_w} \rule[-7.5pt]{0pt}{30pt} & \displaystyle \frac{\partial F_2}{\partial S_n} \\
  \end{array}} \right).
 $$
+bis determined with a transformed version of the original function $F$. The AD tool \mbox{ADiMat}~\cite{Bischof2002CST,Willkomm2014ANU} is used for this transformation.
 
-This Jacobian matrix is divided into four quadrants: the derivative $\partial F_1 / \partial p_w$ in the top left quadrant, $\partial F_1 / \partial S_n$ in the top right, $\partial F_2 / \partial p_w$ in the bottom left, and $\partial F_2 / \partial S_n$ in the bottom right. The sparsity patterns of the $462 \times 462$ Jacobian matrix $A$
-with $3,236$ nonzeros arising from a specific discretization is depicted in \figref{f:geophysik_J_matrices}.
-The four quadrants are indicated by crossed black lines. The Jacobian matrix~$A$ is based on the five-point stencil in the north west, south east, and south west quadrant. In the north east, the two-point stencil~$\{(m,n), (m,n-1)\}$ with the center~$(m,n)$ is used.
+This Jacobian matrix is divided into four quadrants: the derivative $\partial F_1 / \partial p_w$ in the top left quadrant, $\partial F_1 / \partial S_n$ in the top right, $\partial F_2 / \partial p_w$ in the bottom left, and $\partial F_2 / \partial S_n$ in the bottom right. Arising from a particular discretization,
+the sparsity patterns of the $462 \times 462$ Jacobian matrix $A$
+with $3,236$ nonzeros is depicted in \figref{f:geophysik_J_matrices}.
+The discretization uses different stencils which results in different
+sparsity pattern of the Jacobian matrix $A$.
+The Jacobian matrix~$A$ is based on the five-point stencil
+in the north west, south east, and south west quadrant.
+In the north east, the two-point stencil~$\{(m,n), (m,n-1)\}$ with the center~$(m,n)$ is used.
 $$
 A =
 \left({\begin{array}{l|l}
@@ -1852,23 +1858,23 @@ $$
 \label{f:geophysik_J_matrices}
 \end{figure}
 
-We solved a system of linear equations with the
-coefficient matrix $A$ with the BICGSTAB iterative solver.
-We compute the ILU preconditioning on a set of selected elements $S$
+We solve a system of linear equations with the
+coefficient matrix $A$ using the BICGSTAB iterative solver.
+We compute the ILU($2$) preconditioning on a set of selected elements $S$
 instead of the whole Jacobian matrix. 
 We compare the convergence histories of the BICGSTAB solver 
 on the four different methods of preconditioning:
 without preconditioning,
 preconditioning with $S=R_i$,
 preconditioning with $S=R_i + R_a$ in which 
-the set $R_a$ is computed based on the greedy coloring,
+the set $R_a$ is computed based on \coderef{code.greedy},
 and preconditioning with $S=R_i + R_a$ in which 
 the set $R_a$ is computed based on \coderef{code.new.impr2}.
 
 We do this comparison for two block sizes $10$ and $20$ in
 Figure~\ref{f.convergence_greedy_new2} (Top) and
 Figure~\ref{f.convergence_greedy_new2} (Bottom), respectively.
-In both block $10$ and $20$, the preconditioning computed based
+In both block sizes $10$ and $20$, the preconditioning computed based
 on the new coloring converges in the fewer number of matrix-vector products.
 However, it does not mean that a bigger block size results always in the 
 better convergence.
@@ -1878,7 +1884,7 @@ better convergence.
 \includegraphics[width=\linewidth]{jac_convergence_greedy_new.jpg}
 \includegraphics[width=\linewidth]{jac_convergence_greedy_new_bl20.jpg}
 \caption{
-The history of the residual norms is visualized based on the 
+The history of the residual norms is visualized based on 
 the number of matrix-vector products comparing four different methods:
 without preconditioning (red color), 
 preconditioning with $S=R_i$ (blue color),
@@ -1898,24 +1904,21 @@ The level parameter of the ILU preconditioning is $2$.
 \section{Coloring restricted to diagonal elements}
 \label{s.part.color.diag}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-So far, we considered the partial Jacobian computation with an arbitrary
-set of initially required elements. However, a better heuristics can be proposed if the
-pattern of the required elements has a certain structure.
 Here, we look at a particular example in which the sparsity pattern is restricted to diagonal elements.
-
 Lülfesmann~\cite{Lulfesmann2012Fap} shows that the minimum number of colors of
 the star bicoloring restricted to diagonal elements $\chi_{sb}$ is equal to
 the minimal number of colors of the distance-$2$ coloring restricted
-to diagonals $\chi_{d2}$. It means the bidirectional compression restricting to diagonals is not better than
+to diagonal elements $\chi_{d2}$.
+It means the bidirectional compression restricting to diagonals is not better than
 a distance-$2$ coloring restricted to diagonal elements. 
 This theorem can be written as two Lemmas,
 \begin{itemize}
-\item Lemma 1: $\chi_{sb} > \chi_{d2}$
-\item Lemma 2: $\chi_{sb} < \chi_{d2}$
+\item Lemma 1: $\chi_{sb} \geq \chi_{d2}$
+\item Lemma 2: $\chi_{sb} \leq \chi_{d2}$
 \end{itemize}
-The proof of Lemma 1 is clear since
+The proof of Lemma 2 is clear since
 a given distance-$2$ coloring with the fewest number of colors is also a star bicoloring.
-The proof of Lemma 2 is more tricky. A sketch of the proof comes as follow.
+The proof of Lemma 1 is more tricky. A sketch of the proof is as follow.
 \begin{figure}
 \includegraphics[width=\linewidth]{proof1.png}
 \caption{
@@ -1939,10 +1942,9 @@ This star bicoloring is also a distance-$2$ coloring.
 An example of this transformation can be seen in \figref{proof1}. 
 Looking at the proof, this theorem can be generalized by considering any
 coloring instead of the optimal coloring.
-
-On the other hand, the set of diagonal elements in the theorem
+Also, the set of diagonal elements in the theorem
 can be replaced by any set of required elements
-in which each column and row contain only one required nonzero elements.
+in which each column and row contain only one required nonzero element.
 This property is nothing than a matching~\cite{bondy2008graph} in a graph language.
 Given a graph and the vertex and edge set $G=(V,E)$, a matching $M\subseteq E$ contains
 a list of edges which do not have any vertex in common.
@@ -1954,45 +1956,33 @@ bidirectional coloring as follows,
 \begin{theorem}
 \label{t.matching}
 Given the bipartite graph $G=(V_r\cup V_c,E)$ and a matching $M\subseteq E$ representing
-the required elements, any valid partial star bicoloring $Q_{sp}$ restricted to $M$
-with the number of colors $\chi_{sp}$
+the required elements, any valid star bicoloring $Q_{sp}$ restricted to $M$
+with the number of colors $X_{sb}$
 can be transformed to a valid distance-$2$ coloring restricted to $M$
-with the number of colors $\chi_{d2}$ such that $\chi_{sp} \leq \chi_{d2}$.
+with the number of colors $X_{d2}$ such that $X_{sb} \geq X_{d2}$.
 These numbers of colors can be different than the minimal number of colors.
 \end{theorem}
 This theorem is a generalization of Theorem 3.7 of \cite{Lulfesmann2012Fap}.
 Theorem 3.7 of \cite{Lulfesmann2012Fap} discusses only the mapping with minimal coloring
 and the coloring restricted to diagonal elements. We consider any coloring
-and the coloring restricted to a matching. This generalization gives us an idea
-to find new heuristics for coloring. The proof of Theorem~\ref{t.matching}
-is resulted from the proof from \cite{Lulfesmann2012Fap} considering two following points,
+restricted to a matching. 
+The proof for Theorem 3.7 of \cite{Lulfesmann2012Fap} can be applied here considering two following points,
 \begin{itemize}
-\item The minimality of mappings are only used to show the equality in the number of colors which is not
+\item The minimality of colorings are only used to show the equality in the number of colors which is not
 the case in our theorem.
-\item The property of being diagonal elements are used in the proof from \cite{Lulfesmann2012Fap} only to
-make the required edges disjoint from each other which is the definition of a matching in graphs.
+\item The property of being diagonal elements is used in the proof from \cite{Lulfesmann2012Fap} only to
+make the required edges disjoint from each other which is the definition of a matching in a graph.
 \end{itemize}
 
-Based on the column-intersection graph model presented in \cite{cscpaper},
-it is easy to see
-that the coloring restricted to diagonal elements is still an NP-complete problem.
-In this paper, a classical graph coloring problem on an undirected graph
-is formulated from the partial Jacobian computation.
-We know that a graph coloring is an NP-complete problem
-(see \cite{np-complet-graph-coloring})).
-So the coloring restricted to the diagonal elements is an NP-complete problem too.
-Therefore, we should still use some heuristics to compute these colorings.
+This generalization gives us an idea to find new heuristics for coloring.
 The examples in Table~\ref{table.starbic.d2.diag} from Florida sparse collection shows that the
 inequality in Theorem~\ref{t.matching} can happen. The second column of this table
 shows the number of colors computed by the heuristic for star bicoloring.
-The third column shows the number of colors computed by the greedy distance-$2$ coloring
-in which the minimum number of colors between the row and column version is selected.
+The third column shows the minimum number of colors computed by the greedy distance-$2$ coloring 
+for rows and columns.
 It can be seen that even for a small matrix as the matrix \textit{cage3} which has only
 $5$ rows and columns, the star bicoloring can produce a better result.
-However, the difference between the number of colors is not so high for these examples.
-So, it is not maybe efficient to run the star bicoloring to get a better coloring for
-the one-sided coloring. Hence, a new heuristic is proposed with a lower complexity
-to compute the same coloring.
+
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|}
@@ -2043,7 +2033,7 @@ As the theorem says this coloring generates an equivalent distance-$2$ coloring.
 label=star.diagonal,mathescape]
 function star_diag($G=(V_r\cup V_c, E)$, $E_i\subseteq E$)
   $\Phi\leftarrow [0\ldots 0]$
-  $forbiddenColors1\leftarrow [0\ldots 0]$
+  $forbiddenColors1\leftarrow [0\ldots 0]$s
   $forbiddenColors2\leftarrow [0\ldots 0]$
   
   for $e=(v,u)\in E_i$
@@ -2073,11 +2063,11 @@ function star_diag($G=(V_r\cup V_c, E)$, $E_i\subseteq E$)
 \label{s.exact}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 As discussed in \cite{Fomin2013}, a prominent approach used by various graph coloring
-algorithms is based on finding independent sets. Remember, a subset of the vertices $S\subset V$ is
-called an independent set if there is no edge between any of these vertices, i.e.,
-$$
-\forall u,v\in S: (u,v)\notin E.
-$$
+algorithms is based on finding independent sets. Remember, 
+in a general graph $G=(V,E)$, a subset of the vertices $I\subseteq V$ is
+called an independent set~\cite{bondy2008graph} 
+if there is no edge between any of its vertices,
+$$\forall u,v\in I: (u,v)\notin E.$$
 
 An exhaustive search iterating over all possibilities to color the $n$ vertices using $k$
 colors has the computational complexity $k^n$. However, the dynamic programming approach
@@ -2186,7 +2176,7 @@ in the graph increases. To solve the storage size, we consider each
 subset as a binary number as follows. A binary number in which
 the number of bits is the number of vertices, represents a subset.
 It means if the $i$th bit is $1$ then the $i$th element is in that subset.
-We used the class \text{bitset} from C++ to decrease the memory usage as much
+We use the class \text{bitset} from C++ to decrease the memory usage as much
 as possible.
 
 For a further evaluation of this algorithm, we use the toolbox \textit{MESHND}
@@ -3578,7 +3568,7 @@ with the natural ordering.
 \centering
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-Matrix (NAT) & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
+Matrix (NAT) & \multicolumn{2}{c|}{$|R_a|$} & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
 {} & Alg.\ref{code.new.d2.nreq}& Alg.\ref{code.new.impr1} & Alg.\ref{code.new.d2.nreq} & Alg.\ref{code.new.impr1}& Alg.\ref{code.new.d2.nreq} & Alg.\ref{code.new.impr1}\\\hline
 \textit{steam1.mtx} & $630$ & $64$ & $786$ & $64$ & $10$ & $7$\\\hline
 \textit{steam2.mtx} & $1400$ & $240$ & $1880$ & $240$ & $17$ & $9$\\\hline
@@ -3592,7 +3582,7 @@ Matrix (NAT) & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-Matrix (LFO) & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
+Matrix (LFO) & \multicolumn{2}{c|}{$|R_a|$} & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
 {} & Alg.\ref{code.new.d2.nreq}& Alg.\ref{code.new.impr1} & Alg.\ref{code.new.d2.nreq} & Alg.\ref{code.new.impr1}& Alg.\ref{code.new.d2.nreq} & Alg.\ref{code.new.impr1}\\\hline
 \textit{steam1.mtx} & $666$ & $64$ & $1048$ & $64$ & $12$ & $7$\\\hline
 \textit{steam2.mtx} & $1248$ & $240$ & $2624$ & $240$ & $17$ & $9$\\\hline
@@ -3606,7 +3596,7 @@ Matrix (LFO) & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|
 \vspace*{1cm}\newline
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-Matrix (SLO) & \multicolumn{2}{c|}{$|R_{add}|$} & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
+Matrix (SLO) & \multicolumn{2}{c|}{$|R_a|$} & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
 {} & Alg.\ref{code.new.d2.nreq}& Alg.\ref{code.new.impr1} & Alg.\ref{code.new.d2.nreq} & Alg.\ref{code.new.impr1}& Alg.\ref{code.new.d2.nreq} & Alg.\ref{code.new.impr1}\\\hline
 \textit{steam1.mtx} & $754$ & $64$ & $1294$ & $64$ & $14$ & $7$\\\hline
 \textit{steam2.mtx} & $1912$ & $240$ & $3192$ & $240$ & $17$ & $9$\\\hline
@@ -3660,7 +3650,7 @@ with $\alpha\in{0,2,6,10}$ and the LFO ordering. }
 \centering
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Matrix (LFO) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
+Matrix (LFO) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hline
 {} & \coderef{orig.star.bicoloring} & Our new algorithm & \coderef{orig.star.bicoloring} & Our new algorithm\\\hline
 \textit{steam1.mtx} & $786$ & $590$ & $630$ & $454$ \\\hline
 \textit{steam2.mtx} & $1880$ & $2352$ & $1400$ & $1648$ \\\hline
