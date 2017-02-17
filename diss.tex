@@ -1872,18 +1872,22 @@ the set $R_a$ is computed based on \coderef{code.greedy},
 and preconditioning with $S=R_i + R_a$ in which 
 the set $R_a$ is computed based on \coderef{code.new.impr2}.
 
-We do this comparison for two block sizes $10$ and $20$ in
-Figure~\ref{f.convergence_greedy_new2} (Top) and
-Figure~\ref{f.convergence_greedy_new2} (Bottom), respectively.
-In both block sizes $10$ and $20$, the preconditioning computed based
+We do this comparison for four block sizes $5$,$10$,$15$, and $20$ in
+\figref{f.convergence_greedy_new2} and \figref{f.convergence_greedy_new3}.
+In all of these block sizes, the preconditioning computed based
 on the new coloring converges in the fewer number of matrix-vector products.
 However, it does not mean that a bigger block size results always in the 
 better convergence.
+Table~\ref{bls.greedy.new.carbon} is the computation of \coderef{code.greedy} and 
+\coderef{code.new.impr2} for the different block sizes.
+The number of additionally required elements increases in all block sizes
+while the number of colors remains the same.
+
 \begin{figure}
 \centering
 %\includegraphics[width=0.8\linewidth]{jac_convergence_greedy_new_bl2.jpg}
-\includegraphics[width=\linewidth]{jac_convergence_greedy_new.jpg}
-\includegraphics[width=\linewidth]{jac_convergence_greedy_new_bl20.jpg}
+\includegraphics[width=\linewidth]{jac_convergence_greedy_new_5.jpg}
+\includegraphics[width=\linewidth]{jac_convergence_greedy_new_10.jpg}
 \caption{
 The history of the residual norms is visualized based on 
 the number of matrix-vector products comparing four different methods:
@@ -1894,11 +1898,65 @@ the set $R_a$ is computed based on the greedy coloring (black color),
 and preconditioning with $S=R_i + R_a$ in which 
 the set $R_a$ is computed based on \coderef{code.new.impr2} (green color).
 The level parameter of the ILU preconditioning is $2$.
-(Top) The block size is $10$. 
-(Bottom) The block size is $20$.
+(Top) The block size is $5$. 
+(Bottom) The block size is $10$.
 }
 \label{f.convergence_greedy_new2}
 \end{figure}
+
+\begin{figure}
+\centering
+%\includegraphics[width=0.8\linewidth]{jac_convergence_greedy_new_bl2.jpg}
+\includegraphics[width=\linewidth]{jac_convergence_greedy_new_15.jpg}
+\includegraphics[width=\linewidth]{jac_convergence_greedy_new_20.jpg}
+\caption{
+The history of the residual norms is visualized based on 
+the number of matrix-vector products comparing four different methods:
+without preconditioning (red color), 
+preconditioning with $S=R_i$ (blue color),
+preconditioning with $S=R_i + R_a$ in which 
+the set $R_a$ is computed based on the greedy coloring (black color),
+and preconditioning with $S=R_i + R_a$ in which 
+the set $R_a$ is computed based on \coderef{code.new.impr2} (green color).
+The level parameter of the ILU preconditioning is $2$.
+(Top) The block size is $15$. 
+(Bottom) The block size is $20$.
+}
+\label{f.convergence_greedy_new3}
+\end{figure}
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Size & \multicolumn{3}{c|}{\coderef{code.greedy}} & \multicolumn{3}{c|}{\coderef{code.new.impr2}}\\\hline
+{} & $|R_p|$ & $|R_a|$ & $|\Phi|$ & $|R_p|$ & $|R_a|$ & $|\Phi|$\\\hline
+$1$ & $734$ & $724$ & $6$ & $1212$ & $786$ & $7$\\\hline
+$2$ & $1670$ & $886$ & $11$ & $1730$ & $990$ & $10$\\\hline
+$3$ & $1316$ & $776$ & $10$ & $1952$ & $1052$ & $14$\\\hline
+$4$ & $1838$ & $1016$ & $13$ & $1952$ & $1070$ & $14$\\\hline
+$5$ & $1524$ & $896$ & $13$ & $1976$ & $1070$ & $15$\\\hline
+$6$ & $1456$ & $732$ & $13$ & $1828$ & $974$ & $13$\\\hline
+$7$ & $1596$ & $852$ & $11$ & $1770$ & $942$ & $13$\\\hline
+$8$ & $1758$ & $928$ & $13$ & $1880$ & $976$ & $13$\\\hline
+$9$ & $1750$ & $912$ & $13$ & $1826$ & $966$ & $13$\\\hline
+$10$ & $1704$ & $960$ & $13$ & $1826$ & $992$ & $13$\\\hline
+$11$ & $1744$ & $904$ & $13$ & $1832$ & $940$ & $13$\\\hline
+$12$ & $1738$ & $900$ & $13$ & $1760$ & $938$ & $13$\\\hline
+$13$ & $1712$ & $874$ & $13$ & $1918$ & $1022$ & $13$\\\hline
+$14$ & $1572$ & $782$ & $13$ & $1572$ & $848$ & $13$\\\hline
+$15$ & $1728$ & $914$ & $13$ & $1836$ & $928$ & $13$\\\hline
+$16$ & $1704$ & $870$ & $13$ & $1842$ & $956$ & $13$\\\hline
+$17$ & $1702$ & $866$ & $13$ & $1812$ & $940$ & $14$\\\hline
+$18$ & $1696$ & $858$ & $13$ & $1704$ & $874$ & $13$\\\hline
+$19$ & $1694$ & $860$ & $13$ & $1784$ & $940$ & $13$\\\hline
+$20$ & $1688$ & $854$ & $13$ & $1810$ & $956$ & $13$\\\hline
+\end{tabular}
+\caption{The comparison between the number of potentially and additionally required
+elements and the number of colors computed with\coderef{code.greedy} and \coderef{code.new.impr2}.
+The block size is from $1$ to $20$. The ordering is the natural ordering.}
+\label{bls.greedy.new.carbon}
+\end{table}
 
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

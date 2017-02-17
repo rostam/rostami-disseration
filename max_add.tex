@@ -1,0 +1,79 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\section{Maximizing the set of additionally required elements}
+\label{s.max.add.req}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In \secref{s.max.pot.req}, we consider algorithms to increase the potentially required elements
+which increases the number of additionally required elements presumably.
+Here, we suggest a heuristic to predict if a nonrequired element would be an
+additionally required element. 
+For this purpose, we use the bipartite graph model for ILU preconditioning
+presented in \secref{ss.comb.precond} and the its adapted concept of fill path in 
+\defref{d.fill.path.bipartite}. Given a nonrequired element
+(a nonrequired edge of bipartite graph),
+the idea is to check if the addition of this edge would generate any new fill-in.
+If the fill level of SILU is $l$, we list all fill paths of length $l$ passing this nonrequired edge
+in the set $L$. Each fill path in the set $L$ which all its edges except the given nonrequired edge
+are required edges would later generate a fill-in. So, it is more efficient not to add the
+nonrequired edge in this case.
+
+As we discussed, for a fixed ordering of vertices,
+a fill path from the vertex $v_i$ to $v_j$ is a path $v_i,...,v_k,...,v_j$
+in which all intermediate vertices has smaller indices than $i$ and $j$.
+Given a nonrequired edge $t=(r_i,c_j)$, we define the set of all fill paths starting
+from $c_i$ passing the edge $t$ with the size of $k$ as
+$pr_k^t = \{\{ r_i,c_j,...,c_a\},...,\{ r_i,c_j,...,c_b\}\}$.
+Equivalently, we define the set of all fill paths ending to the vertex $c_j$
+passing the edge $t$ with the size of $k$ as
+$pl_k^t = \{ \{c_d,...,r_i,c_j\},..., \{c_e,...,r_i,c_j\}\}$.
+With these definitions, \coderef{code.new.d2.add.fp} is a coloring heuristic
+for distance-$2$ coloring which checks if a determined nonzero element can be an
+additionally required element. 
+\begin{figure}
+\begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
+predicting if a determined nonrequired elements can be an additionally required element.,
+label=code.new.d2.add.fp,mathescape]
+function d2_color_fillpath($G=(V_r\cup V_c,E)$,$E_i\subset E$, $k$)
+  for $v\in V_c$
+    $\Phi(v)=-1$
+    $forbiddenColors[v] = 0$
+
+  for $v\in V_c$ with $\Phi(v)=0$
+    $forbiddenColors[0] = v$
+    if $\exists n\in N_2(v,E_i): (v,n)\in E_i$
+      for $n\in N_2(v,E_i)$
+        if $\Phi(n) \neq 0$
+          $forbiddenColors[\Phi(n)] = v$
+    $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
+
+    Determine an indepentent set $I_v$ containing $v$
+    if $I_v-\{v\}\neq\emptyset$
+      $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
+      for $t\in \{(v,u): u\in maxs\}$
+        if $pr_k^t = \emptyset$ and $pl_k^t = \emptyset$
+          $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
+
+  return $\Phi$
+\end{lstlisting}
+\end{figure}
+Table~\ref{mats.add.gr.vs.nreq.vs.fillpath} shows the comparison between the number of additionally required elements
+which is computed by three algorithms \coderef{code.greedy},
+ \coderef{code.new.impr1}, and \coderef{code.new.d2.add.fp}. We generated more additionally required elements
+by considering this new method.
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Name & \coderef{code.greedy}& \coderef{code.new.impr1} & \coderef{code.new.d2.add.fp}\\\hline
+\textit{steam1} & $64$ & $630$ & $450$ \\\hline
+\textit{steam2} & $240$ & $1400$ & $1466$ \\\hline
+\textit{nos3} & $1106$ & $4136$ & $4145$\\\hline
+\textit{ex33} & $4920$ & $5470$ & $5534$\\\hline
+\textit{crystm01} & $10338$ & $28318$ & $29934$\\\hline
+\end{tabular}
+\caption{The comparison between the number of additionally required
+elements computed by different algorithms. The block size is fixed to $10$.}
+\label{mats.add.gr.vs.nreq.vs.fillpath}
+\end{table}
+
+
