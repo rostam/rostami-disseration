@@ -2039,6 +2039,7 @@ function star_diag($G=(V_r\cup V_c, E)$, $E_i\subseteq E$)
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
 \section{A new heuristic based on exact coloring of small subgraphs}
 \label{s.exact}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2240,17 +2241,14 @@ of a vertex or an edge, respectively.
 Also, the other syntax is the lambda function
 from the new C++ functional programming to implement a function in place.
 
-Following a unique solution, we implement all the possible part of algorithms
-with the use of standard library of C++ which also improves the readability.
+Following a unique solution, we implement all part of algorithms
+with the use of standard library of \textit{C++} which also improves the readability.
 This strategy reduces the amount of the code dramatically and
 make the code more readable.
-Also, the standard algorithms would be automatically parallel in the next
-release of C++ (C++17) next year~\cite{parallelcpp}.
+Also, the standard algorithms would be automatically parallel in \textit{C++17}~\cite{parallelcpp}.
 
-As it is presented in \figref{f.structure}, both computations of coloring and ILU preconditioning
-are in one package available in C++. we also introduced
-two interfaces in MATLAB and JAVA languages which we will explain in
-Section~\ref{s.interfaces}.
+As it is presented in \figref{f.structure}, the computations of coloring and ILU preconditioning
+are in one package available in \textit{C++}. 
 %-----------------------------------------------------------------------------------------------
 \begin{figure}
 \centering
@@ -2261,9 +2259,9 @@ The software PreCol and its two interfaces written in MATLAB and Java are visual
 \end{figure}
 %-----------------------------------------------------------------------------------------------
 
-To use the software, the user can use a command-line command in addition to
-the interfaces in JAVA and MATLAB. So, the user needs to specify different
-options for coloring algorithms, orderings, the block size, and so.
+To use the software, the user can use a shell command.
+So, the user needs to specify different
+options for coloring algorithms, orderings, the block size, and so on.
 These options can be entered directly in the terminal together with command.
 An example is as follows,
 \begin{lstlisting}
@@ -2275,85 +2273,19 @@ The next parameter \textit{BlockDiagonal} specifies the sparsification method
 which is followed by the size of the block $30$. The next number $2$ specifies
 the level parameter of ILU and finally comes the matrix name.
 
-We also generated a new documentation as a website which is available
-under the website: http://csc.c3e.de/precol/html.
-This website is generated automatically by Doxygen~\cite{Lischner2013}.
-We implemented some new HTML/CSS template for doxygen to include extra
-texts and documentation in the website.
-
-%\todo{zero or one}
-%mohem ... discussion about the sparsification in MATLAB and C/C++
-%staring from zero or one ???
-
-\subsection{User interfaces}
-\label{s.interfaces}
-We extend our JAVA software GraphTea~
-\cite{2014:07,2014:15,2014:16,2015:05,2015:06,2015:07,2015:08} to have a
-set of reports for graph coloring and preconditioning. It has two different modes
-to compute independently or to call the software \textit{PreCol}.
-%Chemical Graph theory\cite{2015:05,2015:06,2015:07,2015:08}
-GraphTea is a graph editing framework designed specifically to compute and visualize
-different parameters of graphs interactively.
-Figure~\ref{f.graphtea} shows a snapshot of the
-graph window together with two additional windows that give more details on the solution
-of different graph problems. These separate windows providing additional information are
-called ``reports.''
-
-A report can be computed in GraphTea in two different ways:
-a single report or an incremental report.
-A single report means to compute some parameters on graph and look at the results
-in a textual way. However, an incremental report happens when we have at least
-two parameters for computation. So, we change one of the parameters in
-some range and would generate a table.
-
-The primary goal of developing GraphTea is to support the researcher through their research.
-The following abilities of GraphTea could help the research in different dimensions:
-\begin{itemize}
-\item Generate different class of graphs and compute the parameters on them.
-\item Get reports on the graph beside the parameter and find the connections.
-\item Compute the operations on graphs and influence of these operations on parameters
-of the graph.
-\end{itemize}
-
-If we divide the researcher's works follows,
-\begin{enumerate}
-\item Guess a hypothesis like a bound for coloring number
-\item Evaluate this bound on different graphs
-\item Prove the hypothesis
-\end{enumerate}
-The second step, i.e., evaluation, is always an important step since many first errors and
-improvements could be found.
-However, the researcher can only do this evaluation for small examples if they do not
-use computer tools.
-Different aspects of GraphTea can be used to overcome this evaluation.
-The researchers can generate any graph up to any computationally-reasonable size
-and compute the parameter.
-This process of so-called conjecture checking on different graphs could often lead to a better guess.
-%-----------------------------------------------------------------------------------------------
-\begin{figure}
-\centering
-\includegraphics[width=0.7\textwidth]{graphtea}
-\caption{An overview of GraphTea: A graph drawing window and
-two floating dialogs with reports on a given graph.}
-\label{f.graphtea}
-\end{figure}
-%-----------------------------------------------------------------------------------------------
-
-Beside the automatic generation of graphs up to any size, we added the ability of loading
-different sparse matrix as graphs to GraphTea.
-A new data structure for the sparse matrix, called \textit{SpMat}, is designed
-to handle the large sparse matrices. This data structure is an array.
-The size of this array is the number of rows. Each cell of this array points to
-an array which is the corresponding columns of nonzeros in this row.
-
-The MATLAB interface is just a wrapper function which calls \textit{precol} with
-the same number of parameter as follows,
+We develop two user interfaces from MATLAB and GraphTea~\cite{2014:07,2014:15,2014:16} for \textit{PreCol}.
+These user interfaces helps in evaluating our proposed heuristics and
+generating different figures. Both interfaces execute the binaries of \textit{PreCol} and
+processes the output files.
+The corresponding commands in both software are as follows,
 \begin{lstlisting}
 function [req,pot,add,F,num_col] = precol(coloring,
 	coloring_order,ilu_order,block_size,ILU_level_parameter,MatrixName,alpha)
 ...
 end
 \end{lstlisting}
+in which the parameters are passed directly to \textit{PreCol}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Interactive educational modules}
 \label{explain}
