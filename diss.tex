@@ -2040,41 +2040,44 @@ function star_diag($G=(V_r\cup V_c, E)$, $E_i\subseteq E$)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The computational package: PreCol 1.0}
+\section{Implementation Details of PreCol}
 \label{s.extend}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We develop a piece of software to implement our proposed heuristics.
-Specially, the software is designed employing concepts from the object-oriented programming
-such that it can be extended later with any new coloring heuristic as well as any preconditioning algorithm.
-The developers can implement new extensions without going into details of core implementation.
-Two main ingredients coloring and orderings can be implemented now only by deriving an interface.
+Specifically, the software is designed employing concepts from object-oriented programming
+such that it can be extended further with new coloring heuristics as well as preconditioning algorithms.
+The developers can implement new extensions without going into the details of the core implementation.
+Two main ingredients, coloring and orderings, can be implemented only by deriving an interface.
 For example, a new coloring and ordering can be added as easy as the following code.
 \begin{lstlisting}
 class New_Ordering : public Ordering {
-  bool order(const Graph &G, vector<unsigned int> &ord, bool restricted) {...}
+  void order(const Graph &G, vector<unsigned int> &ord, bool restricted) {...}
 };
 
 class New_Coloring : public ColAlg {
-  int color() {...}
+   vector<int> color() {...}
 };
 \end{lstlisting}
+Here, the computed ordering is saved in the array \textit{ord} and the coloring is the output
+of the function \textit{color}.
 
-The developer needs to implement this new class in an only-header fashion~\cite{headeronly},
-since the goal is to write an extension with a few code. So, the developer should
-move the new header file to the corresponding directory which is the ordering directory
-for this new ordering and \textit{algs} directory for coloring algorithms.
-Now, building the software would bring this new ordering into the software execution.
+The developer needs to implement these new classes in an only-header fashion~\cite{headeronly}
+since the goal is to write an extension with little effort. So, the developer should
+move the new header file to the corresponding directory which is the \textit{ordering} directory
+for this new ordering and the \textit{algs} directory for coloring algorithms.
+Now, building the software will bring this new ordering into the software execution.
 
 The input matrix is in the format of the matrix market~\cite{matrix-market}. 
 After reading this matrix, we convert it to the different graph models 
 like a column-intersection graph or a bipartite graph. 
-Any result matrix like the sparsified matrix also will be saved in this file format.
+Any resulting matrix like the sparsified matrix will also be saved in this file format.
 
 \textit{PreCol} is developed in \textit{C++} using STL (the standard library) and
 the boost library\cite{boost}.
 Using new concepts of functional programming
-in new C++ release~\cite{Sutherland2015}, we provide different functions which can be used
-by developer to work on graphs. For example, the iteration of vertices
+in new C++ release (C++11 and C++14)~\cite{Sutherland2015},
+we provide different functions which can be used
+by developer to work on graphs. For example, the iteration on vertices
 or edges can be easy as follows,
 \begin{lstlisting}
 for_each_v(G, f);
@@ -2082,25 +2085,24 @@ for_each_v(G, [&](Ver v) {...});
 for_each_e(G, f);
 for_each_e(G, [&](Edge e) {...});
 \end{lstlisting}
-, in which the variable $f$ is a function which gets an input parameter
-of a vertex or an edge, respectively.
+in which the variable $f$ is a function which gets an input parameter of a vertex or an edge.
 Also, the other syntax is the lambda function
-from the new C++ functional programming to implement a function in place.
+from the new C++ functional programming to implement an unnamed function.
 
-Following a unique solution, we implement all part of algorithms
+Following a unique solution, we implement all parts of our heuristics
 with the use of standard library of \textit{C++} which also improves the readability.
-This strategy reduces the amount of the code dramatically and
-make the code more readable.
-Also, the standard algorithms would be automatically parallel in \textit{C++17}~\cite{parallelcpp}.
+This strategy reduces the code length dramatically.
+Also, the algorithms of C++ standard library will be automatically parallel in \textit{C++17}~\cite{parallelcpp}.
 
 As it is presented in \figref{f.structure}, the computations of coloring and ILU preconditioning
-are in one package available in \textit{C++}. 
+are in one package available in \textit{C++}. But, the computation of iterative solver is carried out
+in MATLAB.
 %-----------------------------------------------------------------------------------------------
 \begin{figure}
 \centering
 \includegraphics[width=0.52\textwidth]{new_struct}
 \caption{
-The software PreCol and its two interfaces written in MATLAB and Java are visualized.}
+The software \textit{PreCol} and two user interfaces written in MATLAB and Java.}
 \label{f.structure}
 \end{figure}
 %-----------------------------------------------------------------------------------------------
@@ -2108,29 +2110,32 @@ The software PreCol and its two interfaces written in MATLAB and Java are visual
 To use the software, the user can use a shell command.
 So, the user needs to specify different
 options for coloring algorithms, orderings, the block size, and so on.
-These options can be entered directly in the terminal together with command.
+These options can be entered directly in the terminal.
 An example is as follows,
 \begin{lstlisting}
 precol PartialD2RestrictedColumns LFO_Nat BlockDiagonal 30 2 ex33.mtx
 \end{lstlisting}
 in which the \textit{PartialD2RestrictedColumns} is the coloring algorithm,
-two strings of \textit{LFO} and \textit{Nat} are for the coloring and ILU ordering.
+the string \textit{LFO\_Nat} containing
+two strings \textit{LFO} and \textit{Nat} are for the coloring and ILU orderings.
 The next parameter \textit{BlockDiagonal} specifies the sparsification method
-which is followed by the size of the block $30$. The next number $2$ specifies
-the level parameter of ILU and finally comes the matrix name.
+which is followed by the size of the block. Here, the block size is $30$.
+The next number $2$ specifies the level parameter of ILU.
+The matrix name is the last parameter.
 
-We develop two user interfaces from MATLAB and GraphTea~\cite{2014:07,2014:15,2014:16} for \textit{PreCol}.
-These user interfaces helps in evaluating our proposed heuristics and
-generating different figures. Both interfaces execute the binaries of \textit{PreCol} and
-processes the output files.
-The corresponding commands in both software are as follows,
-\begin{lstlisting}
-function [req,pot,add,F,num_col] = precol(coloring,
-	coloring_order,ilu_order,block_size,ILU_level_parameter,MatrixName,alpha)
+We develop two user interfaces for \textit{PreCol}.
+So that it can be called from within MATLAB and GraphTea~\cite{2014:07,2014:15}.
+These user interfaces help to evaluate our proposed heuristics.
+Both interfaces execute the binaries of \textit{PreCol}
+and process the output files generated by \textit{PreCol}.
+The corresponding commands in both software have interfaces like the following pseudo code,
+\begin{lstlisting}[mathescape]
+function ($R_i$,$R_p$,$R_a$,$\Phi$) = precol(coloring,
+  coloring_ordering,ilu_ordering,block_size,
+  ILU_level_parameter,matrix_name,$\alpha$)
 ...
-end
 \end{lstlisting}
-in which the parameters are passed directly to \textit{PreCol}.
+in which the input parameters are passed directly to \textit{PreCol}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Interactive educational modules}
@@ -2985,11 +2990,11 @@ In this module, we do not have any postprocessing step. Hence, the button is dis
 \label{f.bottom_new_explain}
 \end{figure}
 %------------------------------------------------------------------------------------------
-\section{Implementation Details}
+\section{Implementation Details of EXPLAIN}
 \label{s.impl.explain}
 Lülfesmann~\cite{Lulfesmann2010} first introduced an standalone EXPLAIN needed a client with administrator privileges to install Python libraries as well as the software itself.
 Here, we introduce two new releases of EXPLAIN.
-\subsection{EXPLAIN 1.0}
+\subsection{Version 1.0}
 \label{s.impl.explain1}
 This section is a summary of the implementation details 
 of EXPLAIN 1.0 in our publication~\cite{2013:05}.
@@ -3066,7 +3071,7 @@ The second procedure, \textsc{HistClicked}, takes the selected history $h$. This
 \end{figure}
 
 
-\subsection{EXPLAIN 2.0}
+\subsection{Version 2.0}
 \label{s.impl.explain2}
 In EXPLAIN 2.0, we changed the code such that it becomes more efficient and easier to extend.
 In the previous version, the module was mainly based on the Python libraries:
