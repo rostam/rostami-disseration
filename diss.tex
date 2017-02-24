@@ -1534,8 +1534,8 @@ Should it be from the column vertices or the row vertices?
 This selection is based on the value of a weightening factor $\rho$ (to be explained below)
 and the maximum degree of vertices in each step.
 After this selection, the conditions of the star bicoloring are analyzed in the next lines of this algorithm.
-The lines $22$ and $23$ are just postprocessing steps which make the colors distinct for the column and
-row vertices. Finally, we color the uncolored vertices with the color $0$ in lines $25$ and $26$.
+Two final loops of the algorithm are just post processing steps. The first one makes the colors distinct for the column and
+row vertices. And the second one colors the uncolored vertices with the color $0$.
 \begin{figure}
 \begin{lstlisting}[
 caption=The heuristic from Lülfesmann~\cite{Lulfesmann2012Fap} for star bicoloring.,
@@ -1560,17 +1560,15 @@ function star_bicoloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$,next_vertex
             $forbiddenColors[\Phi (x)] = v$
             
     $\Phi(v) = \min(\{j>0: forbiddenColors[j] \neq v\})$
-
   for $v_c\in V_c$ with $\Phi(v_c) > 0$
     $\Phi (v_c) = \Phi (v_c) + \max(\{\Phi (v_r): v_r \in V_r\})$
-
   for $v\in V_r\cup V_c$ with $\Phi(v)= -1$
     $\Phi (v) = 0$
 
   return $\Phi$
 
 function next_vertex($G=(V_r\cup V_c,E)$,$E_i^{'}$,$\rho$)
-  if($\Delta(V_r,G[E_i^{'}]) > \rho \Delta(V_c,G[E_i^{'}])$ then
+  if($\Delta(V_r,G[E_i^{'}]) > \rho \Delta(V_c,G[E_i^{'}])$
     $v$ = $v_r\in V_r$ with maximum degree in $G[E_i^{'}]$
   else
     $v$ = $v_c\in V_c$ with maximum degree in $G[E_i^{'}]$
@@ -1585,8 +1583,7 @@ function star_bicoloring_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$)
 
 function next_vertex_nreq($G=(V_r\cup V_c,E)$,$E_i^{'}$,$\rho$)
   $v$ = next_vertex($G$,$E_i^{'}$,$\rho$)
-  if NonReq = false
-    NonReq = true
+  if NonReq = false then NonReq = true
   else
     Determine an indepentent set $I_v$ containing $v$
     if $I_v-\{v\}\neq\emptyset$
@@ -1646,7 +1643,11 @@ and the minimum number of required elements.
 
 Table~\ref{mats.pot.add.gr.vs.nreq.star} shows the numbers of potentially and additionally required elements
 computed with \coderef{orig.star.bicoloring} and \coderef{new.star.bicoloring}. 
-We have an overall increase in both potentially and additionally required elements.
+We have an overall increase in both potentially and additionally required elements using \coderef{new.star.bicoloring}.
+Also, \figref{crystm01_alg36_bls_nat_adds} and \figref{crystm01_alg36_bls_nat_cols} represent the computation of
+\coderef{orig.star.bicoloring} and \coderef{new.star.bicoloring} while the size of blocks is changing from $1$ to $70$.
+Again, an overall increase in the number of additionally required elements is achieved while the number of colors
+does not increase dramatically.
 
 \begin{table}
 \centering
@@ -1700,13 +1701,18 @@ The block size is fixed to $10$. The orderings for coloring are (Top) the natura
 
 
 \begin{figure}
-\includegraphics[width=\linewidth]{crystm01_alg36_bls_nat_adds}
+\includegraphics[width=0.9\linewidth]{crystm01_alg36_bls_nat_adds}
 \caption{The number of additionally required elements computed with
 \coderef{new.star.bicoloring} compared with \coderef{orig.star.bicoloring}.
 The nonsymmetric matrix \textit{$crystm01$} with the natural ordering is used here.}
 \label{crystm01_alg36_bls_nat_adds}
-\end{figure}
 
+\includegraphics[width=0.9\linewidth]{crystm01_alg36_bls_nat_cols}
+\caption{The number of colors computed with
+\coderef{new.star.bicoloring} compared with \coderef{orig.star.bicoloring}.
+The nonsymmetric matrix \textit{$crystm01$} with the natural ordering is used here.}
+\label{crystm01_alg36_bls_nat_cols}
+\end{figure}
 
 
 %\begin{figure}
@@ -2001,11 +2007,16 @@ We have developed some ideas based on Theorem~\ref{t.matching}
 for a better heuristic. The idea is that a heuristic for star bicoloring maybe
 find a better coloring because of the inequality in the theorem.
 As theorem proposes, every required nonzero element
-is determined by either a column or a row and not both. Hence, a heuristic
-can iterate on the required element and selects between the row and column of
-the nonzero in favor of minimal coloring.
-Thus, the star bicoloring heuristic can be rewritten for a better computational complexity.
-Regarding these ideas, the star bicoloring is rewritten as in \coderef{star.diagonal}.
+is determined by either a column or a row and not both. 
+\coderef{star.diagonal} shows our new heuristic. This heuristic
+iterates over the required edges.
+In each iteration, we find the minimum possible colors $c_1$ and $c_2$
+for both incident vertices (the row and column vertex) of the required edge.
+Then, we color the vertex with the corresponding smaller color.
+This new heuristic generates the number of colros equal to $\Phi_{sb}$
+for the matrices from Table~\ref{table.starbic.d2.diag}.
+
+
 \begin{figure}
 \begin{lstlisting}[
 caption=An improved star bicoloring restricted to diagonal elements.
@@ -2040,6 +2051,7 @@ function star_diag($G=(V_r\cup V_c, E)$, $E_i\subseteq E$)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
 \section{Implementation Details of PreCol}
 \label{s.extend}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
