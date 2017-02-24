@@ -3390,9 +3390,8 @@ The block size is fixed to $10$. The orderings for coloring are (Top) the natura
 \label{mats.pot.add.modified.vs.nreq}
 \end{table}
 
-
-\clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
 \section{Comparing the computation of Algorithm 3.5 with different block sizes}
 \label{app.compare.alg35.alphas}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3417,29 +3416,4 @@ with $\alpha\in{0,2,6,10}$ and the LFO ordering. }
 \label{ex33_alg35_alpha_0_2_6_10_bls_lfo_adds}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Comparing the computation of Algorithm 3.5 ($\alpha=0$) with  our new star bicoloring algorirthm}
-\label{app.compare.alg35.alphas.star}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{table}
-\centering
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-Matrix (LFO) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hline
-{} & \coderef{orig.star.bicoloring} & Our new algorithm & \coderef{orig.star.bicoloring} & Our new algorithm\\\hline
-\textit{steam1.mtx} & $786$ & $590$ & $630$ & $454$ \\\hline
-\textit{steam2.mtx} & $1880$ & $2352$ & $1400$ & $1648$ \\\hline
-\textit{nos3.mtx} & $6756$ & $4614$ & $4296$ & $3050$ \\\hline
-\textit{ex7.mtx} & $34954$ & $36486$ & $25054$ & $28796$ \\\hline
-\textit{ex33.mtx} & $8934$ & $11180$ & $5572$ & $7510$ \\\hline
-\textit{crystm01.mtx} & $47556$ & $22716$ & $28318$ & $13978$ \\\hline
-\textit{coater1.mtx} & $11558$ & $14442$ & $7448$ & $8262$ \\\hline
-\textit{pesa.mtx} & $41154$ & $41460$ & $33094$ & $33956$ \\\hline
-\end{tabular}
-\vspace*{1cm}\newline
-\caption{The comparison between the number of potentially and additionally required
-elements computed with \coderef{orig.star.bicoloring} and our new algorithm.
-The block size and the ordering are fixed to $10$ and LFO, respectively.}
-\label{mats.pot.add.gr.vs.nreq.star.bls}
-\end{table}
 \end{document}
