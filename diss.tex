@@ -864,8 +864,7 @@ there is a fill-in $(i,j)$ in the matrix if and only if there is a
 fill path between $r_i$ and $c_j$ in the corresponding bipartite graph.
 
 Based on the bipartite graph models for coloring and the ILU preconditioning,
-two algorithms are proposed to compute the additionally required
-elements: conservative and sophisticated. 
+Lülfesmann~\cite{Lulfesmann2012Fap} proposed two algorithms to compute the additionally required elements: conservative and sophisticated. 
 We consider the sophisticated algorithm shown in \coderef{code.add}
 to compute the additionally required elements
 throughout this thesis. This algorithm looks at each potentially required edge.
@@ -1308,7 +1307,7 @@ required elements is increased comparing
 is the LFO ordering. However, this is not the same for all matrices. 
 \appref{app.compare.alg32.alg34} shows the results for different matrices
 and different orderings for the block size fixed to $10$.
-Except the matrix \textit{ex7}
+Except the matrix \textit{ex7},
 a general observation is that the numbers of additionally and potentially required elements
 are decreased when the number of colors is decreased.
 This brings us to the next topic of balancing the number of colors
