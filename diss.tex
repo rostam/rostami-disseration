@@ -129,26 +129,27 @@ New heuristics, educational modules, and applications}\par}
 {\Large \today}
 \end{titlepage}
 \chapter*{Abstract}
-Solving problems originating from the real-world applications are often based
-on the solution of some system of linear equations leading to a large sparse Jacobian matrix.
-Hence, there is much research to exploit the sparsity structure and to decrease the amount of storage. 
+Solving problems originating from real-world applications is often based
+on the solution of a system of linear equations whose coefficient matrix is a large sparse Jacobian matrix.
+Hence, there is research to exploit the sparsity structure and to decrease the amount of storage. 
 In contrast to full Jacobian computation in which all elements are meant to be determined, 
-partial Jacobian computation is looking at a subset of these elements. This property brings a lot of conventions leading to a faster
-and more efficient computation.
-Since Jacobian matrix-vector product is needed in iterative solvers, automatic differentiation as an efficient tool fits
+partial Jacobian computation is looking at a subset of these elements. 
+This property can lead to a faster and more efficient computation.
+Since Jacobian matrix-vector products are needed in iterative solvers, automatic differentiation as an efficient tool fits
 the best in these iterative solvers.
 Determining these nonzero elements in full or partial Jacobian computations by automatic differentiation techniques
-can be modeled as graph coloring in graph language.
+can be modeled as graph coloring in the language of graph theory.
 
-On the other hand, the preconditioning techniques are used to improve the convergence of iterative solvers and need access to all nonzero elements
+On the other hand, preconditioning techniques are used to
+improve the convergence of iterative solvers and need access to all nonzero elements
 of the Jacobian matrix.
-So, a sparsification applies on the Jacobian matrix before computing the preconditioner.
-The elements obtained from the sparsification are considered as the required elements in the restricted coloring.
-Lülfesmann~\cite{Lulfesmann2012Fap} introduced a procedure
+So, a sparsification is applied to the Jacobian matrix before computing the preconditioner.
+The elements obtained from the sparsification are considered as the required elements in a restricted coloring.
+Lülfesmann (PhD thesis, RWTH Aachen University, 2012) introduced a procedure
 which selects a subset of the remaining nonrequired elements and adds to the sparsified matrix
 such that no fill-ins or increase of the number of colors happens.
 The current thesis first looks at different ways to optimize the processes of selecting these nonrequired elements.
-The, in the second part of this thesis, we introduce an interactive educational module to teach the
+Then, in the second part of this thesis, we introduce an interactive educational module to teach the
 graph coloring as well as other concepts from combinatorial scientific computing in the classroom.
 
 \chapter*{Zusammenfassung}
