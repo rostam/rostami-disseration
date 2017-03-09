@@ -135,8 +135,8 @@ Hence, there is research to exploit the sparsity structure and to decrease the a
 In contrast to full Jacobian computation in which all elements are meant to be determined, 
 partial Jacobian computation is looking at a subset of these elements. 
 This property can lead to a faster and more efficient computation.
-Since Jacobian matrix-vector products are needed in iterative solvers, automatic differentiation as an efficient tool fits
-the best in these iterative solvers.
+Since Jacobian matrix-vector products are needed in iterative solvers,
+these types of linear systems can be efficiently solved using automatic differentiation.
 Determining these nonzero elements in full or partial Jacobian computations by automatic differentiation techniques
 can be modeled as graph coloring in the language of graph theory.
 
