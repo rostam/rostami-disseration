@@ -261,17 +261,17 @@ Finally, the conclusion and future work are presented in \chapref{conc}.
 \label{prel}
 In this chapter, we briefly discuss known graph formulations and
 models needed in this thesis. In each section of this chapter,
-we provide some references which explains further these concepts in details.
-We look at the ideas to determine the nonzeros of sparse matrices in
+we provide some references which explain further these concepts in details.
+We look at the ideas to determine the nonzeros of sparse Jacobian matrices in
 \secref{s.det.nonzero}.
 We look at definitions of combining ILU preconditioning and 
 partial Jacobian computation in \secref{s.precond}.
 
 %===================================================================================================
-\section{Determining nonzeros of sparse matrices}
+\section{Determining nonzeros of sparse Jacobian matrices}
 \label{s.det.nonzero}
 %===================================================================================================
-There are many references on exploiting the sparsity pattern of Jacobian matrix
+There are many references on exploiting the sparsity pattern of Jacobian matrices
 to improve the performance of automatic differentiation.
 Here, we look at full and partial Jacobian computation in
 \secref{s.full.jac} and \secref{s.part.jac}.
@@ -283,16 +283,16 @@ Assume a program computes a function $f(x) : \setR^n \rightarrow \setR^m$
 at the computational cost $t$.
 Techniques of automatic differentiation (AD)~\cite{Griewank2008EDP,Rall1981ADT} generate
 computer programs capable of evaluating the $m \times n$ Jacobian matrix $J$.
-The so-called forward mode of automatic differentiation generates a program automatically
-which computes the product of the Jacobian matrix with a given so-called seed matrix $V$,
-i.e., $JV$. There is an reverse mode of automatic differentiation which computes the product $WJ$
+The forward mode of automatic differentiation generates a program automatically
+which computes the product of the Jacobian matrix with a given seed matrix $V$,
+i.e., $JV$. There is a reverse mode of automatic differentiation which computes the product $WJ$
 where $W$ is another seed matrix.
-These techniques of automatic computes the matrix-matrix products $JV$ and $WJ$
-without assembling it.
+These techniques of automatic compute the matrix-matrix products $JV$ and $WJ$
+without assembling the Jacobian $J$.
 
-Suppose the matrix $V$ has $\col$ columns and the matrix $W$ has $\row$ rows,
-the computational costs of these products using the forward and reverse modes
-would be $\col t$ and $\row t$, respectively.
+Suppose the matrix $V$ has $\col$ columns and the matrix $W$ has $\row$ rows.
+The computational costs of these products using the forward and reverse modes
+is then given by $\col t$ and $\row t$, respectively.
 In general, the Jacobian $J$ is computed choosing either $c=n$ and $V$ as the identity of
 order~$n$ in the forward mode or $r = m$ and $W$ as the identity of order $m$ in the
 reverse mode. However, if $J$ is sparse and its sparsity pattern is known, the number of
@@ -309,12 +309,12 @@ minimum values for $\col$ and $\row$ and the corresponding combinatorial problem
 \label{ss.problem.full}
 %===================================================================================================
 Here, we find a seed matrix in which
-the number of rows and columns is smaller than the actual Jacobian matrix, so-called compression.
+the corresponding number of rows and columns is smaller than the actual Jacobian matrix which is called compression.
 A unidirectional compression is a compression in either rows or columns in contrast to
 a bidirectional compression in which both rows and columns are compressed at the same time.
 The key idea behind this \emph{unidirectional compression} is now illustrated for the
 forward mode. First, we present a definition as follows,
-\begin{definition}[Structurally Orthogonality]
+\begin{definition}[Structural Orthogonality]
 \label{d:struct_orth}
 Let $J=[c_1, c_2, \dots, c_n]$ denote the $m\times n$ Jacobian matrix 
 in which $c_i \in \setR^m$ is the $i$th
@@ -325,13 +325,13 @@ row in which both columns, $c_i$ and $c_j$, have a nonzero element.
 Analogously, two rows are
 \emph{structurally orthogonal} if they do not have any nonzero element in a same column.
 \end{definition}
-We can compute a linear combination of structurally orthogonal columns of the Jacobian matrix
+We can compute a linear combination of a group of structurally orthogonal columns of the Jacobian matrix
 such that this linear combination contains all elements of these columns.
 The definition of the structurally orthogonal columns can be similarly adapted to rows. 
-It follows that the number of structurally orthogonal groups scales 
-with the computational cost either for columns or rows.
+It follows that the number of structurally orthogonal groups 
+represents the computational cost either for columns or rows.
 \figref{f.mat-ex-for-orth} (Left) and \figref{f.mat-ex-for-orth} (Middle) show two examples
-of matrices which can be compressed efficiently by columns and rows, respectively.
+of matrices which can be compressed efficiently by columns and by rows, respectively.
 \begin{figure}
 \includegraphics[width=0.3\linewidth]{diag-col}
 \hfill
@@ -341,7 +341,7 @@ of matrices which can be compressed efficiently by columns and rows, respectivel
 \caption{
 (Left) An example of a matrix compressed efficiently by columns.
 (Middle) An example of a matrix compressed efficiently by rows.
-(Right) An example of a matrix which cannot be compressed efficiently either by columns nor by rows.
+(Right) An example of a matrix which cannot be compressed efficiently neither by columns nor by rows.
 }
 \label{f.mat-ex-for-orth}
 \end{figure}
@@ -350,7 +350,7 @@ Therefore, there is no unidirectional compression of the
 matrix, neither by columns nor rows.
 However, the technique of bidirectional compression, 
 which compresses both columns and rows at the same time, 
-will reduce the computational cost at that example. 
+will reduce the computational cost for that example. 
 This technique uses both forward and reverse modes of automatic differentiation.
 
 For general sparsity patterns,
@@ -367,6 +367,8 @@ whose number of columns is minimized
 such that all nonzero elements of $J$ also appear in
 the matrix-matrix product $JV$.
 \end{problem}
+The corresponding compression problem for minimizing the number of rows in the matrix-matrix
+product $W.J$ is straightforward and omitted here.
 
 \begin{problem}[\MinBidCom]
 \label{p.seed.bid} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
@@ -396,11 +398,11 @@ $E$ if and only if the columns $J(:,i)$ and $J(:,j)$ represented by $v_i$ and $v
 are structurally non-orthogonal.
 \end{definition}
 
-As we have a graph model interpreted from our Jacobian matrix in \defref{d:cig},
+As we have a graph model associated with our Jacobian matrix in \defref{d:cig},
 the grouping of columns can be encoded in the following well-known graph coloring problem.
 %
 \begin{definition}[Coloring]
-A coloring of $G$ is a mapping $\Phi : V \to {1, \dots, p}$ with the property
+A coloring of $G=(V,E)$ is a mapping $\Phi : V \to \{1, \dots, p\}$ with the property
 $\Phi(v_i)\neq \Phi(v_j)$ if $(v_i,v_j) \in E$.
 \end{definition}
 %
@@ -410,8 +412,9 @@ coloring problem.
 
 \begin{problem}[Minimum Coloring]
 \label{p:mincol}
-Find a coloring $\Phi$ of the column intersection graph $G$ with a minimal number of
-colors.
+Find a coloring $\Phi$ of the column intersection graph $G$
+associated with a sparse Jacobian $J$
+with a minimal number of colors.
 \end{problem}
 
 Although, this model is convincing for the unidirectional compression,
@@ -431,7 +434,7 @@ no edge connecting vertices within the set $V_c$ or within $V_r$. Moreover, two 
 that are connected by a path of length two, are called \emph{distance-$2$ neighbors}.
 \end{definition}
 
-The coloring problem in the column-intersection graph \ref{p.seed.uni} can also be represented in
+The coloring problem in the column-intersection graph can also be represented in
 this bipartite graph model. This equivalent coloring is done only in the set of
 column vertices. Also, \emph{distance-$2$ neighbors} should be considered instead of
 edges.
@@ -440,13 +443,13 @@ The overall idea behind transforming Problem \ref{p.seed.bid}, \MinBidCom, into 
 problem using the bipartite graph model is as follows. The grouping of the columns and
 rows is expressed by representing each group by a color. Vertices that belong to the same
 group of columns/rows are assigned the same color. Formally, this is represented by a
-coloring of a bipartite graph. Such a coloring is mapping
+coloring of a bipartite graph. Such a coloring is a mapping
 $$
 \Phi:V_c \cup V_r \to \{0,1,\dots ,p\}
 $$
 that assigns to each vertex a color represented by an integer. 
 The coloring~$\Phi$ also involves a ``neutral'' color
-representing this ``don't color'' situation. A vertex $v \in V_c \cup V_r$ that is not
+representing the following ``don't color'' situation. A vertex $v \in V_c \cup V_r$ that is not
 used in the grouping of columns/rows is assigned the neutral color $\Phi(v)=0$. More
 precisely, if $\Phi(v)=0$ for a column vertex $v$ then every nonzero represented by an
 incident edge of $v$ is determined by a linear combination of rows. Similarly, a nonzero
@@ -456,7 +459,7 @@ determined by a linear combination of columns.
 To represent the process of finding seed matrices using the bipartite graph model, it is
 necessary to consider the underlying properties, which are as follows:
 \begin{enumerate}
-\item The computational cost roughly consists of the number of groups of columns and
+\item The computational cost roughly consists of the number of groups of structurally orthogonal columns and
 rows. Since the overall cost is the sum of the costs associated with the forward mode
 and the reverse mode, the (non-neutral) colors for the forward mode and the
 (non-neutral) colors for the reverse mode need to be different.
@@ -465,7 +468,7 @@ and the reverse mode, the (non-neutral) colors for the forward mode and the
 elements may be computed twice, by the forward mode in $JV$ and by the reverse mode
 in $WJ$. Therefore, an edge representing such a nonzero element connects two
 vertices with two different non-neutral colors. In general, since the
-\MinBidCom problem asks for computing \emph{all} nonzero elements, at least one vertex of
+\MinBidCom~problem asks for computing \emph{all} nonzero elements, at least one vertex of
 every edge has to be colored with a non-neutral color.
 
 \item Suppose two columns are structurally non-orthogonal and have a nonzero element in a
@@ -514,7 +517,7 @@ matrix~$J$, find a star bicoloring of $G$ with a minimal number of non-neutral c
 A unidirectional compression is a special case of a bidirectional compression. More precisely, a
 unidirectional compression with respect to columns corresponds to a star bicoloring in which all
 the vertices in $V_c$ are colored with a non-neutral color and all row vertices are colored with
-the neutral color. This way, the coloring constraint of a star bicoloring reduces to coloring
+the neutral color. This way, the coloring constraint of a star bicoloring reduces to the coloring of
 distance-$2$ neighbors in the bipartite graph using different (non-neutral) colors. This distance-2
 coloring in the bipartite graph model is then equivalent to a coloring in the undirected graph
 model in which all neighbors are colored differently. Finally, a discussion of the computational
@@ -527,7 +530,7 @@ complexity of Problem~\ref{p.coloring} including recent new results is given in~
 \label{s.part.jac}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Gebremedhin et al.~\cite{Gebremedhin05whatcolor} introduced the concept of partial Jacobian computation
-in which only a subset of Jacobian, the so-called required elements,
+in which only a subset of the nonzero Jacobian entities, the required elements,
 are to be determined.
 L{\"u}lfesmann~\cite{Lulfesmann2012Fap} studied this area in more details and
 introduced some heuristics for partial computation.
@@ -537,8 +540,8 @@ introduced some heuristics for partial computation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Let $R$ be the set representing required elements. 
 The definition of
-\emph{structurally orthogonality} is adapted for partial Jacobian computation as follows,
-\begin{definition}[Partially Structurally Orthogonal]\label{d.part.str.orth}
+\emph{structural orthogonality} is adapted for partial Jacobian computation as follows,
+\begin{definition}[Partially Structural Orthogonality]\label{d.part.str.orth}
 Two columns $c_i$ and $c_j$ are partially structurally orthogonal with respect to $R$
 if and only if they do not have a nonzero element in a same row where at least
 one of these nonzero elements is required.
@@ -548,18 +551,18 @@ The corresponding combinatorial optimization problem for the unidirectional and 
 compression restricted to the required elements
 can be formulated as follows.
 \begin{problem}[\MinRUniCom]
-\label{p.seed.runi} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
-pattern and $R$ be a subset of $J$. Find a seed matrix $V$ of dimension $n\times \col$
-whose number of columns of $V$ sums up
-to a minimal value, $\col$, such that all nonzero elements of $R$ also appear in
+\label{p.seed.runi} Let $J$ represents a sparse ${m\times n}$ Jacobian matrix with known sparsity
+pattern and $R$ be a subset of the nonzero elements of $J$.
+Find a binary seed matrix $V$ of dimension $n\times \col$
+whose number of columns is minimized such that all nonzero elements of $R$ also appear in
 the matrix-matrix product $JV$.
 \end{problem}
 
 \begin{problem}[\MinRBidCom]
-\label{p.seed.rbid} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
-pattern and $R$ be a subset of $J$.
+\label{p.seed.rbid} Let $J$ represents a sparse ${m\times n}$ Jacobian matrix with known sparsity
+pattern and $R$ be a subset of the nonzero elements of $J$.
 Find a pair of binary seed matrices $V$ of dimension $n\times \col$ and $W$~of
-dimension $\row \times m$ whose number of columns of $V$ and number of rows of $W$ sum up
+dimension $\row \times m$ in which the number of columns of $V$ and the number of rows of $W$ sum up
 to a minimal value, $\col + \row$, such that all nonzero elements of $R$ also appear in
 the pair of matrix-matrix products $JV$ and $WJ$.
 \end{problem}
@@ -599,7 +602,7 @@ $\Phi (c_k)\neq \Phi (c_j)$ or $\Phi (r_i)\neq \Phi (r_l)$
 \end{enumerate}
 \end{definition}
 
-Now, the optimization problems are formulated as follow.
+Now, the optimization problems are formulated as follows.
 
 \begin{problem}[Minimum Restricted Distance-$2$ Coloring]
 \label{p.restricted.d2} Given the bipartite graph $G=(V_r\cup V_c, E)$
@@ -631,7 +634,7 @@ in which $x$ and $b$ are $n\times 1$ vectors.
 Iterative solvers are considered to be among the effective solution techniques~\cite{ilu2003}.
 These solvers are matrix-free which makes AD as a suitable method of differentiation.
 
-Iterative techniques are typically used with some set of
+Iterative techniques are typically used in combination with
 the preconditioning techniques~\cite{precond1,ilu2003}.
 Rather than solving the previous system,
 we can solve the preconditioned system
@@ -643,7 +646,7 @@ where the $n \times n$ matrix $M$ serves as a preconditioner that approximates
 the coefficient matrix,
 $$M \approx J.$$
 
-It is well known \cite{ros:gra} that the reordering has an effect on the number and positions of
+It is well known \cite{ros:gra} that reordering has an effect on the number and positions of
 the fill-in elements. We are interested in a particular permutation matrix $P$ such that
 reordering the Jacobian matrix with $P$ is of the following form,
 $$
@@ -692,45 +695,39 @@ therefore prohibitively expensive regarding computing time.
 %\label{f:luelfesmann-sparsify}%
 %\end{figure}
 
-Lülfesmann~\cite{Lulfesmann2012Fap} introduce new approach in which the required elements in matrix
-are in the form of $k\times k$ blocks on the main diagonal.
+Lülfesmann~\cite{Lulfesmann2012Fap} introduced a new approach in which the required elements of the Jacobian matrix $J$
+are given in the form of the nonzero elements within $k\times k$ blocks on the main diagonal.
 Then, the preconditioner is built based on these selected nonzero required elements instead of
 the whole Jacobian matrix.
-Building a preconditioner based on a subset of the nonzero elements are explained in~\cite{Cullum2006}.
-We call these required elements \textit{initially} required elements 
-represented by $R_i$
+Building a preconditioner based on a subset of the nonzero elements is explained in~\cite{Cullum2006}.
+We call these required elements \textit{initially} required elements represented by $R_i$
 since they are an initial set for the further process.
-Now, the coloring problems~\ref{p.restricted.d2} 
-and~\ref{p.restricted.star} can be solved for Jacobian
+Now, the coloring problem can be solved
 restricted to the set of initially required nonzero elements $R_i$. 
 
 The result of a coloring algorithm groups columns and rows together.
-In this processes, the required elements are always computed.
-The remaining elements, the so-called nonrequired elements, 
+In this process, the required elements of $J$ are always computed.
+The remaining nonzero elements of $J$, which are called the nonrequired elements, 
 are divided into two sets of
 elements: the elements which are computed and the ones which would be
 eliminated. We can think of these computed nonrequired nonzero elements as byproducts
 of the coloring and computing the matrix-matrix products $JV$ and $WJ$.
 Since the number of colors does not change,
 the idea is to add these extra byproducts also to $R_i$.
-However, it could generate new fill-ins in the preconditioning step.
 So, we call these byproduct elements the \textit{potentially}
-required elements $R_p$ and compute them as follows,
+required elements $R_p$ which are specified by
 $$
 R_p \subset \operatorname{pat}(J) - R_i \quad\text{so that}\quad |\Phi(R_i)| = |\Phi(R_i\cup R_p)|,
 $$
-while $\operatorname{pat}(J)$ represents the nonzero pattern of the Jacobian matrix $J$.
+where $\operatorname{pat}(J)$ represents the nonzero pattern of the Jacobian matrix $J$.
 
-As we have discussed, an ILU preconditioner is applied to $R_i$ which can
-produce a set of fill-ins.
+As we have discussed, an ILU preconditioner applied to $R_i$ can produce fill-in.
 Different methods can be employed to compute the preconditioner.
-The overall approach applied to a specific problem from aerodynamic is detailed
-in ~\cite{cscpaper}.
 
 Now, a subset $R_a$ of potentially required elements, 
-the so-called \textit{additionally} required elements,
-is selected such that no new fill-ins are generated which is called
-additionally required elements $R_a$. These elements can be added to the
+which is called the set of \textit{additionally} required elements,
+is selected such that no new fill-in is generated.
+These elements can be added to the
 initially required elements for further computation.
 The additionally required elements are formulated as follows,
 $$
@@ -754,42 +751,44 @@ Let $J$ be a sparse $m\times n$ Jacobian matrix with known sparsity pattern and
 $R_i$ is a set of required elements.
 Find a set of additionally required elements $R_a$ with maximal cardinality.
 \end{problem}
+The overall approach applied to a specific problem from aerodynamic is detailed
+in ~\cite{cscpaper}.
+
 
 \subsection{Combinatorial model}
 \label{ss.comb.precond}
 The bipartite graph model presented in~\defref{d.bip.graph} is
 a suitable model to find new algorithms for the initially, potentially,
 and additionally required elements. 
-Recall each edge in the bipartite graph model is related to a nonzero element in 
+Recall that each edge in the bipartite graph model is related to a nonzero element in 
 the matrix.
 Then, given a bipartite matrix $G = (V,E)$,
 three subsets $E_i, E_p, E_a\subset E$
 are considered for the initially, potentially,
 and additionally required elements, respectively.
-Given the $k\times k$ block on diagonal as required elements $R_i$ and the Jacobian matrix $J$,
+Given the $k\times k$ block on the diagonal as required elements $R_i$ and the Jacobian matrix $J$,
 here is a list of steps in the computation of additionally required elements
-and the corresponding algorithm on the bipartite graph model
-(details in~\cite{Lulfesmann2012Fap}),
+and the corresponding algorithm on the bipartite graph model.
+More details can be found in~\cite{Lulfesmann2012Fap}.
 \begin{itemize}
-\item compute the initially required elements $R_i$.
+\item choose the initially required elements $R_i$.
 \item setup the bipartite graph $G$ from the Jacobian matrix $J$ and the subset $E_i\subset E$ representing $R_i$.
-\item compute the coloring $\Phi_{G}(E_i)$ of the bipartite graph $G$ restricted to $E_i$.
-\item find the set of potentially required elements $E_p\subset E - E_i$ such that $|\Phi_{G}(E_i)| = |\Phi_{G}(E_i \cup E_p)|$.
+\item compute the coloring $\Phi(E_i)$ of the bipartite graph $G$ restricted to $E_i$.
+\item find the set of potentially required elements $E_p\subset E - E_i$ such that $|\Phi(E_i)| = |\Phi(E_i \cup E_p)|$.
 \item find the set of additionally required elements $E_a\subset E_p$ such
 that $SILUR(R_i) \cup R_a = SILU(R_i \cup R_a)$. 
 \end{itemize}
 \coderef{code.pot.d2} and \coderef{code.pot.sb} show the algorithms to compute the
 potentially required elements for the distance-$2$ coloring and star bicoloring, respectively.
-In these algorithms, $N_1$ means the distance-$1$ neighbors (edges) and 
-distance-$2$ neighbors.
+In these algorithms, $N_1$ means the distance-$1$ neighbors (edges).
 Given a bipartite graph $G$, the required edges $E_i$, and a distance-$2$ coloring $\Phi$,
 \coderef{code.pot.d2} computes a set of potentially required elements. This algorithm
 iterates over nonrequired edges ($E - E_i$) and checks if such an edge can be added to the 
-potentially required elements. Similarly, \coderef{code.pot.sb} computes 
-the potentially required elements when the given coloring $\phi$ is star bicoloring.
+set of potentially required elements. Similarly, \coderef{code.pot.sb} computes 
+the potentially required elements when the given coloring $\phi$ is a star bicoloring.
 \begin{figure}
 \begin{lstlisting}[caption=Find potentially required elements for
-distance-$2$ coloring,label=code.pot.d2,mathescape]
+distance-$2$ coloring (based on the algorithm 4.2 from~\cite{Lulfesmann2012Fap}).,label=code.pot.d2,mathescape]
 function pot_d2_coloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\phi$)
   $E_p=\emptyset$
   for $(r_i,c_j)\in E-E_i$ with $\Phi(c_j)\neq 0$
@@ -801,7 +800,7 @@ function pot_d2_coloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\phi$)
 \end{lstlisting}
 \end{figure}
 \begin{figure}
-\begin{lstlisting}[caption=Find potentially required elements for star bicoloring,label=code.pot.sb,mathescape]
+\begin{lstlisting}[caption=Find potentially required elements for star bicoloring (based on Algorithm 4.3 from ~\cite{Lulfesmann2012Fap}).,label=code.pot.sb,mathescape]
 function pot_star_bicoloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\phi$)
   $E_p = \emptyset$
   for $(r_i,c_j)\in E-E_i$ with $\Phi(r_i)\neq 0$ or $\Phi(c_j)\neq 0$
@@ -831,24 +830,24 @@ in the language of graphs is needed.
 Hysom and Pothen~\cite{precond-pothen} introduced a graph model for the incomplete
 LU factorization in which the matrix is the adjacency matrix of this graph.
 It should be considered that the graph would be directed if the matrix is not symmetric.
-A concept of \textit{fill path} is defined to characterize the fill-ins in preconditioning,
+The concept of \textit{fill path} is defined to characterize the fill-in in ILU preconditioning,
 \begin{definition}[Fill path]\label{d.fill.path}
 A fill path is a path $(v_i,...,v_k,...,v_j)$ with
-$k<min(i,j)$. It means the index of the all inner nodes in a given ordering of vertices
-should be smaller than indices of the vertices $v_i$ and $v_j$.
+$k<\min(i,j)$. It means the index of all the inner nodes in a given ordering of vertices
+is smaller than the indices of the vertices $v_i$ and $v_j$.
 \end{definition}
 It follows that a matrix element $(i,j)$ is a fill-in if and only if there is a fill path between
 $v_i$ and $v_j$.
 In addition to the concept of fill path, another concept of fill level $l$ is needed to
 formulate the level-based incomplete LU factorization~\cite{precond-pothen}.
-This parameter is used to filter the generated fill-ins.
+This parameter is used to filter the generated fill-in.
 This parameter is the length of the fill path.
-In the level-based incomplete LU factorization, the generated fill-ins are allowed
+In the level-based incomplete LU factorization, the generated fill-in is allowed
 to be considered only up to the level $l$.
 We fix this level parameter to $2$ throughout this thesis.
 
 \begin{figure}
-\begin{lstlisting}[caption=Find additionally required elements,
+\begin{lstlisting}[caption=Find additionally required elements (based on Algorithm 4.5 from ~\cite{Lulfesmann2012Fap}).,
 label=code.add,mathescape]
 function add($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$E_p$)
   $E_a = \emptyset$
@@ -874,7 +873,7 @@ The concept of fill path is also redefined for the bipartite graph model
 in which a path is replaced by a distance-$2$ path.
 \begin{definition}[Fill path in bipartite graph]\label{d.fill.path.bipartite}
 A path $(r_i,c_k,r_k,c_l,r_l,...,c_j)$ in the bipartite graph model starting
-from a row vertex is an fill path 
+from a row vertex is a fill path 
 if and only if all vertices between $r_i$ and $c_j$ have a lower index than $i$
 and $j$. 
 \end{definition}
@@ -890,7 +889,7 @@ throughout this thesis. This algorithm looks at each potentially required edge.
 If it is possible that a fill path generated by adding this edge,
 the edge is not considered for the set of additionally required edges.
 In this sophisticated approach, the algorithm iterates once again over 
-all potentially required elements. This processes repeated until 
+all potentially required elements. This process repeated until 
 no new additionally required edges are found.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
