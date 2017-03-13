@@ -147,7 +147,7 @@ So, a sparsification is applied to the Jacobian matrix before computing the prec
 The elements obtained from the sparsification are considered as the required elements in a restricted coloring.
 Lülfesmann (PhD thesis, RWTH Aachen University, 2012) introduced a procedure
 which selects a subset of the remaining nonrequired elements and adds to the sparsified matrix
-such that no fill-ins or increase of the number of colors happens.
+such that no fill-in or increase of the number of colors happens.
 The current thesis first looks at different ways to optimize the processes of selecting these nonrequired elements.
 We introduce three different algorithms and compare them together as well as with the previous approaches.
 Also, we consider a particular case in which we consider only the diagonal elements as required elements
@@ -576,7 +576,9 @@ of full Jacobian coloring are adapted for the restricted colorings as follows,
 Given a bipartite graph $G=(V_c\cup V_r, E)$ and a subset of required edges
 $E_R\subseteq E$, then a mapping $\Phi:V_c \to
 \{0,1,\dots ,p\}$ is a distance-$2$ coloring
-of $G$ restricted to $E_R$ if no column vertex gets a zero color and
+of $G$ restricted to $E_R$ 
+if all column vertices incident to at least one required edge $e\in E_R$
+gets a nonzero color and
 for every path $(c_k,r_i,c_j)$ with $c_k, c_j\in V_c$, $r_i\in V_r$, and $(r_i,c_j)\in E_R$,
 $\Phi(c_k) \neq \Phi(c_j)$.
 \end{definition}
@@ -632,7 +634,7 @@ J x = b,
 $$
 in which $x$ and $b$ are $n\times 1$ vectors. 
 Iterative solvers are considered to be among the effective solution techniques~\cite{ilu2003}.
-These solvers are matrix-free which makes AD as a suitable method of differentiation.
+%These solvers are matrix-free which makes AD as a suitable method of differentiation.
 
 Iterative techniques are typically used in combination with
 the preconditioning techniques~\cite{precond1,ilu2003}.
@@ -646,6 +648,9 @@ where the $n \times n$ matrix $M$ serves as a preconditioner that approximates
 the coefficient matrix,
 $$M \approx J.$$
 
+Some preconditioning techniques like ILU preconditioning can generate a preconditioner
+which has nonzero at some places in which the Jacobian matrix $J$ has zero elements.
+These nonzero elements are called fill-in.
 It is well known \cite{ros:gra} that reordering has an effect on the number and positions of
 the fill-in elements. We are interested in a particular permutation matrix $P$ such that
 reordering the Jacobian matrix with $P$ is of the following form,
