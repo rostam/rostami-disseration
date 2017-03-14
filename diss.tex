@@ -55,7 +55,7 @@ urlcolor=black
 \definecolor{purple}{rgb}{0.65, 0.12, 0.82}
 \renewcommand{\ttdefault}{pcr}
 \lstdefinelanguage{JavaScript}{
-keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break,for,with},
+keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, while, do, else, case, break,for,with},
 basicstyle=\ttfamily,
 keywordstyle=\bfseries,
 ndkeywords={class, export, boolean, throw, implements, import},
@@ -800,7 +800,7 @@ function pot_d2_coloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\phi$)
     for $c_k\in N_1(r_i,G)$ with $j\neq k$ and $(r_i,c_k)\notin E_i$
       if $\Phi(c_j) = \Phi(c_k)$
         continue with next edge $(r_i,c_j)\in E-E_i$
-    $E_p = E_p \cup {(r_i,c_j)}$
+    $E_p = E_p \cup \{(r_i,c_j)\}$
   return $E_p$
 \end{lstlisting}
 \end{figure}
@@ -811,21 +811,21 @@ function pot_star_bicoloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\phi$)
   for $(r_i,c_j)\in E-E_i$ with $\Phi(r_i)\neq 0$ or $\Phi(c_j)\neq 0$
     if $\Phi(r_i) = 0$
       for $c_k\in N_1(r_i,G)$ with $j\neq k$ and $(r_i,c_k)\notin E_i$
-        if $\Phi(c_j)==\Phi(c_k)$
+        if $\Phi(c_j)=\Phi(c_k)$
           continue with the next edge $(r_i,c_j)\in E - E_i$
 
     if $\Phi(c_j) = 0$
       for $r_l\in N_1(c_j,G)$ with $j\neq l$ and $(r_l,c_j)\notin E_i$
-        if $\Phi(r_i)==\Phi(r_l)$
+        if $\Phi(r_i)=\Phi(r_l)$
           continue with the next edge $(r_i,c_j)\in E - E_i$
 
     if $\Phi(r_i) \neq 0$ and $\Phi(c_j) \neq 0$
       for $c_k\in N_1(r_i,G)$ with $i\neq k$
         for $r_l\in N_1(c_j,G)$ with $j\neq l$
-          if $\Phi(c_j)==\Phi(c_k)$ and $\Phi(r_i)==\Phi(r_l)$
+          if $\Phi(c_j)=\Phi(c_k)$ and $\Phi(r_i)=\Phi(r_l)$
             continue with the next edge $(r_i,c_j)\in E - E_i$
 
-    $E_p = E_p \cup {(r_i,c_j)}$
+    $E_p = E_p \cup \{(r_i,c_j)\}$
   return $E_p$
 \end{lstlisting}
 \end{figure}
@@ -854,20 +854,20 @@ We fix this level parameter to $2$ throughout this thesis.
 \begin{figure}
 \begin{lstlisting}[caption=Find additionally required elements (based on Algorithm 4.5 from ~\cite{Lulfesmann2012Fap}).,
 label=code.add,mathescape]
-function add($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$E_p$)
+function add($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$E_p$,$E_F$)
   $E_a = \emptyset$
   do
     for $(r_i,c_j)\in E_p$
       if $i > j$
         for $c_l\in N_1(r_j,G[E_i\cup (E_F\cup E_a)])$ with $l > j$
-          if $(r_i,c_j)\notin E_i\cup (E_F\cup E_a)$
+          if $(r_i,c_l)\notin E_i\cup (E_F\cup E_a)$
             continue with next edge $(r_i,c_j)\in E_p$
-      else if $i > j$
+      else if $i \leq j$
         for $r_k\in N_1(c_i,G[E_i\cup (E_F\cup E_a)])$ with $k > i$
           if $(r_k,c_j)\notin E_i\cup (E_F\cup E_a)$
             continue with next edge $(r_i,c_j)\in E_p$
-      $E_a = E_a \cup {(r_i,c_j)}$
-      $E_p = E_p - {(r_i,c_j)}$
+      $E_a = E_a \cup \{(r_i,c_j)\}$
+      $E_p = E_p - \{(r_i,c_j)\}$
   while $|E_a|$ is increased in the last iteration
   return $E_a$
 \end{lstlisting}
@@ -1142,7 +1142,7 @@ function validate_coloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   modified = false;
   do
     for $v \in V_c$ and $n \in N_2(v,E_i)$
-      if $\Phi(n) == \Phi(v)$
+      if $\Phi(n) = \Phi(v)$
         $\Phi(n) = $ a color different from its distance-$2$ neighbors
         modified = true
   while modified
