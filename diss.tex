@@ -651,22 +651,22 @@ $$M \approx J.$$
 Some preconditioning techniques like ILU preconditioning can generate a preconditioner
 which has nonzero at some places in which the Jacobian matrix $J$ has zero elements.
 These nonzero elements are called fill-in.
-It is well known \cite{ros:gra} that reordering has an effect on the number and positions of
-the fill-in elements. We are interested in a particular permutation matrix $P$ such that
-reordering the Jacobian matrix with $P$ is of the following form,
-$$
-P^T J P =
-\begin{bmatrix}
-A_1 & 0   & \cdots & 0 & B_1^T \\
-0   & A_2 & \cdots & 0  & B_2^T \\
-\vdots& \vdots & \ddots & 0 & \vdots \\
-0   &   0 & \cdots & A_p & B_p^T \\
-B_1 & B_2 & \cdots & B_p& C
-\end{bmatrix} .
-$$
-This approach, the so-called nested dissection ordering, is first 
-introduced George~\cite{nested_diss1}. An extensive discussion 
-can be found in \cite{ilu_ordering4}.
+%It is well known \cite{ros:gra} that reordering has an effect on the number and positions of
+%the fill-in elements. We are interested in a particular permutation matrix $P$ such that
+%reordering the Jacobian matrix with $P$ is of the following form,
+%$$
+%P^T J P =
+%\begin{bmatrix}
+%A_1 & 0   & \cdots & 0 & B_1^T \\
+%0   & A_2 & \cdots & 0  & B_2^T \\
+%\vdots& \vdots & \ddots & 0 & \vdots \\
+%0   &   0 & \cdots & A_p & B_p^T \\
+%B_1 & B_2 & \cdots & B_p& C
+%\end{bmatrix} .
+%$$
+%This approach, the so-called nested dissection ordering, is first 
+%introduced George~\cite{nested_diss1}. An extensive discussion 
+%can be found in \cite{ilu_ordering4}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Scientific computing problem}
