@@ -235,7 +235,7 @@ by considering a graph coloring restricted to these required elements.
 Then, a subset of nonrequired elements is added to the set of required elements
 such that number of colors does not increase and no extra fill-in elements are generated
 in the ILU preconditioning. These elements are called the additionally required elements.
-In this thesis, we extend this idea further as follows,
+In this thesis, we extend this idea further as follows.
 \begin{itemize}
 \item defining new coloring heuristics
 to increase the number of additionally required elements without increasing the number of colors.
@@ -313,7 +313,7 @@ the corresponding number of rows and columns is smaller than the actual Jacobian
 A unidirectional compression is a compression in either rows or columns in contrast to
 a bidirectional compression in which both rows and columns are compressed at the same time.
 The key idea behind this \emph{unidirectional compression} is now illustrated for the
-forward mode. First, we present a definition as follows,
+forward mode. First, we present a definition as follows.
 \begin{definition}[Structural Orthogonality]
 \label{d:struct_orth}
 Let $J=[c_1, c_2, \dots, c_n]$ denote the $m\times n$ Jacobian matrix
@@ -540,7 +540,7 @@ introduced some heuristics for partial computation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Let $R$ be the set representing required elements.
 The definition of
-\emph{structural orthogonality} is adapted for partial Jacobian computation as follows,
+\emph{structural orthogonality} is adapted for partial Jacobian computation as follows.
 \begin{definition}[Partially Structural Orthogonality]\label{d.part.str.orth}
 Two columns $c_i$ and $c_j$ are partially structurally orthogonal with respect to $R$
 if and only if they do not have a nonzero element in a same row where at least
@@ -571,7 +571,7 @@ Now, we discuss an equivalent graph-theoretical formulation of this problem.
 
 \subsubsection{Combinatorial model}
 Based on \cite{Gebremedhin05whatcolor,Lulfesmann2012Fap}, the definitions
-of full Jacobian coloring are adapted for the restricted colorings as follows,
+of full Jacobian coloring are adapted for the restricted colorings as follows.
 \begin{definition}[Restricted distance-$2$ coloring]\label{d.coloring.d2}
 Given a bipartite graph $G=(V_c\cup V_r, E)$ and a subset of required edges
 $E_R\subseteq E$, then a mapping $\Phi:V_c \to
@@ -734,13 +734,13 @@ which is called the set of \textit{additionally} required elements,
 is selected such that no new fill-in is generated.
 These elements can be added to the
 initially required elements for further computation.
-The additionally required elements are formulated as follows,
+The additionally required elements are formulated as follows.
 $$
 R_a \subset R_p \quad\text{so that}\quad SILU(R_i) \cup R_a = SILU(R_i\cup R_a),
 $$
 in which $SILU$ means the symbolic ILU factorization.
 
-Now, we formulate two optimization problems in this thesis as follows,
+Now, we formulate two optimization problems in this thesis as follows.
 \begin{problem}[Maximum Potentially Required Elements]
 \label{p:max_pot}
 %
@@ -1087,7 +1087,7 @@ called an independent set~\cite{bondy2008graph}
 if there is no edge between any of its vertices,
 $$\forall u,v\in I: (u,v)\notin E.$$
 In the bipartite graph model in \defref{d.bip.graph} with a set of initially required elements $E_i$,
-we need to change the definition of an independent set using the distance-$2$ neighbors as follows,
+we need to change the definition of an independent set using the distance-$2$ neighbors as follows.
 $$\forall u,v\in I: u\notin N_2(v).$$
 Also, we represent an independent set containing the vertex $v$ by $I_v$.
 This set represents the vertices which can have same colors.
@@ -1966,7 +1966,7 @@ A maximum matching is a matching with a maximum possible number of edges.
 Then, a diagonal for example in our bipartite graph is a maximum matching.
 
 Now, we can formulate a new theorem on the comparison of one directional and
-bidirectional coloring as follows,
+bidirectional coloring as follows.
 \begin{theorem}
 \label{t.matching}
 Given the bipartite graph $G=(V_r\cup V_c,E)$ and a matching $M\subseteq E$ representing
@@ -2118,7 +2118,7 @@ Using new concepts of functional programming
 in new C++ release (C++11 and C++14)~\cite{Sutherland2015},
 we provide different functions which can be used
 by developer to work on graphs. For example, the iteration on vertices
-or edges can be easy as follows,
+or edges can be easy as follows.
 \begin{lstlisting}
 for_each_v(G, f);
 for_each_v(G, [&](Ver v) {...});
@@ -2151,7 +2151,7 @@ To use the software, the user can use a shell command.
 So, the user needs to specify different
 options for coloring algorithms, orderings, the block size, and so on.
 These options can be entered directly in the terminal.
-An example is as follows,
+An example is as follows.
 \begin{lstlisting}
 precol PartialD2RestrictedColumns LFO_Nat BlockDiagonal 30 2 ex33.mtx
 \end{lstlisting}
@@ -2242,7 +2242,7 @@ from the following list,
 The input to the program is a sparse matrix in the format of the matrix market~\cite{matrix-market}.
 We build the corresponding graph from the matrix.
 The type of graph can be different based on the module and the algorithm.
-A list of possible graph types is as follows,
+A list of possible graph types is as follows.
 \begin{itemize}
 \item Simple graph: an undirected graph without self-loops considering
 the given symmetric matrix as an adjacency matrix of the graph.
@@ -2394,7 +2394,7 @@ J =
 0 & 0 & 0 & 0 & 0 & 15
 \end{bmatrix},
 \end{equation}
-and the related column-intersection graph in which the student has already selected the two vertices $v_2$ and $v_6$. Both vertices are colored with the same since they are not connected by an edge. \figref{fig3} represents the final step which shows that four colors are needed when the vertices are selected in the order $(v_2, v_6, v_3, v_5, v_1, v_4)$ displayed in the vertex list. The group of columns with the same color is compressed to a single column in the seed matrix as follows,
+and the related column-intersection graph in which the student has already selected the two vertices $v_2$ and $v_6$. Both vertices are colored with the same since they are not connected by an edge. \figref{fig3} represents the final step which shows that four colors are needed when the vertices are selected in the order $(v_2, v_6, v_3, v_5, v_1, v_4)$ displayed in the vertex list. The group of columns with the same color is compressed to a single column in the seed matrix as follows.
 \begin{equation}
 \label{e:matrixS}
 J \cdot S =
