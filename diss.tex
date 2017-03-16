@@ -904,7 +904,7 @@ no new additionally required edges are found.
 \label{package}
 Karp~\cite{karp:1972} proves that the graph coloring problem is NP-complete for general graphs.
 Hence, various coloring heuristics are studied throughout the years with a polynomial complexity.
-The greedy coloring is a widely used heuristic which has a low computational complexity
+Greedy coloring is a widely used heuristic which has a low computational complexity
 and computes a \textit{reasonable} coloring (see~\cite{spaa14}).
 The greedy coloring algorithm for the restricted distance-$2$ coloring
 is given in \coderef{code.greedy} which is adapted from Lülfesmann~\cite{Lulfesmann2012Fap}.
@@ -941,7 +941,7 @@ for columns.,label=code.greedy,mathescape]
 function d2_color($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   $\Phi\leftarrow [0\ldots 0]$
   $forbiddenColors\leftarrow [0\ldots 0]$
-  for $v\in V_c$ with $N_2(v,E_i)\neq\emptyset$
+  for $v\in V_c$ with $\exists r\in V_r: (v,r) \in E_i$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
         $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
@@ -1065,7 +1065,7 @@ considering the nonrequired elements.,label=code.new.d2.nreq,mathescape]
 function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   $\Phi\leftarrow [0\ldots 0]$
   $forbiddenColors\leftarrow [0\ldots 0]$
-  for $v\in V_c$ with $N_2(v,E_i)\neq\emptyset$ and $\Phi(v)=0$
+  for $v\in V_c$ with with $\exists r\in V_r: (v,r) \in E_i$ and $\Phi(v)=0$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
       $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
@@ -1289,7 +1289,7 @@ label=code.new.impr1,mathescape]
 function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   $\Phi\leftarrow [0\ldots 0]$
   $forbiddenColors\leftarrow [0\ldots 0]$
-  for $v\in V_c$ with $N_2(v,E_i)\neq\emptyset$ and $\Phi(v)=0$
+  for $v\in V_c$ with with $\exists r\in V_r: (v,r) \in E_i$ and $\Phi(v)=0$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
       $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
@@ -1357,7 +1357,7 @@ label=code.new.impr2,mathescape]
 function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
   $\Phi\leftarrow [0\ldots 0]$
   $forbiddenColors\leftarrow [0\ldots 0]$
-  for $v\in V_c$ with $N_2(v,E_i)\neq\emptyset$ and $\Phi(v)=0$
+  for $v\in V_c$ with with $\exists r\in V_r: (v,r) \in E_i$ and $\Phi(v)=0$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
       $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
