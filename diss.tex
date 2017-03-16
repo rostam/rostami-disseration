@@ -958,7 +958,6 @@ Various orderings are studied for coloring heuristics
 throughout the years. Here are some orderings for coloring which are applied before doing the coloring:
 the largest-first ordering (LFO)~\cite{LFO}, the incidence-degree ordering (IDO)~\cite{IDO},
 the saturation-degree ordering (SDO)~\cite{SDO}, and the smallest-last ordering (SLO)~\cite{ordering1}.
-A short description of these orderings is available in \appref{app.ord}.
 
 This chapter is structured as follows.
 We modify the greedy algorithm in \secref{s.max.pot.req}
@@ -3298,21 +3297,6 @@ Another future work is to consider blocks of submatrices for coloring instead of
 \setcounter{chapter}{1}
 \addcontentsline{toc}{chapter}{Appendix}
 \renewcommand\thechapter{\Alph{chapter}}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Different orderings for coloring}
-\label{app.ord}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Here are some orderings for coloring,
-\begin{itemize}
-\item Largest-First Ordering (LFO)~\cite{LFO} chooses a vertex with the minimum degree in each step.
-\item Incidence-degree Ordering (IDO)~\cite{IDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it selects the matrix with the maximal degree in the subgraph induced by $V(G)-v$. It means the vertex with the maximum incidence degree is selected.
-\item Saturation-degree Ordering (SDO)~\cite{SDO} chooses first the vertex with the maximum degree in $G$, namely $v$. Then, it determines the vertex with the maximum saturation degree in
-$V$. The saturation degree of the vertex $v$ is the number of different colored vertices in the neighbors of $v$.
-\item Smallest last ordering (SLO)~\cite{ordering1} makes a set of vertices ${v_1,v_2,...,v_n}$ in a so-called smallest-last
-order whenever $v_i$ has minimum degree in the maximal subgraph on the vertices $v_1,v_2,...,v_i$ for all $i$.
-\end{itemize}
-The computation of this ordering can have a higher complexity than the complexity of the greedy coloring ($\mathcal{O}(n+m)$) or to have the same complexity. For example, the \textit{SLO} ordering has the same time complexity~\cite{ordering1} although it has the different space complexity. These various orderings should be considered in new heuristic coloring which we propose. to improve the results of coloring.
-\clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Comparing the computations of Algorithm 3.1 and Algorithm 3.2}
 \label{app.compare.alg31.alg32}
