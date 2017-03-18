@@ -914,7 +914,7 @@ All arrays in all algorithms, like $forbiddenColors$,
 implemented in this thesis start with the index $0$.
 The assignment $forbiddenColors[c]=v$ means the vertex $v$ can not be colored
 by the color $c$. Since this algorithm does not consider the color $0$,
-the element $forbiddenColors[0]$ is ignored.
+the element $forbiddenColors[0]$ is ignored in line 7 of \coderef{code.greedy}.
 
 In this algorithm, the function $N_2(v,E_i)$ finds all distance-$2$ neighbors
 of $v$ restricted to the set of initially required edges $E_i$.
@@ -925,13 +925,13 @@ $$
 N_2(v,E_i)=\{ z\in V: \text{ there is a path } (v,w,z) \text{ with } (v,w)\in E_i
 \text{ or } (w,z)\in E_i \text{ or both.}\}
 $$
-To color a vertex $v$ we iterate over all distance-$2$ neighbors in $N_2(v,E_i)$ which are
+To color a vertex $v$ we iterate over all its distance-$2$ neighbors in $N_2(v,E_i)$ which are
 already colored. Remember that these assigned colors can not be used to color the vertex $v$.
-After collecting all these forbidden colors, we assign $v$ color with a smallest index different from
+After collecting all these forbidden colors, we assign to $v$ the color with the smallest index different from
 these forbidden colors.
 It follows that the computational complexity of this algorithm is $\mathcal{O}(n \Delta^2)$ in which $n$
 and $\Delta$ are the number of vertices and the maximum vertex degree, respectively.
-Recall from the last chapter, the matrices are sparse. Therefore, $n$ is large and $\Delta$ and $\Delta^2$
+Recall from the last chapter that the Jacobian matrices are sparse. Therefore, $n$ is large and $\Delta$ and $\Delta^2$
 are relatively small.
 
 \begin{figure}
@@ -952,7 +952,7 @@ function d2_color($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 In this algorithm, vertices are colored one at a time.
 Therefore, the vertex ordering plays a major role in the greedy algorithm.
 Hence, there are many publications on how to choose
-a suitable ordering heuristics for a serial or parallel version of
+a suitable ordering for a serial or parallel version of
 coloring~\cite{ordering1,ordering2,ordering3}.
 Various orderings are studied for coloring heuristics
 throughout the years. Here are some orderings for coloring which are applied before doing the coloring:
@@ -1010,7 +1010,7 @@ these matrices from the Florida sparse matrix collection.}
 \section{Maximizing the set of additionally required elements}
 \label{s.max.pot.req}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Here, our focus is to solve the optimization Problems~\ref{p:max_pot} and ~\ref{p:max_add}.
+Here, our focus is to solve the optimization Problems~\ref{p:max_pot} and~\ref{p:max_add}.
 As we have discussed, there are nonrequired nonzero elements
 which are also computed as a by-product of the computation of required elements.
 The nonrequired elements have a major effect on
@@ -1050,13 +1050,12 @@ Here, we introduce a new heuristic which increases the number of determined nonr
 while the number of colors remains almost the same.
 
 \subsection{Restricted distance-$2$ coloring}
-Our goal here is to increase the number of potentially required elements.
-A potentially required element is selected from the nonrequired elements such that
-the number of colors does not increase.
+Our goal here is to increase the number of potentially and additionally required elements.
 Given a bipartite graph $G=(V_c\cup V_r,E)$ and a vertex $v\in V_c$,
 we define a function $\nreq_v:S\subseteq V_c\rightarrow \mathbb{N}$.
-The function $\nreq_v(w)$ computes the number of determined nonrequired elements
-in the linear combination of the columns corresponding to the vertices $v$ and $w$.
+The function $\nreq_v(w)$ computes the number of nonrequired elements
+that are actually determined by
+the linear combination of the columns corresponding to the vertices $v$ and $w$.
 We call these elements the determined nonrequired elements.
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
@@ -1069,9 +1068,9 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
       $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
 
-    Determine an indepentent set $I_v$ containing $v$
-    if $I_v-\{v\}\neq\emptyset$
-      $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
+    $I_v=\{z\in V_c: z\neq v\text{ and }z\notin N_2(v) \text{ and } \Phi(z) = 0 \}$
+    if $I_v\neq\emptyset$
+      $maxs = \argmax_{x\in I_v} \nreq_v (x)$
       $\Phi(maxs[0]) = \Phi(v)$
   return $\Phi$
 \end{lstlisting}
@@ -1080,27 +1079,26 @@ Here, we focus on the unidirectional compression for columns represented by $V_c
 However, an analogous discussion holds for the unidirectional compression for rows.
 
 We modify the greedy algorithm  presented in \coderef{code.greedy} as follows.
-Our approach in this new coloring algorithm is based on finding independent sets.
-In a general graph $G=(V,E)$, a subset of the vertices $I\subseteq V$ is
-called an independent set~\cite{bondy2008graph}
-if there is no edge between any of its vertices,
-$$\forall u,v\in I: (u,v)\notin E.$$
-In the bipartite graph model in \defref{d.bip.graph} with a set of initially required elements $E_i$,
-we need to change the definition of an independent set using the distance-$2$ neighbors as follows.
-$$\forall u,v\in I: u\notin N_2(v).$$
-Also, we represent an independent set containing the vertex $v$ by $I_v$.
-This set represents the vertices which can have same colors.
-Here, we use this adapted definition for simplicity.
-Other definitions are possible using $N_2(v,E_i)$ which
-may result in a more efficient heuristic.
-
+%Our approach in this new coloring algorithm is based on finding independent sets.
+%In a general graph $G=(V,E)$, a subset of the vertices $I\subseteq V$ is
+%called an independent set~\cite{bondy2008graph}
+%if there is no edge between any of its vertices,
+%$$\forall u,v\in I: (u,v)\notin E.$$
+%In the bipartite graph model of \defref{d.bip.graph},
+%we need to change the definition of an independent set using the distance-$2$ neighbors as follows.
+%$$\forall u,v\in I: u\notin N_2(v).$$
+%Also, we represent an independent set containing the vertex $v$ by $I_v$.
+%This set represents the vertices that can have the same colors as the vertex $v$.
+%Here, we use this adapted definition for simplicity.
+%Other definitions are possible using $N_2(v,E_i)$ which
+%may result in a more efficient heuristic.
 For this new heuristic, we define two operators.
 Given a function $f:A\rightarrow B$ and a subset $S\subseteq A$
 the operators $\argmax$ and $\argmin$ are defined as,
 \begin{equation*}
 \begin{split}
-\argmax_{x\in S} f(x) &= \{ x | \forall y\in S: f(y) \leq f(x)\}, \\
-\argmin_{x\in S} f(x) &= \{ x | \forall y\in S: f(y) \geq f(x)\}.
+\argmax_{x\in S} f(x) &= \{ x \mid \forall y\in S: f(y) \leq f(x)\}, \\
+\argmin_{x\in S} f(x) &= \{ x \mid \forall y\in S: f(y) \geq f(x)\}.
 \end{split}
 \end{equation*}
 
@@ -1108,52 +1106,59 @@ the operators $\argmax$ and $\argmin$ are defined as,
 In this algorithm, we iterate over all uncolored vertices.
 First, we color the vertex $v$ with a color different form
 its distance-$2$ neighbors restricted to $E_i$ like the previous greedy coloring.
+Note, however, that there is an additional condition which 
+ensures that the vertex $v$ has not been previously colored.
+After the coloring of $v$, \coderef{code.new.d2.nreq} finds the set $I_v$
+representing the uncolored vertices that can have the same colors as the vertex $v$.
 Additionally, we compute $\nreq_v(x)$ for each vertex $x\in I_v$
 and color a vertex $w\neq x$ with the same color as $v$
-if $w$ leads to the maximum value of $\nreq_v(w)$
-The time complexity of this new heuristic is estimated as follows.
-We go through all vertices $v$
-and find a maximum independent set $I_v$ containing $v$.
-Then, we compute $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$.
-The computations of both sets $I_v$ and $maxs$ are of $\mathcal{O}(n^2)$.
-That results in the computational complexity of $\mathcal{O}(n^3)$.
+if $w$ leads to the maximum value of $\nreq_v(w)$.
+The time complexity of this new heuristic is estimated as follows.s
+The outer loop at most consists of $n$ vertices. 
+For a vertex $v$, the complexity of coloring in line 5 to 7 is $\mathcal{O}(\Delta^2)$ as 
+in \coderef{code.greedy}. The set $I_v$ is computed in $\mathcal{O}(n)$.
+Since the computation of $\nreq_v(w)$ is $\mathcal{O}(n)$, the computation of
+the set $maxs$ is $\mathcal{O}(n^2)$. Thus, the general complexity is given by $\mathcal{O}(n^3)$.
 
 Although we color a vertex $v$ and another vertex $u\in I_v$ in each iteration
-it does not always mean that the coloring is valid. Consider the following example.
-\begin{equation}
-\left(\begin{array}{cccc}
-r & 0 & 0 & 0  \\
-0 & 0 & r & 0 \\
-0 & * & * & 0 \\
-0 & r & 0 & r \\
-\end{array}\right)
+it does not always mean that the coloring is valid. Consider the Jacobian and 
+its bipartite graph model in \figref{twocolorings2} where the required edges are the bold edges in the graph.
+%\begin{equation}
+%\left(\begin{array}{cccc}
+%r & 0 & 0 & 0  \\
+%0 & 0 & r & 0 \\
+%0 & * & * & 0 \\
+%0 & r & 0 & r \\
+%\end{array}\right)
+%\label{twocolorings2}
+%\end{equation}
+\begin{figure}
+\centering
+\includegraphics[width=0.25\linewidth]{example_matrix}
+\qquad
+\includegraphics[width=0.12\linewidth]{example_bipartite}
+\caption{An example of a Jacobian and its bipartite graph model
+in which \coderef{code.new.d2.nreq} does not generate a valid coloring.}
 \label{twocolorings2}
-\end{equation}
-\coderef{code.new.d2.nreq} colors the first and second columns with the same color
+\end{figure}
+%\end{tabular}
+\coderef{code.new.d2.nreq} colors the first and second columns of this Jacobian with the same color
 in the first step. Then, the third column is colored with the same color as the
 first column since there is no conflict. The fourth column gets the color of
 the third column. However, this is not a valid coloring
 since the fourth and second columns can not be compressed.
 \begin{figure}
 \begin{lstlisting}[
-label=consistency,caption=A function validates the coloring.,mathescape]
-function validate_coloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
-  modified = false;
-  do
+label=consistency,caption=A function which checks the validation of the coloring.,mathescape]
+function is_valid($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
     for $v \in V_c$ and $n \in N_2(v,E_i)$
       if $\Phi(n) = \Phi(v)$
-        $\Phi(n) = $ a color different from its distance-$2$ neighbors
-        modified = true
-  while modified
-  return $\Phi$
+        return false
+  return true
 \end{lstlisting}
 \end{figure}
-Considering this problem, we validate the coloring at the end of the algorithm
+Considering this problem, we check if the coloring is valid at the end of the algorithm
 by the function given in \coderef{consistency}.
-In this function, we check if the color of each vertex $v$ is different than its distance $2$ neighbors restricted
- to $E_i$.
-If not, the colors of that vertex change to some color different from its distance-$2$ neighbors.
-This algorithm repeats this process until no new such vertex is found.
 
 Table~\ref{mats.pot.add.gr.vs.nreq} presents the number of potentially
 and additionally required elements computed
@@ -1161,14 +1166,14 @@ by \coderef{code.greedy} and \coderef{code.new.d2.nreq}
 and for different orderings for coloring.
 Table~\ref{mats.pot.add.gr.vs.nreq} (Top), (Middle), and (Bottom) are
 the results for the natural ordering, the LFO ordering, and the SLO ordering, respectively.
-The size of diagonal blocks is fixed to $10$.
-In these tables, the numbers of both potentially required elements and additionally required elements
-are increased in the new proposed \coderef{code.new.d2.nreq} regardless of the ordering.
-An observation is that although the number of potentially required elements decreases
-in the computation of the matrix $pesa.mtx$ with the ordering LFO,
-the number of additionally required elements increases. However,
+The size of the diagonal blocks is fixed to $10$.
+In these tables, the numbers of both potentially and additionally required elements
+tend to increase in the new proposed \coderef{code.new.d2.nreq} regardless of the ordering.
+An observation is that, for the matrix $pesa.mtx$ with the ordering LFO,
+the number of potentially required elements decreases
+while the number of additionally required elements increases. Also,
 both the numbers of potentially and additionally required elements
-are larger in the computation for \textit{ex7.mtx} and for all orderings.
+decrease in \coderef{code.new.d2.nreq} for \textit{ex7.mtx} and for all orderings.
 
 \begin{table}
 \centering
@@ -1214,7 +1219,7 @@ Matrix (SLO) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hli
 \textit{pesa.mtx} & $39606$ & $44624$ & $29034$ & $34044$ \\\hline
 \end{tabular}
 \caption{The comparison between the number of potentially and additionally required
-elements computed with \coderef{code.new.d2.nreq} and \coderef{code.greedy}.
+elements computed with \coderef{code.greedy} and \coderef{code.new.d2.nreq}.
 The block size is fixed to $10$. The orderings for coloring are (Top) the natural ordering,
 (Middle) LFO, and (Bottom) SLO.}
 \label{mats.pot.add.gr.vs.nreq}
@@ -1227,16 +1232,19 @@ and \textit{crystm01} with the three different orderings: the natural ordering, 
 and the SLO ordering. Additionally, we compute the number of colors in each case too.
 All figures are illustrated in \appref{app.compare.alg31.alg32}.
 An observation is that the behavior of the figures of the potentially required elements and
-the additionally required elements is the same. Hence, we consider only the additionally
-required elements now.
+the additionally required elements is similar. Hence, we consider only the additionally
+required elements for $ex33$ now.
 The number of additionally required elements computed by \coderef{code.new.d2.nreq} with the ordering SLO
 is overall larger than \coderef{code.greedy} (see \figref{ex33_alg31_alg32_bls_slo_add}).
 The number of colors remains almost the same for the both colorings
 (see \figref{ex33_alg31_alg32_bls_slo_cols}).
-In the other orderings, this happens only in the middle block sizes, like from 25 to 60.
+Here, \coderef{code.new.d2.nreq} leads to a larger number of colors compared to \coderef{code.greedy}.
+Howeveer, there are also orderings where \coderef{code.new.d2.nreq} is not superior for all block sizes in terms of 
+the number of additionally required elements.
 For example, \figref{ex33_alg31_alg32_bls_nat_add} shows the number of additionally required elements
-compared when the natural ordering is considered.
-However, the number of colors in this ordering is even more similar in both algorithms
+for the natural ordering.
+Here, \coderef{code.new.d2.nreq} tends to perform better for smaller block sizes up to around $40$.
+However, for larger block sizes, \coderef{code.greedy} tends to produce slightly more additionally required elements.
 (see \figref{ex33_alg31_alg32_bls_nat_cols}).
 %The number of colors in~\figref{bls_cols_ex33_without_alpha} for the greedy coloring
 %is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and \textit{IDO}.
