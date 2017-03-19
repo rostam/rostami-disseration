@@ -186,7 +186,7 @@ In the second part, we introduce a set of interactive educational modules teachi
 This thesis is concerned with
 the solution of linear equations whose coefficient matrices are sparse, large, and nonsingular.
 Furthermore, it is assumed throughout this thesis that the coefficient matrix is a
-Jacobian matrix of some mathematical funtion.
+Jacobian matrix of some mathematical function.
 This Jacobian matrix is computed by Automatic Differentiation (AD)~\cite{Griewank2008EDP,Rall1981ADT} without truncation error.
 AD computes a product of a Jacobian and another matrix which is called the seed matrix.
 A careful choice of the seed matrix will reduce the computational effort as well as
@@ -196,7 +196,7 @@ These systems of linear equations are solved using iterative methods which are i
 Most preconditioning techniques need access to all elements of Jacobian matrix which
 can lead to performance problems when standard techniques of AD are employed.
 Therefore, we consider an alternative approach that first applies a sparsification operator to the Jacobian matrix and then
-uses standard precontitioning techniques for the sparsified matrix.
+uses standard preconditioning techniques for the sparsified matrix.
 This process becomes complete by adding more nonzero elements to the sparsified matrix
 without producing more fill-in elements and without increasing efforts to set up the sparsified matrix.
 We introduce new heuristics targeting the careful choice of these extra nonzero elements.
@@ -230,7 +230,7 @@ the idea of combining partial Jacobian computation and ILU preconditioning.
 This idea defines a sparsification operator $\rho$ which is applied to the Jacobian matrix
 before the ILU preconditioner is computed. The nonzero elements selected by $\rho$
 are called required elements. The remaining elements are called nonrequired elements.
-Lülfesmann~\cite{Lulfesmann2012Fap} computes the seed matrix for automatic differentation
+Lülfesmann~\cite{Lulfesmann2012Fap} computes the seed matrix for automatic differentiation
 by considering a graph coloring restricted to these required elements.
 Then, a subset of nonrequired elements is added to the set of required elements
 such that number of colors does not increase and no extra fill-in elements are generated
@@ -1038,6 +1038,7 @@ which are determined.
 Here, the symbol $r$ stands for a required element,
 the symbol \textit{$*$} stands for other nonzero elements (the nonrequired elements),
 and the number $0$ denotes a zero element.
+
 If the first and second columns get the same color as given in the left matrix,
 we will get the nonzero at position $(3,1)$ as a by-product.
 However, there are certain degrees of freedom. In
@@ -1141,12 +1142,22 @@ its bipartite graph model in \figref{twocolorings2} where the required edges are
 in which \coderef{code.new.d2.nreq} does not generate a valid coloring.}
 \label{twocolorings2}
 \end{figure}
-%\end{tabular}
-\coderef{code.new.d2.nreq} colors the first and second columns of this Jacobian with the same color
-in the first step. Then, the third column is colored with the same color as the
-first column since there is no conflict. The fourth column gets the color of
-the third column. However, this is not a valid coloring
-since the fourth and second columns can not be compressed.
+
+Here, we assume that the outer loop is executed in a natural ordering corresponding to iterate over 
+the columns of the Jacobian from left to right.
+After the first vertex $v_1$ corresponding to the first column is given some color, 
+the set $I_v$ consists of the columns $2$, $3$, and $4$. Since all these three columns
+can be compressed with the first column, the function $\nreq_{v_1}(x)$ is given by the number of 
+nonrequired elements in a column corresponding to $x$. Thus, the values of $\nreq_{v_1}(x)$ 
+for the columns $2$, $3$, and $4$ are $1$, $1$, $0$, correspondingly.
+Therefore, the first and the second column are colored identically.
+In the next iteration of the outer loop, the third column is then colored with the same color as the first
+column since the vertex $v_3$ corresponding to the third column does not have any distance-$2$ neighbors 
+restricted to $E_i$. Thus, the array $forbiddenColors$ is not changed in this iteration.
+So that the colors of first three columns are the same.
+Now, the set $I_{v_3}$ contains the vertex $v_4$ corresponding to the 
+fourth columns since th others are already colored. Therefore, the fourth column gets the color of
+the third column. However, this is not a valid coloring since the fourth and second columns can not be compressed.
 \begin{figure}
 \begin{lstlisting}[
 label=consistency,caption=A function which checks the validation of the coloring.,mathescape]
@@ -1159,6 +1170,8 @@ function is_valid($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \end{figure}
 Considering this problem, we check if the coloring is valid at the end of the algorithm
 by the function given in \coderef{consistency}.
+An observation is that the coloring is valid for all the matrices that are mentioned in this
+thesis.
 
 Table~\ref{mats.pot.add.gr.vs.nreq} presents the number of potentially
 and additionally required elements computed
@@ -1239,7 +1252,7 @@ is overall larger than \coderef{code.greedy} (see \figref{ex33_alg31_alg32_bls_s
 The number of colors remains almost the same for the both colorings
 (see \figref{ex33_alg31_alg32_bls_slo_cols}).
 Here, \coderef{code.new.d2.nreq} leads to a larger number of colors compared to \coderef{code.greedy}.
-Howeveer, there are also orderings where \coderef{code.new.d2.nreq} is not superior for all block sizes in terms of 
+However, there are also orderings where \coderef{code.new.d2.nreq} is not superior for all block sizes in terms of 
 the number of additionally required elements.
 For example, \figref{ex33_alg31_alg32_bls_nat_add} shows the number of additionally required elements
 for the natural ordering.
@@ -1301,7 +1314,7 @@ function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
       $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
 
-    Determine an indepentent set $I_v$ containing $v$
+    $I_v=\{z\in V_c: z\neq v\text{ and }z\notin N_2(v) \text{ and } \Phi(z) = 0 \}$
     if $I_v-\{v\}\neq\emptyset$
       $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
       $mins = \argmin_{x\in maxs} \req (x)$
@@ -1341,7 +1354,7 @@ Except the matrix \textit{ex7},
 a general observation is that the numbers of additionally and potentially required elements
 are decreased when the number of colors is decreased.
 This brings us to the next topic of balancing the number of colors
-and the number of additioanlly required elements.
+and the number of additionally required elements.
 
 \subsubsection{Balancing the number of colors}
 Here, we modify \coderef{code.new.d2.nreq} and \coderef{code.new.impr1} again
@@ -1369,7 +1382,7 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
       $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
 
-    Determine an indepentent set $I_v$ containing $v$
+    $I_v=\{z\in V_c: z\neq v\text{ and }z\notin N_2(v) \text{ and } \Phi(z) = 0 \}$
     if $I_v-\{v\}\neq\emptyset$
       $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
       $mins = \argmin_{x\in maxs} \req(x)$
@@ -1554,7 +1567,7 @@ Lülfesmann~\cite{LulfesmannMaster} implemented and evaluated this algorithm.
 This algorithm closely follows the definition of the star bicoloring.
 Complete direct cover bicoloring~\cite{Hossain95computinga}
 is another algorithm which are introduced for bicoloring.
-Acoording to Calotoiu~\cite{CalotoiuMaster}, this algorithm does not perform
+According to Calotoiu~\cite{CalotoiuMaster}, this algorithm does not perform
 better than the star bicoloring scheme.
 Also, Calotoiu~\cite{CalotoiuMaster} introduces two other algorithms the integrated star bicoloring
 and total ordering star bicoloring which perform better than
@@ -1620,7 +1633,7 @@ function next_vertex_nreq($G=(V_r\cup V_c,E)$,$E_i^{'}$,$\rho$)
   $v$ = next_vertex($G$,$E_i^{'}$,$\rho$)
   if NonReq = false then NonReq = true
   else
-    Determine an indepentent set $I_v$ containing $v$
+    $I_v=\{z\in V_c: z\neq v\text{ and }z\notin N_2(v) \text{ and } \Phi(z) = 0 \}$
     if $I_v-\{v\}\neq\emptyset$
       $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
       $mins = \argmin_{x\in maxs} \req(x)$
@@ -2048,7 +2061,7 @@ iterates over the required edges.
 In each iteration, we find the minimum possible colors $c_1$ and $c_2$
 for both incident vertices (the row and column vertex) of the required edge.
 Then, we color the vertex with the corresponding smaller color.
-This new heuristic generates the number of colros equal to $\Phi_{sb}$
+This new heuristic generates the number of colors equal to $\Phi_{sb}$
 for the matrices from Table~\ref{table.starbic.d2.diag}.
 
 
@@ -2192,7 +2205,7 @@ We develop an extensible collection of educational modules (\mbox{EXPLAIN})
 to teach combinatorial scientific computing in classroom.
 There is an increasing need for such educational tools since the connection
 between the problems from scientific computing and the corresponding combinatorial
-problem is tricky for the students. This chapter summerizes our previous publications
+problem is tricky for the students. This chapter summarizes our previous publications
 \cite{2013:05,2014:01,2014:02,2014:09,2015:3} and also provides some new features.
 
 Since graphs are ubiquitous in computer science, mathematics, and a variety of other scientific
