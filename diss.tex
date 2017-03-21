@@ -1633,8 +1633,8 @@ function next_vertex_nreq($G=(V_r\cup V_c,E)$,$E_i^{'}$,$\rho$)
     NonReq = true
   else
     $I_v=\{z\in V_c: z\neq v\text{ and }z\notin N_2(v) \text{ and } \Phi(z) = 0 \}$
-    if $I_v-\{v\}\neq\emptyset$
-      $maxs = \argmax_{x\in I_v - \{v\}} \nreq_v (x)$
+    if $I_v\neq\emptyset$
+      $maxs = \argmax_{x\in I_v} \nreq_v (x)$
       $mins = \argmin_{x\in maxs} \req(x)$
       $v=mins[0]$
     NonReq = false
@@ -1857,9 +1857,9 @@ However, it does not mean that a bigger block size results always in a better co
 as you can compare the figures for the blocksizes $10$ and $20$.
 
 Table~\ref{bls.greedy.new.carbon} shows the results of the computation of \coderef{code.greedy} and
-\coderef{code.new.impr2} for the different block sizes.
-The number of additionally required elements increases in all block sizes
-while the number of colors tends to be the same.
+\coderef{code.new.impr2} for the different block sizes and for the Jacobian $A$.
+The number of potentially and additionally required elements once more increases in all block sizes
+while the number of colors tends to be the same. 
 
 \begin{figure}
 \centering
@@ -1949,7 +1949,7 @@ the minimal number of colors of the distance-$2$ coloring restricted
 to diagonal elements $\chi_{d2}$.
 It means that the bidirectional compression restricting to diagonals is not better than
 a distance-$2$ coloring restricted to diagonal elements.
-This theorem can be written as two Lemmas,
+This theorem can be written as two lemmas,
 \begin{itemize}
 \item Lemma 1: $\chi_{sb} \geq \chi_{d2}$
 \item Lemma 2: $\chi_{sb} \leq \chi_{d2}$
@@ -1978,8 +1978,8 @@ to the valid star bicoloring $\Phi_{sb}^{'}$ where all row vertices are colored 
 This star bicoloring is also a distance-$2$ coloring.
 \end{enumerate}
 An example of this transformation can be seen in \figref{proof1}.
-Looking at the proof, Lemma 3.8 of Lülfesmann~\cite{Lulfesmann2012Fap} can be generalized by considering any
-coloring instead of the optimal coloring.
+Looking at the proof of Lemma 3.8 of Lülfesmann~\cite{Lulfesmann2012Fap}, this lemma (and consequently Theorem 3.10 of Lülfesmann~\cite{Lulfesmann2012Fap})
+can be generalized by considering any coloring instead of the optimal coloring.
 Also, the set of diagonal elements in the theorem
 can be replaced by any set of required elements
 in which each column and row contain only one required nonzero element.
@@ -2012,12 +2012,17 @@ the case in our theorem.
 make the required edges disjoint from each other which is the definition of a matching in a graph.
 \end{itemize}
 
-This generalization gives us an idea to find new heuristics for coloring.
-The examples in Table~\ref{table.starbic.d2.diag} from Florida sparse collection shows that the
-inequality in Theorem~\ref{t.matching} can happen. The second column of this table
-shows the number of colors computed by the heuristic for star bicoloring.
-The third column shows the minimum number of colors computed by the greedy distance-$2$ coloring
-for rows and columns.
+This generalization gives us an idea to find new heuristics for coloring in which
+we color the column and row vertices simultaneausly. 
+The motivation of this new heuristic is from the following observation.
+When we compare the number of colors computed by \coderef{code.greedy} and \coderef{orig.star.bicoloring}
+in Table~\ref{table.starbic.d2.diag} for different matrices,
+the better results are observed in \coderef{orig.star.bicoloring} in some matrices.
+These examples also shows that the inequality in Theorem~\ref{t.matching} can happen.
+The second column of this table
+shows the number of colors computed by  \coderef{orig.star.bicoloring}.
+The third column shows the minimum number of colors computed by the greedy coloring in~\coderef{code.greedy}
+either for rows or columns.
 It can be seen that even for a small matrix as the matrix \textit{cage3} which has only
 $5$ rows and columns, the star bicoloring can produce a better result.
 
@@ -2055,8 +2060,7 @@ The ordering is the natural ordering of the matrix for both colorings.}
 \label{table.starbic.d2.diag}
 \end{table}
 
-We have developed some ideas based on Theorem~\ref{t.matching}
-for a better heuristic. The idea is that a heuristic for star bicoloring maybe
+More clearly, the idea is that a heuristic for star bicoloring maybe
 find a better coloring because of the inequality in the theorem.
 As theorem proposes, every required nonzero element
 is determined by either a column or a row and not both.
@@ -2657,7 +2661,7 @@ The graph model of this problem has the simple graph layout considering the matr
 as the adjacency matrix of a graph.
 The algorithm from~\cite{2014:02} searches for a vertex-separator set
 corresponding to the block $C$ here. A vertex separator $S$ of the given graph $G$
-is a subgraph of $G$ if removing $S$ and its adjacent edges from $G$ results in two
+is a subgraph of $G$ if the removal of $S$ and its adjacent edges from $G$ results in two
 disconnected components $V_1$ and $V_2$ of $G$.
 Suppose we move rows and columns corresponding to the vertex separator to the end of
 the matrix and bring together
@@ -3176,7 +3180,7 @@ in the implementation of Breadth-First Search (BFS).
 %-----------------------------------------------------------------------------------------------
 We consider a model-view-control (MVC) design pattern~\cite{osmani2012learning} for our implementation.
 An important aspect of our design is the suitable connection of the
-model and view. A practical approach enables the direct change in view while keeps the
+model and view. A practical approach enables the direct change in view while it keeps the
 separation of the view and model.
 So, we have unique ids for
 edges and vertices. The unique ids for vertices are the concatenation of the
@@ -3221,11 +3225,11 @@ min($l$) and max($l$) & finds minimum and maximum of the list of integers $l$ \\
 diff($A$,$B$) & finds $A - B$ \\\hline
 get\_colors($l_v$) & return a list of colors of the list $l_v$ of vertices\\\hline
 \end{tabular}
-\caption{The list of functions available in the new scripting language.}
+\caption{A list of functions available in the new scripting language.}
 \label{command-table}
 \end{table}
 
-Having such scripting language empowers us to have a dynamic script editor
+Having such scripting language empowers us to have a dynamic scripting editor
 together with EXPLAIN which makes the creation of new modules efficient and fast.
 The developer of a new module needs only to write the action command of the vertex
 click and the global variables which he/she needs.
@@ -3313,7 +3317,7 @@ the new ways of further developments.
 Although we proposed different heuristics, many dimensions of the problem can be improved.
 We considered only the ILU preconditioning. A future work is to replace ILU
 with other preconditioning techniques.
-For example, the approximate inverse preconditioning (AINV)~\cite{ainv98} is a
+For example, the approximate inverse preconditioning (AINV)~\cite{ainv98} might be a
 suitable candidate which produces no fill-in.
 Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph model as before and show it has advantages in the unidirectional coloring. A first improvement is to search for the similar approach in the bidirectional coloring and restricted coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
 
