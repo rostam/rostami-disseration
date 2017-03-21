@@ -151,11 +151,13 @@ such that no fill-in or increase of the number of colors happens.
 The current thesis first looks at different ways to optimize the processes of selecting these nonrequired elements.
 We introduce three different algorithms and compare them together as well as with the previous approaches.
 Also, we consider a particular case in which we consider only the diagonal elements as required elements
-and generalize a previous study. We also apply our new ideas to an application from geoscience.
+and generalize a previous study. Using this generalization, a new heuristics is also introduced for a coloring
+in a specific case. To see our proposed algorithms in practice,
+we also apply them to an application from geoscience.
 Finally, we look at our new software package which has the implementations of these new heuristics.
-In the second part of this thesis, we introduce an interactive educational module to teach the
+In the next part of this thesis, we introduce an interactive educational module to teach the
 graph coloring as well as other concepts from combinatorial scientific computing in the classroom.
-This module is designed to integrate the students more in the processes of learning
+This module is designed to integrate the students more in the processes of learning.
 
 \chapter*{Zusammenfassung}
 Die Lösung von Real-world Anwendungen basieren oft auf der Lösung von Lineares Gleichungssystem,
@@ -237,8 +239,7 @@ such that number of colors does not increase and no extra fill-in elements are g
 in the ILU preconditioning. These elements are called the additionally required elements.
 In this thesis, we extend this idea further as follows.
 \begin{itemize}
-\item defining new coloring heuristics
-to increase the number of additionally required elements without increasing the number of colors.
+\item defining new coloring heuristics (both for distance-$2$ coloring and star bicoloring) to increase the number of additionally required elements without having a hight increase in the number of colors.
 \item applying this new heuristics to an example from geoscience.
 \item generalizing a previous result from Lülfesmann~\cite{Lulfesmann2012Fap} for the coloring restricted to diagonal elements
 \item Introducing a software package to implement these new heuristics
@@ -273,8 +274,7 @@ partial Jacobian computation in \secref{s.precond}.
 %===================================================================================================
 There are many references on exploiting the sparsity pattern of Jacobian matrices
 to improve the performance of automatic differentiation.
-Here, we look at full and partial Jacobian computation in
-\secref{s.full.jac} and \secref{s.part.jac}.
+Here, we look at full and partial Jacobian computation in~\secref{s.full.jac} and \secref{s.part.jac}.
 %===================================================================================================
 \subsection{Full Jacobian computation}
 \label{s.full.jac}
