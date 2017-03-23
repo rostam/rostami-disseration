@@ -139,61 +139,63 @@ Since Jacobian matrix-vector products are needed in iterative solvers,
 these types of linear systems can be efficiently solved using automatic differentiation.
 Determining these nonzero elements in full or partial Jacobian computations by automatic differentiation techniques
 can be modeled as graph coloring in the language of graph theory.
-
-On the other hand, preconditioning techniques are used to
-improve the convergence of iterative solvers and need access to all nonzero elements
-of the Jacobian matrix.
-So, a sparsification is applied to the Jacobian matrix before computing the preconditioner.
-The elements obtained from the sparsification are considered as the required elements in a restricted coloring.
-Lülfesmann (PhD thesis, RWTH Aachen University, 2012) introduced a procedure
-which selects a subset of the remaining nonrequired elements and adds to the sparsified matrix
-such that no fill-in or increase of the number of colors happens.
-The current thesis has two parts.
-In the first part, we look at different ways to optimize the process of selecting these nonrequired elements.
-We introduce three different heuristics and compare them together as well as with the previous approaches.
-Also, we look at a particular case in which we consider only the diagonal elements as required elements.
-We generalize a previous study on this case.
-Using this generalization, a new heuristics is also introduced
-in this specific case. To see our proposed heuristics in practice,
-we also apply them to an application from geoscience.
-Finally, we look at our new software package which has the implementations of these new heuristics.
-In the second part of this thesis, we introduce an interactive educational module to teach the
-graph coloring as well as other concepts from combinatorial scientific computing in the classroom.
-This module is designed to integrate the students more in the process of learning.
+%
+On the other hand, preconditioning techniques are used to improve the convergence of iterative
+solvers and need access to all nonzero elements of the Jacobian matrix. So, a sparsification is
+applied to the Jacobian matrix before computing the preconditioner. The elements obtained from
+the sparsification are considered as the required elements in a restricted coloring. Lülfesmann (PhD
+thesis, RWTH Aachen University, 2012) introduced a procedure which selects a subset of the
+remaining nonrequired elements and adds this subset to the sparsified matrix such that neither
+fill-in nor an increase in the number of colors happen. This thesis consists of two parts. In the first
+part, we look at different ways to optimize the process of selecting these nonrequired elements. We
+introduce three new coloring heuristics and compare them with each other as well as with existing
+approaches. Also, we look at a particular case in which we consider only the diagonal elements as
+required elements. For this case, we generalize a previous result  and introduce a new coloring
+heuristic. To evaluate our proposed heuristics in practice, we apply them to an application from
+geoscience. Finally, we describe our new software package implementing these new heuristics. In
+the second part of this thesis, we introduce  a collection of interactive educational modules to teach
+not only graph coloring, but also other concepts from combinatorial scientific computing in the
+classroom. These modules are designed to involve the students more thoroughly in the process of
+learning. At the end, we explain the design of this collection and outline its implementation.
 
 \chapter*{Zusammenfassung}
-Die Lösung von Real-world Anwendungen basieren oft auf der Lösung von Lineares Gleichungssystem,
-die zu größe dünnbesetze Jacobi-Matrix führen. 
-Deshalb gibt es viele Rechechen, die
-die Struktur von Matrix ausnutzt, um die Speicher reduzieren.
-Im Gegensatz zu der vollständigen jakobischen Berechnung, in der alle Elemente bestimmt werden sollen,
-Partielle jakobische Berechnungen betrachten eine Teilmenge dieser Elemente.
-Diese Eigenschaft kann zu einer schnelleren und effizienteren Berechnung führen.
-Da jakobische Matrix-Vektor-Produkte in iterativen Lösern benötigt werden,
-Diese Typen von linearen Systemen lassen sich mit automatischer Differenzierung effizient lösen.
-Bestimmen dieser Nicht-Null-Elemente in vollständigen oder partiellen jakobischen Berechnungen durch automatische Differenzierungstechniken
-Kann als Graphenfärbung in der Sprache der Graphentheorie modelliert werden.
+Die Lösung von realistischen Anwendungsproblemen basiert oft auf der Lösung von linearen
+Glei\-chungs\-systemen, deren Koeffizientenmatrizen  große dünnbesetze Jacobi-Matrizen sind.
+Deshalb gibt es eine Fülle von Forschungsarbeiten mit dem Ziel, die Struktur dieser Matrizen zur
+Reduktion von Rechenzeit und Speicher auszunutzen. Im Gegensatz zu der vollständigen
+Berechnung von Jacobi-Matrizen, in der alle Nichtnullelemente bestimmt werden müssen, wird in
+einer partiellen Berechnung lediglich eine Teilmenge aller Nichtnullelemente bestimmt. Die partielle
+Berechnung kann daher im Vergleich zu einer vollständigen Berechnung zu schnelleren und
+effizienteren Verfahren führen. Da Jacobi-Matrix-Vektor-Produkte in iterativen Lösern benötigt
+werden, lassen sich diese Typen von linearen Systemen mit Techniken des automatischen
+Differenzierens effizient lösen. Die Be\-stimmung von Nichtnullelemente durch vollständige oder
+partielle Berechnungen von Jacobi-Matrizen kann in der Sprache der Graphentheorie als Problem
+einer Graphen\-färbung modelliert werden.
+%
+Auf der anderen Seite werden Vorkonditionstechniken verwendet, um die Konvergenz von
+iterativen Lösern zu verbessern. Solche Vorkonditionstechniken greifen meist auf alle
+Nichtnullelemente der Jacobi-Matrix zu. Daher kann es vorteilhaft sein, eine Ausdünnung auf die
+Jacobi-Matrix anzuwenden, bevor die Vorkonditionierung berechnet wird. Die nach der
+Ausdünnung verbleibenden Nichtnullelemente werden als benötigte Elemente bezeichnet und in
+einer eingeschränkten Färbung verwendet. Lülfesmann (Dissertation, RWTH Aachen, 2012) hat ein
+Verfahren eingeführt, das eine Teilmenge der nichtbenötigten Elemente auswählt und zu der
+ausgedünnten Jacobi-Matrix addiert, so dass weder Füllelemente noch eine Erhöhung der Anzahl
+der Farben erfolgt. Die nun vorliegende Dissertation besteht aus zwei Teilen. Im ersten Teil
+betrachten wir verschiedene Möglichkeiten, den Prozess der Auswahl dieser nichtbenötigten
+Elemente zu optimieren. Wir stellen drei neue Färbungsheuristiken vor und vergleichen sie sowohl
+untereinander als auch mit bisherigen Ansätzen. Wir betrachten auch einen Spezialfall, in dem als
+benötigte Elemente  nur die Diagonalelemente zu bestimmen sind. Wir verallgemeinern dabei ein
+vorheriges Ergebnis und führen eine neue Färbungsheuristik ein. Um unsere vorgeschlagenen
+Heuristiken in der Praxis zu evaluieren, wenden wir sie auf eine Problemstellung aus den
+Geowissenschaften an. Schließlich betrachten wir unser neues Softwarepaket, das die neuen
+Heuristiken implementiert. Im zweiten Teil dieser Arbeit stellen wir eine Sammlung von interaktiven
+Lehrmodulen vor, die nicht nur Graphenfärbung sondern auch andere Konzepte aus dem
+kombinatorischen wissenschaftlichen Rechnen im Klassenzimmer illustrieren. Diese Module wurden
+entwickelt, um die Studierenden noch gründlicher in den Prozess des Lernens zu involvieren.
+Schließlich erläutern wir den Entwurf dieser Sammlung von Lehrmodulen und beschreiben deren
+Implementierung.
 
-Auf der anderen Seite werden Vorkonditionstechniken verwendet
-um die Konvergenz von iterativen Lösern zu verbessern.
-Die Vorkonditionstechniken brauchen meistens Zugrief zu allen nicht-null Elementen der Jacobi-Matrix.
-So wird eine Sparsifikation auf die Jacobi-Matrix angewendet, bevor die Vorkonditionierer zu berechnen.
-Die aus der Sparsifizierung gewonnenen Elemente werden als die erforderlichen Elemente in einer eingeschränkten Färbung betrachtet.
-Lülfesmann (Dissertation, RWTH Aachen, 2012) hat ein Verfahren eingeführt,
-die eine Teilmenge der verbleibenden nicht benötigten Elemente auswählt und zu der gespaltenen Jacobi-Matrix addiert,
-so dass keine Füllung oder Erhöhung der Anzahl der Farben erfolgt.
-Die aktuelle Arbeit besteht aus zwei Teilen.
-Im ersten Teil betrachten wir verschiedene Möglichkeiten, den Prozess der Auswahl dieser nicht benötigten Elemente zu optimieren.
-Wir stellen drei verschiedene Heuristiken vor und vergleichen sie zusammen sowie mit den bisherigen Ansätzen.
-Auch wir betrachten einen besonderen Fall, in dem wir nur die diagonalen Elemente als erforderliche Elemente betrachten.
-Wir verallgemeinern eine vorherige Studie zu diesem Fall.
-Mit dieser Verallgemeinerung wird auch eine neue Heuristik eingeführt.
-In diesem konkreten Fall. Um unsere vorgeschlagenen Heuristiken in der Praxis zu sehen,
-Wir wenden sie auch auf eine Anwendung aus Geowissenschaften an.
-Schließlich betrachten wir unser neues Softwarepaket, das die Implementierungen dieser neuen Heuristiken hat.
-Im zweiten Teil dieser Arbeit stellen wir ein interaktives Bildungsmodul vor, um das zu lehren
-Graphische Färbung sowie andere Konzepte aus kombinatorischem wissenschaftlichem Rechnen im Klassenzimmer.
-Dieses Modul wurde entwickelt, um die Studenten mehr in den Prozess des Lernens zu integrieren.
+
 \chapter*{Acknowledgments}
 \noindent This project would not have been possible without
 the support of many people. I must express my first gratitude
@@ -1133,7 +1135,7 @@ the operators $\argmax$ and $\argmin$ are defined as,
 In this algorithm, we iterate over all uncolored vertices.
 First, we color the vertex $v$ with a color different form
 its distance-$2$ neighbors restricted to $E_i$ like the previous greedy coloring.
-Note, however, that there is an additional condition which 
+Note, however, that there is an additional condition which
 ensures that the vertex $v$ has not been previously colored.
 After the coloring of $v$, \coderef{code.new.d2.nreq} finds the set $I_v$
 representing the uncolored vertices that can have the same colors as the vertex $v$.
@@ -1141,14 +1143,14 @@ Additionally, we compute $\nreq_v(x)$ for each vertex $x\in I_v$
 and color a vertex $w\neq x$ with the same color as $v$
 if $w$ leads to the maximum value of $\nreq_v(w)$.
 The time complexity of this new heuristic is estimated as follows.s
-The outer loop at most consists of $n$ vertices. 
-For a vertex $v$, the complexity of coloring in line 5 to 7 is $\mathcal{O}(\Delta^2)$ as 
+The outer loop at most consists of $n$ vertices.
+For a vertex $v$, the complexity of coloring in line 5 to 7 is $\mathcal{O}(\Delta^2)$ as
 in \coderef{code.greedy}. The set $I_v$ is computed in $\mathcal{O}(n)$.
 Since the computation of $\nreq_v(w)$ is $\mathcal{O}(n)$, the computation of
 the set $maxs$ is $\mathcal{O}(n^2)$. Thus, the general complexity is given by $\mathcal{O}(n^3)$.
 
 Although we color a vertex $v$ and another vertex $u\in I_v$ in each iteration
-it does not always mean that the coloring is valid. Consider the Jacobian and 
+it does not always mean that the coloring is valid. Consider the Jacobian and
 its bipartite graph model in \figref{twocolorings2} where the required edges are the bold edges in the graph.
 %\begin{equation}
 %\left(\begin{array}{cccc}
@@ -1169,19 +1171,19 @@ in which \coderef{code.new.d2.nreq} does not generate a valid coloring.}
 \label{twocolorings2}
 \end{figure}
 
-Here, we assume that the outer loop is executed in a natural ordering corresponding to iterate over 
+Here, we assume that the outer loop is executed in a natural ordering corresponding to iterate over
 the columns of the Jacobian from left to right.
-After the first vertex $v_1$ corresponding to the first column is given some color, 
+After the first vertex $v_1$ corresponding to the first column is given some color,
 the set $I_v$ consists of the columns $2$, $3$, and $4$. Since all these three columns
-can be compressed with the first column, the function $\nreq_{v_1}(x)$ is given by the number of 
-nonrequired elements in a column corresponding to $x$. Thus, the values of $\nreq_{v_1}(x)$ 
+can be compressed with the first column, the function $\nreq_{v_1}(x)$ is given by the number of
+nonrequired elements in a column corresponding to $x$. Thus, the values of $\nreq_{v_1}(x)$
 for the columns $2$, $3$, and $4$ are $1$, $1$, $0$, correspondingly.
 Therefore, the first and the second column are colored identically.
 In the next iteration of the outer loop, the third column is then colored with the same color as the first
-column since the vertex $v_3$ corresponding to the third column does not have any distance-$2$ neighbors 
+column since the vertex $v_3$ corresponding to the third column does not have any distance-$2$ neighbors
 restricted to $E_i$. Thus, the array $forbiddenColors$ is not changed in this iteration.
 So that the colors of first three columns are the same.
-Now, the set $I_{v_3}$ contains the vertex $v_4$ corresponding to the 
+Now, the set $I_{v_3}$ contains the vertex $v_4$ corresponding to the
 fourth columns since th others are already colored. Therefore, the fourth column gets the color of
 the third column. However, this is not a valid coloring since the fourth and second columns can not be compressed.
 \begin{figure}
@@ -1278,7 +1280,7 @@ is overall larger than \coderef{code.greedy} (see \figref{ex33_alg31_alg32_bls_s
 The number of colors remains almost the same for the both colorings
 (see \figref{ex33_alg31_alg32_bls_slo_cols}).
 Here, \coderef{code.new.d2.nreq} leads to a larger number of colors compared to \coderef{code.greedy}.
-However, there are also orderings where \coderef{code.new.d2.nreq} is not superior for all block sizes in terms of 
+However, there are also orderings where \coderef{code.new.d2.nreq} is not superior for all block sizes in terms of
 the number of additionally required elements.
 For example, \figref{ex33_alg31_alg32_bls_nat_add} shows the number of additionally required elements
 for the natural ordering.
@@ -1617,7 +1619,7 @@ function star_bicoloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$,next_vertex
   $\Phi\leftarrow [-1\ldots -1]$
   $forbiddenColors\leftarrow [0\ldots 0]$
   $E_i^{'} = E_i$
-  
+
   while $E_i^{'}\neq\emptyset$
     $v$=next_vertex($G$,$E_i^{'}$,$\rho$)
     $E_i^{'} = E_i^{'} - \{(v,w)\in E_i^{'}:w\in N_1(v,G[E_i^{'}])\}$
@@ -1887,7 +1889,7 @@ as you can compare the figures for the blocksizes $10$ and $20$.
 Table~\ref{bls.greedy.new.carbon} shows the results of the computation of \coderef{code.greedy} and
 \coderef{code.new.impr2} for the different block sizes and for the Jacobian $A$.
 The number of potentially and additionally required elements once more increases in all block sizes
-while the number of colors tends to be the same. 
+while the number of colors tends to be the same.
 
 \begin{figure}
 \centering
@@ -2041,7 +2043,7 @@ make the required edges disjoint from each other which is the definition of a ma
 \end{itemize}
 
 This generalization gives us an idea to find new heuristics for coloring in which
-we color the column and row vertices simultaneausly. 
+we color the column and row vertices simultaneausly.
 The motivation of this new heuristic is from the following observation.
 When we compare the number of colors computed by \coderef{code.greedy} and \coderef{orig.star.bicoloring}
 in Table~\ref{table.starbic.d2.diag} for different matrices,
@@ -2271,7 +2273,7 @@ implementation details in \secref{s.impl.explain}.
 detail in \secref{s.impl.explain}. Some of the modules
 are only available in the new release. Both releases
 are available now since they were developed on different technologies and have
-pros and cons. 
+pros and cons.
 %However, the release 2.0 is an improved version and is developed .
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Concept and design}
