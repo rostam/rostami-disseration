@@ -148,23 +148,52 @@ The elements obtained from the sparsification are considered as the required ele
 Lülfesmann (PhD thesis, RWTH Aachen University, 2012) introduced a procedure
 which selects a subset of the remaining nonrequired elements and adds to the sparsified matrix
 such that no fill-in or increase of the number of colors happens.
-The current thesis first looks at different ways to optimize the processes of selecting these nonrequired elements.
-We introduce three different algorithms and compare them together as well as with the previous approaches.
-Also, we consider a particular case in which we consider only the diagonal elements as required elements
-and generalize a previous study. Using this generalization, a new heuristics is also introduced for a coloring
-in a specific case. To see our proposed algorithms in practice,
+The current thesis has two parts.
+In the first part, we look at different ways to optimize the process of selecting these nonrequired elements.
+We introduce three different heuristics and compare them together as well as with the previous approaches.
+Also, we look at a particular case in which we consider only the diagonal elements as required elements.
+We generalize a previous study on this case.
+Using this generalization, a new heuristics is also introduced
+in this specific case. To see our proposed heuristics in practice,
 we also apply them to an application from geoscience.
 Finally, we look at our new software package which has the implementations of these new heuristics.
-In the next part of this thesis, we introduce an interactive educational module to teach the
+In the second part of this thesis, we introduce an interactive educational module to teach the
 graph coloring as well as other concepts from combinatorial scientific computing in the classroom.
-This module is designed to integrate the students more in the processes of learning.
+This module is designed to integrate the students more in the process of learning.
 
 \chapter*{Zusammenfassung}
 Die Lösung von Real-world Anwendungen basieren oft auf der Lösung von Lineares Gleichungssystem,
-die zu größe dünnbesetze Jacobi-Matrix führen. Deshalb gibt es viele Rechechen, die
+die zu größe dünnbesetze Jacobi-Matrix führen. 
+Deshalb gibt es viele Rechechen, die
 die Struktur von Matrix ausnutzt, um die Speicher reduzieren.
+Im Gegensatz zu der vollständigen jakobischen Berechnung, in der alle Elemente bestimmt werden sollen,
+Partielle jakobische Berechnungen betrachten eine Teilmenge dieser Elemente.
+Diese Eigenschaft kann zu einer schnelleren und effizienteren Berechnung führen.
+Da jakobische Matrix-Vektor-Produkte in iterativen Lösern benötigt werden,
+Diese Typen von linearen Systemen lassen sich mit automatischer Differenzierung effizient lösen.
+Bestimmen dieser Nicht-Null-Elemente in vollständigen oder partiellen jakobischen Berechnungen durch automatische Differenzierungstechniken
+Kann als Graphenfärbung in der Sprache der Graphentheorie modelliert werden.
 
-
+Auf der anderen Seite werden Vorkonditionstechniken verwendet
+um die Konvergenz von iterativen Lösern zu verbessern.
+Die Vorkonditionstechniken brauchen meistens Zugrief zu allen nicht-null Elementen der Jacobi-Matrix.
+So wird eine Sparsifikation auf die Jacobi-Matrix angewendet, bevor die Vorkonditionierer zu berechnen.
+Die aus der Sparsifizierung gewonnenen Elemente werden als die erforderlichen Elemente in einer eingeschränkten Färbung betrachtet.
+Lülfesmann (Dissertation, RWTH Aachen, 2012) hat ein Verfahren eingeführt,
+die eine Teilmenge der verbleibenden nicht benötigten Elemente auswählt und zu der gespaltenen Jacobi-Matrix addiert,
+so dass keine Füllung oder Erhöhung der Anzahl der Farben erfolgt.
+Die aktuelle Arbeit besteht aus zwei Teilen.
+Im ersten Teil betrachten wir verschiedene Möglichkeiten, den Prozess der Auswahl dieser nicht benötigten Elemente zu optimieren.
+Wir stellen drei verschiedene Heuristiken vor und vergleichen sie zusammen sowie mit den bisherigen Ansätzen.
+Auch wir betrachten einen besonderen Fall, in dem wir nur die diagonalen Elemente als erforderliche Elemente betrachten.
+Wir verallgemeinern eine vorherige Studie zu diesem Fall.
+Mit dieser Verallgemeinerung wird auch eine neue Heuristik eingeführt.
+In diesem konkreten Fall. Um unsere vorgeschlagenen Heuristiken in der Praxis zu sehen,
+Wir wenden sie auch auf eine Anwendung aus Geowissenschaften an.
+Schließlich betrachten wir unser neues Softwarepaket, das die Implementierungen dieser neuen Heuristiken hat.
+Im zweiten Teil dieser Arbeit stellen wir ein interaktives Bildungsmodul vor, um das zu lehren
+Graphische Färbung sowie andere Konzepte aus kombinatorischem wissenschaftlichem Rechnen im Klassenzimmer.
+Dieses Modul wurde entwickelt, um die Studenten mehr in den Prozess des Lernens zu integrieren.
 \chapter*{Acknowledgments}
 \noindent This project would not have been possible without
 the support of many people. I must express my first gratitude
@@ -235,22 +264,21 @@ are called required elements. The remaining elements are called nonrequired elem
 Lülfesmann~\cite{Lulfesmann2012Fap} computes the seed matrix for automatic differentiation
 by considering a graph coloring restricted to these required elements.
 Then, a subset of nonrequired elements is added to the set of required elements
-such that number of colors does not increase and no extra fill-in elements are generated
+such that the number of colors does not increase and no extra fill-in elements are generated
 in the ILU preconditioning. These elements are called the additionally required elements.
 In this thesis, we extend this idea further as follows.
-\begin{itemize}
-\item defining new coloring heuristics (both for distance-$2$ coloring and star bicoloring) to increase the number of additionally required elements without having a hight increase in the number of colors.
-\item applying this new heuristics to an example from geoscience.
-\item generalizing a previous result from Lülfesmann~\cite{Lulfesmann2012Fap} for the coloring restricted to diagonal elements
-\item Introducing a software package to implement these new heuristics
-\end{itemize}
+First, we define new coloring heuristics (both for distance-$2$ coloring and star bicoloring)
+to increase the number of additionally required elements without having a hight increase in the number of colors.
+Then, we apply these new heuristics to an example from geoscience.
+Later, we generalize a previous result from Lülfesmann~\cite{Lulfesmann2012Fap} for the coloring restricted to diagonal elements.
+Finally, we introduce a software package to implement these new heuristics.
 
 In the second part of this thesis, we summarize our previous publications
 \cite{2013:05,2014:01,2014:02,2014:09,2015:3,cscpaper} as well as discussing some new features
 to teach the coloring heuristics in classroom. In this part, we develop an infrastructure
 to interactively illustrate two views matrix and graph of the same topic.
 We apply some gamifications to integrate the students more in the processes of teaching.
-We look also in some available modules as well as the new feature of animation.
+We look also in some available modules as well as the feature of animation.
 
 This dissertation is structured as follows.
 First, we discuss the known graph models from scientific computing~\chapref{prel}.
