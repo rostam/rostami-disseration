@@ -129,57 +129,58 @@ New heuristics, educational modules, and applications}\par}
 {\Large \today}
 \end{titlepage}
 \chapter*{Abstract}
-Solving problems originating from real-world applications is often based
-on the solution of a system of linear equations whose coefficient matrix is a large sparse Jacobian matrix.
-Hence, there is research to exploit the sparsity structure and to decrease the amount of storage.
-In contrast to full Jacobian computation in which all elements are meant to be determined,
-partial Jacobian computation is looking at a subset of these elements.
-This property can lead to a faster and more efficient computation.
-Since Jacobian matrix-vector products are needed in iterative solvers,
-these types of linear systems can be efficiently solved using automatic differentiation.
-Determining these nonzero elements in full or partial Jacobian computations by automatic differentiation techniques
-can be modeled as graph coloring in the language of graph theory.
+Solving problems originating from real-world applications is often based on the solution of a
+system of linear equations whose coefficient matrix is a large sparse Jacobian matrix. Hence, there is
+research to exploit the sparsity structure and to decrease the amount of storage. In contrast to full
+Jacobian computation in which all nonzero elements are to be determined, partial Jacobian
+computation is looking at a subset of these elements. Partial Jacobian computation can therefore
+be faster and more efficient than full Jacobian computation. Since Jacobian matrix-vector products
+are needed in iterative solvers, these types of linear systems can be efficiently solved using
+automatic differentiation. Determining these nonzero elements in full or partial Jacobian
+computations by automatic differentiation techniques can be modeled as graph coloring in the
+language of graph theory.
 %
 On the other hand, preconditioning techniques are used to improve the convergence of iterative
-solvers and need access to all nonzero elements of the Jacobian matrix. So, a sparsification is
-applied to the Jacobian matrix before computing the preconditioner. The elements obtained from
-the sparsification are considered as the required elements in a restricted coloring. Lülfesmann (PhD
-thesis, RWTH Aachen University, 2012) introduced a procedure which selects a subset of the
-remaining nonrequired elements and adds this subset to the sparsified matrix such that neither
-fill-in nor an increase in the number of colors happen. This thesis consists of two parts. In the first
-part, we look at different ways to optimize the process of selecting these nonrequired elements. We
-introduce three new coloring heuristics and compare them with each other as well as with existing
-approaches. Also, we look at a particular case in which we consider only the diagonal elements as
-required elements. For this case, we generalize a previous result  and introduce a new coloring
-heuristic. To evaluate our proposed heuristics in practice, we apply them to an application from
-geoscience. Finally, we describe our new software package implementing these new heuristics. In
-the second part of this thesis, we introduce  a collection of interactive educational modules to teach
-not only graph coloring, but also other concepts from combinatorial scientific computing in the
-classroom. These modules are designed to involve the students more thoroughly in the process of
-learning. At the end, we explain the design of this collection and outline its implementation.
+solvers and typically need access to all nonzero elements of the Jacobian matrix. So, a sparsification
+is applied to the Jacobian matrix before computing the preconditioner. The nonzero elements
+obtained from the sparsification are considered as the required elements in a restricted coloring.
+Lülfesmann (PhD thesis, RWTH Aachen University, 2012) introduced a procedure that selects a
+subset of the remaining nonrequired elements. The approach then adds this subset to the
+sparsified matrix such that neither fill-in is created nor an increase in the number of colors happens.
+This thesis consists of two parts. In the first part, we look at different ways to optimize the process of
+selecting these nonrequired elements. We introduce three new coloring heuristics and compare
+them with each other as well as with existing approaches. Also, we look at a particular case in which
+we consider only the diagonal elements as required elements. For this case, we generalize a
+previous result  and introduce a new coloring heuristic. To evaluate our proposed heuristics in
+practice, we apply them to a problem from geoscience. Finally, we describe our new software
+package implementing these new heuristics. In the second part of this thesis, we introduce  a
+collection of interactive educational modules to teach not only graph coloring, but also other
+concepts from combinatorial scientific computing in the classroom. These modules are designed to
+involve the students more thoroughly in the process of learning. At the end, we explain the design
+of this collection and outline its implementation.
 
 \chapter*{Zusammenfassung}
 Die Lösung von realistischen Anwendungsproblemen basiert oft auf der Lösung von linearen
 Glei\-chungs\-systemen, deren Koeffizientenmatrizen  große dünnbesetze Jacobi-Matrizen sind.
 Deshalb gibt es eine Fülle von Forschungsarbeiten mit dem Ziel, die Struktur dieser Matrizen zur
-Reduktion von Rechenzeit und Speicher auszunutzen. Im Gegensatz zu der vollständigen
-Berechnung von Jacobi-Matrizen, in der alle Nichtnullelemente be\-stimmt werden müssen, wird in
-einer partiellen Berechnung lediglich eine Teilmenge aller Nichtnullelemente be\-stimmt. Die partielle
-Be\-rechnung kann daher im Vergleich zu einer vollständigen Berechnung zu schnelleren und
-effizienteren Verfahren führen. Da Jacobi-Matrix-Vektor-Produkte in iterativen Lösern benötigt
-werden, lassen sich diese Typen von linearen Systemen mit Techniken des automatischen
-Differenzierens effizient lösen. Die Be\-stimmung von Nichtnullelemente durch vollständige oder
-partielle Berechnungen von Jacobi-Matrizen kann in der Sprache der Graphentheorie als Problem
-einer Graphen\-färbung modelliert werden.
+Reduktion von Rechenzeit und Speicher auszunutzen. Im Gegensatz zu der voll\-ständigen
+Berechnung von Jacobi-Matrizen, in der alle Nicht\-null\-elemente be\-stimmt werden müssen,
+wird in einer partiellen Berechnung lediglich eine Teilmenge aller Nichtnullelemente be\-stimmt.
+Die partielle Be\-rechnung kann daher im Vergleich zu einer vollständigen Berechnung zu
+schnelleren und effizienteren Verfahren führen. Da Jacobi-Matrix-Vektor-Produkte in iterativen
+Lösern benötigt werden, lassen sich diese Typen von linearen Systemen mit Techniken des
+automatischen Differenzierens effizient lösen. Die Be\-stimmung von Nicht\-null\-elemente durch
+vollständige oder partielle Berechnungen von Jacobi-Matrizen kann in der Sprache der
+Graphen\-theorie als Problem einer Graphen\-färbung modelliert werden.
 %
-Auf der anderen Seite werden Vor\-konditionstechniken verwendet, um die Konvergenz von
-iterativen Lösern zu verbessern. Solche Vor\-konditionstechniken greifen meist auf alle
+Auf der anderen Seite werden Vor\-konditions\-techniken verwendet, um die Konvergenz von
+iterativen Lösern zu verbessern. Solche Vor\-konditions\-techniken greifen meist auf alle
 Nichtnullelemente der Jacobi-Matrix zu. Daher kann es vorteilhaft sein, eine Ausdünnung auf die
-Jacobi-Matrix anzuwenden, bevor die Vor\-konditionierung berechnet wird. Die nach der
-Ausdünnung verbleibenden Nichtnullelemente werden als benötigte Elemente bezeichnet und in
-einer eingeschränkten Färbung verwendet. Lülfesmann (Dissertation, RWTH Aachen, 2012) hat ein
-Verfahren eingeführt, das eine Teilmenge der nichtbenötigten Elemente auswählt und zu der
-ausgedünnten Jacobi-Matrix addiert, so dass weder Füllelemente noch eine Erhöhung der Anzahl
+Jacobi-Matrix anzuwenden, bevor die Vor\-kon\-ditio\-nie\-rung berechnet wird. Die nach der
+Ausdünnung verbleibenden Nicht\-null\-elemente werden als benötigte Elemente bezeichnet und
+in einer eingeschränkten Färbung verwendet. Lülfesmann (Dissertation, RWTH Aachen, 2012) hat
+ein Verfahren eingeführt, das eine Teilmenge der nichtbenötigten Elemente auswählt und zu der
+ausgedünnten Jacobi-Matrix hinzufügt, so dass weder Füllelemente noch eine Erhöhung der Anzahl
 der Farben erfolgt. Die nun vorliegende Dissertation besteht aus zwei Teilen. Im ersten Teil
 be\-trachten wir verschiedene Möglichkeiten, den Prozess der Auswahl dieser nichtbenötigten
 Elemente zu optimieren. Wir stellen drei neue Färbungsheuristiken vor und vergleichen sie sowohl
@@ -190,22 +191,22 @@ Heuristiken in der Praxis zu evaluieren, wenden wir sie auf eine Problemstellung
 Geo\-wissen\-schaften an. Schließlich be\-trachten wir unser neues Softwarepaket, das die neuen
 Heuristiken implementiert. Im zweiten Teil dieser Arbeit stellen wir eine Sammlung von interaktiven
 Lehrmodulen vor, die nicht nur Graphenfärbung sondern auch andere Konzepte aus dem
-kombinatorischen wissen\-schaftlichen Rechnen im Klassenzimmer illustrieren. Diese Module wurden
-ent\-wickelt, um die Studierenden noch gründlicher in den Prozess des Lernens zu involvieren.
-Schließlich erläutern wir den Ent\-wurf dieser Sammlung von Lehrmodulen und beschreiben deren
-Implementierung.
+kombinatorischen wissen\-schaftlichen Rechnen im Klassenzimmer illustrieren. Diese Module
+wurden ent\-wickelt, um die Studierenden noch gründlicher in den Prozess des Lernens zu
+involvieren. Schließlich erläutern wir den Ent\-wurf dieser Sammlung von Lehrmodulen und
+beschreiben deren Implementierung.
 
 
 \chapter*{Acknowledgments}
-\noindent This project would not have been possible without
-the support of many people. I must express my first gratitude
-towards my supervisors \textit{Prof. Dr. Martin B\"ucker} for his continuous
-support during my research, patience, immense knowledge,
-and attention to details.
-I should confess that I can not imagine a better and friendlier supervisor.
-Besides, I would like to thank \textit{Michael Lülfesmann} for his comments on my works.
-Finally, I wish to thank my wife \textit{Masoumeh Seydi} and
-my best friend \textit{Azin Azadi} for encouraging me throughout all my studies at University.
+\noindent This project would not have been possible without the support of many people. I must
+express my first gratitude towards my supervisor \textit{Prof.\ Dr.\ Martin B\"ucker} for his
+continuous support during my research, patience, immense knowledge, and attention to details. I
+should confess that I can not imagine a better and friendlier supervisor. \textit{Prof.\ Dr.\ Trond
+Steihaug} was a good listener to my ideas that we discussed at the Oxford conference on
+algortihmic differentiation. I like to thank him for accepting to review my thesis. Besides, I would like
+to thank \textit{Michael Lülfesmann} for his comments on my work. Finally, I wish to thank my wife
+\textit{Masoumeh Seydi} and my best friend \textit{Azin Azadi} for encouraging me throughout all
+my studies at university.
 
 \tableofcontents
 \chapter{Introduction}
@@ -225,73 +226,66 @@ AD computes a product of a Jacobian and another matrix which is called the seed 
 A careful choice of the seed matrix will reduce the computational effort as well as
 the storage. Different choices can be formulated as different graph problems.
 
-These systems of linear equations are solved using iterative methods which are in practice accelerated by preconditioning techniques.
-Most preconditioning techniques need access to all elements of Jacobian matrix which
-can lead to performance problems when standard techniques of AD are employed.
-Therefore, we consider an alternative approach that first applies a sparsification operator to the Jacobian matrix and then
-uses standard preconditioning techniques for the sparsified matrix.
-This process becomes complete by adding more nonzero elements to the sparsified matrix
-without producing more fill-in elements and without increasing efforts to set up the sparsified matrix.
-We introduce new heuristics targeting the careful choice of these extra nonzero elements.
+These systems of linear equations are solved using iterative methods which are in practice
+accelerated by preconditioning techniques. Most preconditioning techniques need access to all
+nonzero elements of the Jacobian matrix which can lead to performance problems when standard
+techniques of AD are employed. Therefore, we consider an alternative approach that first applies a
+sparsification operator to the Jacobian matrix and then uses standard preconditioning techniques
+for the sparsified matrix. This process becomes complete by adding more nonzero elements to the
+sparsified matrix without producing more fill-in elements and without increasing efforts to set up
+the resulting sparsified matrix. We introduce new heuristics targeting the careful choice of these
+extra nonzero elements.
 
-Our work is based on the idea of exploiting the sparsity pattern of a matrix in favor of
-reducing the computational efforts. The assumption here is that the sparsity pattern is
-known apriori, for example, from the formulation of a physical problem.
-Curtis, Powell, and Reid~\cite{Curtis1974117} were first to study the determination of
-a sparse Jacobian matrix based on the sparsity exploitation.
-Coleman and Mor{\'e}~\cite{Coleman1983EoS} transformed this sparse matrix problem
-into the problem of vertex coloring in graph theory. The idea is to formulate
-the compression of the columns (similarly for rows) such that all the nonzero elements of the Jacobian matrix
-are determined. This is called the one-sided compression.
-Later, a two-sided compression is introduced and analyzed in~\cite{Coleman1996SaE}
-and~\cite{hs:csj} which can result in longer savings in computations and storage requirements.
-Several other graph models are studied further in Hossain and Steihaug~\cite{hs:gmei}
-like the pattern graph which keeps the structure of the matrix explicitly.
-Also, a recent graph formulation is to group together rows into blocks
-and partition the resulting column segments in~\cite{optimal_diret_determination}.
-On the other hand, rather than computing all nonzero elements,
-some other problems from scientific computing target the computation
-of only a proper subset of the nonzero elements.
-These problems are studied under the term of partial Jacobian computation.
-Gebremedhin, Manne, and Pothen~\cite{Gebremedhin05whatcolor} introduced
-the rules of the partial Jacobian computation and its corresponding graph problems.
-Several examples in the partial Jacobian computation are studied later in
-\cite{CalotoiuMaster} and \cite{LulfesmannMaster}.
+Our work is based on the idea of exploiting the sparsity pattern of a matrix in favor of reducing the
+computational efforts. The assumption here is that the sparsity pattern is known a~priori, for
+example, from the formulation of a physical problem. Curtis, Powell, and Reid~\cite{Curtis1974117}
+were first to study the determination of a sparse Jacobian matrix based on the sparsity exploitation.
+Coleman and Mor{\'e}~\cite{Coleman1983EoS} transformed this sparse matrix problem into the
+problem of vertex coloring in graph theory. The idea is to formulate the compression of the
+columns (similarly for rows) such that all the nonzero elements of the Jacobian matrix are
+determined. This is called unidirectional compression. Later, a bidirectional compression is
+introduced and analyzed in~\cite{Coleman1996SaE} and~\cite{hs:csj} which can result in larger
+savings in computation and storage. Several other graph models are studied further in Hossain and
+Steihaug~\cite{hs:gmei} like the pattern graph which keeps the structure of the matrix explicitly.
+Also, a recent graph formulation is to group together rows into blocks and partition the resulting
+column segments in~\cite{optimal_diret_determination}. On the other hand, rather than computing
+all nonzero elements, some other problems from scientific computing target the computation of
+only a proper subset of the nonzero elements. These problems are studied under the term of
+partial Jacobian computation. Gebremedhin, Manne, and Pothen~\cite{Gebremedhin05whatcolor}
+introduced the rules of the partial Jacobian computation and its corresponding graph problems.
+Several examples in the partial Jacobian computation are studied later in \cite{CalotoiuMaster} and
+\cite{LulfesmannMaster}.
 
-Lülfesmann~\cite{Lulfesmann2012Fap} introduced for the first time
-the idea of combining partial Jacobian computation and ILU preconditioning.
-This idea defines a sparsification operator $\rho$ which is applied to the Jacobian matrix
-before the ILU preconditioner is computed. The nonzero elements selected by $\rho$
-are called required elements. The remaining elements are called nonrequired elements.
-Lülfesmann~\cite{Lulfesmann2012Fap} computes the seed matrix for automatic differentiation
-by considering a graph coloring restricted to these required elements.
-Then, a subset of nonrequired elements is added to the set of required elements
-such that the number of colors does not increase and no extra fill-in elements are generated
-in the ILU preconditioning. These elements are called the additionally required elements.
-In this thesis, we extend this idea further as follows.
-First, we define new coloring heuristics (both for distance-$2$ coloring and star bicoloring)
-to increase the number of additionally required elements without having a hight increase in the number of colors.
-Then, we apply these new heuristics to an example from geoscience.
-Later, we generalize a previous result from Lülfesmann~\cite{Lulfesmann2012Fap} for the coloring restricted to diagonal elements.
-Finally, we introduce a software package to implement these new heuristics.
+Lülfesmann~\cite{Lulfesmann2012Fap} introduced for the first time the idea of combining partial
+Jacobian computation and ILU preconditioning. This idea defines a sparsification operator $\rho$
+which is applied to the Jacobian matrix before the ILU preconditioner is computed. The nonzero
+elements selected by $\rho$ are called required elements. The remaining elements are called
+nonrequired elements. Lülfesmann~\cite{Lulfesmann2012Fap} computes the seed matrix for
+automatic differentiation by considering a graph coloring restricted to these required elements.
+Then, a subset of nonrequired elements is added to the set of required elements such that the
+number of colors does not increase and no extra fill-in elements are generated in the ILU
+preconditioning. These elements are called the additionally required elements. In this thesis, we
+extend this idea further as follows. First, we define new coloring heuristics (both for distance-$2$
+coloring and star bicoloring) to increase the number of additionally required elements without
+having a high increase in the number of colors. Then, we apply these new heuristics to an example
+from geoscience. Later, we generalize a previous result from Lülfesmann~\cite{Lulfesmann2012Fap}
+for the coloring restricted to diagonal elements. Finally, we introduce a software package to
+implement these new heuristics.
 
 In the second part of this thesis, we summarize our previous publications
-\cite{2013:05,2014:01,2014:02,2014:09,2015:3,cscpaper} as well as discussing some new features
-to teach the coloring heuristics in classroom. In this part, we develop a collection of 
-educational modules for teaching purposes.
-Each module illustrate side by side the matrix and graph view of a problem in scientific computing and its equivalent
-combinatorial problem, respectively.
-The student can interactively follow the steps of the algorithms in this module.
-We First outline the overall design of this collection.
-Then, we discuss the graph coloring as well as the other available modules.
+\cite{2013:05,2014:01,2014:02,2014:09,2015:3,cscpaper} as well as discuss some new features to teach
+the coloring heuristics in classroom. In this part, we develop a collection of educational modules for
+teaching purposes. Each module illustrates side by side the matrix and graph view of a problem in
+scientific computing and its equivalent combinatorial problem, respectively. The student can
+interactively follow the steps of the algorithms in this module. We first outline the overall design of
+this collection. Then, we discuss the graph coloring module as well as the other available modules.
 We explain the new unpublished feature in which an animation of the algorithm is visualized.
 Finally, we explain the implementation details of this collection.
 
-This dissertation is structured as follows.
-First, we discuss the known graph models from scientific computing~\chapref{prel}.
-Then, \chapref{package} discusses our new coloring heuristics.
-\chapref{explain} introduces our interactive educational modules.
-Finally, the conclusion and future work are presented in \chapref{conc}.
+This dissertation is structured as follows. First, we discuss the known graph models from scientific
+computing in~\chapref{prel}. Then, \chapref{package} discusses our new coloring heuristics.
+\chapref{explain} introduces our interactive educational modules. Finally, the conclusion and future
+work are presented in \chapref{conc}.
 
 \chapter{Known graph models from scientific computing}
 \label{prel}
