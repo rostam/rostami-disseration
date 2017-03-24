@@ -1137,11 +1137,11 @@ its distance-$2$ neighbors restricted to $E_i$ like the previous greedy coloring
 Note, however, that there is an additional condition which
 ensures that the vertex $v$ has not been previously colored.
 After the coloring of $v$, \coderef{code.new.d2.nreq} finds the set $I_v$
-representing the uncolored vertices that can have the same colors as the vertex $v$.
+representing the uncolored vertices that can have the same color as the vertex $v$.
 Additionally, we compute $\nreq_v(x)$ for each vertex $x\in I_v$
 and color a vertex $w\neq x$ with the same color as $v$
 if $w$ leads to the maximum value of $\nreq_v(w)$.
-The time complexity of this new heuristic is estimated as follows.s
+The time complexity of this new heuristic is estimated as follows.
 The outer loop at most consists of $n$ vertices.
 For a vertex $v$, the complexity of coloring in line 5 to 7 is $\mathcal{O}(\Delta^2)$ as
 in \coderef{code.greedy}. The set $I_v$ is computed in $\mathcal{O}(n)$.
@@ -1181,9 +1181,9 @@ Therefore, the first and the second column are colored identically.
 In the next iteration of the outer loop, the third column is then colored with the same color as the first
 column since the vertex $v_3$ corresponding to the third column does not have any distance-$2$ neighbors
 restricted to $E_i$. Thus, the array $forbiddenColors$ is not changed in this iteration.
-So that the colors of first three columns are the same.
+So, the colors of first three columns are the same.
 Now, the set $I_{v_3}$ contains the vertex $v_4$ corresponding to the
-fourth columns since th others are already colored. Therefore, the fourth column gets the color of
+fourth column since the others are already colored. Therefore, the fourth column gets the color of
 the third column. However, this is not a valid coloring since the fourth and second columns can not be compressed.
 \begin{figure}
 \begin{lstlisting}[
