@@ -1539,13 +1539,13 @@ which presents an algorithm in which only a single point of synchronization is n
 In this algorithm, the number of colors changes with the number of parallel threads
 but it remains near to the number of colors in the serial version.
 We adapt this parallelization to \coderef{code.greedy} and \coderef{code.new.impr2} for the bipartite graph model.
-These algorithms first colors the vertices
+These algorithms first color the vertices
 greedily with a parallel loop and then corrects the false coloring which can happen.
 
 We color the bipartite graph associated with the matrix \textit{Cavity16}
-from the sparse matrix collection of the University of Florida.
-The timing results are all from the computation carried on an Intel Core i5 with 8 Gb RAM with hyperthreading.
-This means the number of available parallel threads is $4$ doubled by hyperthreading.
+from the sparse matrix collection of the university of Florida.
+The timing results are all from the computations carried on an Intel Core i5 with 8 Gb RAM with hyperthreading.
+This means that the number of available parallel threads is $4$ doubled by hyperthreading.
 Table~\ref{omp.res} shows the results of these computations.
 Here, we change the number of threads from $1$ to $5$ shown in the first column.
 The second column shows the computation time in milliseconds. The third column
@@ -2047,9 +2047,9 @@ The motivation of this new heuristic is from the following observation.
 When we compare the number of colors computed by \coderef{code.greedy} and \coderef{orig.star.bicoloring}
 in Table~\ref{table.starbic.d2.diag} for different matrices,
 the better results are observed in \coderef{orig.star.bicoloring} in some matrices.
-These examples also shows that the inequality in Theorem~\ref{t.matching} can happen.
+These examples also show that the inequality in Theorem~\ref{t.matching} can happen.
 The second column of this table
-shows the number of colors computed by  \coderef{orig.star.bicoloring}.
+shows the number of colors computed by \coderef{orig.star.bicoloring}.
 The third column shows the minimum number of colors computed by the greedy coloring in~\coderef{code.greedy}
 either for rows or columns.
 It can be seen that even for a small matrix as the matrix \textit{cage3} which has only
@@ -2083,7 +2083,7 @@ Matrix & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
 \textit{cavity16} & $20$ & $18$ \\\hline
 \end{tabular}
 
-\caption{The comparison of number of colors in star bicoloring and in
+\caption{The comparison of the number of colors in star bicoloring and in
 distance-$2$ coloring restricted to diagonals.
 The ordering is the natural ordering of the matrix for both colorings.}
 \label{table.starbic.d2.diag}
@@ -2098,9 +2098,8 @@ iterates over the required edges.
 In each iteration, we find the minimum possible colors $c_1$ and $c_2$
 for both incident vertices (the row and column vertex) of the required edge.
 Then, we color the vertex with the corresponding smaller color.
-This new heuristic generates the number of colors equal to $\Phi_{sb}$
+We observe that the number of colors computed by this new heuristic is equal to $\Phi_{sb}$
 for the matrices from Table~\ref{table.starbic.d2.diag}.
-
 
 \begin{figure}
 \begin{lstlisting}[
