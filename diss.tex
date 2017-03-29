@@ -2042,7 +2042,7 @@ make the required edges disjoint from each other which is the definition of a ma
 \end{itemize}
 
 This generalization gives us an idea to find new heuristics for coloring in which
-we color the column and row vertices simultaneausly.
+we color the column and row vertices simultaneously.
 The motivation of this new heuristic is from the following observation.
 When we compare the number of colors computed by \coderef{code.greedy} and \coderef{orig.star.bicoloring}
 in Table~\ref{table.starbic.d2.diag} for different matrices,
@@ -2090,15 +2090,16 @@ The ordering is the natural ordering of the matrix for both colorings.}
 \end{table}
 
 More clearly, the idea is that a heuristic for star bicoloring maybe
-find a better coloring because of the inequality in the theorem.
-As theorem proposes, every required nonzero element
-is determined by either a column or a row and not both.
+finds a better coloring than a distance-$2$ coloring because of the inequality in the theorem.
+As the proof of the theorem proposes, every required nonzero element
+can be determined by either a column or a row, but not both.
 \coderef{star.diagonal} shows our new heuristic. This heuristic
 iterates over the required edges.
-In each iteration, we find the minimum possible colors $c_1$ and $c_2$
-for both incident vertices (the row and column vertex) of the required edge.
-Then, we color the vertex with the corresponding smaller color.
-We observe that the number of colors computed by this new heuristic is equal to $\Phi_{sb}$
+In each iteration, we simultaneously execute a distance-$2$ coloring for both
+incident vertices of the required edge. This greedy approach finds the minimum possible colors $c_1$ for columns
+and $c_2$ for rows, each in a separate fashion.
+Then, the recombination of these two separate distance-$2$ colorings into a star bicoloring is given by coloring the vertex with the corresponding smaller color.
+In numerical experiments we observe that the number of colors computed by this new heuristic is equal to $\Phi_{sb}$
 for the matrices from Table~\ref{table.starbic.d2.diag}.
 
 \begin{figure}
@@ -2111,7 +2112,7 @@ function star_diag($G=(V_r\cup V_c, E)$, $E_i\subseteq E$)
   $forbiddenColors1\leftarrow [0\ldots 0]$
   $forbiddenColors2\leftarrow [0\ldots 0]$
 
-  for $e=(v,u)\in E_i$
+  for $e=(v,u)\in E_i$ with $v \in V_c$ and $u \in V_r$
     $forbiddenColors1[0] = v$
     $forbiddenColors2[0] = u$
 
