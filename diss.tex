@@ -1091,7 +1091,7 @@ considering the nonrequired elements.,label=code.new.d2.nreq,mathescape]
 function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   $\Phi\leftarrow [0\ldots 0]$
   $forbiddenColors\leftarrow [0\ldots 0]$
-  for $v\in V_c$ with with $\exists r\in V_r: (v,r) \in E_i$ and $\Phi(v)=0$
+  for $v\in V_c$ with $\exists r\in V_r: (v,r) \in E_i$ and $\Phi(v)=0$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
       $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
@@ -1330,13 +1330,12 @@ The computation is carried out on the matrix \textit{ex33}. }
 
 \begin{figure}
 \begin{lstlisting}[
-caption=A modification of \coderef{code.new.d2.nreq} in which
-a particular element is selected in lines 10 and 11.,
+caption=A modification of \coderef{code.new.d2.nreq}.,
 label=code.new.impr1,mathescape]
 function d2_color_nreq_modified($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   $\Phi\leftarrow [0\ldots 0]$
   $forbiddenColors\leftarrow [0\ldots 0]$
-  for $v\in V_c$ with with $\exists r\in V_r: (v,r) \in E_i$ and $\Phi(v)=0$
+  for $v\in V_c$ with $\exists r\in V_r: (v,r) \in E_i$ and $\Phi(v)=0$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
       $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
@@ -1404,7 +1403,7 @@ label=code.new.impr2,mathescape]
 function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
   $\Phi\leftarrow [0\ldots 0]$
   $forbiddenColors\leftarrow [0\ldots 0]$
-  for $v\in V_c$ with with $\exists r\in V_r: (v,r) \in E_i$ and $\Phi(v)=0$
+  for $v\in V_c$ with $\exists r\in V_r: (v,r) \in E_i$ and $\Phi(v)=0$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
       $forbiddenColors[\Phi(n)] = v$
     $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
@@ -1413,7 +1412,7 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
     if $I_v\neq\emptyset$
       $maxs = \argmax_{x\in I_v} \nreq_v (x)$
       $mins = \argmin_{x\in maxs} \req(x)$
-      for $i\in\{0,1,...,\min (\alpha - 1, size(mins))\}$
+      for $i\in\{0,1,...,\min (\alpha - 1, size(mins)-1)\}$
         $\Phi(mins[i]) = \Phi(v)$
   return $\Phi$
 \end{lstlisting}
@@ -1427,8 +1426,8 @@ All these algorithms are computed with the LFO ordering.
 We selected this ordering for this computation
 since this ordering gives the best results.
 The variable $\alpha$ for \coderef{code.new.impr2} is equal to $10$.
-The block size varies also from $1$ to $80$.
-It is clear from this figure that \coderef{code.new.impr2} generates the
+The block size varies also from $1$ to $70$.
+It is clear from this figure that \coderef{code.new.impr2} tends to generate the
 smallest number of colors particularly in the middle block sizes when $\alpha=10$.
 However, as illustrated in \figref{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds},
 it does not perform well in the case of additionally required elements.
@@ -1459,7 +1458,7 @@ Three tables at the top, middle, and the bottom of Table~\ref{different.alpha}
 are for the natural ordering, the LFO ordering, and the SLO ordering, respectively.
 Regardless of the ordering and except for certain cases,
 the number of colors tends to decrease when $\alpha$ grows.
-Indeed, the number of colors is reduced in the most of the cases. In some cases like
+Indeed, the number of colors is reduced in most of the cases. In some cases like
 the matrix \textit{steam2.mtx} with the LFO ordering, we need $6$ fewer colors comparing
 the coloring with $\alpha=0$ and $\alpha=10$.
 
@@ -1534,22 +1533,26 @@ For example, {\c{C}}ataly{\"{u}}rek~\cite{cataly2012} introduced an OpenMP paral
 greedy coloring which computes the same number of colors as the serial version.
 However, there are two points in each iteration of the algorithm in which the threads
 need to be synchronized.
-Here, our focus is on another algorithm from Rokos et al~\cite{Rokos2015}
+Here, our focus is on another algorithm from Rokos et al.~\cite{Rokos2015}
 which presents an algorithm in which only a single point of synchronization is needed.
 In this algorithm, the number of colors changes with the number of parallel threads
 but it remains near to the number of colors in the serial version.
 We adapt this parallelization to \coderef{code.greedy} and \coderef{code.new.impr2} for the bipartite graph model.
 These algorithms first color the vertices
-greedily with a parallel loop and then corrects the false coloring which can happen.
+greedily with a parallel loop and then correct the false coloring which can happen.
 
 We color the bipartite graph associated with the matrix \textit{Cavity16}
 from the sparse matrix collection of the university of Florida.
-The timing results are all from the computations carried on an Intel Core i5 with 8 Gb RAM with hyperthreading.
-This means that the number of available parallel threads is $4$ doubled by hyperthreading.
+The timing results are all from the computations carried on an Intel Core i5 with 8 GB RAM with hyperthreading.
+This means that the number of available parallel threads is doubled by hyperthreading resulting in $4$ threads.
 Table~\ref{omp.res} shows the results of these computations.
 Here, we change the number of threads from $1$ to $5$ shown in the first column.
 The second column shows the computation time in milliseconds. The third column
 is also the number of colors which changes based on the number of threads.
+Here, the time decreases by increasing the number of threads up to $4$.
+Then it decreases as we have only $4$ available threads.
+Also, the number of colors changes slightly by increasing the number of threads.
+
 \begin{figure}
 \begin{tabular}{|c|c|c|}
 \hline
@@ -1880,8 +1883,8 @@ the set $R_a$ is computed based on the our proposed modified greedy coloring in 
 
 We do this comparison for four block sizes $5$,$10$,$15$, and $20$ in
 \figref{f.convergence_greedy_new2} and \figref{f.convergence_greedy_new3}.
-In all of these block sizes, the preconditioning computed based
-on the new coloring converges in fewer numbers of matrix-vector products.
+In all of these block sizes, the preconditisoning computed based
+on the new coloring converges in smaller numbers of matrix-vector products.
 However, it does not mean that a bigger block size results always in a better convergence
 as you can compare the figures for the blocksizes $10$ and $20$.
 
@@ -2044,9 +2047,9 @@ make the required edges disjoint from each other which is the definition of a ma
 This generalization gives us an idea to find new heuristics for coloring in which
 we color the column and row vertices simultaneously.
 The motivation of this new heuristic is from the following observation.
-When we compare the number of colors computed by \coderef{code.greedy} and \coderef{orig.star.bicoloring}
-in Table~\ref{table.starbic.d2.diag} for different matrices,
-the better results are observed in \coderef{orig.star.bicoloring} in some matrices.
+Next we compare the number of colors computed by \coderef{code.greedy} and \coderef{orig.star.bicoloring}
+in Table~\ref{table.starbic.d2.diag} for different matrices.
+The better results are observed in \coderef{orig.star.bicoloring} for some matrices.
 These examples also show that the inequality in Theorem~\ref{t.matching} can happen.
 The second column of this table
 shows the number of colors computed by \coderef{orig.star.bicoloring}.
@@ -2072,7 +2075,7 @@ Matrix & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
 \hfill
 \begin{tabular}{|c|c|c|}
 \hline
-Matrix & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
+Matrix & $\Phi_{sb}$ & $\min(\Phi_r,\Phi_c)$\\\hline
 \textit{ex7} & $18$ & $22$ \\\hline
 \textit{nos3} & $10$ & $10$ \\\hline
 \textit{steam1} & $6$ & $6$ \\\hline
@@ -2083,8 +2086,10 @@ Matrix & $\Phi_{sb}$ & min($\Phi_r$,$\Phi_c$)\\\hline
 \textit{cavity16} & $20$ & $18$ \\\hline
 \end{tabular}
 
-\caption{The comparison of the number of colors in star bicoloring and in
-distance-$2$ coloring restricted to diagonals.
+\caption{The comparison of the number of colors in star bicoloring restricted to diagonals $\Phi_{sb}$
+computed by \coderef{orig.star.bicoloring}
+and in distance-$2$ coloring restricted to diagonals $\min(\Phi_r,\Phi_c)$ (either for rows or for columns) 
+computed by \coderef{code.greedy}.
 The ordering is the natural ordering of the matrix for both colorings.}
 \label{table.starbic.d2.diag}
 \end{table}
@@ -3091,7 +3096,7 @@ In this module, we do not have any postprocessing step. Hence, the button is dis
 %------------------------------------------------------------------------------------------
 \section{Implementation details of EXPLAIN}
 \label{s.impl.explain}
-Lülfesmann et al~\cite{Lulfesmann2010} first introduced an standalone version of EXPLAIN that
+Lülfesmann et al.~\cite{Lulfesmann2010} first introduced an standalone version of EXPLAIN that
 needed a client with administrator privileges to install Python libraries as well as the software itself.
 Here, we introduce two new releases of EXPLAIN.
 \subsection{Version 1.0}
