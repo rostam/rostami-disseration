@@ -1473,7 +1473,9 @@ More figures can be found in \appref{app.compare.alg35.alphas} comparing these v
 based on the varying block sizes.
 
 \begin{table}
-\centering
+\begin{center}
+\fbox{
+\begin{minipage}{0.75\textwidth}
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
 Matrix (NAT) & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
@@ -1515,6 +1517,8 @@ Matrix (SLO) & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
 \textit{crystm01.mtx} & $27432$ & $26478$ & $27782$ & $22$ & $22$ & $22$ \\\hline
 \textit{coater1.mtx} & $7668$ & $7624$ & $7570$ & $25$ & $26$ & $24$ \\\hline
 \end{tabular}
+\end{minipage}}
+\end{center}
 \caption{The comparison of the additionally required elements and the number of colors
 in the computation of \coderef{code.new.impr2} with the different value of $\alpha$.
 The orderings for coloring are (Top) the natural ordering,
@@ -2088,7 +2092,7 @@ Matrix & $\Phi_{sb}$ & $\min(\Phi_r,\Phi_c)$\\\hline
 
 \caption{The comparison of the number of colors in star bicoloring restricted to diagonals $\Phi_{sb}$
 computed by \coderef{orig.star.bicoloring}
-and in distance-$2$ coloring restricted to diagonals $\min(\Phi_r,\Phi_c)$ (either for rows or for columns) 
+and in distance-$2$ coloring restricted to diagonals $\min(\Phi_r,\Phi_c)$ (either for rows or for columns)
 computed by \coderef{code.greedy}.
 The ordering is the natural ordering of the matrix for both colorings.}
 \label{table.starbic.d2.diag}
@@ -3416,6 +3420,7 @@ with the natural ordering.
 \section{Comparing the computations of Algorithm 3.2 and Algorithm 3.4}
 \label{app.compare.alg32.alg34}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\enlargethispage{200cm}
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|c|c|c|c|}
