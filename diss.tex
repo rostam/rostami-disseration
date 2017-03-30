@@ -1216,7 +1216,8 @@ both the numbers of potentially and additionally required elements
 decrease in \coderef{code.new.d2.nreq} for \textit{ex7.mtx} and for all orderings.
 
 \begin{table}
-\centering
+\begin{center}
+\begin{minipage}{0.92\textwidth}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 Matrix (NAT) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hline
@@ -1258,6 +1259,8 @@ Matrix (SLO) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hli
 \textit{coater1.mtx} & $10476$ & $11702$ & $7004$ & $7878$ \\\hline
 \textit{pesa.mtx} & $39606$ & $44624$ & $29034$ & $34044$ \\\hline
 \end{tabular}
+\end{minipage}
+\end{center}
 \caption{The comparison between the number of potentially and additionally required
 elements computed with \coderef{code.greedy} and \coderef{code.new.d2.nreq}.
 The block size is fixed to $10$. The orderings for coloring are (Top) the natural ordering,
@@ -1474,8 +1477,7 @@ based on the varying block sizes.
 
 \begin{table}
 \begin{center}
-\fbox{
-\begin{minipage}{0.75\textwidth}
+\begin{minipage}{0.76\textwidth}
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
 Matrix (NAT) & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
@@ -1517,7 +1519,7 @@ Matrix (SLO) & \multicolumn{6}{c|}{\coderef{code.new.impr2}} \\\hline
 \textit{crystm01.mtx} & $27432$ & $26478$ & $27782$ & $22$ & $22$ & $22$ \\\hline
 \textit{coater1.mtx} & $7668$ & $7624$ & $7570$ & $25$ & $26$ & $24$ \\\hline
 \end{tabular}
-\end{minipage}}
+\end{minipage}
 \end{center}
 \caption{The comparison of the additionally required elements and the number of colors
 in the computation of \coderef{code.new.impr2} with the different value of $\alpha$.
@@ -1560,6 +1562,7 @@ Also, the number of colors changes slightly by increasing the number of threads.
 \begin{figure}
 \begin{tabular}{|c|c|c|}
 \hline
+\multicolumn{3}{|c|}{OpenMP-parallelized \coderef{code.greedy}}\\\hline
 Threads & Time & Colors \\\hline
 1 & 42.8745 & 47 \\\hline
 2 & 33.9665 & 47 \\\hline
@@ -1569,6 +1572,7 @@ Threads & Time & Colors \\\hline
 \end{tabular}\hfill
 \begin{tabular}{|c|c|c|}
 \hline
+\multicolumn{3}{|c|}{OpenMP-parallelized \coderef{code.new.impr2}}\\\hline
 Threads & Time & Colors \\\hline
 1 & 96.795 & 48 \\\hline
 2 & 75.744 & 47 \\\hline
@@ -1736,7 +1740,8 @@ Again, an overall increase in the number of additionally required elements is ac
 does not increase dramatically.
 
 \begin{table}
-\centering
+\begin{center}
+\begin{minipage}{0.92\textwidth}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 Matrix (NAT) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hline
@@ -1778,6 +1783,8 @@ Matrix (SLO) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hli
 \textit{coater1.mtx} & $14532$ & $14634$ & $8194$ & $8412$ \\\hline
 \textit{pesa.mtx} & $41128$ & $42112$ & $31114$ & $33744$ \\\hline
 \end{tabular}
+\end{minipage}
+\end{center}
 \caption{The comparison between the number of potentially and additionally required
 elements computed with \coderef{orig.star.bicoloring} and \coderef{new.star.bicoloring}.
 The block size is fixed to $10$. The orderings for coloring are (Top) the natural ordering,
@@ -3420,9 +3427,12 @@ with the natural ordering.
 \section{Comparing the computations of Algorithm 3.2 and Algorithm 3.4}
 \label{app.compare.alg32.alg34}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\enlargethispage{200cm}
+Here is the comparison of the number of colors and the number of potentially and additionally required elements
+produced by Algorithm 3.2 and Algorithm 3.4.
+
 \begin{table}
-\centering
+\begin{center}
+\begin{minipage}{0.83\textwidth}
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
 Matrix (NAT) & \multicolumn{2}{c|}{$|R_a|$} & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|\Phi|$}\\\hline
@@ -3464,7 +3474,8 @@ Matrix (SLO) & \multicolumn{2}{c|}{$|R_a|$} & \multicolumn{2}{c|}{$|R_p|$} & \mu
 \textit{coater1.mtx} & $7878$ & $7004$ & $11702$ & $10476$ & $24$ & $21$\\\hline
 \textit{pesa.mtx} & $34044$ & $29034$ & $44624$ & $39606$ & $13$ & $10$\\\hline
 \end{tabular}
-
+\end{minipage}
+\end{center}
 \caption{The comparison between the number of potentially and additionally required
 elements as well as the number of colors computed with \coderef{code.new.impr1} and \ref{code.new.d2.nreq}.
 The block size is fixed to $10$. The orderings for coloring are (Top) the natural ordering,
