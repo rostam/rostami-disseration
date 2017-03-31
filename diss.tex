@@ -1629,7 +1629,6 @@ function star_bicoloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$,next_vertex
   $\Phi\leftarrow [-1\ldots -1]$
   $forbiddenColors\leftarrow [0\ldots 0]$
   $E_i^{'} = E_i$
-
   while $E_i^{'}\neq\emptyset$
     $v$=next_vertex($G$,$E_i^{'}$,$\rho$)
     $E_i^{'} = E_i^{'} - \{(v,w)\in E_i^{'}:w\in N_1(v,G[E_i^{'}])\}$
