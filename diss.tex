@@ -3427,7 +3427,7 @@ with the natural ordering.
 \section{Comparing the computations of Algorithm 3.2 and Algorithm 3.4}
 \label{app.compare.alg32.alg34}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Here is the comparison of the number of colors and the number of potentially and additionally required elements
+Table~\ref{mats.pot.add.modified.vs.nreq} shows the comparison of the number of colors and the number of potentially and additionally required elements
 produced by Algorithm 3.2 and Algorithm 3.4.
 
 \begin{table}
@@ -3488,24 +3488,22 @@ The block size is fixed to $10$. The orderings for coloring are (Top) the natura
 \section{Comparing the computations of Algorithm 3.5 with different block sizes}
 \label{app.compare.alg35.alphas}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Here is the comparison of the number of colors and the number of additionally required elements
+\figref{ex33_alg35_alpha_0_2_6_10_bls_lfo_cols} and \figref{ex33_alg35_alpha_0_2_6_10_bls_lfo_adds} show
+the comparison of the number of colors and the number of additionally required elements
 produced by Algorithm 3.5 with different values of $\alpha$ and the varying block sizes.
-
-\begin{figure}
+\begin{figure}[!b]
 \centering
-\includegraphics[width=0.9\linewidth]{ex33_alg35_alpha_0_2_6_10_bls_lfo_cols}
+\includegraphics[width=0.75\linewidth]{ex33_alg35_alpha_0_2_6_10_bls_lfo_cols}
 \caption{
 The comparison of the number of colors in \coderef{code.new.impr2}
-with $\alpha\in{0,2,6,10}$ and the LFO ordering.}
+with $\alpha\in\{0,2,6,10\}$ and the LFO ordering.}
 \label{ex33_alg35_alpha_0_2_6_10_bls_lfo_cols}
-\end{figure}
-
-\begin{figure}
+\vfill
 \centering
-\includegraphics[width=0.9\linewidth]{ex33_alg35_alpha_0_2_6_10_bls_lfo_adds}
+\includegraphics[width=0.75\linewidth]{ex33_alg35_alpha_0_2_6_10_bls_lfo_adds}
 \caption{
 The comparison of the number of additionally required elements in \coderef{code.new.impr2}
-with $\alpha\in{0,2,6,10}$ and the LFO ordering. }
+with $\alpha\in\{0,2,6,10\}$ and the LFO ordering. }
 \label{ex33_alg35_alpha_0_2_6_10_bls_lfo_adds}
 \end{figure}
 
