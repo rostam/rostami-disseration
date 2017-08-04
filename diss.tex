@@ -169,12 +169,12 @@ wird in einer partiellen Berechnung lediglich eine Teilmenge aller Nichtnullelem
 Die partielle Be\-rechnung kann daher im Vergleich zu einer vollständigen Berechnung zu
 schnelleren und effizienteren Verfahren führen. Da Jacobi-Matrix-Vektor-Produkte in iterativen
 Lösern benötigt werden, lassen sich diese Typen von linearen Systemen mit Techniken des
-automatischen Differenzierens effizient lösen. Die Be\-stimmung von Nicht\-null\-elemente durch
+automatischen Differenzierens effizient lösen. Die Be\-stimmung von Nicht\-null\-elementen durch
 vollständige oder partielle Berechnungen von Jacobi-Matrizen kann in der Sprache der
 Graphen\-theorie als Problem einer Graphen\-färbung modelliert werden.
 %
-Auf der anderen Seite werden Vor\-konditions\-techniken verwendet, um die Konvergenz von
-iterativen Lösern zu verbessern. Solche Vor\-konditions\-techniken greifen meist auf alle
+Auf der anderen Seite werden Vor\-konditionierungs\-techniken verwendet, um die Konvergenz von
+iterativen Lösern zu verbessern. Solche Vor\-konditionierungs\-techniken greifen meist auf alle
 Nichtnullelemente der Jacobi-Matrix zu. Daher kann es vorteilhaft sein, eine Ausdünnung auf die
 Jacobi-Matrix anzuwenden, bevor die Vor\-kon\-ditio\-nie\-rung berechnet wird. Die nach der
 Ausdünnung verbleibenden Nicht\-null\-elemente werden als benötigte Elemente bezeichnet und
@@ -190,7 +190,7 @@ vorheriges Ergebnis und führen eine neue Färbungsheuristik ein. Um unsere vorg
 Heuristiken in der Praxis zu evaluieren, wenden wir sie auf eine Problemstellung aus den
 Geo\-wissen\-schaften an. Schließlich be\-trachten wir unser neues Softwarepaket, das die neuen
 Heuristiken implementiert. Im zweiten Teil dieser Arbeit stellen wir eine Sammlung von interaktiven
-Lehrmodulen vor, die nicht nur Graphenfärbung sondern auch andere Konzepte aus dem
+Lehrmodulen vor, die nicht nur Graphenfärbung, sondern auch andere Konzepte aus dem
 kombinatorischen wissen\-schaftlichen Rechnen im Klassenzimmer illustrieren. Diese Module
 wurden ent\-wickelt, um die Studierenden noch gründlicher in den Prozess des Lernens zu
 involvieren. Schließlich erläutern wir den Ent\-wurf dieser Sammlung von Lehrmodulen und
@@ -264,16 +264,18 @@ nonrequired elements. Lülfesmann~\cite{Lulfesmann2012Fap} computes the seed mat
 automatic differentiation by considering a graph coloring restricted to these required elements.
 Then, a subset of nonrequired elements is added to the set of required elements such that the
 number of colors does not increase and no extra fill-in elements are generated in the ILU
-preconditioning. These elements are called the additionally required elements. In this thesis, we
+preconditioning. These elements are called the additionally required elements.
+In this thesis, we
 extend this idea further as follows. First, we define new coloring heuristics (both for distance-$2$
 coloring and star bicoloring) to increase the number of additionally required elements without
 having a high increase in the number of colors. Then, we apply these new heuristics to an example
-from geoscience. Later, we generalize a previous result from Lülfesmann~\cite{Lulfesmann2012Fap}
+from geoscience similar to an application from aerodynamics~\cite{cscpaper}. 
+Later, we generalize a previous result from Lülfesmann~\cite{Lulfesmann2012Fap}
 for the coloring restricted to diagonal elements. Finally, we introduce a software package to
 implement these new heuristics.
 
 In the second part of this thesis, we summarize our previous publications
-\cite{2013:05,2014:01,2014:02,2014:09,2015:3,cscpaper} as well as discuss some new features to teach
+\cite{2013:05,2014:01,2014:02,2014:09,2015:3} as well as discuss some new features to teach
 the coloring heuristics in classroom. In this part, we develop a collection of educational modules for
 teaching purposes. Each module illustrates side by side the matrix and graph view of a problem in
 scientific computing and its equivalent combinatorial problem, respectively. The student can
@@ -397,7 +399,7 @@ such that all nonzero elements of $J$ also appear in
 the matrix-matrix product $JV$.
 \end{problem}
 The corresponding compression problem for minimizing the number of rows in the matrix-matrix
-product $W.J$ is straightforward and omitted here.
+product $WJ$ is straightforward and omitted here.
 
 \begin{problem}[\MinBidCom]
 \label{p.seed.bid} Let $J$ be a sparse ${m\times n}$ Jacobian matrix with known sparsity
@@ -463,10 +465,10 @@ no edge connecting vertices within the set $V_c$ or within $V_r$. Moreover, two 
 that are connected by a path of length two, are called \emph{distance-$2$ neighbors}.
 \end{definition}
 
-The coloring problem in the column-intersection graph can also be represented in
+The coloring problem in the column intersection graph can also be represented in
 this bipartite graph model. This equivalent coloring is done only in the set of
 column vertices. Also, \emph{distance-$2$ neighbors} should be considered instead of
-edges.
+adjacent vertices.
 
 The overall idea behind transforming Problem \ref{p.seed.bid}, \MinBidCom, into an equivalent
 problem using the bipartite graph model is as follows. The grouping of the columns and
@@ -559,7 +561,7 @@ complexity of Problem~\ref{p.coloring} including recent new results is given in~
 \label{s.part.jac}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Gebremedhin et al.~\cite{Gebremedhin05whatcolor} introduced the concept of partial Jacobian computation
-in which only a subset of the nonzero Jacobian entities, the required elements, are to be determined.
+in which only a subset of the nonzero Jacobian entries, the required elements, are to be determined.
 L{\"u}lfesmann~\cite{Lulfesmann2012Fap} studied this area in more details and
 introduced some heuristics for partial computation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -606,7 +608,7 @@ $E_R\subseteq E$, then a mapping $\Phi:V_c \to
 \{0,1,\dots ,p\}$ is a distance-$2$ coloring
 of $G$ restricted to $E_R$
 if all column vertices incident to at least one required edge $e\in E_R$
-gets a nonzero color and
+get a nonzero color and
 for every path $(c_k,r_i,c_j)$ with $c_k, c_j\in V_c$, $r_i\in V_r$, and $(r_i,c_j)\in E_R$,
 $\Phi(c_k) \neq \Phi(c_j)$.
 \end{definition}
@@ -752,7 +754,8 @@ required elements $R_p$ which are specified by
 $$
 R_p \subset \operatorname{pat}(J) - R_i \quad\text{so that}\quad |\Phi(R_i)| = |\Phi(R_i\cup R_p)|,
 $$
-where $\operatorname{pat}(J)$ represents the nonzero pattern of the Jacobian matrix $J$.
+where $\operatorname{pat}(J)$ represents the nonzero pattern of the Jacobian matrix $J$
+and $|\Phi(R_i)|$ is the number of colors resulting from the coloring restricted to $R_i$.
 
 As we have discussed, an ILU preconditioner applied to $R_i$ can produce fill-in.
 %Different methods can be employed to compute the preconditioner.
@@ -783,8 +786,7 @@ Let $J$ be a sparse $m\times n$ Jacobian matrix with known sparsity pattern and
 $R_i$ is a set of required elements.
 Find a set of additionally required elements $R_a$ with maximal cardinality.
 \end{problem}
-The overall approach applied to a specific problem from aerodynamics is detailed in
-~\cite{cscpaper}.
+The overall approach applied to a specific problem from aerodynamics is detailed in~\cite{cscpaper}.
 
 
 \subsection{Combinatorial model}
@@ -794,7 +796,7 @@ a suitable model to find new algorithms for the initially, potentially,
 and additionally required elements.
 Recall that each edge in the bipartite graph model is related to a nonzero element in
 the matrix.
-Then, given a bipartite matrix $G = (V,E)$,
+Then, given a bipartite graph $G = (V,E)$,
 three subsets $E_i, E_p, E_a\subset E$
 are considered for the initially, potentially,
 and additionally required elements, respectively.
@@ -812,7 +814,7 @@ More details can be found in~\cite{Lulfesmann2012Fap}.
 \end{itemize}
 \coderef{code.pot.d2} and \coderef{code.pot.sb} show the algorithms to compute the
 potentially required elements for the distance-$2$ coloring and star bicoloring, respectively.
-In these algorithms, $N_1$ means the distance-$1$ neighbors (edges).
+In these algorithms, $N_1$ means the distance-$1$ neighbors (the adjacent vertices).
 Given a bipartite graph $G$, the required edges $E_i$, and a distance-$2$ coloring $\Phi$,
 \coderef{code.pot.d2} computes a set of potentially required elements. This algorithm
 iterates over nonrequired edges ($E - E_i$) and checks if such an edge can be added to the
@@ -832,7 +834,7 @@ function pot_d2_coloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\phi$)
 \end{lstlisting}
 \end{figure}
 \begin{figure}
-\begin{lstlisting}[caption=Find potentially required elements for star bicoloring (based on Algorithm 4.3 from ~\cite{Lulfesmann2012Fap}).,label=code.pot.sb,mathescape]
+\begin{lstlisting}[caption=Find potentially required elements for star bicoloring (based on Algorithm 4.3 from~\cite{Lulfesmann2012Fap}).,label=code.pot.sb,mathescape]
 function pot_star_bicoloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\phi$)
   $E_p = \emptyset$
   for $(r_i,c_j)\in E-E_i$ with $\Phi(r_i)\neq 0$ or $\Phi(c_j)\neq 0$
@@ -879,7 +881,7 @@ to be considered only up to the level $l$.
 We fix this level parameter to $2$ throughout this thesis.
 
 \begin{figure}
-\begin{lstlisting}[caption=Find additionally required elements (based on Algorithm 4.5 from ~\cite{Lulfesmann2012Fap}).,
+\begin{lstlisting}[caption=Find additionally required elements (based on Algorithm 4.5 from~\cite{Lulfesmann2012Fap}).,
 label=code.add,mathescape]
 function add($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$E_p$,$E_F$)
   $E_a = \emptyset$
@@ -918,7 +920,7 @@ Lülfesmann~\cite{Lulfesmann2012Fap} proposed two algorithms to compute the addi
 We consider the sophisticated algorithm shown in \coderef{code.add}
 to compute the additionally required elements
 throughout this thesis. This algorithm looks at each potentially required edge.
-If it is possible that a fill path generated by adding this edge,
+If it is possible that a fill path is generated by adding this edge,
 the edge is not considered for the set of additionally required edges.
 In this sophisticated approach, the algorithm iterates once again over
 all potentially required elements. This process is repeated until
@@ -1083,7 +1085,7 @@ Given a bipartite graph $G=(V_c\cup V_r,E)$ and a vertex $v\in V_c$,
 we define a function $\nreq_v:S\subseteq V_c\rightarrow \mathbb{N}$.
 The function $\nreq_v(w)$ computes the number of nonrequired elements
 that are actually determined by
-the linear combination of the columns corresponding to the vertices $v$ and $w$.
+the linear combination of the columns corresponding to the vertices $v$ and $w\in V_c$.
 We call these elements the determined nonrequired elements.
 \begin{figure}
 \begin{lstlisting}[caption=New coloring heuristic for distance-$2$ coloring
@@ -1176,7 +1178,7 @@ After the first vertex $v_1$ corresponding to the first column is given some col
 the set $I_v$ consists of the columns $2$, $3$, and $4$. Since all these three columns
 can be compressed with the first column, the function $\nreq_{v_1}(x)$ is given by the number of
 nonrequired elements in a column corresponding to $x$. Thus, the values of $\nreq_{v_1}(x)$
-for the columns $2$, $3$, and $4$ are $1$, $1$, $0$, correspondingly.
+for the columns $2$, $3$, and $4$ are $1$, $1$, $0$, respectively.
 Therefore, the first and the second column are colored identically.
 In the next iteration of the outer loop, the third column is then colored with the same color as the first
 column since the vertex $v_3$ corresponding to the third column does not have any distance-$2$ neighbors
@@ -1288,7 +1290,7 @@ For example, \figref{ex33_alg31_alg32_bls_nat_add} shows the number of additiona
 for the natural ordering.
 Here, \coderef{code.new.d2.nreq} tends to perform better for smaller block sizes up to around $40$.
 However, for larger block sizes, \coderef{code.greedy} tends to produce slightly more additionally required elements.
-(see \figref{ex33_alg31_alg32_bls_nat_cols}).
+Figure~\figref{ex33_alg31_alg32_bls_nat_cols} shows that the number of colors does not vary significantly.
 %The number of colors in~\figref{bls_cols_ex33_without_alpha} for the greedy coloring
 %is the minimum value between different orderings \textit{LFO}, \textit{SLO}, and \textit{IDO}.
 
@@ -1409,13 +1411,13 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
   for $v\in V_c$ with $\exists r\in V_r: (v,r) \in E_i$ and $\Phi(v)=0$
     for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
       $forbiddenColors[\Phi(n)] = v$
-    $\Phi(v) = min \{ a>0:forbiddenColors[a]\neq v\}$
+    $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
 
     $I_v=\{z\in V_c: z\neq v\text{ and }z\notin N_2(v) \text{ and } \Phi(z) = 0 \}$
     if $I_v\neq\emptyset$
       $maxs = \argmax_{x\in I_v} \nreq_v (x)$
       $mins = \argmin_{x\in maxs} \req(x)$
-      for $i\in\{0,1,...,\min (\alpha - 1, size(mins)-1)\}$
+      for $i\in\{0,1,...,\min (\alpha - 1, \operatorname{size}(mins)-1)\}$
         $\Phi(mins[i]) = \Phi(v)$
   return $\Phi$
 \end{lstlisting}
@@ -1473,7 +1475,7 @@ the coloring with $\alpha=6$ can be a suitable choice in most of the cases
 since the number of additionally required elements is relatively high
 while the number of colors is mainly small.
 More figures can be found in \appref{app.compare.alg35.alphas} comparing these values
-based on the varying block sizes.
+based on varying block sizes.
 
 \begin{table}
 \begin{center}
@@ -1639,9 +1641,9 @@ function star_bicoloring($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\rho$,next_vertex
             $forbiddenColors[\Phi (x)]=v$
       else
         for $x\in N_1(w,G[E_i])$ with $\Phi(x) > 0$
-        for $y\in N_1(x,G)$ with $\Phi(y) > 0$ and $y\neq w$
-          if $\Phi(w) = \Phi(y)$
-            $forbiddenColors[\Phi (x)] = v$
+          for $y\in N_1(x,G)$ with $\Phi(y) > 0$ and $y\neq w$
+            if $\Phi(w) = \Phi(y)$
+              $forbiddenColors[\Phi (x)] = v$
 
     $\Phi(v) = \min(\{j>0: forbiddenColors[j] \neq v\})$
   for $v_c\in V_c$ with $\Phi(v_c) > 0$
@@ -1703,14 +1705,14 @@ in a big change in the number of additionally required elements.
 
 \begin{figure}
 \includegraphics[width=0.9\linewidth]{rho_value_685_bus}
-\caption{The influence of $\rho$ is computed on the additionally required elements
+\caption{The influence of $\rho$ is computed on the additionally required elements with Algorithm~\ref{orig.star.bicoloring}
 for the matrix \textit{685\_bus} with the LFO ordering.}
 \label{rho_value_685_bus}
 \end{figure}
 
 \begin{figure}
 \includegraphics[width=0.9\linewidth]{rho_value_orani678}
-\caption{The influence of $\rho$ is computed on the additionally required elements
+\caption{The influence of $\rho$ is computed on the additionally required elements with Algorithm~\ref{orig.star.bicoloring}
 for the matrix \textit{orani678} with the LFO ordering.}
 \label{rho_value_orani678}
 \end{figure}
@@ -1879,17 +1881,19 @@ More details are found in \cite{Lulfesmann2012Fap}.
 
 We solve the resulting systems of linear equations with the
 coefficient matrix $A$ in MATLAB using the BICGSTAB iterative solver.
-The right-hand side is the sum of all columns.
+The right-hand side is the sum of all columns and the initial guess is the zero vector.
 We compute the ILU($2$) preconditioning on a set of selected elements $S$
 instead of the whole Jacobian matrix.
 We compare the convergence histories of the BICGSTAB solver
 on the four different methods of preconditioning:
 without preconditioning,
 preconditioning with $S=R_i$,
-preconditioning with $S=R_i + R_a$ in which
-the set $R_a$ is computed based on the greedy coloring in\coderef{code.greedy},
-and preconditioning with $S=R_i + R_a$ in which
-the set $R_a$ is computed based on the our proposed modified greedy coloring in \coderef{code.new.impr2}.
+preconditioning with $S=R_i \cup R_a$ in which
+the set $R_a$ is computed based on the greedy coloring in~\coderef{code.greedy},
+and preconditioning with $S=R_i \cup R_a$ in which
+the set $R_a$ is computed based
+on our proposed modified greedy coloring in \coderef{code.new.impr2}.
+In this section, \coderef{code.new.impr2} is always computed with $\alpha = 6$.
 
 We do this comparison for the four block sizes $5$,$10$,$15$, and $20$ in
 \figref{f.convergence_greedy_new2} and \figref{f.convergence_greedy_new3}.
@@ -1913,9 +1917,9 @@ The history of the residual norms is visualized based on
 the number of matrix-vector products comparing four different methods:
 without preconditioning (red color),
 preconditioning with $S=R_i$ (blue color),
-preconditioning with $S=R_i + R_a$ in which
+preconditioning with $S=R_i \cup R_a$ in which
 the set $R_a$ is computed based on the greedy coloring (black color),
-and preconditioning with $S=R_i + R_a$ in which
+and preconditioning with $S=R_i \cup R_a$ in which
 the set $R_a$ is computed based on \coderef{code.new.impr2} (green color).
 The level parameter of the ILU preconditioning is $2$.
 (Top) The block size is $5$.
@@ -1934,9 +1938,9 @@ The history of the residual norms is visualized based on
 the number of matrix-vector products comparing four different methods:
 without preconditioning (red color),
 preconditioning with $S=R_i$ (blue color),
-preconditioning with $S=R_i + R_a$ in which
+preconditioning with $S=R_i \cup R_a$ in which
 the set $R_a$ is computed based on the greedy coloring (black color),
-and preconditioning with $S=R_i + R_a$ in which
+and preconditioning with $S=R_i \cup R_a$ in which
 the set $R_a$ is computed based on \coderef{code.new.impr2} (green color).
 The level parameter of the ILU preconditioning is $2$.
 (Top) The block size is $15$.
@@ -2029,7 +2033,7 @@ This property is nothing but a matching~\cite{bondy2008graph} in a graph.
 Given a graph and the vertex and edge set $G=(V,E)$, a matching $M\subseteq E$ contains
 a list of edges which do not have any vertex in common.
 A maximum matching is a matching with a maximum possible number of edges.
-Then, all diagonal elements for example in our bipartite graph is a maximum matching.
+Then, the set of all diagonal elements for example in our bipartite graph is a maximum matching.
 
 Now, we can formulate a new theorem on the comparison of unidirectional and
 bidirectional coloring as follows.
@@ -2181,7 +2185,7 @@ Now, building the software will bring this new ordering into the software execut
 
 The input matrix is in the format of the matrix market~\cite{matrix-market}.
 After reading this matrix, we convert it to the different graph models
-like a column-intersection graph or a bipartite graph.
+like a column intersection graph or a bipartite graph.
 Any resulting matrix like the sparsified matrix will also be saved in this file format.
 
 \textit{PreCol} is developed in \textit{C++} using STL (the standard library) and
@@ -2320,7 +2324,7 @@ A list of possible graph types is as follows.
 the given matrix with a symmetric pattern as an adjacency matrix of the graph.
 \item Directed graph: a directed graph without self-loops considering
 the given nonsymmetric matrix as an adjacency matrix of the graph.
-\item Column-intersection graph: the graph model explained in \defref{d:cig}.
+\item Column intersection graph: the graph model explained in \defref{d:cig}.
 \item Bipartite graph: the bipartite graph model explained in \defref{d.bip.graph}.
 \end{itemize}
 The matrix and the corresponding graph are visualized side by side.
@@ -2341,7 +2345,7 @@ the nested dissection module.
 \hfill
 \includegraphics[width=0.48\textwidth]{explain2-init.png}
 \caption{
-(Left)~\mbox{EXPLAIN} has a fixed layout consists of four sections and a header.
+(Left)~\mbox{EXPLAIN} has a fixed layout consisting of four sections and a header.
 (Right)~An example of the actual implemented view of \mbox{EXPLAIN}.}
 \label{explain-design}
 \end{figure}
@@ -2380,7 +2384,7 @@ A publication addressing this aspect of gamification is given in
 algorithms. A collaborative game is described in \cite{shl:bsc} that aims at improving the teaching
 quality of a course on mathematical logic.
 
-The gamification of \mbox{EXPLAIN} is based on finding a solution to a combinatorial scientific problem.
+The gamification of \mbox{EXPLAIN} is based on finding a solution to a combinatorial scientific computing problem.
 We interpret each solution to a problem instance as a \textit{round}.
 The feedback diagram reports the results of previous rounds.
 The idea of gamification is used to solve a combinatorial
@@ -2393,9 +2397,9 @@ time, balancing the sizes of the remaining components.
 \label{s.av.modules}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In \mbox{EXPLAIN}, we have already implemented several modules.
-After discussing the module for the full unidirectional Jacobian compression using the column-intersection graph model,
+After discussing the module for the full unidirectional Jacobian compression using the column intersection graph,
 we explain the modules for the full and partial bidirectional Jacobian computation.
-Then, two other modules of nested dissection ordering and parallel matrix-vector
+Then, two other modules of nested dissection ordering and parallel matrix-vector product
 are presented to see other features of the software.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Column compression}
@@ -2468,7 +2472,7 @@ J =
 0 & 0 & 0 & 0 & 0 & 15
 \end{bmatrix},
 \end{equation}
-and the related column-intersection graph in which the student has already selected the two vertices $v_2$ and $v_6$. Both vertices are colored with the same color since they are not connected by an edge. \figref{fig3} represents the final step which shows that four colors are needed when the vertices are selected in the order $(v_2, v_6, v_3, v_5, v_1, v_4)$ displayed in the vertex list. The group of columns with the same color is compressed to a single column in the seed matrix as follows.
+and the related column intersection graph in which the student has already selected the two vertices $v_2$ and $v_6$. Both vertices are colored with the same color since they are not connected by an edge. \figref{fig3} represents the final step which shows that four colors are needed when the vertices are selected in the order $(v_2, v_6, v_3, v_5, v_1, v_4)$ displayed in the vertex list. The group of columns with the same color is compressed to a single column in the seed matrix as follows.
 \begin{equation}
 \label{e:matrixS}
 J \cdot S =
@@ -2669,8 +2673,9 @@ nonzero elements get the red color.}
 \includegraphics[width=0.18\textwidth]{arrow_shaped_partial_coloring_init_graph_good_coloring}
 \includegraphics[width=0.26\textwidth]{arrow_shaped_partial_coloring_init_matrix_good_coloring}}
 \caption{
-(a) A graph coloring with four colors in which only column vertices are selected.
-(b) A graph coloring with three colors in which the user colors a row vertex first.}
+A star bicoloring restricted to the red edges 
+(a) with four colors in which only column vertices are selected and
+(b) with three colors in which the user colors a row vertex first.}
 \label{partial_coloring_good_coloring}
 \end{figure}
 
@@ -2704,13 +2709,13 @@ the two remaining components, $|V_1|$ and $|V_2|$, are balanced.
 The graph model of this problem has the simple graph layout considering the matrix
 as the adjacency matrix of a graph.
 The algorithm from~\cite{2014:02} searches for a vertex-separator set
-corresponding to the block $C$ here. A vertex separator $S$ of the given graph $G$
+corresponding to the block $C$. Here, a vertex separator $S$ of the given graph $G$
 is a subgraph of $G$ if the removal of $S$ and its adjacent edges from $G$ results in two
 disconnected components $V_1$ and $V_2$ of $G$.
 Suppose we move rows and columns corresponding to the vertex separator to the end of
 the matrix and bring together
 the corresponding columns of $V_1$ and $V_2$ by a permutation,
-then a nested dissection would is visualized in the matrix by the block form (\ref{e.A}).
+then a nested dissection is visualized in the matrix by the block form (\ref{e.A}).
 
 In this module representing a bisection, a round consists of finding a vertex separator.
 Figure~\ref{initial_10} shows the initial layout of an example
@@ -2771,7 +2776,7 @@ like \figref{diagram}. Here, the blue and red curves should have
 values close to each other since this indicates the balancing condition.
 The orange curve should be as small as possible
 because it represents the minimization of the separator size.
-In in the last round of this figure, we see a balanced result with minimal separator size.
+In the last round of this figure, we see a balanced result with minimal separator size.
 \begin{figure}
 \centering
 \includegraphics[width=0.47\textwidth]{diagram}
@@ -2833,7 +2838,7 @@ both graph components become disconnected. The vertex separators
 are moved to the bottom of the graph components as well as the graph components
 are shown separately.
 Figure~\ref{bad_disection} and Figure~\ref{good_disection}
-illustrate two unbalanced and better balanced results of nested dissection,
+illustrate an unbalanced result and a better balanced result of nested dissection,
 respectively. Figure~\ref{good_disection2} shows how the results can
 get even more balanced.
 
@@ -3207,7 +3212,7 @@ because of its power of control and visualization.
 Figure~\ref{f.graph-ds} shows an illustration
 of the data structure of adjacency list for graph which is implemented in Javascript.
 There is an the array representing the vertices.
-Each cell of array this points to another array \textit{edges} which contains
+Each cell of this array points to another array \textit{edges} which contains
 the identity of the vertices which are neighbors of that vertex.
 Here, we show that the data structure contains other properties like colors.
 Using the object structure of Javascript,
@@ -3267,7 +3272,7 @@ color\_column($i$,$c$) & colors the column $i$ with the color $c$ \\\hline
 color\_row($j$,$c$) & colors the row $j$ with the color $c$ \\\hline
 min($l$) and max($l$) & finds minimum and maximum of the list of integers $l$ \\\hline
 diff($A$,$B$) & finds $A - B$ \\\hline
-get\_colors($l_v$) & return a list of colors of the list $l_v$ of vertices\\\hline
+get\_colors($l_v$) & returns a list of colors of the list $l_v$ of vertices\\\hline
 \end{tabular}
 \caption{A list of functions available in the new scripting language.}
 \label{command-table}
@@ -3348,7 +3353,7 @@ we discussed a new heuristic for the coloring restricted to the diagonal element
 We implemented all these heuristics in our software \textit{PreCol} which
 is explained in \secref{s.extend}.
 
-Inn \secref{explain}, we develop an interactive educational module
+In \secref{explain}, we develop an interactive educational module
 for teaching the concepts of combinatorial scientific computing.
 In this chapter, we discussed our previous publications
 \cite{2013:05,2014:01,2014:02,2014:09,2015:3} and also the new features which
@@ -3363,7 +3368,7 @@ We considered only the ILU preconditioning. A future work is to replace ILU
 with other preconditioning techniques.
 For example, the approximate inverse preconditioning (AINV)~\cite{ainv98} might be a
 suitable candidate which produces no fill-in.
-Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph model as before and show it has advantages in the unidirectional coloring. A first improvement is to search for the similar approach in the bidirectional coloring and restricted coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
+Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph as before and show it has advantages in the unidirectional coloring. A first improvement is to search for a similar approach in the bidirectional coloring and restricted coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
