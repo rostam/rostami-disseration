@@ -1,6 +1,8 @@
 \PassOptionsToPackage{dvipsnames}{xcolor} % prevent an option clash
 \documentclass{beamer}
-\usetheme{Madrid}
+\usetheme{Ilmenau}
+
+\usepackage{listings}
 \usepackage{amsmath}
 \usepackage{sidecap}
 \usepackage{graphicx}
@@ -20,6 +22,50 @@
 \newcommand{\sparsify}[1]{\ensuremath{\sparsifysymbol(#1)}}
 \newcommand{\todo}[1]{\textbf{#1}}
 \newcommand{\nnz}[1]{\ensuremath{\operatorname{nz}(#1)}}
+
+
+\hyphenation{
+	MATLAB
+}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\newcommand{\nreq}{L}
+\newcommand{\req}{M}
+\newcommand{\setR}{\ensuremath{\mathbb{R}}}
+\lstdefinelanguage{JavaScript}{
+keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, while, do, else, case, break,for,with},
+basicstyle=\ttfamily,
+keywordstyle=\bfseries,
+ndkeywords={class, export, boolean, throw, implements, import},
+ndkeywordstyle=\color{darkgray}\bfseries,
+identifierstyle=\color{black},
+sensitive=false,
+comment=[l]{//},
+morecomment=[s]{/*}{*/},
+commentstyle=\color{purple}\ttfamily,
+stringstyle=\color{red}\ttfamily,
+morestring=[b]',
+morestring=[b]"
+}
+
+\lstset{
+language=JavaScript,
+backgroundcolor=\color{lightgray},
+extendedchars=true,
+basicstyle=\footnotesize\ttfamily,
+showstringspaces=false,
+showspaces=false,
+numbers=left,
+numberstyle=\footnotesize,
+numbersep=9pt,
+tabsize=2,
+breaklines=true,
+showtabs=false,
+captionpos=b
+keywords={with},
+}
 
 % Define the name of the two minimization problems
 \newcommand{\MinStaBic}{\textsc{MinimumStarBicoloring}}
@@ -60,33 +106,23 @@
   \titlepage
 \end{frame}
 
-\begin{frame}{QUADFLOW}
-\begin{itemize}
-\item A package which is developed in RWTH Aachen
-\item A finite volume flow solver
-\item Two- and three-dimensional meshes in multiblocks
-\end{itemize}
-%------------------------------------------------------------------------------------------
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.46\textwidth]{profile}
-\caption{A NACA0012 profile implemented in
-QUADFLOW.}
-\label{f:profile}
-\end{figure}
-%------------------------------------------------------------------------------------------
+\begin{frame}{Structure of This Talk}
+\tableofcontents
 \end{frame}
 
+\section{Motivation}
 \begin{frame}{Automatic Differentation}
-After discretization of the differential equations solved in 
-QUADFLOW and some reduction, it turns out that the
-difficult part of solving the equation consists of computing the term involving the
-Jacobian of the residual, i.e.,
+After discretization of a differential equation coming from a real-world problem,
+the difficult part of solving the equation consists of computing the term involving the
+Jacobian-vector product:
 \begin{equation*}
-\frac{\partial \vek{R}(\vek{u}^n)}{\partial \vek{u}^n} \vek{z}.
+J\cdot \vek{z}
 \end{equation*}
+\begin{block}{Automatic Differentation}
 Jacobian-vector products of this form are accurately and efficiently computed using
 automatic differentiation.
+\end{block}
+
 \end{frame}
 
 \begin{frame}{Automatic Differentation (2)}
@@ -106,7 +142,7 @@ is evaluated at the same point $\vek{x}_0$ as the function $f$.
 
 \begin{frame}{Preconditioning}
 In practice,
-iterative solvers are rarely applied in a pure fashion, but involve some sort of
+iteraive solvers are rarely applied in a pure fashion, but involve some sort of
 preconditioning.
 $$J \vek{y}=\vek{b},\quad \vek{y} \in \R^n, \vek{b} \in \R^n, J \in \R^{n \times n}$$
 Rather than solving the unpreconditioned system
@@ -162,6 +198,14 @@ $k=200$.}
 \end{figure}
 %------------------------------------------------------------------------------------------
 \end{frame}
+
+\begin{frame}{Influence of Sparsification}
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{sparsify}
+\end{figure}
+\end{frame}
+
 \begin{frame}{AD, Preconditioning, and Sparsification}
 \begin{itemize}
   \item To perform a Jacobian-vector product $J \vek{z}$ with some vector \vek{z} in a
@@ -214,13 +258,6 @@ color are computed as linear combinations.}
 
 \end{frame}
 
-\begin{frame}{sparsify}
-\begin{figure}
-\centering
-\includegraphics[width=0.8\textwidth]{sparsify}
-\end{figure}
-\end{frame}
-
 \begin{frame}{Problem Formulation: Block Seed}
 Let $J$ be a sparse $n \times n$ Jacobian matrix with known sparsity pattern and let
 \sparsify{J} denote its sparsification using $k \times k$ blocks on the diagonal of $J$.
@@ -267,41 +304,8 @@ Find a coloring $\Phi$ of the $\sparsifysymbol$-column intersection graph
 $G_\sparsifysymbol$ with a minimal number of colors.
 \end{frame}
 
-\begin{frame}{Experimental Results}
-
-%------------------------------------------------------------------------------------------
-\begin{figure}
-\centering
-\includegraphics[width=0.48\textwidth]{convergence}
-\caption{Convergence behavior varying the block size~$k$.}
-\label{f:convergence}
-\end{figure}
-%------------------------------------------------------------------------------------------
-
-\end{frame}
-
-\begin{frame}{Required Elements vs Block sizes}
-%------------------------------------------------------------------------------------------
-\begin{figure}
-\centering
-\includegraphics[width=0.45\textwidth]{nnz_bar_required_elements}
-\caption{Number of required elements versus block size.}
-\label{f:required_elements}
-\end{figure}
-%------------------------------------------------------------------------------------------
-\end{frame}
 
 \begin{frame}{Iterations vs Colors}
-%------------------------------------------------------------------------------------------
-\begin{figure}
-\centering
-\includegraphics[width=0.75\textwidth]{iterations_colors}
-\caption{The number of iterations needed to converge (given in blue) and the number of
-colors needed by the coloring heuristic (given in red) both plotted versus the block size $k$.}
-\end{figure}
-%------------------------------------------------------------------------------------------
-\end{frame}
-\begin{frame}{Iterations vs Colors (2)}
 \begin{figure}
 \centering
 \includegraphics[width=0.44\textwidth]{zoom_iterations_colors}
@@ -310,15 +314,73 @@ colors needed by the coloring heuristic (given in red) both plotted versus the b
 \end{figure}
 \end{frame}
 
-\begin{frame}{Timing results vs Block sizes}
-%------------------------------------------------------------------------------------------
+\section{New Coloring Heuristics}
+\begin{frame}[fragile]
+\frametitle{Restricted Distance-$2$ Coloring Heuristics}
+The greedy algorithm for
+the distance-$2$ coloring restricted to the edge set $E_i$
+for columns.
+\begin{lstlisting}[mathescape]
+function d2_color($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
+  $\Phi\leftarrow [0\ldots 0]$
+  $forbiddenColors\leftarrow [0\ldots 0]$
+  for $v\in V_c$ with $\exists r\in V_r: (v,r) \in E_i$
+    for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
+        $forbiddenColors[\Phi(n)] = v$
+    $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
+  return $\Phi$
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{New coloring heuristic}
+New coloring heuristic for distance-$2$ coloring
+considering the nonrequired elements.
+\begin{figure}
+\begin{lstlisting}[mathescape]
+function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
+  $\Phi\leftarrow [0\ldots 0]$
+  $forbiddenColors\leftarrow [0\ldots 0]$
+  for $v\in V_c$ with $\exists r\in V_r: (v,r) \in E_i$ and $\Phi(v)=0$
+    for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
+      $forbiddenColors[\Phi(n)] = v$
+    $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
+
+    $I_v=\{z\in V_c: z\neq v\text{ and }z\notin N_2(v) \text{ and } \Phi(z) = 0 \}$
+    if $I_v\neq\emptyset$
+      $maxs = \argmax_{x\in I_v} \nreq_v (x)$
+      $\Phi(maxs[0]) = \Phi(v)$
+  return $\Phi$
+\end{lstlisting}
+\end{figure}
+\end{frame}
+\section{Application}
+\begin{frame}{Application in Geoscience}
+we apply our new heuristics to a carbon sequestration example from geoscience.
+The geophysics group of RWTH Aachen simulates the injection of CO\textsubscript{2} in a reservoir by a
+two-phase flow model in porous media.
 \begin{figure}
 \centering
-\includegraphics[width=0.8\textwidth]{timings}
-\caption{The timing results in seconds of the different computational tasks plotted versus the block size $k$.}
+\includegraphics[width=0.4\textwidth]{co2_jac}
 \end{figure}
-%------------------------------------------------------------------------------------------
 \end{frame}
+
+\begin{frame}{Convergence (Block Size = 5)}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{jac_convergence_greedy_new_5}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Convergence (Block Size = 15)}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{jac_convergence_greedy_new_15}
+\end{figure}
+\end{frame}
+
+
+\section{A Special Case}
+\section{Conclusion}
 \begin{frame}{Conclusion}
 \begin{itemize}
 \item Automatic Differenation and Preconditioning together
