@@ -23,7 +23,6 @@
 \newcommand{\todo}[1]{\textbf{#1}}
 \newcommand{\nnz}[1]{\ensuremath{\operatorname{nz}(#1)}}
 
-
 \hyphenation{
 	MATLAB
 }
@@ -111,56 +110,25 @@ keywords={with},
 \end{frame}
 
 \section{Motivation}
-\begin{frame}{Automatic Differentation}
-After discretization of a differential equation coming from a real-world problem,
-the difficult part of solving the equation consists of computing the term involving the
-Jacobian-vector product:
-\begin{equation*}
-J\cdot \vek{z}
-\end{equation*}
-\begin{block}{Automatic Differentation}
-Jacobian-vector products of this form are accurately and efficiently computed using
-automatic differentiation.
-\end{block}
-
+\begin{frame}{Solve a Linear Equation}
+The difficult part of the solution to the most of real-world problems is to solve:
+$$J \vek{y}=\vek{b},\quad \vek{y} \in \R^n, \vek{b} \in \R^n, J \in \R^{n \times n}$$
+\begin{itemize}
+\item In practice, these systems of linear equations are computed using iterative solvers which
+need the product $J \vek{y}$ in each iteration.
+\item Automatic Differentation computes the product $J \vek{y}$ without truncation error (a linear combination).
+\item These iterative solvers are rarely applied in a pure fashion, but involve some sort of
+preconditioning.
+\end{itemize}
 \end{frame}
 
-\begin{frame}{Automatic Differentation (2)}
-Given a computer program evaluating some function $f: \R^n \rightarrow
-\R^n$ at a point $\vek{x}_0\in \R^n$ and any user-chosen $n \times p$ seed matrix $S$,
-the so-called forward mode of automatic differentiation generates a computer program to
-evaluate not only $f(\vek{x}_0)$ but also the matrix-matrix product
-$$
-\left.\frac{\partial f(\vek{x})}{\partial \vek{x}}\right|_{\vek{x}=\vek{x}_0} \cdot S,
-$$
-where the $n \times n$ Jacobian
-$$
-J(\vek{x}_0) := \left.\frac{\partial f(\vek{x})}{\partial \vek{x}}\right|_{\vek{x}=\vek{x}_0}
-$$
-is evaluated at the same point $\vek{x}_0$ as the function $f$.
-\end{frame}
 
 \begin{frame}{Preconditioning}
-In practice,
-iteraive solvers are rarely applied in a pure fashion, but involve some sort of
-preconditioning.
-$$J \vek{y}=\vek{b},\quad \vek{y} \in \R^n, \vek{b} \in \R^n, J \in \R^{n \times n}$$
-Rather than solving the unpreconditioned system
- one is solving the preconditioned system
-$$M^{-1} J \vek{y}= M^{-1}\vek{b},$$
-A preconditioner somehow approximates the coefficient matrix,
-$$M \approx J.$$
-\end{frame}
+Rather than solving the unpreconditioned system one is solving the preconditioned system
+$$M^{-1} J \vek{y}= M^{-1}\vek{b},\quad M \approx J$$
 
-\begin{frame}{Preconditioning (2)}
-Common approaches to construct the preconditioner $M$ are based on accessing individual
-nonzero entries $J(i,j)$ of the Jacobian:
-
-\begin{itemize}
-\item Diagonal Scaling 
-\item LU factorization 
-\item Incomplete LU factorization
-\end{itemize}
+Common approaches to construct the preconditioner $M$ (like ILU) are based on accessing individual
+nonzero entries $J(i,j)$ of the Jacobian.
 
 \begin{alertblock}{Access to nonzero elements}
  In general, accessing an
@@ -170,6 +138,7 @@ complete column or row. In practice, an access to some individual nonzero entry 
 \end{alertblock}
 \end{frame}
 
+\section{Basics}
 \begin{frame}{Sparsification}
 A sparsification of $J$, \sparsify{J}, selects a 
 subset of all nonzero elements of $J$ and construct a
@@ -181,22 +150,6 @@ diagonal. If the block size $k$ does not divide the matrix order $n$, we adapt t
 of the last diagonal block to some smaller value such that the sum of all block sizes
 equals $n$.
 \end{itemize}
-\end{frame}
-
-\begin{frame}{Sparsification (2)}
-%------------------------------------------------------------------------------------------
-\begin{figure}
-\centering
-\includegraphics[width=0.42\textwidth]{quadflow}
-\hfill
-\includegraphics[width=0.42\textwidth]{block200}
-
-\caption{Left: The nonzero pattern of the Jacobian $J$ with size $n=1,600$. 
-Right: The pattern of the
-sparsified Jacobian $\sparsify{J}$ illustrating the required elements for a block size of
-$k=200$.}
-\end{figure}
-%------------------------------------------------------------------------------------------
 \end{frame}
 
 \begin{frame}{Influence of Sparsification}
@@ -217,6 +170,32 @@ $k=200$.}
   \item Construct a preconditioner $M$ from \sparsify{J} by performing an ILU(0)
       factorization on each block of~\sparsify{J}. 
 \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Problem Formulation: Block Seed}
+Let $J$ be a sparse $n \times n$ Jacobian matrix with known sparsity pattern and let
+\sparsify{J} denote its sparsification using $k \times k$ blocks on the diagonal of $J$.
+Find a binary $n \times p$ seed matrix~$S$ with a minimal number of columns, $p$, such
+that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J \cdot
+S$.
+\end{frame}
+
+\begin{frame}{Combinatorial Model: Bipartite Graph}
+$G(V_c\times V_r,E)$
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{bip}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Graph Distnace-$2$ Coloring For Columns}
+A coloring of $G$ is a mapping $\Phi : V_c \to {1, \dots, p}$ with the property
+$\Phi(v_i)\neq \Phi(v_j)$ when $v_i$ and $v_j$ are at the distance $2$.
+
+\begin{alertblock}{Problem}
+Find a coloring $\Phi$ with a minimal number of colors.
+\end{alertblock}
 \end{frame}
 
 \begin{frame}{Full Jacobian Computation}
@@ -258,61 +237,6 @@ color are computed as linear combinations.}
 
 \end{frame}
 
-\begin{frame}{Problem Formulation: Block Seed}
-Let $J$ be a sparse $n \times n$ Jacobian matrix with known sparsity pattern and let
-\sparsify{J} denote its sparsification using $k \times k$ blocks on the diagonal of $J$.
-Find a binary $n \times p$ seed matrix~$S$ with a minimal number of columns, $p$, such
-that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J \cdot
-S$.
-\end{frame}
-
-\begin{frame}{Combinatorial Model: Column Intersection Graph}
-The column intersection graph $G = (V,E)$ associated with an $n \times n$ Jacobian $J$
-consists of a set of vertices $V=\{v_1, v_2, \dots, v_n\}$ whose vertex $v_i$ represents
-the $i$th column $J(:,i)$. Furthermore, there is an edge $(v_i,v_j)$ in the set of edges
-$E$ if and only if the columns $J(:,i)$ and $J(:,j)$ represented by $v_i$ and $v_j$ have
-a nonzero element in at least a same row position.
-\end{frame}
-
-\begin{frame}{Graph Coloring}
-A coloring of $G$ is a mapping $\Phi : V \to {1, \dots, p}$ with the property
-$\Phi(v_i)\neq \Phi(v_j)$ for $(v_i,v_j) \in E$.
-
-\begin{alertblock}{Problem}
-Find a coloring $\Phi$ of the column intersection graph $G$ with a minimal number of
-colors.
-\end{alertblock}
-\end{frame}
-
-\begin{frame}{structurally orthogonal}
-A column $J(:,i)$ is structurally $\sparsifysymbol$-orthogonal to column $J(:,j)$ if and
-only if there is no row position $\ell$ in which $J(\ell,i)$ and $J(\ell,j)$ are nonzero
-elements and at least one of them belongs to the set of required element \sparsify{J}.
-\end{frame}
-
-\begin{frame}{$\sparsifysymbol$-Column Intersection Graph}
-The $\sparsifysymbol$-column intersection graph $G_\sparsifysymbol =
-(V,E_\sparsifysymbol)$ associated with a pair of $n \times n$ Jacobians $J$ and
-\sparsify{J} consists of a set of vertices $V=\{v_1, v_2, \dots, v_n\}$ whose vertex
-$v_i$ represents the $i$th column $J(:,i)$. Furthermore, there is an edge $(v_i,v_j)$ in
-the set of edges $E_\sparsifysymbol$ if and only if the columns $J(:,i)$ and $J(:,j)$
-represented by $v_i$ and $v_j$ are not structurally $\sparsifysymbol$-orthogonal.
-\end{frame}
-
-\begin{frame}{Minimum Block Coloring}
-Find a coloring $\Phi$ of the $\sparsifysymbol$-column intersection graph
-$G_\sparsifysymbol$ with a minimal number of colors.
-\end{frame}
-
-
-\begin{frame}{Iterations vs Colors}
-\begin{figure}
-\centering
-\includegraphics[width=0.44\textwidth]{zoom_iterations_colors}
-\caption{Focus on $1 \leq k \leq 11$.}
-\label{f:zoom_iterations_colors}
-\end{figure}
-\end{frame}
 
 \section{New Coloring Heuristics}
 \begin{frame}[fragile]
@@ -356,7 +280,7 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \section{Application}
 \begin{frame}{Application in Geoscience}
 we apply our new heuristics to a carbon sequestration example from geoscience.
-The geophysics group of RWTH Aachen simulates the injection of CO\textsubscript{2} in a reservoir by a
+The geophysics group of RWTH Aachen simulates the injection of CO$_2$ in a reservoir by a
 two-phase flow model in porous media.
 \begin{figure}
 \centering
