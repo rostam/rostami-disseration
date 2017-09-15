@@ -92,7 +92,7 @@ keywords={with},
 {Combining partial Jacobian computation and preconditioning}
 \author[\textbf{Rostami}]{{\bf M. A. Rostami}}
 \institute[FSU Jena]{
-  Chair of Advanced Computing\\
+f  Chair of Advanced Computing\\
   Friedrich Schiller University Jena, Germany\\[1ex]
   \texttt{a.rostami@uni-jena.de}
 }
@@ -116,7 +116,7 @@ $$J \vek{y}=\vek{b},\quad \vek{y} \in \R^n, \vek{b} \in \R^n, J \in \R^{n \times
 \begin{itemize}
 \item In practice, these systems of linear equations are computed using iterative solvers which
 need the product $J \vek{y}$ in each iteration.
-\item Automatic Differentation computes the product $J \vek{y}$ without truncation error (a linear combination).
+\item Automatic Differentation computes the product $J \vek{y}$ without truncation error (a linear combination of columns or rows).
 \item These iterative solvers are rarely applied in a pure fashion, but involve some sort of
 preconditioning.
 \end{itemize}
@@ -144,12 +144,14 @@ A sparsification of $J$, \sparsify{J}, selects a
 subset of all nonzero elements of $J$ and construct a
 preconditioner based on these selected nonzero elements (required elements)
 \begin{itemize}
-\item Block Diagonal: the pattern of the required nonzero elements is
-given by the pattern of all nonzero entries within these $k\times k$ blocks on the
-diagonal. If the block size $k$ does not divide the matrix order $n$, we adapt the size
-of the last diagonal block to some smaller value such that the sum of all block sizes
-equals $n$.
+\item $k\times k$-Block Diagonal:
 \end{itemize}
+\begin{figure}
+\centering
+\includegraphics[width=0.3\textwidth]{mat}
+\includegraphics[width=0.3\textwidth]{mat_sparsify}
+\includegraphics[width=0.3\textwidth]{mat_sparsify_removed}
+\end{figure}
 \end{frame}
 
 \begin{frame}{Influence of Sparsification}
