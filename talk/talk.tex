@@ -183,6 +183,30 @@ that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J
 S$.
 \end{frame}
 
+\begin{frame}{Full vs Partial Jacobian Computation}
+%------------------------------------------------------------------------------------------
+\begin{figure}
+\centering
+\includegraphics[height=0.25\textwidth]{small_jac}
+\hfill
+\includegraphics[height=0.25\textwidth]{full_color}
+\hfill
+\includegraphics[height=0.25\textwidth]{full_color_compress}
+\end{figure}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\begin{figure}
+\centering
+\includegraphics[height=0.25\textwidth]{partial_coloring_orig}
+\hfill
+\includegraphics[height=0.25\textwidth]{partial_color}
+\hfill
+\includegraphics[height=0.25\textwidth]{partial_color_compress}
+\end{figure}
+%------------------------------------------------------------------------------------------
+
+\end{frame}
+
+
 \begin{frame}{Combinatorial Model: Bipartite Graph}
 $G(V_c\times V_r,E)$
 \begin{figure}
@@ -191,56 +215,54 @@ $G(V_c\times V_r,E)$
 \end{figure}
 \end{frame}
 
-\begin{frame}{Graph Distnace-$2$ Coloring For Columns}
-A coloring of $G$ is a mapping $\Phi : V_c \to {1, \dots, p}$ with the property
-$\Phi(v_i)\neq \Phi(v_j)$ when $v_i$ and $v_j$ are at the distance $2$.
-
-\begin{alertblock}{Problem}
-Find a coloring $\Phi$ with a minimal number of colors.
-\end{alertblock}
-\end{frame}
-
-\begin{frame}{Full Jacobian Computation}
-
-%------------------------------------------------------------------------------------------
+\begin{frame}{Restrticted Distnace-$2$ Coloring}
+Given the bipartite graph $G(V_c\times V_r,E)$ and the required elements
+$E_D$, the distance-$2$ coloring restricted to $E_D$ is the mapping 
+$\Phi:V_c\to {0,1,...,p}$ such that
+\begin{itemize}
+\item $\forall (r_i,c_i)\in E_D:\Phi(c_i)\neq 0$
+\item The distance-$2$ neighbors $c_i, c_j$ are colored differently
+if there is a connecting path of length $2$ with at least an edge in $E_D$.
+\end{itemize}
 \begin{figure}
 \centering
-\includegraphics[height=0.27\textwidth]{small_jac}
-\hfill
-\includegraphics[height=0.27\textwidth]{full_color}
-\hfill
-\includegraphics[height=0.27\textwidth]{full_color_compress}
-\caption{Computation of all nonzero entries.
-Left: The nonzeros are displayed in black. Middle: Each column is assigned a color.
-Right: Columns with the same color are computed as linear combinations.}
-%
-\label{f:full}
+\includegraphics[width=0.8\textwidth]{restricted_distance2}
 \end{figure}
-%------------------------------------------------------------------------------------------
 \end{frame}
-\begin{frame}{Partial Jacobian Computation}
-%------------------------------------------------------------------------------------------
-\begin{figure}[t]
+
+\begin{frame}{Different Models of Computation}
+\begin{figure}
 \centering
-\includegraphics[height=0.27\textwidth]{partial_coloring_orig}
-\hfill
-\includegraphics[height=0.27\textwidth]{partial_color}
-\hfill
-\includegraphics[height=0.27\textwidth]{partial_color_compress}
-\caption{Computation of required nonzero entries.
-Left: The nonzeros are subdivided into required elements (black disks) and
-nonrequired elements (black circles). Middle: Each column is assigned a color.
-Right: Columns with the same
-color are computed as linear combinations.}
-%
-\label{f:partial}
+\includegraphics[width=0.9\textwidth]{fullvsPart}
 \end{figure}
-%------------------------------------------------------------------------------------------
-
 \end{frame}
 
+\begin{frame}{Combining AD and Preconditioning}
+\begin{figure}
+\centering
+\includegraphics[width=0.29\textwidth]{nnz}
+\includegraphics[width=0.29\textwidth]{nnz_Ri}
+\includegraphics[width=0.29\textwidth]{R_i}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.29\textwidth]{P}
+\includegraphics[width=0.29\textwidth]{PA}
+\includegraphics[width=0.29\textwidth]{add}
+\end{figure}
+\end{frame}
 
 \section{New Coloring Heuristics}
+\begin{frame}{Increasing the potentially and additionally required elements}
+The nonrequired nonzero elements are also computed as a by-product of the computation of required elements.
+The nonrequired elements have a major effect on the determination of potentially required elements
+and additionally required elements.
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{increase}
+\end{figure}
+\end{frame}
+
 \begin{frame}[fragile]
 \frametitle{Restricted Distance-$2$ Coloring Heuristics}
 The greedy algorithm for
@@ -279,6 +301,8 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \end{lstlisting}
 \end{figure}
 \end{frame}
+
+
 \section{Application}
 \begin{frame}{Application in Geoscience}
 we apply our new heuristics to a carbon sequestration example from geoscience.
