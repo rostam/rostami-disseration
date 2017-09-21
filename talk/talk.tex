@@ -302,6 +302,84 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \end{figure}
 \end{frame}
 
+\begin{frame}{Results}
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Matrix (NAT) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hline
+{} & Greedy & New & Greedy & New\\\hline
+\textit{steam1.mtx} & $64$ & $786$ & $64$ & $630$ \\\hline
+\textit{steam2.mtx} & $240$ & $1880$ & $240$ & $1400$ \\\hline
+\textit{nos3.mtx} & $1638$ & $6756$ & $1106$ & $4296$ \\\hline
+\textit{crystm01.mtx} & $17822$ & $47556$ & $10388$ & $28318$ \\\hline
+\textit{ex7.mtx} & $38554$ & $34954$ & $29174$ & $25054$ \\\hline
+\textit{ex33.mtx} & $7408$ & $8934$ & $4920$ & $5572$ \\\hline
+\textit{coater1.mtx} & $11722$ & $11558$ & $7684$ & $7448$ \\\hline
+\textit{pesa.mtx} & $36972$ & $41154$ & $31010$ & $33094$ \\\hline
+\end{tabular}
+\end{center}
+\end{table}
+\end{frame}
+
+\begin{frame}{Comparing with different block sizes}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_slo_add}
+\caption{
+The number of additionally required elements computed by
+new heuristic with the SLO ordering
+compared with Greedy algorithm.
+The computation is carried out on the matrix \textit{ex33}. }
+\label{ex33_alg31_alg32_bls_slo_add}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Balancing the number of colors}
+\begin{figure}
+\begin{lstlisting}[
+caption=New coloring heuristic with a controller to balance
+the number of colors and the number of additionally required elements.,
+label=code.new.impr2,mathescape]
+function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
+  $\Phi\leftarrow [0\ldots 0]$
+  $forbiddenColors\leftarrow [0\ldots 0]$
+  for $v\in V_c$ with $\exists r\in V_r: (v,r) \in E_i$ and $\Phi(v)=0$
+    for $n\in N_2(v,E_i)$ with $\Phi(n) \neq 0$
+      $forbiddenColors[\Phi(n)] = v$
+    $\Phi(v) = \min \{ a>0:forbiddenColors[a]\neq v\}$
+
+    $I_v=\{z\in V_c: z\neq v\text{ and }z\notin N_2(v) \text{ and } \Phi(z) = 0 \}$
+    if $I_v\neq\emptyset$
+      $maxs = \argmax_{x\in I_v} \nreq_v (x)$
+      $mins = \argmin_{x\in maxs} \req(x)$
+      for $i\in\{0,1,...,\min (\alpha - 1, \operatorname{size}(mins)-1)\}$
+        $\Phi(mins[i]) = \Phi(v)$
+  return $\Phi$
+\end{lstlisting}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Colors and number of additionally required elements}
+\begin{figure}
+\centering
+\includegraphics[width=0.5\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
+%The comparison of the number of colors in \coderef{code.new.d2.nreq},
+%\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
+%The computation is carried out on the matrix \textit{ex33} and with the LFO ordering.}
+\label{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.5\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
+%The comparison of the number of additionally required elements in \coderef{code.new.d2.nreq},
+%\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
+%The computation is carried out on the matrix \textit{ex33} and with the LFO ordering.}
+\label{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
+\end{figure}
+\end{frame}
 
 \section{Application}
 \begin{frame}{Application in Geoscience}
