@@ -444,7 +444,30 @@ Is the distance-$2$ coloring restricted to diagonal elements NP-Complete?
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{}
+\begin{frame}[fragile]
+\frametitle{A new heuristic based on the theorem}
+\begin{lstlisting}[
+caption=An improved star bicoloring restricted to diagonal elements.
+As the theorem says this coloring generates an equivalent distance-$2$ coloring.,
+label=star.diagonal,mathescape]
+function star_diag($G=(V_r\cup V_c, E)$, $E_i\subseteq E$)
+  $\Phi\leftarrow [0\ldots 0]$
+  $forbiddenColors1\leftarrow [0\ldots 0]$
+  $forbiddenColors2\leftarrow [0\ldots 0]$
+  for $e=(v,u)\in E_i$ with $v \in V_c$ and $u \in V_r$
+    $forbiddenColors1[0] = v$
+    $forbiddenColors2[0] = u$
+    for $n\in N_2(v,E_i)$ with $\Phi(n)\neq 0$
+        $forbiddenColors1[\Phi(n)] = v$
+    for $n\in N_2(u,E_i)$ with $\Phi(n)\neq 0$
+        $forbiddenColors2[\Phi(n)] = u$
+    $c_1 = \min(\{j>0: forbiddenColors1[j] \neq v\})$
+    $c_2 = \min(\{j>0: forbiddenColors2[j] \neq u\})$
+
+    if $c_1 < c_2$ $\Phi(v) = c_1$
+    else $\Phi(u) = c_2$
+  return $\Phi$
+\end{lstlisting}
 \end{frame}
 
 \section{Conclusion}
