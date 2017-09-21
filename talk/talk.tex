@@ -23,9 +23,7 @@
 \newcommand{\todo}[1]{\textbf{#1}}
 \newcommand{\nnz}[1]{\ensuremath{\operatorname{nz}(#1)}}
 
-\hyphenation{
-	MATLAB
-}
+\hyphenation{MATLAB}
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -90,13 +88,13 @@ keywords={with},
 % items enclosed in square brackets are optional; explanation below
 \title[]
 {Combining partial Jacobian computation and preconditioning}
-\author[\textbf{Rostami}]{{\bf M. A. Rostami}}
+\author[\textbf{Rostami}]{M. Ali Rostami}
 \institute[FSU Jena]{
-f  Chair of Advanced Computing\\
-  Friedrich Schiller University Jena, Germany\\[1ex]
-  \texttt{a.rostami@uni-jena.de}
+ Chair of Advanced Computing\\
+  Friedrich Schiller University Jena, Germany\\[2ex]
+  \textbf{Reviewers:} \\Prof. Martin B{\"u}cker, FSU Jena, Germany\\ Prof. Trond Steihaug, University of Bergen, Norway\\[1ex]
 }
-%\date[September 2013]{September 26, 2013}
+\date[September 2017]{September 27, 2017}
 
 \begin{document}
 
@@ -110,31 +108,30 @@ f  Chair of Advanced Computing\\
 \end{frame}
 
 \section{Motivation}
-\begin{frame}{Solve a Linear Equation}
+\begin{frame}{Solve a System of Linear Equations}
 The difficult part of the solution to the most of real-world problems is to solve:
 $$J \vek{y}=\vek{b},\quad \vek{y} \in \R^n, \vek{b} \in \R^n, J \in \R^{n \times n}$$
-\begin{itemize}
+where $J$ is a {\color{red} sparse} Jacobian matrix of a function implemented in a {\color{red} computer program}.
+The nonzero pattern of $J$ is {\color{red} known} before.
+\pause\begin{itemize}
 \item In practice, these systems of linear equations are computed using iterative solvers which
 need the product $J \vek{y}$ in each iteration.
-\item Automatic Differentation computes the product $J \vek{y}$ without truncation error (a linear combination of columns or rows).
-\item These iterative solvers are rarely applied in a pure fashion, but involve some sort of
-preconditioning.
+\item Automatic Differentation computes the product $J \vek{y}$ without assembling the whole matrix and without truncation error (a linear combination of columns (or rows or both)).
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}{Preconditioning}
+The iterative solvers are rarely applied in a pure fashion, but involve some sort of preconditioning.
 Rather than solving the unpreconditioned system one is solving the preconditioned system
 $$M^{-1} J \vek{y}= M^{-1}\vek{b},\quad M \approx J$$
 
 Common approaches to construct the preconditioner $M$ (like ILU) are based on accessing individual
-nonzero entries $J(i,j)$ of the Jacobian.
+nonzero entries $J(i,j)$.
 
-\begin{alertblock}{Access to nonzero elements}
- In general, accessing an
-individual nonzero entry via automatic differentiation is as efficient as accessing a
-complete column or row. In practice, an access to some individual nonzero entry is
- expensive in terms of computing time.
+\pause\begin{alertblock}{Access to nonzero elements}
+Accessing an individual nonzero entry via automatic differentiation is as efficient as accessing a
+complete column or row. In practice, an access to some individual nonzero entry is expensive in terms of computing time.
 \end{alertblock}
 \end{frame}
 
@@ -179,8 +176,7 @@ preconditioner based on these selected nonzero elements (required elements)
 Let $J$ be a sparse $n \times n$ Jacobian matrix with known sparsity pattern and let
 \sparsify{J} denote its sparsification using $k \times k$ blocks on the diagonal of $J$.
 Find a binary $n \times p$ seed matrix~$S$ with a minimal number of columns, $p$, such
-that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J \cdot
-S$.
+that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J \cdot S$.
 \end{frame}
 
 \begin{frame}{Full vs Partial Jacobian Computation}
@@ -194,7 +190,7 @@ S$.
 \includegraphics[height=0.25\textwidth]{full_color_compress}
 \end{figure}
 \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
-\begin{figure}
+\pause\begin{figure}
 \centering
 \includegraphics[height=0.25\textwidth]{partial_coloring_orig}
 \hfill
@@ -203,7 +199,6 @@ S$.
 \includegraphics[height=0.25\textwidth]{partial_color_compress}
 \end{figure}
 %------------------------------------------------------------------------------------------
-
 \end{frame}
 
 
@@ -215,14 +210,14 @@ $G(V_c\times V_r,E)$
 \end{figure}
 \end{frame}
 
-\begin{frame}{Restrticted Distnace-$2$ Coloring}
+\begin{frame}{Restricted Distance-$2$ Coloring}
 Given the bipartite graph $G(V_c\times V_r,E)$ and the required elements
-$E_D$, the distance-$2$ coloring restricted to $E_D$ is the mapping 
+$R_i$, the distance-$2$ coloring restricted to $R_i$ is the mapping 
 $\Phi:V_c\to {0,1,...,p}$ such that
 \begin{itemize}
-\item $\forall (r_i,c_i)\in E_D:\Phi(c_i)\neq 0$
+\item Any column vertex $c_i$ should be colored if $c_i$ is incident to some required edges/element.
 \item The distance-$2$ neighbors $c_i, c_j$ are colored differently
-if there is a connecting path of length $2$ with at least an edge in $E_D$.
+if there is a connecting path of length $2$ with at least an edge in $R_i$.
 \end{itemize}
 \begin{figure}
 \centering
@@ -265,7 +260,7 @@ and additionally required elements.
 
 \begin{frame}[fragile]
 \frametitle{Restricted Distance-$2$ Coloring Heuristics}
-The greedy algorithm for
+{\color{green} The greedy algorithm (Algorithm 3.1)} for
 the distance-$2$ coloring restricted to the edge set $E_i$
 for columns.
 \begin{lstlisting}[mathescape]
@@ -281,7 +276,7 @@ function d2_color($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \end{frame}
 \begin{frame}[fragile]
 \frametitle{New coloring heuristic}
-New coloring heuristic for distance-$2$ coloring
+{\color{blue} New coloring heuristic (Algorithm 3.2)} for distance-$2$ coloring
 considering the nonrequired elements.
 \begin{figure}
 \begin{lstlisting}[mathescape]
@@ -463,7 +458,6 @@ function star_diag($G=(V_r\cup V_c, E)$, $E_i\subseteq E$)
         $forbiddenColors2[\Phi(n)] = u$
     $c_1 = \min(\{j>0: forbiddenColors1[j] \neq v\})$
     $c_2 = \min(\{j>0: forbiddenColors2[j] \neq u\})$
-
     if $c_1 < c_2$ $\Phi(v) = c_1$
     else $\Phi(u) = c_2$
   return $\Phi$
