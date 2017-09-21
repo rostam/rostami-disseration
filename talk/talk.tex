@@ -381,6 +381,24 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
 \end{figure}
 \end{frame}
 
+\begin{frame}{Colors and number of additionally required elements}
+\begin{figure}
+\centering
+\includegraphics[width=0.5\linewidth]{ex33_alg35_alpha_0_2_6_10_bls_lfo_adds}
+%The comparison of the number of colors in \coderef{code.new.d2.nreq},
+%\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
+%The computation is carried out on the matrix \textit{ex33} and with the LFO ordering.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.5\linewidth]{ex33_alg35_alpha_0_2_6_10_bls_lfo_cols}
+%The comparison of the number of additionally required elements in \coderef{code.new.d2.nreq},
+%\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
+%The computation is carried out on the matrix \textit{ex33} and with the LFO ordering.}
+\end{figure}
+\end{frame}
+
 \section{Application}
 \begin{frame}{Application in Geoscience}
 we apply our new heuristics to a carbon sequestration example from geoscience.
@@ -407,7 +425,28 @@ two-phase flow model in porous media.
 \end{frame}
 
 
-\section{A Special Case}
+\section{Special Case}
+\begin{frame}{Generalizing a theorem}
+\begin{theorem}
+The minimal star bicoloring restricted to the diagonal elements
+can be transformed to a minimal distance-$2$ coloring.
+\end{theorem}
+\pause\begin{theorem}
+Given the bipartite graph $G=(V_r\cup V_c,E)$ and a matching $M\subseteq E$ representing
+the required elements, any valid star bicoloring restricted to $M$
+with the number of colors $X_{sb}$
+can be transformed to a valid distance-$2$ coloring restricted to $M$
+with the number of colors $X_{d2}$ such that $X_{sb} \geq X_{d2}$.
+These numbers of colors can be different from the minimal number of colors.
+\end{theorem}
+\pause\begin{alertblock}{Open Problem}
+Is the distance-$2$ coloring restricted to diagonal elements NP-Complete?
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{}
+\end{frame}
+
 \section{Conclusion}
 \begin{frame}{Conclusion}
 \begin{itemize}
