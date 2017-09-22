@@ -173,10 +173,12 @@ preconditioner based on these selected nonzero elements (required elements)
 
 
 \begin{frame}{Problem Formulation: Block Seed}
-Let $J$ be a sparse $n \times n$ Jacobian matrix with known sparsity pattern and let
-\sparsify{J} denote its sparsification using $k \times k$ blocks on the diagonal of $J$.
-Find a binary $n \times p$ seed matrix~$S$ with a minimal number of columns, $p$, such
+Find a binary $n \times p$ seed matrix~$S$ with a minimal number of columns, $k$, such
 that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J \cdot S$.
+
+\begin{figure}
+\includegraphics[width=0.5\linewidth]{minimizek}
+\end{figure}
 \end{frame}
 
 \begin{frame}{Full vs Partial Jacobian Computation}
@@ -221,7 +223,7 @@ if there is a connecting path of length $2$ with at least an edge in $R_i$.
 \end{itemize}
 \begin{figure}
 \centering
-\includegraphics[width=0.8\textwidth]{restricted_distance2}
+\includegraphics[width=0.7\textwidth]{restricted_distance2}
 \end{figure}
 \end{frame}
 
@@ -230,6 +232,16 @@ if there is a connecting path of length $2$ with at least an edge in $R_i$.
 \centering
 \includegraphics[width=0.9\textwidth]{fullvsPart}
 \end{figure}
+\end{frame}
+
+\begin{frame}{Combining AD and Preconditioning}
+\begin{itemize}
+\item Compute $R_{init} = \rho(J)$
+\item Compute $R_{init} \cup Fillin = SILU(R_{init})$
+\item Compute the coloring $\Phi (R_{init}, J)$ restricted to $R_{init}$
+\item Compute $R_{pot} \subset R_{init}$ such that $|\Phi(R_{init}\cup R_{pot},J)| = |\Phi (R_{init}, J)|$
+\item Compute $R_{add} \subset R_{pot}$ such that $SILU(R_{init})\cup R_{add} = SILU(R_{init}\cup R_{add})$
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Combining AD and Preconditioning}
@@ -248,10 +260,9 @@ if there is a connecting path of length $2$ with at least an edge in $R_i$.
 \end{frame}
 
 \section{New Coloring Heuristics}
-\begin{frame}{Increasing the number of potentially and additionally required elements}
+\begin{frame}{Increasing $|R_{pot}|$ and $R_{add}$}
 The nonrequired nonzero elements are also computed as a by-product of the computation of required elements.
-The nonrequired elements have a major effect on the determination of potentially required elements
-and additionally required elements.
+The nonrequired elements have a major effect on the determination of $R_{pot}$ and $R_{add}$.
 \begin{figure}
 \centering
 \includegraphics[width=0.5\textwidth]{increase}
@@ -356,27 +367,27 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
 \end{figure}
 \end{frame}
 
-\begin{frame}{Colors and number of additionally required elements}
-\begin{figure}
-\centering
-\includegraphics[width=0.5\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
+%\begin{frame}{Colors and $|R_{add}|$}
+%\begin{figure}
+%\centering
+%\includegraphics[width=0.5\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
 %The comparison of the number of colors in \coderef{code.new.d2.nreq},
 %\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
 %The computation is carried out on the matrix \textit{ex33} and with the LFO ordering.}
-\label{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
-\end{figure}
+%\label{ex33_alg31_alg32_alg34_alg35_bls_lfo_cols}
+%\end{figure}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.5\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
+%\begin{figure}
+%\centering
+%\includegraphics[width=0.5\linewidth]{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
 %The comparison of the number of additionally required elements in \coderef{code.new.d2.nreq},
 %\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
 %The computation is carried out on the matrix \textit{ex33} and with the LFO ordering.}
-\label{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
-\end{figure}
-\end{frame}
+%\label{ex33_alg31_alg32_alg34_alg35_bls_lfo_adds}
+%\end{figure}
+%\end{frame}
 
-\begin{frame}{Colors and number of additionally required elements}
+\begin{frame}{Colors and $|R_{add}|$}
 \begin{figure}
 \centering
 \includegraphics[width=0.5\linewidth]{ex33_alg35_alpha_0_2_6_10_bls_lfo_adds}
