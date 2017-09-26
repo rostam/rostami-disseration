@@ -163,14 +163,9 @@ preconditioner based on these selected nonzero elements (required elements):
 \begin{frame}{AD, Preconditioning, and Sparsification}
 
 \begin{itemize}
-  \item To perform a Jacobian-vector product $J \vek{z}$ with some vector \vek{z} in an
-      iterative solver method, apply automatic differentiation with a seed matrix
-      identical to that vector \vek{z}. 
-  \item Choose a block size $k$ and apply the sparsification to get \sparsify{J} from
-      the Jacobian~$J$. Assemble \sparsify{J} via automatic differentiation and store
-      it explicitly.
-  \item Construct a preconditioner $M$ from \sparsify{J} by performing an ILU(0)
-      factorization on each block of~\sparsify{J}. 
+  \item Apply automaic differentation to compute Jacobian-vector product $J \vek{z}$
+  \item Choose a block size $k$ and apply the sparsification to get \sparsify{J}. Assemble \sparsify{J} via automatic differentiation and store it explicitly.
+  \item Construct a preconditioner $M$ from \sparsify{J} by performing an SILU on each block of~\sparsify{J}. 
 \end{itemize}
 \end{frame}
 
