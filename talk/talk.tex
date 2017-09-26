@@ -103,7 +103,7 @@ keywords={with},
   \titlepage
 \end{frame}
 
-\begin{frame}{Structure of This Talk}
+\begin{frame}{Structure}
 \tableofcontents
 \end{frame}
 
@@ -126,8 +126,8 @@ The iterative solvers are rarely applied in a pure fashion, but involve some sor
 Rather than solving the unpreconditioned system one is solving the preconditioned system
 $$M^{-1} J \vek{y}= M^{-1}\vek{b},\quad M \approx J$$
 
-Common approaches to construct the preconditioner $M$ (like ILU) are based on accessing individual
-nonzero entries $J(i,j)$.
+Common approaches to construct the preconditioner $M$ (like SILU) are based on accessing individual
+nonzero entries $J(i,j)$ (may produce Fillins).
 
 \pause\begin{alertblock}{Access to nonzero elements}
 Accessing an individual nonzero entry via automatic differentiation is as efficient as accessing a
@@ -260,14 +260,7 @@ if there is a connecting path of length $2$ with at least an edge in $R_i$.
 \end{frame}
 
 \section{New Coloring Heuristics}
-\begin{frame}{Increasing $|R_{pot}|$ and $R_{add}$}
-The nonrequired nonzero elements are also computed as a by-product of the computation of required elements.
-The nonrequired elements have a major effect on the determination of $R_{pot}$ and $R_{add}$.
-\begin{figure}
-\centering
-\includegraphics[width=0.5\textwidth]{increase}
-\end{figure}
-\end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Restricted Distance-$2$ Coloring Heuristics}
@@ -285,8 +278,18 @@ function d2_color($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
   return $\Phi$
 \end{lstlisting}
 \end{frame}
+
+\begin{frame}{Increasing $|R_{pot}|$ and $| R_{add}|$}
+The nonrequired nonzero elements are also computed as a by-product of the computation of required elements.
+The nonrequired elements have a major effect on the determination of $R_{pot}$ and $R_{add}$.
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{increase}
+\end{figure}
+\end{frame}
+
 \begin{frame}[fragile]
-\frametitle{New coloring heuristic}
+\frametitle{New Coloring Heuristic}
 {\color{blue} New coloring heuristic (Algorithm 3.2)} for distance-$2$ coloring
 considering the nonrequired elements.
 \begin{figure}
@@ -407,7 +410,7 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
 
 \section{Application}
 \begin{frame}{Application in Geoscience}
-we apply our new heuristics to a carbon sequestration example from geoscience.
+We apply our new heuristics to a carbon sequestration example from geoscience.
 The geophysics group of RWTH Aachen simulates the injection of CO$_2$ in a reservoir by a
 two-phase flow model in porous media.
 \begin{figure}
