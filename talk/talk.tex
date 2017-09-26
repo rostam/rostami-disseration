@@ -112,12 +112,12 @@ keywords={with},
 \begin{frame}{Solve a System of Linear Equations}
 The difficult part of the solution to the most of real-world problems is to solve:
 $$J \vek{y}=\vek{b},\quad \vek{y} \in \R^n, \vek{b} \in \R^n, J \in \R^{n \times n}$$
-where $J$ is a {\color{red} sparse} Jacobian matrix of a function implemented in a {\color{red} computer program}.
+where $J$ is a {\color{red} large sparse} Jacobian matrix of a function implemented in a {\color{red} computer program}.
 The nonzero pattern of $J$ is {\color{red} known} before.
 \pause\begin{itemize}
 \item In practice, these systems of linear equations are computed using iterative solvers which
 need the product $J \vek{y}$ in each iteration.
-\item Automatic Differentation computes the product $J \vek{y}$ without assembling the whole matrix and without truncation error (a linear combination of columns (or rows or both)).
+\item Automatic Differentation computes the product $J \vek{z}$ without assembling the whole matrix and without truncation error (a linear combination of columns (or rows or both)).
 \end{itemize}
 \end{frame}
 
@@ -127,8 +127,8 @@ The iterative solvers are rarely applied in a pure fashion, but involve some sor
 Rather than solving the unpreconditioned system one is solving the preconditioned system
 $$M^{-1} J \vek{y}= M^{-1}\vek{b},\quad M \approx J$$
 
-Common approaches to construct the preconditioner $M$ (like SILU) are based on accessing individual
-nonzero entries $J(i,j)$ (may produce Fillins).
+Common approaches to construct the preconditioner $M$ (like symbolic incomplete LU decomposition - SILU) are based on accessing individual
+nonzero entries $J(i,j)$ (may produce Fill-ins).
 
 \pause\begin{alertblock}{Access to nonzero elements}
 Accessing an individual nonzero entry via automatic differentiation is as efficient as accessing a
@@ -140,7 +140,7 @@ complete column or row. In practice, an access to some individual nonzero entry 
 \begin{frame}{Sparsification}
 A sparsification of $J$, \sparsify{J}, selects a 
 subset of all nonzero elements of $J$ and construct a
-preconditioner based on these selected nonzero elements (required elements)
+preconditioner based on these selected nonzero elements (required elements):
 \begin{itemize}
 \item $k\times k$-Block Diagonal:
 \end{itemize}
@@ -150,6 +150,7 @@ preconditioner based on these selected nonzero elements (required elements)
 \includegraphics[width=0.3\textwidth]{mat_sparsify}
 \includegraphics[width=0.3\textwidth]{mat_sparsify_removed}
 \end{figure}
+(Prof. B{\"u}cker)
 \end{frame}
 
 \begin{frame}{Influence of Sparsification}
@@ -160,8 +161,9 @@ preconditioner based on these selected nonzero elements (required elements)
 \end{frame}
 
 \begin{frame}{AD, Preconditioning, and Sparsification}
+
 \begin{itemize}
-  \item To perform a Jacobian-vector product $J \vek{z}$ with some vector \vek{z} in a
+  \item To perform a Jacobian-vector product $J \vek{z}$ with some vector \vek{z} in an
       iterative solver method, apply automatic differentiation with a seed matrix
       identical to that vector \vek{z}. 
   \item Choose a block size $k$ and apply the sparsification to get \sparsify{J} from
@@ -174,8 +176,9 @@ preconditioner based on these selected nonzero elements (required elements)
 
 
 \begin{frame}{Problem Formulation: Block Seed}
-Find a binary $n \times p$ seed matrix~$S$ with a minimal number of columns, $k$, such
+Find a binary $n \times k$ seed matrix~$S$ with a minimal number of columns, $k$, such
 that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J \cdot S$.
+A minimal $k$ would decreae the computational overhead.
 
 \begin{figure}
 \includegraphics[width=0.5\linewidth]{minimizek}
@@ -199,7 +202,7 @@ that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J
 \hfill
 \includegraphics[height=0.25\textwidth]{partial_color}
 \hfill
-\includegraphics[height=0.25\textwidth]{partial_color_compress}
+\includegraphics[height=0.25\textwidth]{partial_color_compress2}
 \end{figure}
 %------------------------------------------------------------------------------------------
 \end{frame}
@@ -211,16 +214,18 @@ $G(V_c\times V_r,E)$
 \centering
 \includegraphics[width=0.8\textwidth]{bip}
 \end{figure}
+
+(Alex Pothen, Trond Steihaug)
 \end{frame}
 
 \begin{frame}{Restricted Distance-$2$ Coloring}
 Given the bipartite graph $G(V_c\times V_r,E)$ and the required elements
-$R_i$, the distance-$2$ coloring restricted to $R_i$ is the mapping 
+$R_init$, the distance-$2$ coloring restricted to $R_init$ is the mapping 
 $\Phi:V_c\to {0,1,...,p}$ such that
 \begin{itemize}
 \item Any column vertex $c_i$ should be colored if $c_i$ is incident to some required edges/element.
 \item The distance-$2$ neighbors $c_i, c_j$ are colored differently
-if there is a connecting path of length $2$ with at least an edge in $R_i$.
+if there is a connecting path of length $2$ with at least an edge in $R_init$.
 \end{itemize}
 \begin{figure}
 \centering
@@ -236,6 +241,7 @@ if there is a connecting path of length $2$ with at least an edge in $R_i$.
 \end{frame}
 
 \begin{frame}{Combining AD and Preconditioning}
+(L{\"u}lfesmann: a doctorate of Prof. B{\"u}cker)
 \begin{itemize}
 \item Compute $R_{init} = \rho(J)$
 \item Compute $R_{init} \cup Fillin = SILU(R_{init})$
@@ -283,6 +289,9 @@ function d2_color($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \begin{frame}{Increasing $|R_{pot}|$ and $| R_{add}|$}
 The nonrequired nonzero elements are also computed as a by-product of the computation of required elements.
 The nonrequired elements have a major effect on the determination of $R_{pot}$ and $R_{add}$.
+In the right matrix, one nonrequired element survives.
+In the left matrix, three nonrequired elements survive.
+
 \begin{figure}
 \centering
 \includegraphics[width=0.5\textwidth]{increase}
@@ -313,11 +322,12 @@ function d2_color_nreq($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \end{frame}
 
 \begin{frame}{Results}
+The block size is fixed to $10$.
 \begin{table}
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Matrix (NAT) & \multicolumn{2}{c|}{$|R_p|$} & \multicolumn{2}{c|}{$|R_a|$}\\\hline
+Matrix (NAT) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|$}\\\hline
 {} & Greedy & New & Greedy & New\\\hline
 \textit{steam1.mtx} & $64$ & $786$ & $64$ & $630$ \\\hline
 \textit{steam2.mtx} & $240$ & $1880$ & $240$ & $1400$ \\\hline
@@ -392,6 +402,31 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
 %\end{frame}
 
 \begin{frame}{Colors and $|R_{add}|$}
+The matrix \textit{ex33}:
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg35_alpha_0_2_6_10_bls_lfo_adds}
+%The comparison of the number of colors in \coderef{code.new.d2.nreq},
+%\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
+%The computation is carried out on the matrix \textit{ex33} and with the LFO ordering.}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Colors and $|R_{add}|$}
+The matrix \textit{ex33}:
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{ex33_alg35_alpha_0_2_6_10_bls_lfo_cols}
+%The comparison of the number of additionally required elements in \coderef{code.new.d2.nreq},
+%\coderef{code.new.impr1}, and~\coderef{code.new.impr2}.
+%The computation is carried out on the matrix \textit{ex33} and with the LFO ordering.}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}{Colors and $|R_{add}|$}
+The matrix \textit{ex33}:
 \begin{figure}
 \centering
 \includegraphics[width=0.5\linewidth]{ex33_alg35_alpha_0_2_6_10_bls_lfo_adds}
@@ -423,14 +458,14 @@ two-phase flow model in porous media.
 \begin{frame}{Convergence (Block Size = 5)}
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{jac_convergence_greedy_new_5}
+\includegraphics[width=0.95\textwidth]{jac_convergence_greedy_new_5_2}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Convergence (Block Size = 15)}
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{jac_convergence_greedy_new_15}
+\includegraphics[width=0.95\textwidth]{jac_convergence_greedy_new_15_2}
 \end{figure}
 \end{frame}
 
@@ -482,10 +517,10 @@ function star_diag($G=(V_r\cup V_c, E)$, $E_i\subseteq E$)
 \section{Conclusion}
 \begin{frame}{Conclusion}
 \begin{itemize}
-\item Automatic Differenation and Preconditioning together
+\item Combining Automatic differenation and preconditioning
 \item Using partial Jacobian Computation
 \item Modeling in graph language
-\item Some experimental results
+\item Experimental results
 \end{itemize}
 \end{frame}
 
