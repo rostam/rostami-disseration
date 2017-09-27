@@ -116,7 +116,7 @@ where $J$ is a {\color{red} large sparse} Jacobian matrix of a function implemen
 The nonzero pattern of $J$ is {\color{red} known} before.
 \pause\begin{itemize}
 \item In practice, these systems of linear equations are computed using iterative solvers which
-need the product $J \vek{y}$ in each iteration.
+need the product $J \vek{z}$ for $\vek{z} \in \R^n$ in each iteration.
 \item Automatic Differentation computes the product $J \vek{z}$ without assembling the whole matrix and without truncation error (a linear combination of columns (or rows or both)).
 \end{itemize}
 \end{frame}
@@ -170,7 +170,7 @@ preconditioner based on these selected nonzero elements (required elements):
 \end{frame}
 
 
-\begin{frame}{Problem Formulation: Block Seed}
+\begin{frame}{Problem Formulation: Partial Jacobian Computation}
 Find a binary $n \times k$ seed matrix~$S$ with a minimal number of columns, $k$, such
 that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J \cdot S$.
 A minimal $k$ would decreae the computational overhead.
@@ -235,11 +235,11 @@ if there is a connecting path of length $2$ with at least an edge in $R_init$.
 \end{figure}
 \end{frame}
 
-\begin{frame}{Combining AD and Preconditioning}
+\begin{frame}{More preserved nonzeros: A Heuristic}
 (L{\"u}lfesmann: a doctorate of Prof. B{\"u}cker)
 \begin{itemize}
 \item Compute $R_{init} = \rho(J)$
-\item Compute $R_{init} \cup Fillin = SILU(R_{init})$
+\item Compute $R_{init} \cup Fill-in = SILU(R_{init})$
 \item Compute the coloring $\Phi (R_{init}, J)$ restricted to $R_{init}$
 \item Compute $R_{pot} \subset R_{init}$ such that $|\Phi(R_{init}\cup R_{pot},J)| = |\Phi (R_{init}, J)|$
 \item Compute $R_{add} \subset R_{pot}$ such that $SILU(R_{init})\cup R_{add} = SILU(R_{init}\cup R_{add})$
