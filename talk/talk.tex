@@ -117,7 +117,7 @@ The nonzero pattern of $J$ is {\color{red} known} before.
 \pause\begin{itemize}
 \item In practice, these systems of linear equations are computed using iterative solvers which
 need the product $J \vek{z}$ for $\vek{z} \in \R^n$ in each iteration.
-\item Automatic Differentation computes the product $J \vek{z}$ without assembling the whole matrix and without truncation error (a linear combination of columns (or rows or both)).
+\item Automatic differentation computes the product $J \vek{z}$ without assembling the whole matrix and without truncation error (a linear combination of columns (or rows or both)).
 \end{itemize}
 \end{frame}
 
@@ -139,7 +139,7 @@ complete column or row. In practice, an access to some individual nonzero entry 
 \section{Basics}
 \begin{frame}{Sparsification}
 A sparsification of $J$, \sparsify{J}, selects a 
-subset of all nonzero elements of $J$ and construct a
+subset of all nonzero elements of $J$ and constructs a
 preconditioner based on these selected nonzero elements (required elements):
 \begin{itemize}
 \item $k\times k$-Block Diagonal:
@@ -162,18 +162,18 @@ preconditioner based on these selected nonzero elements (required elements):
 
 \begin{frame}{AD, Preconditioning, and Sparsification}
 
-\begin{itemize}
-  \item Apply automaic differentation to compute Jacobian-vector product $J \vek{z}$
-  \item Choose a block size $k$ and apply the sparsification to get \sparsify{J}. Assemble \sparsify{J} via automatic differentiation and store it explicitly.
-  \item Construct a preconditioner $M$ from \sparsify{J} by performing an SILU on each block of~\sparsify{J}. 
-\end{itemize}
+\begin{enumerate}
+  \item Apply automaic differentation to compute Jacobian-vector product $J \vek{z}$. {\color{green} OK}
+  \item Choose a block size $k$ and apply the sparsification to get \sparsify{J}. Assemble \sparsify{J} via \textbf{partial Jacobian computation} and store it explicitly. {\color{red} Actual Problem}
+  \item Construct a preconditioner $M$ from \sparsify{J} by performing an SILU on each block of~\sparsify{J}. {\color{green} OK}
+\end{enumerate}
 \end{frame}
 
 
 \begin{frame}{Problem Formulation: Partial Jacobian Computation}
 Find a binary $n \times k$ seed matrix~$S$ with a minimal number of columns, $k$, such
 that all nonzero entries of \sparsify{J} also appear in the compressed matrix $J \cdot S$.
-A minimal $k$ would decreae the computational overhead.
+A minimal $k$ decreases the computational and storage overhead.
 
 \begin{figure}
 \includegraphics[width=0.5\linewidth]{minimizek}
@@ -215,10 +215,10 @@ $G(V_c\times V_r,E)$
 
 \begin{frame}{Restricted Distance-$2$ Coloring}
 Given the bipartite graph $G(V_c\times V_r,E)$ and the required elements
-$R_init$, the distance-$2$ coloring restricted to $R_init$ is the mapping 
+$R_{init}$, the distance-$2$ coloring restricted to $R_{init}$ is the mapping 
 $\Phi:V_c\to {0,1,...,p}$ such that
 \begin{itemize}
-\item Any column vertex $c_i$ should be colored if $c_i$ is incident to some required edges/element.
+\item Any column vertex $c_i$ should be colored \textbf{only if} $c_i$ is incident to some required edges/elements.
 \item The distance-$2$ neighbors $c_i, c_j$ are colored differently
 if there is a connecting path of length $2$ with at least an edge in $R_init$.
 \end{itemize}
@@ -236,28 +236,28 @@ if there is a connecting path of length $2$ with at least an edge in $R_init$.
 \end{frame}
 
 \begin{frame}{More preserved nonzeros: A Heuristic}
-(L{\"u}lfesmann: a doctorate of Prof. B{\"u}cker)
+(L{\"u}lfesmann, B{\"u}cker)
 \begin{itemize}
 \item Compute $R_{init} = \rho(J)$
-\item Compute $R_{init} \cup Fill-in = SILU(R_{init})$
+\item Compute $R_{init} \cup \text{Fill-in} = SILU(R_{init})$
 \item Compute the coloring $\Phi (R_{init}, J)$ restricted to $R_{init}$
 \item Compute $R_{pot} \subset R_{init}$ such that $|\Phi(R_{init}\cup R_{pot},J)| = |\Phi (R_{init}, J)|$
 \item Compute $R_{add} \subset R_{pot}$ such that $SILU(R_{init})\cup R_{add} = SILU(R_{init}\cup R_{add})$
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Combining AD and Preconditioning}
+\begin{frame}{More preserved nonzeros}
 \begin{figure}
 \centering
-\includegraphics[width=0.29\textwidth]{nnz}
-\includegraphics[width=0.29\textwidth]{nnz_Ri}
-\includegraphics[width=0.29\textwidth]{R_i}
+\includegraphics[width=0.33\textwidth]{nnz}
+%\includegraphics[width=0.29\textwidth]{nnz_Ri}
+\includegraphics[width=0.33\textwidth]{R_i}
 \end{figure}
 \begin{figure}
 \centering
-\includegraphics[width=0.29\textwidth]{P}
-\includegraphics[width=0.29\textwidth]{PA}
-\includegraphics[width=0.29\textwidth]{add}
+\includegraphics[width=0.33\textwidth]{P}
+\includegraphics[width=0.33\textwidth]{PA}
+%\includegraphics[width=0.29\textwidth]{add}
 \end{figure}
 \end{frame}
 
@@ -284,12 +284,12 @@ function d2_color($G=(V_r\cup V_c,E)$,$E_i\subseteq E$)
 \begin{frame}{Increasing $|R_{pot}|$ and $| R_{add}|$}
 The nonrequired nonzero elements are also computed as a by-product of the computation of required elements.
 The nonrequired elements have a major effect on the determination of $R_{pot}$ and $R_{add}$.
-In the right matrix, one nonrequired element survives.
-In the left matrix, three nonrequired elements survive.
+%In the left matrix, one nonrequired element survives.
+%In the right matrix, three nonrequired elements survive.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.5\textwidth]{increase}
+\includegraphics[width=0.6\textwidth]{increase2}
 \end{figure}
 \end{frame}
 
@@ -338,15 +338,10 @@ Matrix (NAT) & \multicolumn{2}{c|}{$|R_{pot}|$} & \multicolumn{2}{c|}{$|R_{add}|
 \end{frame}
 
 \begin{frame}{Comparing with different block sizes}
+The matrix \textit{ex33}:
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{ex33_alg31_alg32_bls_slo_add}
-\caption{
-The number of additionally required elements computed by
-new heuristic with the SLO ordering
-compared with Greedy algorithm.
-The computation is carried out on the matrix \textit{ex33}. }
-\label{ex33_alg31_alg32_bls_slo_add}
 \end{figure}
 \end{frame}
 
@@ -396,7 +391,7 @@ function d2_color_nreq_balance($G=(V_r\cup V_c,E)$,$E_i\subseteq E$,$\alpha$)
 %\end{figure}
 %\end{frame}
 
-\begin{frame}{Colors and $|R_{add}|$}
+\begin{frame}{$|R_{add}|$}
 The matrix \textit{ex33}:
 \begin{figure}
 \centering
@@ -407,7 +402,7 @@ The matrix \textit{ex33}:
 \end{figure}
 \end{frame}
 
-\begin{frame}{Colors and $|R_{add}|$}
+\begin{frame}{Colors}
 The matrix \textit{ex33}:
 
 \begin{figure}
@@ -512,18 +507,32 @@ function star_diag($G=(V_r\cup V_c, E)$, $E_i\subseteq E$)
 \section{Conclusion}
 \begin{frame}{Conclusion}
 \begin{itemize}
-\item Combining Automatic differenation and preconditioning
+\item Combining automatic differenation and preconditioning
 \item Using partial Jacobian Computation
+\item New problems
+\begin{itemize}
+\item New formulations
+\item New heuristics
+\item Implementation
+\end{itemize}
 \item Modeling in graph language
 \item Experimental results
+\item Not mentioned:
+\begin{itemize}
+\item Bidirectional compression
+\item EXPLAIN: An interative educational module
+\end{itemize}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Finish!}
+\begin{frame}{Thank you!}
 \begin{center}
-   \Huge \bf Thank you!
+\bf Any Questions?
 \end{center}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\textwidth]{custom_module}
+\end{figure}
 \end{frame}
-
 \end{document}
 
