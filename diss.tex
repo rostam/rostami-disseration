@@ -203,7 +203,7 @@ express my first gratitude towards my supervisor \textit{Prof.\ Dr.\ Martin B\"u
 continuous support during my research, patience, immense knowledge, and attention to details. I
 should confess that I can not imagine a better and friendlier supervisor. \textit{Prof.\ Dr.\ Trond
 Steihaug} was a good listener to my ideas that we discussed at the Oxford conference on
-algortihmic differentiation. I like to thank him for accepting to review my thesis. Besides, I would like
+algorithmic differentiation. I like to thank him for accepting to review my thesis. Besides, I would like
 to thank \textit{Michael Lülfesmann} for his comments on my work. Finally, I wish to thank my wife
 \textit{Masoumeh Seydi} and my best friend \textit{Azin Azadi} for encouraging me throughout all
 my studies at university.
@@ -243,12 +243,14 @@ were first to study the determination of a sparse Jacobian matrix based on the s
 Coleman and Mor{\'e}~\cite{Coleman1983EoS} transformed this sparse matrix problem into the
 problem of vertex coloring in graph theory. The idea is to formulate the compression of the
 columns (similarly for rows) such that all the nonzero elements of the Jacobian matrix are
-determined. This is called unidirectional compression. Later, a bidirectional compression is
+determined. This is called unidirectional compression. 
+There are other studies like~\cite{DennisSteihaug} which consider the byproducts of some column compression schemes.
+Later, a bidirectional compression is
 introduced and analyzed in~\cite{Coleman1996SaE} and~\cite{hs:csj} which can result in larger
 savings in computation and storage. Several other graph models are studied further in Hossain and
-Steihaug~\cite{hs:gmei} like the pattern graph which keeps the structure of the matrix explicitly.
+Steihaug~\cite{hs:gmei,Hasan2016} like the pattern graph which keeps the structure of the matrix explicitly.
 Also, a recent graph formulation is to group together rows into blocks and partition the resulting
-column segments in~\cite{optimal_diret_determination}. On the other hand, rather than computing
+column segments in~\cite{optimal_diret_determination}.  On the other hand, rather than computing
 all nonzero elements, some other problems from scientific computing target the computation of
 only a proper subset of the nonzero elements. These problems are studied under the term of
 partial Jacobian computation. Gebremedhin, Manne, and Pothen~\cite{Gebremedhin05whatcolor}
@@ -298,6 +300,7 @@ We look at the ideas to determine the nonzeros of sparse Jacobian matrices in
 \secref{s.det.nonzero}.
 We look at definitions of combining ILU preconditioning and
 partial Jacobian computation in \secref{s.precond}.
+Throughout this thesis, we consider the natural ordering of the given matrix for ILU preconditioning.
 
 %===================================================================================================
 \section{Determining nonzeros of sparse Jacobian matrices}
@@ -3364,10 +3367,11 @@ Also, we need an extensive evaluation of the software to find
 the new ways of further developments.
 
 Although we proposed different heuristics, many dimensions of the problem can be improved.
-We considered only the ILU preconditioning. A future work is to replace ILU
+We considered only the ILU preconditioning with the natural ordering. A future work is to replace ILU
 with other preconditioning techniques.
 For example, the approximate inverse preconditioning (AINV)~\cite{ainv98} might be a
 suitable candidate which produces no fill-in.
+Also, the connection of combinatorial techniques in support theory for preconditioning~\cite{GrembanPHD,BomanHendrickson} could be explored.
 Another future work is to consider blocks of submatrices for coloring instead of just a complete row or column? Steihaug and Hossain~\cite{Steihaug1997GCa} discuss this idea for blocks of rows and the same column intersection graph as before and show it has advantages in the unidirectional coloring. A first improvement is to search for a similar approach in the bidirectional coloring and restricted coloring. Finally, a new area is to look at the same ideas for the hypergraph model for fine-grained coloring.
 
 \bibliographystyle{IEEEtran}

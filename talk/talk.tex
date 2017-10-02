@@ -241,7 +241,7 @@ if there is a connecting path of length $2$ with at least an edge in $R_init$.
 \item Compute $R_{init} = \rho(J)$
 \item Compute $R_{init} \cup \text{Fill-in} = SILU(R_{init})$
 \item Compute the coloring $\Phi (R_{init}, J)$ restricted to $R_{init}$
-\item Compute $R_{pot} \subset R_{init}$ such that $|\Phi(R_{init}\cup R_{pot},J)| = |\Phi (R_{init}, J)|$
+\item Compute $R_{pot} \subset J\R_{init}$ such that $|\Phi(R_{init}\cup R_{pot},J)| = |\Phi (R_{init}, J)|$
 \item Compute $R_{add} \subset R_{pot}$ such that $SILU(R_{init})\cup R_{add} = SILU(R_{init}\cup R_{add})$
 \end{itemize}
 \end{frame}
